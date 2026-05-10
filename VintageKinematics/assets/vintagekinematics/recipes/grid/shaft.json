@@ -1,0 +1,26 @@
+[
+	{
+		"ingredientPattern": "HRC,L_L,L_L",
+		"ingredients": {
+			"H": { "type": "item", "tags": ["tool-hammer"], "isTool": true, "toolDurabilityCost": 5 },
+			"C": { "type": "item", "tags": ["tool-chisel"], "isTool": true, "toolDurabilityCost": 5 },
+			"R": { "type": "item", "code": "game:resin" },
+			"L": { "type": "block", "code": "game:log-placed-*-ud" }
+		},
+		"width": 3,
+		"height": 3,
+		"output": { "type": "block", "code": "shaft-y", "quantity": 8 }
+	},
+	{
+		"ingredientPattern": "HRC,L_L,L_L",
+		"ingredients": {
+			"H": { "type": "item", "tags": ["tool-hammer"], "isTool": true, "toolDurabilityCost": 5 },
+			"C": { "type": "item", "tags": ["tool-chisel"], "isTool": true, "toolDurabilityCost": 5 },
+			"R": { "type": "item", "code": "game:resin" },
+			"L": { "type": "block", "code": "game:logsection-placed-*-ud" }
+		},
+		"width": 3,
+		"height": 3,
+		"output": { "type": "block", "code": "shaft-y", "quantity": 8 }
+	}
+]

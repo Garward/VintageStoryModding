@@ -1,0 +1,38 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"surface": "game:block/coal/charcoal",
+		"side": "game:block/metal/plate/iron"
+	},
+	"elements": [
+		{
+			"name": "TopBelt",
+			"from": [ 0.0, 10.0, 0.0 ],
+			"to": [ 16.0, 11.0, 16.0 ],
+			"rotationOrigin": [ 0.0, 1.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"south": { "texture": "#surface", "uv": [ 0.0, 15.0, 16.0, 16.0 ] },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"up": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#side", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "BottomBelt",
+			"from": [ 0.0, 5.0, 0.0 ],
+			"to": [ 16.0, 6.0, 16.0 ],
+			"rotationOrigin": [ 0.0, -1.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"south": { "texture": "#surface", "uv": [ 0.0, 15.0, 16.0, 16.0 ] },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"up": { "texture": "#side", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		}
+	]
+}

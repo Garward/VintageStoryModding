@@ -1,0 +1,14 @@
+{
+	"ingredient": { "type": "item", "code": "slate-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-slate", "weight": 45 },
+		{ "weight": 12, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 10 },
+		{ "type": "item", "code": "game:metalbit-tin", "weight": 9 },
+		{ "type": "item", "code": "game:metalbit-bismuth", "weight": 6 },
+		{ "type": "item", "code": "game:metalbit-copper", "weight": 6 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 4 },
+		{ "type": "item", "code": "game:metalbit-titanium", "weight": 3 }
+	]
+}

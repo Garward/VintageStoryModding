@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "item", "code": "game:stone-sandstone", "quantity": 1 },
+	"outputs": [
+		{ "type": "block", "code": "game:sand-sandstone", "quantity": 1 }
+	],
+	"crushTicks": 3
+}

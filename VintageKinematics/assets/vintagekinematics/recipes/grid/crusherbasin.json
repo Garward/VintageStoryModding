@@ -1,0 +1,10 @@
+{
+	"ingredientPattern": "I_I,III,IRI",
+	"ingredients": {
+		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 7 },
+		"R": { "type": "block", "code": "game:rock-*", "name": "rock", "allowedVariants": ["andesite", "granite", "basalt", "peridotite"] }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "crusherbasin-x", "quantity": 1 }
+}

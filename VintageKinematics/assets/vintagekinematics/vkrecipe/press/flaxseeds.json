@@ -1,0 +1,5 @@
+{
+    "ingredient": { "type": "item", "code": "game:seeds-flax", "quantity": 1 },
+    "liquid": { "code": "game:oilportion-flax", "litres": 0.1 },
+    "pressTicks": 6
+}

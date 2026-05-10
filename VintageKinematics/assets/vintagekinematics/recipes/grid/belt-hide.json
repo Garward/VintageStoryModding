@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "HCH,RPR,HCH",
+	"ingredients": {
+		"H": { "type": "item", "code": "game:hide-raw-small" },
+		"C": { "type": "item", "code": "game:charcoal" },
+		"P": { "type": "item", "code": "game:metalplate-copper" },
+		"R": { "type": "item", "code": "game:resin" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "belt", "quantity": 4 }
+}

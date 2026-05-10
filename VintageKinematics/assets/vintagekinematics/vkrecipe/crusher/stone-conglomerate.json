@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "item", "code": "game:stone-conglomerate", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "conglomerate-grit", "quantity": 1 }
+	],
+	"crushTicks": 4
+}

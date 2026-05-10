@@ -1,0 +1,59 @@
+{
+    "code": "crusher",
+    "class": "BlockCrusher",
+    "entityClass": "KineticAnimated",
+    "entityBehaviors": [
+        { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 24 } },
+        { "name": "KineticAnimator" },
+        { "name": "KineticPiston" },
+        { "name": "CrusherProcess" }
+    ],
+    "entityBehaviorsByType": {
+        "*-x": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 24 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "stubXpos", "axis": "X", "ratio":  1 },
+                { "element": "stubXneg", "axis": "X", "ratio":  1 }
+            ] } },
+            { "name": "KineticPiston", "properties": { "pistons": [
+                { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine",
+                  "travel": 24, "ratio": 1, "invert": true },
+                { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine",
+                  "travel": 24, "ratio": 1, "invert": true }
+            ] } },
+            { "name": "CrusherProcess" }
+        ],
+        "*-z": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 24 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "stubZpos", "axis": "Z", "ratio":  1 },
+                { "element": "stubZneg", "axis": "Z", "ratio":  1 }
+            ] } },
+            { "name": "KineticPiston", "properties": { "pistons": [
+                { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine",
+                  "travel": 24, "ratio": 1, "invert": true },
+                { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine",
+                  "travel": 24, "ratio": 1, "invert": true }
+            ] } },
+            { "name": "CrusherProcess" }
+        ]
+    },
+    "variantgroups": [
+        { "code": "axis", "states": ["x", "z"] }
+    ],
+    "shapeByType": {
+        "*-x": { "base": "block/crusher_x" },
+        "*-z": { "base": "block/crusher_z" }
+    },
+    "textures": {
+        "iron": { "base": "game:block/metal/sheet/iron1" },
+        "wood": { "base": "game:block/wood/planks/generic" }
+    },
+    "blockmaterial": "Wood",
+    "creativeinventory": { "general": ["*-x"] },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": { "x1": 0, "y1": 0.25, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0.25, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+}

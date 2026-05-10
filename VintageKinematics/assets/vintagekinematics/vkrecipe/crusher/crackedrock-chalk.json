@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "block", "code": "game:crackedrock-chalk", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "chalk-grit", "quantity": 4 }
+	],
+	"crushTicks": 6
+}

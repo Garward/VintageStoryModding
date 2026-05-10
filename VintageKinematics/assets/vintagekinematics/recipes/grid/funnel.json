@@ -1,0 +1,10 @@
+{
+	"ingredientPattern": "I_I,IKI,_I_",
+	"ingredients": {
+		"I": { "type": "item", "code": "game:metalplate-copper" },
+		"K": { "type": "item", "code": "game:stick" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "funnel-copper-north", "quantity": 1 }
+}

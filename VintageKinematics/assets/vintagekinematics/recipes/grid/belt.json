@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "CLC,RPR,CLC",
+	"ingredients": {
+		"C": { "type": "item", "code": "game:charcoal" },
+		"L": { "type": "item", "code": "game:leather-normal-*", "name": "leather", "quantity": 2 },
+		"P": { "type": "item", "code": "game:metalplate-copper" },
+		"R": { "type": "item", "code": "game:resin" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "belt", "quantity": 8 }
+}

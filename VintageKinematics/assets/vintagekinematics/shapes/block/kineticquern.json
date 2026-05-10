@@ -1,0 +1,1666 @@
+{
+  "editor": {
+    "allAngles": false,
+    "singleTexture": false
+  },
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "grindstoneup": "block/stone/quern/grindstoneup",
+    "baseside": "block/stone/quern/baseside",
+    "baseup": "block/stone/quern/grooves",
+    "wood": "game:block/wood/planks/generic",
+    "cog": "game:block/wood/planks/generic"
+  },
+  "elements": [
+    {
+      "name": "Base",
+      "from": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        11.0,
+        16.0
+      ],
+      "rotationOrigin": [
+        8.0,
+        10.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#baseside",
+          "uv": [
+            0.0,
+            5.0,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#baseside",
+          "uv": [
+            0.0,
+            5.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#baseside",
+          "uv": [
+            0.0,
+            5.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#baseside",
+          "uv": [
+            0.0,
+            5.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#baseup",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#basematerial",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "Stone",
+      "from": [
+        2.0,
+        11.0,
+        2.0
+      ],
+      "to": [
+        14.0,
+        16.0,
+        14.0
+      ],
+      "rotationOrigin": [
+        8.0,
+        10.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#baseside",
+          "uv": [
+            2.0,
+            0.0,
+            14.0,
+            5.0
+          ]
+        },
+        "east": {
+          "texture": "#baseside",
+          "uv": [
+            2.0,
+            0.0,
+            14.0,
+            5.0
+          ]
+        },
+        "south": {
+          "texture": "#baseside",
+          "uv": [
+            2.0,
+            0.0,
+            14.0,
+            5.0
+          ]
+        },
+        "west": {
+          "texture": "#baseside",
+          "uv": [
+            2.0,
+            0.0,
+            14.0,
+            5.0
+          ]
+        },
+        "up": {
+          "texture": "#grindstoneup",
+          "uv": [
+            2.0,
+            2.0,
+            14.0,
+            14.0
+          ]
+        },
+        "down": {
+          "texture": "#baseup",
+          "uv": [
+            2.0,
+            2.0,
+            14.0,
+            14.0
+          ]
+        }
+      },
+      "children": [
+        {
+          "name": "HandleSW",
+          "from": [
+            -0.5,
+            2.0,
+            11.0
+          ],
+          "to": [
+            0.5,
+            3.0,
+            14.0
+          ],
+          "rotationOrigin": [
+            0.0,
+            2.0,
+            12.0
+          ],
+          "rotationY": -45.0,
+          "faces": {
+            "north": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                3.0,
+                1.0,
+                4.0
+              ]
+            },
+            "east": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                4.0,
+                3.0,
+                5.0
+              ]
+            },
+            "south": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            },
+            "west": {
+              "texture": "#wood",
+              "uv": [
+                6.0,
+                3.0,
+                9.0,
+                4.0
+              ]
+            },
+            "up": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                6.0,
+                4.0
+              ],
+              "rotation": 90
+            },
+            "down": {
+              "texture": "#wood",
+              "uv": [
+                9.0,
+                1.0,
+                12.0,
+                2.0
+              ],
+              "rotation": 90
+            }
+          }
+        },
+        {
+          "name": "HandleSE",
+          "from": [
+            11.5,
+            2.0,
+            11.0
+          ],
+          "to": [
+            12.5,
+            3.0,
+            14.0
+          ],
+          "rotationOrigin": [
+            12.0,
+            2.0,
+            12.0
+          ],
+          "rotationY": 45.0,
+          "faces": {
+            "north": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                3.0,
+                1.0,
+                4.0
+              ]
+            },
+            "east": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                4.0,
+                3.0,
+                5.0
+              ]
+            },
+            "south": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            },
+            "west": {
+              "texture": "#wood",
+              "uv": [
+                6.0,
+                3.0,
+                9.0,
+                4.0
+              ]
+            },
+            "up": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                6.0,
+                4.0
+              ],
+              "rotation": 90
+            },
+            "down": {
+              "texture": "#wood",
+              "uv": [
+                9.0,
+                1.0,
+                12.0,
+                2.0
+              ],
+              "rotation": 90
+            }
+          }
+        },
+        {
+          "name": "HandleNE",
+          "from": [
+            11.5,
+            2.0,
+            -1.0
+          ],
+          "to": [
+            12.5,
+            3.0,
+            2.0
+          ],
+          "rotationOrigin": [
+            12.0,
+            2.0,
+            0.0
+          ],
+          "rotationY": 135.0,
+          "faces": {
+            "north": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                3.0,
+                1.0,
+                4.0
+              ]
+            },
+            "east": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                4.0,
+                3.0,
+                5.0
+              ]
+            },
+            "south": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            },
+            "west": {
+              "texture": "#wood",
+              "uv": [
+                6.0,
+                3.0,
+                9.0,
+                4.0
+              ]
+            },
+            "up": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                6.0,
+                4.0
+              ],
+              "rotation": 90
+            },
+            "down": {
+              "texture": "#wood",
+              "uv": [
+                9.0,
+                1.0,
+                12.0,
+                2.0
+              ],
+              "rotation": 90
+            }
+          }
+        },
+        {
+          "name": "HandleNW",
+          "from": [
+            -0.5,
+            2.0,
+            -2.0
+          ],
+          "to": [
+            0.5,
+            3.0,
+            1.0
+          ],
+          "rotationOrigin": [
+            0.0,
+            2.0,
+            0.0
+          ],
+          "rotationY": 45.0,
+          "faces": {
+            "north": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                3.0,
+                1.0,
+                4.0
+              ]
+            },
+            "east": {
+              "texture": "#wood",
+              "uv": [
+                0.0,
+                4.0,
+                3.0,
+                5.0
+              ]
+            },
+            "south": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                4.0,
+                4.0
+              ]
+            },
+            "west": {
+              "texture": "#wood",
+              "uv": [
+                6.0,
+                3.0,
+                9.0,
+                4.0
+              ]
+            },
+            "up": {
+              "texture": "#wood",
+              "uv": [
+                3.0,
+                3.0,
+                6.0,
+                4.0
+              ],
+              "rotation": 90
+            },
+            "down": {
+              "texture": "#wood",
+              "uv": [
+                9.0,
+                1.0,
+                12.0,
+                2.0
+              ],
+              "rotation": 90
+            }
+          }
+        },
+        {
+          "name": "CogRingNorth",
+          "from": [
+            1,
+            -3.8499999999999996,
+            -2.25
+          ],
+          "to": [
+            11,
+            -1.8499999999999996,
+            -0.75
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingSouth",
+          "from": [
+            1,
+            -3.8499999999999996,
+            12.75
+          ],
+          "to": [
+            11,
+            -1.8499999999999996,
+            14.25
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingWest",
+          "from": [
+            -2.25,
+            -3.8499999999999996,
+            1
+          ],
+          "to": [
+            -0.75,
+            -1.8499999999999996,
+            11
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingEast",
+          "from": [
+            12.75,
+            -3.8499999999999996,
+            1
+          ],
+          "to": [
+            14.25,
+            -1.8499999999999996,
+            11
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                3,
+                8,
+                13,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingNW",
+          "from": [
+            -1.25,
+            -3.8499999999999996,
+            -1.25
+          ],
+          "to": [
+            1.25,
+            -1.8499999999999996,
+            1.25
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingNE",
+          "from": [
+            10.75,
+            -3.8499999999999996,
+            -1.25
+          ],
+          "to": [
+            13.25,
+            -1.8499999999999996,
+            1.25
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingSE",
+          "from": [
+            10.75,
+            -3.8499999999999996,
+            10.75
+          ],
+          "to": [
+            13.25,
+            -1.8499999999999996,
+            13.25
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "CogRingSW",
+          "from": [
+            -1.25,
+            -3.8499999999999996,
+            10.75
+          ],
+          "to": [
+            1.25,
+            -1.8499999999999996,
+            13.25
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            6
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                0,
+                8,
+                2,
+                10
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_n",
+          "from": [
+            5,
+            -3.8,
+            10
+          ],
+          "to": [
+            7,
+            -1.8000000000000007,
+            15
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            4
+          ],
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_ne",
+          "from": [
+            4,
+            -3.8,
+            11
+          ],
+          "to": [
+            6,
+            -1.8000000000000007,
+            16
+          ],
+          "rotationOrigin": [
+            5,
+            -3,
+            5
+          ],
+          "rotationY": 45.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_e",
+          "from": [
+            3,
+            -3.8,
+            12
+          ],
+          "to": [
+            5,
+            -1.8000000000000007,
+            17
+          ],
+          "rotationOrigin": [
+            4,
+            -3,
+            6
+          ],
+          "rotationY": 90.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_se",
+          "from": [
+            4,
+            -3.8,
+            13
+          ],
+          "to": [
+            6,
+            -1.8000000000000007,
+            18
+          ],
+          "rotationOrigin": [
+            5,
+            -3,
+            7
+          ],
+          "rotationY": 135.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_s",
+          "from": [
+            5,
+            -3.8,
+            14
+          ],
+          "to": [
+            7,
+            -1.8000000000000007,
+            19
+          ],
+          "rotationOrigin": [
+            6,
+            -3,
+            8
+          ],
+          "rotationY": 180.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_sw",
+          "from": [
+            6,
+            -3.8,
+            13
+          ],
+          "to": [
+            8,
+            -1.8000000000000007,
+            18
+          ],
+          "rotationOrigin": [
+            7,
+            -3,
+            7
+          ],
+          "rotationY": 225.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_w",
+          "from": [
+            7,
+            -3.8,
+            12
+          ],
+          "to": [
+            9,
+            -1.8000000000000007,
+            17
+          ],
+          "rotationOrigin": [
+            8,
+            -3,
+            6
+          ],
+          "rotationY": 270.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        },
+        {
+          "name": "tooth_nw",
+          "from": [
+            6,
+            -3.8,
+            11
+          ],
+          "to": [
+            8,
+            -1.8000000000000007,
+            16
+          ],
+          "rotationOrigin": [
+            7,
+            -3,
+            5
+          ],
+          "rotationY": 315.0,
+          "faces": {
+            "north": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "east": {
+              "texture": "#cog",
+              "uv": [
+                10.0,
+                6.0,
+                15.0,
+                8.0
+              ]
+            },
+            "south": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                6.0,
+                9.0,
+                8.0
+              ]
+            },
+            "west": {
+              "texture": "#cog",
+              "uv": [
+                0.0,
+                6.0,
+                5.0,
+                8.0
+              ]
+            },
+            "up": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                10.0,
+                9.0,
+                15.0
+              ]
+            },
+            "down": {
+              "texture": "#cog",
+              "uv": [
+                7.0,
+                0.0,
+                9.0,
+                5.0
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

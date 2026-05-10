@@ -1,0 +1,75 @@
+{
+    "code": "kineticsieve",
+    "class": "BlockKineticSieve",
+    "entityClass": "KineticSieve",
+    "entityBehaviors": [
+        { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
+        { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+        { "name": "KineticAnimator", "properties": { "rotators": [
+            { "element": "Drum", "axis": "Z", "ratio": 1 },
+            { "element": "StubZneg", "axis": "Z", "ratio": 1 },
+            { "element": "StubZpos", "axis": "Z", "ratio": 1 }
+        ] } }
+    ],
+    "entityBehaviorsByType": {
+        "*-n": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "Drum", "axis": "Z", "ratio": 1 },
+                { "element": "StubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "StubZpos", "axis": "Z", "ratio": 1 }
+            ] } }
+        ],
+        "*-s": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "Drum", "axis": "Z", "ratio": 1 },
+                { "element": "StubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "StubZpos", "axis": "Z", "ratio": 1 }
+            ] } }
+        ],
+        "*-e": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "X" } },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "Drum", "axis": "Z", "ratio": 1 },
+                { "element": "StubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "StubZpos", "axis": "Z", "ratio": 1 }
+            ] } }
+        ],
+        "*-w": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "X" } },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "Drum", "axis": "Z", "ratio": 1 },
+                { "element": "StubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "StubZpos", "axis": "Z", "ratio": 1 }
+            ] } }
+        ]
+    },
+    "variantgroups": [
+        { "code": "side", "states": ["n", "e", "s", "w"] }
+    ],
+    "behaviorsByType": {
+        "*-n": [{ "name": "Multiblock", "properties": { "sizex": 1, "sizey": 1, "sizez": 3, "cposition": { "x": 0, "y": 0, "z": 0 } } }],
+        "*-s": [{ "name": "Multiblock", "properties": { "sizex": 1, "sizey": 1, "sizez": 3, "cposition": { "x": 0, "y": 0, "z": 2 } } }],
+        "*-e": [{ "name": "Multiblock", "properties": { "sizex": 3, "sizey": 1, "sizez": 1, "cposition": { "x": 2, "y": 0, "z": 0 } } }],
+        "*-w": [{ "name": "Multiblock", "properties": { "sizex": 3, "sizey": 1, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } }]
+    },
+    "shape": { "base": "block/kineticsieve" },
+    "shapeByType": {
+        "*-n": { "base": "block/kineticsieve", "rotateY":   0 },
+        "*-e": { "base": "block/kineticsieve", "rotateY": 270 },
+        "*-s": { "base": "block/kineticsieve", "rotateY": 180 },
+        "*-w": { "base": "block/kineticsieve", "rotateY":  90 }
+    },
+    "blockmaterial": "Wood",
+    "creativeinventory": { "general": ["*-n"] },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+}

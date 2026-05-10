@@ -1,0 +1,46 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": { "wood": "game:block/wood/planks/generic" },
+    "elements": [
+        {
+            "name": "shaft",
+            "from": [6, 0, 6],
+            "to": [10, 16, 10],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [0, 0, 4, 16] },
+                "east":  { "texture": "#wood", "uv": [0, 0, 4, 16] },
+                "south": { "texture": "#wood", "uv": [0, 0, 4, 16] },
+                "west":  { "texture": "#wood", "uv": [0, 0, 4, 16] },
+                "up":    { "texture": "#wood", "uv": [0, 0, 4, 4] },
+                "down":  { "texture": "#wood", "uv": [0, 0, 4, 4] }
+            }
+        },
+        {
+            "name": "crankarm",
+            "from": [10, 7, 7],
+            "to": [13, 9, 9],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [0, 0, 3, 2] },
+                "east":  { "texture": "#wood", "uv": [0, 0, 2, 2] },
+                "south": { "texture": "#wood", "uv": [0, 0, 3, 2] },
+                "west":  { "texture": "#wood", "uv": [0, 0, 2, 2] },
+                "up":    { "texture": "#wood", "uv": [0, 0, 3, 2] },
+                "down":  { "texture": "#wood", "uv": [0, 0, 3, 2] }
+            }
+        },
+        {
+            "name": "grip",
+            "from": [13, 4, 7],
+            "to": [14, 12, 9],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [0, 0, 1, 8] },
+                "east":  { "texture": "#wood", "uv": [0, 0, 2, 8] },
+                "south": { "texture": "#wood", "uv": [0, 0, 1, 8] },
+                "west":  { "texture": "#wood", "uv": [0, 0, 2, 8] },
+                "up":    { "texture": "#wood", "uv": [0, 0, 1, 2] },
+                "down":  { "texture": "#wood", "uv": [0, 0, 1, 2] }
+            }
+        }
+    ]
+}

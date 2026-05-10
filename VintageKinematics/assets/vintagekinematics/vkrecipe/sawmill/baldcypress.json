@@ -1,0 +1,7 @@
+{
+    "ingredient": { "type": "block", "code": "game:log-placed-baldcypress-*", "quantity": 1 },
+    "outputs": [
+        { "type": "item", "code": "game:plank-baldcypress", "quantity": 4 }
+    ],
+    "sawTicks": 4
+}

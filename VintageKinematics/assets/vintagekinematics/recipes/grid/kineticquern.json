@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "SRS,RGR,H_C",
+	"ingredients": {
+		"H": { "type": "item", "tags": ["tool-hammer"], "isTool": true, "toolDurabilityCost": 20 },
+		"C": { "type": "item", "tags": ["tool-chisel"], "isTool": true, "toolDurabilityCost": 20 },
+		"R": { "type": "block", "code": "game:rock-*", "name": "rock", "allowedVariants": ["andesite", "granite", "basalt", "peridotite"], "quantity": 4 },
+		"S": { "type": "item", "code": "game:stick" },
+		"G": { "type": "block", "code": "cogwheel-y" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticquern", "quantity": 1 }
+}

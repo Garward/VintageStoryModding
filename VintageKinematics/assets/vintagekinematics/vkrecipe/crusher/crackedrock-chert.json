@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "block", "code": "game:crackedrock-chert", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "chert-grit", "quantity": 4 }
+	],
+	"crushTicks": 6
+}

@@ -1,0 +1,336 @@
+using System;
+using Vintagestory.API.Client;
+using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
+using VintageKinematics.Api;
+using VintageKinematics.BlockEntities;
+using VintageKinematics.Blocks;
+
+namespace VintageKinematics.Rendering
+{
+    public class BeltAnimationRenderer : IRenderer
+    {
+        private const int FrameCount = 16;
+        private const int RenderRangeBlocks = 24;
+        private const int White = unchecked((int)0xffffffff);
+        private static readonly int FlagsUp = VertexFlags.PackNormal(0f, 1f, 0f);
+        private static readonly int FlagsDown = VertexFlags.PackNormal(0f, -1f, 0f);
+
+        private readonly ICoreClientAPI capi;
+        private readonly BEBelt belt;
+        private readonly BEBehaviorKinetic kinetic;
+        private readonly Matrixf modelMat = new Matrixf();
+
+        private MeshRef[] surfaceFrames;
+        private MeshRef shaftMesh;
+        private EnumBeltPart builtPart;
+        private bool builtHasShaft;
+        private string builtDirection;
+
+        public double RenderOrder => 0.51;
+        public int RenderRange => RenderRangeBlocks;
+
+        public BeltAnimationRenderer(ICoreClientAPI capi, BEBelt belt, BEBehaviorKinetic kinetic)
+        {
+            this.capi = capi;
+            this.belt = belt;
+            this.kinetic = kinetic;
+        }
+
+        public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
+        {
+            if (capi.World.Player?.Entity == null) return;
+            if (string.IsNullOrEmpty(belt.Direction)) return;
+
+            EnsureMeshes();
+            if (surfaceFrames == null) return;
+
+            float t = (float)capi.World.ElapsedMilliseconds / 1000f;
+            float rpm = kinetic?.ActualRPM ?? 0f;
+            int sign = BEBelt.HeadDirSign(belt.Direction);
+            float phase = PositiveMod(sign * (t * rpm / 60f + (kinetic?.PhaseOffset ?? 0f) / (2f * MathF.PI)), 1f);
+            // Start segments carry an extra +180° baseRot (so their pulley faces the rest of
+            // the chain), which flips shape-Z relative to world-Z. Re-invert the scroll on
+            // Start only so the surface still tracks world-frame chain motion.
+            if (belt.Part == EnumBeltPart.Start) phase = PositiveMod(1f - phase, 1f);
+            int frame = (int)(phase * FrameCount) % FrameCount;
+            if (frame < 0) frame += FrameCount;
+
+            IRenderAPI rpi = capi.Render;
+            Vec3d camPos = capi.World.Player.Entity.CameraPos;
+
+            rpi.GlDisableCullFace();
+            rpi.GlToggleBlend(false);
+
+            IStandardShaderProgram prog = rpi.PreparedStandardShader(belt.Pos.X, belt.Pos.Y, belt.Pos.Z);
+            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
+            prog.RgbaLightIn = capi.World.BlockAccessor.GetLightRGBs(belt.Pos.X, belt.Pos.Y, belt.Pos.Z);
+
+            float rotY = BaseRotationDegrees() * MathF.PI / 180f;
+            PrepareBaseMatrix(camPos, rotY);
+            prog.ModelMatrix = modelMat.Values;
+            prog.ViewMatrix = rpi.CameraMatrixOriginf;
+            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
+            rpi.RenderMesh(surfaceFrames[frame]);
+
+            if (shaftMesh != null && ShouldRenderShaft())
+            {
+                float angle = KineticAnimatorMath.ComputeAngle(t, rpm, 1f, 0f, kinetic?.PhaseOffset ?? 0f);
+                modelMat.Identity()
+                    .Translate((float)(belt.Pos.X - camPos.X), (float)(belt.Pos.Y - camPos.Y), (float)(belt.Pos.Z - camPos.Z))
+                    .Translate(0.5f, 0.5f, 0.5f);
+                switch (kinetic?.Axis)
+                {
+                    case EnumKineticAxis.X: modelMat.RotateX(angle); break;
+                    case EnumKineticAxis.Y: modelMat.RotateY(angle); break;
+                    case EnumKineticAxis.Z: modelMat.RotateZ(angle); break;
+                }
+                modelMat.RotateY(rotY);
+                modelMat.Translate(-0.5f, -0.5f, -0.5f);
+                prog.ModelMatrix = modelMat.Values;
+                rpi.RenderMesh(shaftMesh);
+            }
+
+            RenderBeltItems(rpi, prog, camPos);
+
+            prog.Stop();
+        }
+
+        private void RenderBeltItems(IRenderAPI rpi, IStandardShaderProgram prog, Vec3d camPos)
+        {
+            BEBelt controller = GetController();
+            if (controller == null) return;
+            var items = controller.Items;
+            if (items.Count == 0) return;
+
+            int chainLen = controller.ChainLength;
+            int myIdx = belt.IndexInChain;
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                BeltItem bi = items[i];
+                if (bi?.Stack == null) continue;
+                int idx = (int)MathF.Floor(bi.Progress);
+                if (idx < 0) idx = 0;
+                else if (idx > chainLen - 1) idx = chainLen - 1;
+                if (idx != myIdx) continue;
+
+                MultiTextureMeshRef mref = GetStackMeshRef(bi.Stack);
+                if (mref == null) continue;
+
+                Vec3d wp = controller.ProgressToWorld(bi.Progress);
+                modelMat.Identity()
+                    .Translate((float)(wp.X - camPos.X), (float)(wp.Y - camPos.Y), (float)(wp.Z - camPos.Z))
+                    .Scale(0.5f, 0.5f, 0.5f)
+                    .Translate(-0.5f, 0f, -0.5f);
+                prog.ModelMatrix = modelMat.Values;
+                rpi.RenderMultiTextureMesh(mref, "tex");
+            }
+        }
+
+        private BEBelt GetController()
+        {
+            if (belt.IsController) return belt;
+            if (belt.ControllerPos == null) return null;
+            return capi.World.BlockAccessor.GetBlockEntity(belt.ControllerPos) as BEBelt;
+        }
+
+        private MultiTextureMeshRef GetStackMeshRef(ItemStack stack)
+        {
+            if (stack.Class == EnumItemClass.Block)
+            {
+                return stack.Block != null ? capi.TesselatorManager.GetDefaultBlockMeshRef(stack.Block) : null;
+            }
+            return stack.Item != null ? capi.TesselatorManager.GetDefaultItemMeshRef(stack.Item) : null;
+        }
+
+        private void PrepareBaseMatrix(Vec3d camPos, float rotY)
+        {
+            modelMat.Identity()
+                .Translate((float)(belt.Pos.X - camPos.X), (float)(belt.Pos.Y - camPos.Y), (float)(belt.Pos.Z - camPos.Z))
+                .Translate(0.5f, 0.5f, 0.5f)
+                .RotateY(rotY)
+                .Translate(-0.5f, -0.5f, -0.5f);
+        }
+
+        private void EnsureMeshes()
+        {
+            if (surfaceFrames != null
+                && builtPart == belt.Part
+                && builtHasShaft == belt.HasShaft
+                && builtDirection == belt.Direction)
+            {
+                return;
+            }
+
+            DisposeMeshes();
+
+            builtPart = belt.Part;
+            builtHasShaft = belt.HasShaft;
+            builtDirection = belt.Direction;
+
+            TextureAtlasPosition surfaceTex = capi.BlockTextureAtlas.GetPosition(belt.Block, "surface", true)
+                ?? capi.BlockTextureAtlas.UnknownTexturePosition;
+            TextureAtlasPosition woodTex = capi.BlockTextureAtlas.GetPosition(belt.Block, "wood", true)
+                ?? capi.BlockTextureAtlas.UnknownTexturePosition;
+
+            if (surfaceTex == null || woodTex == null)
+            {
+                builtPart = default;
+                builtHasShaft = default;
+                builtDirection = null;
+                return;
+            }
+
+            surfaceFrames = new MeshRef[FrameCount];
+            for (int i = 0; i < FrameCount; i++)
+            {
+                MeshData mesh = BuildSurfaceFrame(i / (float)FrameCount);
+                mesh.SetTexPos(surfaceTex);
+                surfaceFrames[i] = capi.Render.UploadMesh(mesh);
+            }
+
+            if (ShouldRenderShaft())
+            {
+                MeshData shaft = new MeshData(32, 48);
+                AddBox(shaft, 0f, 6.25f / 16f, 6.25f / 16f, 1f, 9.75f / 16f, 9.75f / 16f);
+                shaft.SetTexPos(woodTex);
+                shaftMesh = capi.Render.UploadMesh(shaft);
+            }
+        }
+
+        private MeshData BuildSurfaceFrame(float phase)
+        {
+            MeshData mesh = new MeshData(64, 96);
+
+            float yTop = 11f / 16f;
+            float yBot = 5f / 16f;
+            float zStart = 0f;
+            float zEnd = 1f;
+
+            AddScrollingZQuad(mesh, zStart, zEnd, yTop, phase, isTop: true);
+            AddScrollingZQuad(mesh, zStart, zEnd, yBot, 1f - phase, isTop: false);
+
+            return mesh;
+        }
+
+        private static void AddScrollingZQuad(MeshData mesh, float z1, float z2, float y, float phase, bool isTop)
+        {
+            float zLen = z2 - z1;
+            float vEnd = phase + zLen;
+
+            if (vEnd <= 1f)
+            {
+                AddSurfaceQuad(mesh, z1, z2, y, phase, vEnd, isTop);
+            }
+            else
+            {
+                float zSplit = z1 + (1f - phase);
+                AddSurfaceQuad(mesh, z1, zSplit, y, phase, 1f, isTop);
+                AddSurfaceQuad(mesh, zSplit, z2, y, 0f, vEnd - 1f, isTop);
+            }
+        }
+
+        private static void AddSurfaceQuad(MeshData mesh, float z1, float z2, float y, float v1, float v2, bool isTop)
+        {
+            int v = mesh.VerticesCount;
+            int flags = isTop ? FlagsUp : FlagsDown;
+            if (isTop)
+            {
+                mesh.AddVertexWithFlags(0f, y, z1, 0f, v1, White, flags);
+                mesh.AddVertexWithFlags(1f, y, z1, 1f, v1, White, flags);
+                mesh.AddVertexWithFlags(1f, y, z2, 1f, v2, White, flags);
+                mesh.AddVertexWithFlags(0f, y, z2, 0f, v2, White, flags);
+            }
+            else
+            {
+                mesh.AddVertexWithFlags(0f, y, z1, 0f, v1, White, flags);
+                mesh.AddVertexWithFlags(0f, y, z2, 0f, v2, White, flags);
+                mesh.AddVertexWithFlags(1f, y, z2, 1f, v2, White, flags);
+                mesh.AddVertexWithFlags(1f, y, z1, 1f, v1, White, flags);
+            }
+            mesh.AddIndices(v, v + 1, v + 2, v, v + 2, v + 3);
+        }
+
+        private static void AddBox(MeshData mesh, float x1, float y1, float z1, float x2, float y2, float z2)
+        {
+            AddBoxQuad(mesh, x1, y1, z1, x2, y1, z1, x2, y2, z1, x1, y2, z1, VertexFlags.PackNormal(0f, 0f, -1f));
+            AddBoxQuad(mesh, x2, y1, z1, x2, y1, z2, x2, y2, z2, x2, y2, z1, VertexFlags.PackNormal(1f, 0f, 0f));
+            AddBoxQuad(mesh, x2, y1, z2, x1, y1, z2, x1, y2, z2, x2, y2, z2, VertexFlags.PackNormal(0f, 0f, 1f));
+            AddBoxQuad(mesh, x1, y1, z2, x1, y1, z1, x1, y2, z1, x1, y2, z2, VertexFlags.PackNormal(-1f, 0f, 0f));
+            AddBoxQuad(mesh, x1, y2, z1, x2, y2, z1, x2, y2, z2, x1, y2, z2, FlagsUp);
+            AddBoxQuad(mesh, x1, y1, z2, x2, y1, z2, x2, y1, z1, x1, y1, z1, FlagsDown);
+        }
+
+        private static void AddBoxQuad(MeshData mesh,
+            float x1, float y1, float z1,
+            float x2, float y2, float z2,
+            float x3, float y3, float z3,
+            float x4, float y4, float z4,
+            int flags)
+        {
+            int v = mesh.VerticesCount;
+            mesh.AddVertexWithFlags(x1, y1, z1, 0f, 0f, White, flags);
+            mesh.AddVertexWithFlags(x2, y2, z2, 1f, 0f, White, flags);
+            mesh.AddVertexWithFlags(x3, y3, z3, 1f, 1f, White, flags);
+            mesh.AddVertexWithFlags(x4, y4, z4, 0f, 1f, White, flags);
+            mesh.AddIndices(v, v + 1, v + 2, v, v + 2, v + 3);
+        }
+
+        private bool IsEndLike()
+        {
+            return belt.Part == EnumBeltPart.Start || belt.Part == EnumBeltPart.End || belt.Part == EnumBeltPart.Solo;
+        }
+
+        private bool ShouldRenderShaft()
+        {
+            return IsEndLike() || belt.HasShaft;
+        }
+
+        private int BaseRotationDegrees()
+        {
+            int baseRot = belt.Direction switch
+            {
+                "n" => 0,
+                "e" => 270,
+                "s" => 180,
+                "w" => 90,
+                _ => 0
+            };
+
+            if (belt.Part == EnumBeltPart.Start)
+            {
+                baseRot = (baseRot + 180) % 360;
+            }
+
+            return baseRot;
+        }
+
+        private static float PositiveMod(float value, float modulus)
+        {
+            float result = value % modulus;
+            if (result < 0f) result += modulus;
+            return result;
+        }
+
+        public void Dispose()
+        {
+            DisposeMeshes();
+        }
+
+        private void DisposeMeshes()
+        {
+            if (surfaceFrames != null)
+            {
+                foreach (MeshRef mesh in surfaceFrames)
+                {
+                    mesh?.Dispose();
+                }
+                surfaceFrames = null;
+            }
+
+            shaftMesh?.Dispose();
+            shaftMesh = null;
+        }
+    }
+}

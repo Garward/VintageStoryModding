@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "item", "code": "game:stone-shale", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "shale-grit", "quantity": 1 }
+	],
+	"crushTicks": 4
+}

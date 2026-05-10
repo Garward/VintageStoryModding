@@ -1,0 +1,7 @@
+{
+    "ingredient": { "type": "block", "code": "game:log-placed-redwood-*", "quantity": 1 },
+    "outputs": [
+        { "type": "item", "code": "game:plank-redwood", "quantity": 4 }
+    ],
+    "sawTicks": 4
+}

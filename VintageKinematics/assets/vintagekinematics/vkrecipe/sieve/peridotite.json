@@ -1,0 +1,16 @@
+{
+	"ingredient": { "type": "item", "code": "peridotite-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-peridotite", "weight": 38 },
+		{ "weight": 10, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-nickel", "weight": 14 },
+		{ "type": "item", "code": "game:metalbit-chromium", "weight": 10 },
+		{ "type": "item", "code": "game:metalbit-copper", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 7 },
+		{ "type": "item", "code": "game:metalbit-tin", "weight": 6 },
+		{ "type": "item", "code": "game:metalbit-titanium", "weight": 4 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 2 },
+		{ "type": "item", "code": "game:metalbit-bismuth", "weight": 1 }
+	]
+}

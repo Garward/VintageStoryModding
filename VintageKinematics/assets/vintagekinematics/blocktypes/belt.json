@@ -1,0 +1,30 @@
+{
+    "code": "belt",
+    "class": "BlockBelt",
+    "entityClass": "Belt",
+    "entityBehaviors": [
+        { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 4 } }
+    ],
+    "variantgroups": [
+        { "code": "direction", "states": ["n", "e", "s", "w"] }
+    ],
+    "shape": { "base": "block/belt" },
+    "shapeByType": {
+        "*-n": { "base": "block/belt", "rotateY":   0 },
+        "*-e": { "base": "block/belt", "rotateY": 270 },
+        "*-s": { "base": "block/belt", "rotateY": 180 },
+        "*-w": { "base": "block/belt", "rotateY":  90 }
+    },
+    "textures": {
+        "surface": { "base": "vintagekinematics:block/belt" },
+        "side":    { "base": "game:block/metal/plate/iron" },
+        "wood": { "base": "game:block/wood/planks/generic" }
+    },
+    "blockmaterial": "Wood",
+    "drops": [],
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": { "x1": 0, "y1": 0.375, "z1": 0, "x2": 1, "y2": 0.625, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0.375, "z1": 0, "x2": 1, "y2": 0.625, "z2": 1 }
+}

@@ -1,0 +1,11 @@
+{
+	"ingredientPattern": "_K_,PSP,___",
+	"ingredients": {
+		"K": { "type": "item", "code": "game:stick" },
+		"S": { "type": "block", "code": "shaft-y" },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "handcrank-y", "quantity": 1 }
+}

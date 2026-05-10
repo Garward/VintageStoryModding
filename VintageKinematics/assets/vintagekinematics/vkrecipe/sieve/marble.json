@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "marble-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-andesite", "weight": 32 },
+		{ "type": "item", "code": "game:metalbit-copper", "quantity": 2, "weight": 25 },
+		{ "weight": 18, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 13 },
+		{ "type": "item", "code": "game:metalbit-gold", "weight": 7 },
+		{ "type": "item", "code": "game:metalbit-silver", "weight": 5 }
+	]
+}

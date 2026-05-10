@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "block", "code": "game:rock-granite", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "granite-grit", "quantity": 4 }
+	],
+	"crushTicks": 6
+}

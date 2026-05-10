@@ -1,0 +1,13 @@
+{
+	"ingredient": { "type": "item", "code": "conglomerate-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-conglomerate", "weight": 50 },
+		{ "weight": 12, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 10 },
+		{ "type": "item", "code": "game:metalbit-copper", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-lead", "weight": 7 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 7 },
+		{ "type": "block", "code": "game:gravel-conglomerate", "weight": 2 }
+	]
+}

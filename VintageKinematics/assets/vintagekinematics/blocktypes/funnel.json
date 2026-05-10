@@ -1,0 +1,39 @@
+{
+    "code": "funnel",
+    "class": "BlockFunnel",
+    "entityClass": "Funnel",
+    "variantgroups": [
+        { "code": "tier", "states": ["copper", "iron"] },
+        { "code": "facing", "states": ["north", "east", "south", "west", "up", "down"] }
+    ],
+    "shape": { "base": "block/funnel_horizontal" },
+    "shapeByType": {
+        "*-north": { "base": "block/funnel_horizontal", "rotateY": 180 },
+        "*-east":  { "base": "block/funnel_horizontal", "rotateY": 90 },
+        "*-south": { "base": "block/funnel_horizontal", "rotateY": 0 },
+        "*-west":  { "base": "block/funnel_horizontal", "rotateY": 270 },
+        "*-up":    { "base": "block/funnel_up" },
+        "*-down":  { "base": "block/funnel_down" }
+    },
+    "textures": {
+        "side": { "base": "game:block/metal/plate/copper" },
+        "dark": { "base": "game:block/coal/charcoal" }
+    },
+    "texturesByType": {
+        "*-copper-*": {
+            "side": { "base": "game:block/metal/plate/copper" },
+            "dark": { "base": "game:block/coal/charcoal" }
+        },
+        "*-iron-*": {
+            "side": { "base": "game:block/metal/plate/iron" },
+            "dark": { "base": "game:block/coal/charcoal" }
+        }
+    },
+    "blockmaterial": "Metal",
+    "creativeinventory": { "general": ["*-north"] },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": { "x1": 0.125, "y1": 0, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+    "selectionbox": { "x1": 0.0625, "y1": 0, "z1": 0.0625, "x2": 0.9375, "y2": 0.875, "z2": 1 }
+}

@@ -1,0 +1,36 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": {
+        "side": "game:block/metal/plate/copper",
+        "dark": "game:block/coal/charcoal"
+    },
+    "elements": [
+        {
+            "name": "rim",
+            "from": [ 2.0, 9.0, 2.0 ],
+            "to": [ 14.0, 14.0, 14.0 ],
+            "faces": {
+                "north": { "texture": "#side", "uv": [ 2.0, 2.0, 14.0, 7.0 ] },
+                "east": { "texture": "#side", "uv": [ 2.0, 2.0, 14.0, 7.0 ] },
+                "south": { "texture": "#side", "uv": [ 2.0, 2.0, 14.0, 7.0 ] },
+                "west": { "texture": "#side", "uv": [ 2.0, 2.0, 14.0, 7.0 ] },
+                "up": { "texture": "#dark", "uv": [ 2.0, 2.0, 14.0, 14.0 ] },
+                "down": { "texture": "#side", "uv": [ 2.0, 2.0, 14.0, 14.0 ] }
+            }
+        },
+        {
+            "name": "dropSpout",
+            "from": [ 5.0, 0.0, 5.0 ],
+            "to": [ 11.0, 10.0, 11.0 ],
+            "faces": {
+                "north": { "texture": "#side", "uv": [ 5.0, 0.0, 11.0, 10.0 ] },
+                "east": { "texture": "#side", "uv": [ 5.0, 0.0, 11.0, 10.0 ] },
+                "south": { "texture": "#side", "uv": [ 5.0, 0.0, 11.0, 10.0 ] },
+                "west": { "texture": "#side", "uv": [ 5.0, 0.0, 11.0, 10.0 ] },
+                "up": { "texture": "#dark", "uv": [ 5.0, 5.0, 11.0, 11.0 ] },
+                "down": { "texture": "#dark", "uv": [ 5.0, 5.0, 11.0, 11.0 ] }
+            }
+        }
+    ]
+}

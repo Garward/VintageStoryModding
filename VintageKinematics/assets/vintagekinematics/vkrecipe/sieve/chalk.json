@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "chalk-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-chalk", "weight": 50 },
+		{ "weight": 15, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 10 },
+		{ "type": "item", "code": "game:metalbit-copper", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-lead", "weight": 5 }
+	]
+}

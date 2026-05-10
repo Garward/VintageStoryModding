@@ -1,0 +1,8 @@
+{
+    "ingredient": { "type": "block", "code": "game:log-placed-*", "quantity": 1 },
+    "outputs": [
+        { "type": "block", "code": "shaft-y", "quantity": 2 }
+    ],
+    "sawTicks": 4,
+    "mode": "Shaft"
+}

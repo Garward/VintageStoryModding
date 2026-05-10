@@ -1,0 +1,9 @@
+{
+	"ingredientPattern": "G",
+	"ingredients": {
+		"G": { "type": "block", "code": "gearbox-y" }
+	},
+	"width": 1,
+	"height": 1,
+	"output": { "type": "block", "code": "gearbox-x", "quantity": 1 }
+}

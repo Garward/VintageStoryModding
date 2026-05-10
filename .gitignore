@@ -33,6 +33,3 @@ MeleeRaycastMod/
 RustboundMagicFix_src/
 VibrantShaders/
 
-# VintageKinematics local-only docs
-VintageKinematics/docs/processing-design.md
-VintageKinematics/docs/modeling-guide.md

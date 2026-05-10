@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "meteorite-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "item", "code": "game:metalbit-meteoriciron", "weight": 38 },
+		{ "type": "block", "code": "game:sand-andesite", "weight": 25 },
+		{ "type": "item", "code": "game:metalbit-nickel", "weight": 12 },
+		{ "type": "item", "code": "game:metalbit-platinum", "weight": 12 },
+		{ "weight": 8, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 5 }
+	]
+}

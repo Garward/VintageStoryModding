@@ -1,0 +1,29 @@
+{
+    "code": "encasedshaft",
+    "class": "BlockEncasedShaft",
+    "entityClass": "KineticAnimated",
+    "entityBehaviors": [
+        { "name": "Kinetic", "properties": { "role": "EncasedShaft", "stressImpact": 0 } },
+        { "name": "KineticAnimator", "properties": { "rotators": [
+            { "element": "stubYpos", "axis": "Y", "ratio": 1 },
+            { "element": "stubYneg", "axis": "Y", "ratio": 1 }
+        ] } }
+    ],
+    "variantgroups": [
+        { "code": "axis", "states": ["x", "y", "z"] }
+    ],
+    "shape": { "base": "block/encasedshaft" },
+    "shapeByType": {
+        "encasedshaft-x": { "base": "block/encasedshaft", "rotateZ": 90 },
+        "encasedshaft-y": { "base": "block/encasedshaft" },
+        "encasedshaft-z": { "base": "block/encasedshaft", "rotateX": 90 }
+    },
+    "textures": { "wood": { "base": "game:block/wood/planks/generic" } },
+    "blockmaterial": "Wood",
+    "creativeinventory": { "general": ["*-y"] },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "true" },
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+}

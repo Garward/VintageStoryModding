@@ -1,0 +1,14 @@
+{
+	"ingredientPattern": "HCX,GPG,R__",
+	"ingredients": {
+		"H": { "type": "item", "tags": ["tool-hammer"], "isTool": true, "toolDurabilityCost": 30 },
+		"C": { "type": "item", "tags": ["tool-chisel"], "isTool": true, "toolDurabilityCost": 15 },
+		"X": { "type": "item", "tags": ["tool-saw"], "isTool": true, "toolDurabilityCost": 25 },
+		"G": { "type": "block", "code": "cogwheel-y" },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 8 },
+		"R": { "type": "item", "code": "game:resin", "quantity": 2 }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "gearbox-x", "quantity": 1 }
+}

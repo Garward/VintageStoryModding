@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "_G_,_F_,RPR",
+	"ingredients": {
+		"F": { "type": "item", "code": "crusherframe" },
+		"P": { "type": "block", "code": "platepiston-n" },
+		"G": { "type": "block", "code": "largecogwheel-y" },
+		"R": { "type": "item", "code": "game:resin", "quantity": 2 }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "crusher-x", "quantity": 1 }
+}

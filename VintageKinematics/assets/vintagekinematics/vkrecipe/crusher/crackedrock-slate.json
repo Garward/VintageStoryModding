@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "block", "code": "game:crackedrock-slate", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "slate-grit", "quantity": 4 }
+	],
+	"crushTicks": 6
+}

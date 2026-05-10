@@ -1,0 +1,13 @@
+{
+	"ingredient": { "type": "item", "code": "claystone-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-claystone", "weight": 45 },
+		{ "weight": 12, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 10 },
+		{ "type": "block", "code": "game:rawclay-blue-none", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-copper", "weight": 7 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 7 },
+		{ "type": "item", "code": "game:metalbit-lead", "weight": 6 }
+	]
+}

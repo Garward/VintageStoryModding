@@ -1,0 +1,64 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": {
+        "iron": "game:block/metal/sheet/iron1",
+        "wood": "game:block/wood/planks/generic"
+    },
+    "elements": [
+        { "name": "casing", "from": [2, 2, 2], "to": [14, 14, 14],
+          "faces": {
+            "north": { "texture": "#wood", "uv": [2, 2, 14, 14] },
+            "east":  { "texture": "#wood", "uv": [2, 2, 14, 14] },
+            "south": { "texture": "#wood", "uv": [2, 2, 14, 14] },
+            "west":  { "texture": "#wood", "uv": [2, 2, 14, 14] },
+            "up":    { "texture": "#wood", "uv": [2, 2, 14, 14] },
+            "down":  { "texture": "#wood", "uv": [2, 2, 14, 14] }
+          }
+        },
+        { "name": "plate", "from": [0, 14, 0], "to": [16, 16, 16],
+          "faces": {
+            "north": { "texture": "#iron", "uv": [0, 0, 16, 2] },
+            "east":  { "texture": "#iron", "uv": [0, 0, 16, 2] },
+            "south": { "texture": "#iron", "uv": [0, 0, 16, 2] },
+            "west":  { "texture": "#iron", "uv": [0, 0, 16, 2] },
+            "up":    { "texture": "#iron", "uv": [0, 0, 16, 16] },
+            "down":  { "texture": "#iron", "uv": [0, 0, 16, 16] }
+          },
+          "children": [
+            { "name": "plateRod", "from": [6, 2, 6], "to": [10, 14, 10],
+              "faces": {
+                "north": { "texture": "#iron", "uv": [6, 2, 10, 14] },
+                "east":  { "texture": "#iron", "uv": [6, 2, 10, 14] },
+                "south": { "texture": "#iron", "uv": [6, 2, 10, 14] },
+                "west":  { "texture": "#iron", "uv": [6, 2, 10, 14] },
+                "up":    { "texture": "#iron", "uv": [6, 6, 10, 10] },
+                "down":  { "texture": "#iron", "uv": [6, 6, 10, 10] }
+              }
+            }
+          ]
+        },
+        { "name": "stubBottom", "from": [6, 0, 6], "to": [10, 2, 10],
+          "rotationOrigin": [8, 1, 8],
+          "faces": {
+            "north": { "texture": "#iron", "uv": [6, 0, 10, 2] },
+            "east":  { "texture": "#iron", "uv": [6, 0, 10, 2] },
+            "south": { "texture": "#iron", "uv": [6, 0, 10, 2] },
+            "west":  { "texture": "#iron", "uv": [6, 0, 10, 2] },
+            "up":    { "texture": "#iron", "uv": [6, 6, 10, 10] },
+            "down":  { "texture": "#iron", "uv": [6, 6, 10, 10] }
+          }
+        },
+        { "name": "stubSide", "from": [6, 6, 0], "to": [10, 10, 2],
+          "rotationOrigin": [8, 8, 8],
+          "faces": {
+            "north": { "texture": "#iron", "uv": [6, 6, 10, 10] },
+            "east":  { "texture": "#iron", "uv": [6, 0, 8, 4] },
+            "south": { "texture": "#iron", "uv": [6, 6, 10, 10] },
+            "west":  { "texture": "#iron", "uv": [6, 0, 8, 4] },
+            "up":    { "texture": "#iron", "uv": [6, 0, 10, 2] },
+            "down":  { "texture": "#iron", "uv": [6, 0, 10, 2] }
+          }
+        }
+    ]
+}

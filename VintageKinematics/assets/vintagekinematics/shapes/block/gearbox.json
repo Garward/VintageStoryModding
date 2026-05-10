@@ -1,0 +1,20 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": { "wood": "game:block/wood/planks/generic" },
+    "elements": [
+        {
+            "name": "casing",
+            "from": [2, 2, 2],
+            "to": [14, 14, 14],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [0, 0, 12, 12] },
+                "east":  { "texture": "#wood", "uv": [0, 0, 12, 12] },
+                "south": { "texture": "#wood", "uv": [0, 0, 12, 12] },
+                "west":  { "texture": "#wood", "uv": [0, 0, 12, 12] },
+                "up":    { "texture": "#wood", "uv": [0, 0, 12, 12] },
+                "down":  { "texture": "#wood", "uv": [0, 0, 12, 12] }
+            }
+        }
+    ]
+}

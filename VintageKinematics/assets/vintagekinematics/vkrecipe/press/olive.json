@@ -1,0 +1,5 @@
+{
+    "ingredient": { "type": "item", "code": "game:fruit-olive", "quantity": 1 },
+    "liquid": { "code": "game:oilportion-olive", "litres": 0.15 },
+    "pressTicks": 6
+}

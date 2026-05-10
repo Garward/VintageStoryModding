@@ -1,0 +1,10 @@
+{
+	"ingredientPattern": "PSP,PSP",
+	"ingredients": {
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
+		"S": { "type": "block", "code": "shaft-y", "quantity": 2 }
+	},
+	"width": 3,
+	"height": 2,
+	"output": { "type": "block", "code": "encasedshaft-y", "quantity": 2 }
+}

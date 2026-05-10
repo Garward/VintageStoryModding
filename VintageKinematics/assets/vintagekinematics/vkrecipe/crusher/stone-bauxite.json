@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "item", "code": "game:stone-bauxite", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "bauxite-grit", "quantity": 1 }
+	],
+	"crushTicks": 4
+}

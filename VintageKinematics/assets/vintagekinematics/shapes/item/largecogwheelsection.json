@@ -1,0 +1,385 @@
+{
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "cog": "game:block/wood/planks/generic",
+    "wood": "game:block/wood/planks/generic"
+  },
+  "elements": [
+    {
+      "name": "tooth_00",
+      "from": [
+        7,
+        6,
+        17
+      ],
+      "to": [
+        9,
+        10,
+        23
+      ],
+      "rotationOrigin": [
+        8,
+        8,
+        8
+      ],
+      "rotationY": 0,
+      "faces": {
+        "north": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cog",
+          "uv": [
+            13,
+            6,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cog",
+          "uv": [
+            0,
+            6,
+            3,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            13,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "tooth_22",
+      "from": [
+        7,
+        6,
+        17
+      ],
+      "to": [
+        9,
+        10,
+        23
+      ],
+      "rotationOrigin": [
+        8,
+        8,
+        8
+      ],
+      "rotationY": 22.5,
+      "faces": {
+        "north": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cog",
+          "uv": [
+            13,
+            6,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cog",
+          "uv": [
+            0,
+            6,
+            3,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            13,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "tooth_45",
+      "from": [
+        7,
+        6,
+        17
+      ],
+      "to": [
+        9,
+        10,
+        23
+      ],
+      "rotationOrigin": [
+        8,
+        8,
+        8
+      ],
+      "rotationY": 45,
+      "faces": {
+        "north": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cog",
+          "uv": [
+            13,
+            6,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cog",
+          "uv": [
+            0,
+            6,
+            3,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            13,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "tooth_67",
+      "from": [
+        7,
+        6,
+        17
+      ],
+      "to": [
+        9,
+        10,
+        23
+      ],
+      "rotationOrigin": [
+        8,
+        8,
+        8
+      ],
+      "rotationY": 67.5,
+      "faces": {
+        "north": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cog",
+          "uv": [
+            13,
+            6,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cog",
+          "uv": [
+            0,
+            6,
+            3,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            13,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "name": "tooth_90",
+      "from": [
+        7,
+        6,
+        17
+      ],
+      "to": [
+        9,
+        10,
+        23
+      ],
+      "rotationOrigin": [
+        8,
+        8,
+        8
+      ],
+      "rotationY": 90,
+      "faces": {
+        "north": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cog",
+          "uv": [
+            13,
+            6,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            6,
+            9,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cog",
+          "uv": [
+            0,
+            6,
+            3,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            13,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cog",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      }
+    }
+  ]
+}

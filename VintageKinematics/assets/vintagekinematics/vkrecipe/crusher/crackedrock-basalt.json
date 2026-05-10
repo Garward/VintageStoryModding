@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "block", "code": "game:crackedrock-basalt", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "basalt-grit", "quantity": 4 }
+	],
+	"crushTicks": 6
+}

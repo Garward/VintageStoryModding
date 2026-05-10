@@ -1,0 +1,360 @@
+{
+  "editor": {
+    "allAngles": false,
+    "entityTextureMode": false
+  },
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textureSizes": {},
+  "textures": {
+    "iron": "game:block/metal/sheet/iron1",
+    "wood": "game:block/wood/planks/generic"
+  },
+  "elements": [
+    {
+      "name": "topcap",
+      "from": [
+        0.0,
+        13.0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        15.0,
+        16.0
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "pillarNW",
+      "from": [
+        0.0,
+        -4.0,
+        14.0
+      ],
+      "to": [
+        2.0,
+        13.0,
+        16.0
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            17.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            17.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            17.0
+          ]
+        },
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            17.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "pillarNE",
+      "from": [
+        0.0,
+        -4.0,
+        0.0
+      ],
+      "to": [
+        2.0,
+        13.0,
+        2.0
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "pillarSW",
+      "from": [
+        14.0,
+        -4.0,
+        14.0
+      ],
+      "to": [
+        16.0,
+        13.0,
+        16.0
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "pillarSE",
+      "from": [
+        14.0,
+        -4.0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        13.0,
+        2.0
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ]
+        }
+      }
+    }
+  ]
+}

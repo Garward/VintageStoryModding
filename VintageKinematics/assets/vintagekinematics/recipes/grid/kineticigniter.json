@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "_C_,IPI,_S_",
+	"ingredients": {
+		"C": { "type": "item", "code": "game:metalplate-copper" },
+		"P": { "type": "item", "code": "game:metalplate-copper" },
+		"I": { "type": "item", "code": "game:metalplate-iron" },
+		"S": { "type": "block", "code": "shaft-z" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticigniter-n-cool", "quantity": 1 }
+}

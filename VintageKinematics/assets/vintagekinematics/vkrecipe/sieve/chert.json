@@ -1,0 +1,13 @@
+{
+	"ingredient": { "type": "item", "code": "chert-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-chert", "weight": 45 },
+		{ "weight": 12, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 12 },
+		{ "type": "item", "code": "game:metalbit-copper", "weight": 8 },
+		{ "type": "item", "code": "game:flint", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 6 },
+		{ "type": "item", "code": "game:metalbit-lead", "weight": 5 }
+	]
+}

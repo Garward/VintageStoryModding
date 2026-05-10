@@ -1,0 +1,7 @@
+{
+    "ingredient": { "type": "block", "code": "game:log-placed-larch-*", "quantity": 1 },
+    "outputs": [
+        { "type": "item", "code": "game:plank-larch", "quantity": 4 }
+    ],
+    "sawTicks": 4
+}

@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "block", "code": "game:crackedrock-phyllite", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "phyllite-grit", "quantity": 4 }
+	],
+	"crushTicks": 6
+}

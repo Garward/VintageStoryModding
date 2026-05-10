@@ -1,0 +1,52 @@
+{
+    "code": "kineticigniter",
+    "class": "BlockKineticIgniter",
+    "entityClass": "KineticIgniter",
+    "entityBehaviors": [
+        { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 8, "stressCurve": "Quadratic", "axis": "Z" } }
+    ],
+    "entityBehaviorsByType": {
+        "*-n-*": [ { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 8, "stressCurve": "Quadratic", "axis": "Z" } } ],
+        "*-s-*": [ { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 8, "stressCurve": "Quadratic", "axis": "Z" } } ],
+        "*-e-*": [ { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 8, "stressCurve": "Quadratic", "axis": "X" } } ],
+        "*-w-*": [ { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 8, "stressCurve": "Quadratic", "axis": "X" } } ]
+    },
+    "variantgroups": [
+        { "code": "side", "states": ["n", "e", "s", "w"] },
+        { "code": "state", "states": ["cool", "glow"] }
+    ],
+    "shape": { "base": "block/kineticigniter" },
+    "shapeByType": {
+        "*-n-*": { "base": "block/kineticigniter", "rotateY": 0 },
+        "*-e-*": { "base": "block/kineticigniter", "rotateY": 270 },
+        "*-s-*": { "base": "block/kineticigniter", "rotateY": 180 },
+        "*-w-*": { "base": "block/kineticigniter", "rotateY": 90 }
+    },
+    "textures": {
+        "stone":  { "base": "game:block/stone/rock/granite1" },
+        "iron":   { "base": "game:block/metal/sheet/iron1" },
+        "copper": { "base": "game:block/metal/sheet/copper1" }
+    },
+    "texturesByType": {
+        "*-glow": {
+            "stone":  { "base": "game:block/stone/rock/granite1" },
+            "iron":   { "base": "game:block/metal/sheet/iron1" },
+            "copper": { "base": "vintagekinematics:block/kineticigniter-rod-glow" }
+        }
+    },
+    "blockmaterial": "Metal",
+    "creativeinventory": { "general": ["*-n-cool"], "mechanics": ["*-n-cool"] },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": false, "down": true },
+    "sidesolid":  { "all": false, "down": true },
+    "lightHsv": [0, 0, 0],
+    "lightHsvByType": {
+        "*-glow": [5, 7, 6]
+    },
+    "resistance": 3,
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.875, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.875, "z2": 1 },
+    "drops": [
+        { "type": "block", "code": "kineticigniter-n-cool", "quantity": { "avg": 1 } }
+    ]
+}

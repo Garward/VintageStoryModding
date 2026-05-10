@@ -1,0 +1,10 @@
+{
+	"code": "largecogwheelsection",
+	"shape": { "base": "item/largecogwheelsection" },
+	"textures": {
+		"cog": { "base": "game:block/wood/planks/generic" },
+		"wood": { "base": "game:block/wood/planks/generic" }
+	},
+	"creativeinventory": { "general": ["*"] },
+	"maxstacksize": 8
+}

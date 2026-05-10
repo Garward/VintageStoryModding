@@ -1,0 +1,12 @@
+{
+    "ingredientPattern": "PMP,SBS,PPP",
+    "ingredients": {
+        "P": { "type": "item", "code": "game:plank-*", "name": "wood" },
+        "M": { "type": "item", "code": "game:metalplate-iron" },
+        "S": { "type": "block", "code": "shaft-y" },
+        "B": { "type": "item", "code": "game:metalplate-iron" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "kineticpress-x", "quantity": 1 }
+}

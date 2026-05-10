@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "ILI,GFG,ISI",
+	"ingredients": {
+		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 4 },
+		"L": { "type": "block", "code": "game:linen-*", "quantity": 4 },
+		"G": { "type": "block", "code": "cogwheel-y", "quantity": 2 },
+		"S": { "type": "block", "code": "shaft-y" },
+		"F": { "type": "item", "code": "game:fat-rendered" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticsieve-n", "quantity": 1 }
+}

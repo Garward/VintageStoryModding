@@ -1,0 +1,11 @@
+{
+	"ingredientPattern": "PIP,ISI,PIP",
+	"ingredients": {
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
+		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 4 },
+		"S": { "type": "block", "code": "shaft-y" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "crusherframe", "quantity": 1 }
+}

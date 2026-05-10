@@ -1,0 +1,14 @@
+{
+    "type": "code",
+    "modid": "vintagekinematics",
+    "name": "Vintage Kinematics",
+    "version": "1.0.1",
+    "description": "Create-style kinetic power, belts, and machines for Vintage Story.",
+    "authors": ["garward"],
+    "side": "Universal",
+    "requiredOnClient": true,
+    "requiredOnServer": true,
+    "dependencies": {
+        "game": ""
+    }
+}

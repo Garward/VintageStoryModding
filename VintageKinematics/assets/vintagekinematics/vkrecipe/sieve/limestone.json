@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "limestone-grit" },
+	"sieveTicks": 6,
+	"outputs": [
+		{ "type": "block", "code": "game:sand-limestone", "weight": 38 },
+		{ "weight": 10, "nothing": true },
+		{ "type": "item", "code": "game:metalbit-copper", "quantity": 2, "weight": 18 },
+		{ "type": "item", "code": "game:metalbit-iron", "weight": 9 },
+		{ "type": "item", "code": "game:metalbit-lead", "weight": 8 },
+		{ "type": "item", "code": "game:metalbit-zinc", "weight": 7 }
+	]
+}

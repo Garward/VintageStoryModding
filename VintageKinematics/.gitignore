@@ -1,0 +1,9 @@
+# Modeling source files (Blender / Model Creator originals)
+raw_assets/
+
+# Test project
+tests/
+
+# Local-only design docs
+docs/processing-design.md
+docs/modeling-guide.md
