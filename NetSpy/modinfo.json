@@ -1,0 +1,14 @@
+{
+    "type": "code",
+    "modid": "netspy",
+    "name": "NetSpy",
+    "version": "0.1.0",
+    "description": "Diagnostic mod: dumps top outbound packet sources every 5 seconds. Server-side only. Uninstall after diagnosis.",
+    "authors": ["garward"],
+    "side": "Server",
+    "requiredOnClient": false,
+    "requiredOnServer": true,
+    "dependencies": {
+        "game": "1.22.0"
+    }
+}

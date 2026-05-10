@@ -1,0 +1,12 @@
+{
+  "type": "code",
+  "name": "Recipe Explorer",
+  "modid": "recipeexplorer",
+  "description": "JEI-like recipe system. Press U to show recipes that use an item. Adds auto-fill buttons to handbook pages to automatically fill crafting grids. Includes optimized recipe indexing for large modpacks.",
+  "authors": [ "garward" ],
+  "version": "1.1.0",
+  "dependencies": {
+    "game": "1.21.0"
+  },
+  "side": "client"
+}

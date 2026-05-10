@@ -1,0 +1,38 @@
+# Build output (any mod folder)
+**/bin/
+**/obj/
+**/TestResults/
+
+# Packaged distributables
+**/dist/
+*.zip
+
+# IDE / editor
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*~
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Reference material / scratch
+Sources/
+tmp/
+
+# Mods not yet ready for publication; un-ignore as each one is cleaned up
+ActionCombat/
+ButterflyFix/
+MagicPainting/
+MeleeRaycastMod/
+RustboundMagicFix_src/
+VibrantShaders/
+
+# VintageKinematics local-only docs
+VintageKinematics/docs/processing-design.md
+VintageKinematics/docs/modeling-guide.md

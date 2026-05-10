@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>NetSpy</RootNamespace>
+    <AssemblyName>NetSpy</AssemblyName>
+    <OutputType>Library</OutputType>
+    <LangVersion>12.0</LangVersion>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VSPath>/home/garward/Games/Games/VintageStory/vintagestory</VSPath>
+    <ModOutputPath>/home/garward/.config/VintagestoryData/Mods/NetSpy</ModOutputPath>
+    <PackageOutputPath>$(MSBuildProjectDirectory)/dist</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="VintagestoryAPI">
+      <HintPath>$(VSPath)/VintagestoryAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VintagestoryLib">
+      <HintPath>$(VSPath)/VintagestoryLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="modinfo.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <Target Name="DeployToVS" AfterTargets="Build">
+    <RemoveDir Directories="$(ModOutputPath)" />
+    <MakeDir Directories="$(ModOutputPath)" />
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ModOutputPath)" />
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).pdb" DestinationFolder="$(ModOutputPath)" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
+    <Copy SourceFiles="modinfo.json" DestinationFolder="$(ModOutputPath)" />
+  </Target>
+
+  <Target Name="PackageZip" AfterTargets="DeployToVS">
+    <MakeDir Directories="$(PackageOutputPath)" />
+    <Delete Files="$(PackageOutputPath)/NetSpy.zip" />
+    <Exec Command="python3 -c &quot;import zipfile, os; os.makedirs(r'$(PackageOutputPath)', exist_ok=True); z=zipfile.ZipFile(r'$(PackageOutputPath)/NetSpy.zip','w',zipfile.ZIP_DEFLATED); z.write(r'$(ModOutputPath)/NetSpy.dll','NetSpy.dll'); z.write(r'$(ModOutputPath)/modinfo.json','modinfo.json'); z.close()&quot;" />
+    <Message Text="Packaged: $(PackageOutputPath)/NetSpy.zip" Importance="high" />
+  </Target>
+
+</Project>
