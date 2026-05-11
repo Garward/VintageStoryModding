@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-poor-limonite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2
+        }
+    ],
+    "crushTicks": 3
+}

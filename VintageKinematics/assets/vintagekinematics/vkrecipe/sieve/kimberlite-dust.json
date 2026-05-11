@@ -1,0 +1,53 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "kimberlite-dust"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-andesite",
+            "weight": 11
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-chromite",
+            "quantity": 2,
+            "weight": 44
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 20
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-pentlandite",
+            "quantity": 2,
+            "weight": 14
+        },
+        {
+            "type": "item",
+            "code": "game:gem-diamond-rough",
+            "weight": 12
+        },
+        {
+            "type": "item",
+            "code": "game:gem-emerald-rough",
+            "weight": 10
+        },
+        {
+            "type": "item",
+            "code": "game:gem-olivine_peridot-rough",
+            "weight": 10
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-ilmenite",
+            "quantity": 2,
+            "weight": 10
+        }
+    ]
+}

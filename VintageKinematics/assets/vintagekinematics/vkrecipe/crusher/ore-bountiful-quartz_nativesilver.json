@@ -1,0 +1,20 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-bountiful-quartz_nativesilver-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-nativesilver",
+            "quantity": 10
+        },
+        {
+            "type": "item",
+            "code": "game:clearquartz",
+            "quantity": 1
+        }
+    ],
+    "crushTicks": 6
+}

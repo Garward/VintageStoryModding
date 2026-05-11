@@ -11,7 +11,7 @@
                 { "element": "StubXneg", "axis": "X", "ratio": 1 }
             ] } },
             { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "Plate", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 6, "ratio": 0.5 }
+                { "element": "Plate", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true }
             ] } }
         ],
         "*-z": [
@@ -22,7 +22,7 @@
                 { "element": "StubXneg", "axis": "X", "ratio": 1 }
             ] } },
             { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "Plate", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 6, "ratio": 0.5 }
+                { "element": "Plate", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true }
             ] } }
         ]
     },

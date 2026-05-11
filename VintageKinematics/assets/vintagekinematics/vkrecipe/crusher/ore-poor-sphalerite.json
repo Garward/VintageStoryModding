@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-poor-sphalerite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2
+        }
+    ],
+    "crushTicks": 3
+}

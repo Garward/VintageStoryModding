@@ -29,6 +29,16 @@ namespace VintageKinematics.Network
                 if (beh != null)
                 {
                     node = beh.ToNode();
+                    // If this BE is a multiblock controller whose own cell isn't designated as
+                    // a shaft cell, demote it to Role.Custom so the default coaxial rule short-
+                    // circuits. Internal connectivity to the designated shaft fillers is handled
+                    // by the intra-multiblock edge in TryGetCustomConnection. Stress and other
+                    // node attributes are unaffected — only edge-formation cares about Role here.
+                    IKineticMultiblockController mbcSelf = ResolveMultiblockInterface(be);
+                    if (mbcSelf != null && !mbcSelf.IsKineticShaftCell(pos))
+                    {
+                        node.Role = EnumKineticRole.Custom;
+                    }
                     return true;
                 }
 
@@ -61,6 +71,13 @@ namespace VintageKinematics.Network
             // would only accept input on the controller-side face, since both axial faces of
             // a 1×1×N kinetic body lie on filler cells. Ghost nodes report StressImpact=0 and
             // no Tier so they don't double-count toward stress or MaxRPM.
+            //
+            // Designated shaft cells get Role.Shaft so the default coaxial rule forms external
+            // edges to matching-axis sources. Non-shaft cells get Role.Custom so the default
+            // short-circuits — they remain reachable internally through the intra-multiblock
+            // edge in TryGetCustomConnection, but external blocks can't connect to them.
+            // Multiblock controllers without IKineticMultiblockController fall back to "every
+            // cell is a shaft cell", which preserves the existing 1×N sieve behaviour.
             if (world.BlockAccessor.GetBlock(pos) is BlockMultiblock mb)
             {
                 BlockPos ctrlPos = new BlockPos(pos.X + mb.OffsetInv.X, pos.Y + mb.OffsetInv.Y, pos.Z + mb.OffsetInv.Z, pos.dimension);
@@ -68,11 +85,14 @@ namespace VintageKinematics.Network
                 BEBehaviorKinetic ctrlKin = ctrlBe?.GetBehavior<BEBehaviorKinetic>();
                 if (ctrlKin == null) return false;
 
+                IKineticMultiblockController mbc = ResolveMultiblockInterface(ctrlBe);
+                bool isShaftCell = mbc != null ? mbc.IsKineticShaftCell(pos) : true;
+
                 node = new KineticNode
                 {
                     Pos = pos,
                     Axis = ctrlKin.Axis,
-                    Role = EnumKineticRole.Shaft,
+                    Role = isShaftCell ? EnumKineticRole.Shaft : EnumKineticRole.Custom,
                     StressImpact = 0f,
                     RatedRPM = 0f,
                     Tier = null,
@@ -86,6 +106,27 @@ namespace VintageKinematics.Network
 
         public KineticConnection? TryGetCustomConnection(KineticNode from, KineticNode to)
         {
+            // Intra-multiblock edge: any two cells belonging to the same multiblock controller
+            // are a single rigid body, so the network treats them as freely connected regardless
+            // of axis alignment or offset direction. Without this, a non-linear multiblock (e.g.
+            // a 3x3x2 bore with controller in a corner and shaft cells in the middle column) has
+            // its controller islanded from the shaft cells because the default coaxial rule only
+            // links same-axis fillers along the rotation axis.
+            BlockPos fromCtrl = ResolveMultiblockController(from.Pos);
+            BlockPos toCtrl = ResolveMultiblockController(to.Pos);
+            if (fromCtrl != null && toCtrl != null && fromCtrl.Equals(toCtrl))
+            {
+                return new KineticConnection(1f, 1, 0f);
+            }
+            if (fromCtrl != null && fromCtrl.Equals(to.Pos))
+            {
+                return new KineticConnection(1f, 1, 0f);
+            }
+            if (toCtrl != null && toCtrl.Equals(from.Pos))
+            {
+                return new KineticConnection(1f, 1, 0f);
+            }
+
             // Vanilla MP ↔ VK shaft bridge: coaxial face-neighbour with matching axis. Stays
             // one-edge — never bridges two vanilla blocks against each other (those should
             // remain on the vanilla MP graph). Returns null when neither end is a bridge so
@@ -95,6 +136,12 @@ namespace VintageKinematics.Network
             if (fromVanilla && toVanilla) return null;
             if (fromVanilla || toVanilla)
             {
+                // The bridge has no Role check by default. Refuse to bridge into a non-vanilla
+                // Custom-role neighbour: that's either a multiblock internal filler (must stay
+                // internal-only) or a self-routing block like a belt segment (handles its own
+                // connectivity through IKineticConnector).
+                if (!fromVanilla && from.Role == EnumKineticRole.Custom) return null;
+                if (!toVanilla && to.Role == EnumKineticRole.Custom) return null;
                 if (from.Axis != to.Axis) return null;
                 Vec3i offset = new Vec3i(to.Pos.X - from.Pos.X, to.Pos.Y - from.Pos.Y, to.Pos.Z - from.Pos.Z);
                 int absSum = Math.Abs(offset.X) + Math.Abs(offset.Y) + Math.Abs(offset.Z);
@@ -120,6 +167,26 @@ namespace VintageKinematics.Network
             {
                 var result = connTo.TryConnect(toInfo, fromInfo, to.Pos, from.Pos);
                 if (result.HasValue) return Translate(result.Value);
+            }
+            return null;
+        }
+
+        private static IKineticMultiblockController ResolveMultiblockInterface(BlockEntity be)
+        {
+            if (be == null) return null;
+            if (be is IKineticMultiblockController direct) return direct;
+            foreach (var b in be.Behaviors)
+            {
+                if (b is IKineticMultiblockController viaBehavior) return viaBehavior;
+            }
+            return null;
+        }
+
+        private BlockPos ResolveMultiblockController(BlockPos pos)
+        {
+            if (world.BlockAccessor.GetBlock(pos) is BlockMultiblock mb)
+            {
+                return new BlockPos(pos.X + mb.OffsetInv.X, pos.Y + mb.OffsetInv.Y, pos.Z + mb.OffsetInv.Z, pos.dimension);
             }
             return null;
         }

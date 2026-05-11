@@ -1,14 +1,54 @@
 {
-	"ingredient": { "type": "item", "code": "slate-grit" },
-	"sieveTicks": 6,
-	"outputs": [
-		{ "type": "block", "code": "game:sand-slate", "weight": 45 },
-		{ "weight": 12, "nothing": true },
-		{ "type": "item", "code": "game:metalbit-iron", "weight": 10 },
-		{ "type": "item", "code": "game:metalbit-tin", "weight": 9 },
-		{ "type": "item", "code": "game:metalbit-bismuth", "weight": 6 },
-		{ "type": "item", "code": "game:metalbit-copper", "weight": 6 },
-		{ "type": "item", "code": "game:metalbit-zinc", "weight": 4 },
-		{ "type": "item", "code": "game:metalbit-titanium", "weight": 3 }
-	]
+    "ingredient": {
+        "type": "item",
+        "code": "slate-grit"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-slate",
+            "weight": 45
+        },
+        {
+            "weight": 12,
+            "nothing": true
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 10
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-cassiterite",
+            "quantity": 2,
+            "weight": 9
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-bismuthinite",
+            "quantity": 2,
+            "weight": 6
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 6
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2,
+            "weight": 4
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-ilmenite",
+            "quantity": 2,
+            "weight": 3
+        }
+    ]
 }

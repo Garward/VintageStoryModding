@@ -243,6 +243,72 @@ Selection box, collision box, light absorption, and break-on-controller
 behavior are all handled by the vanilla `Multiblock` behavior. You don't
 need to set those per cell.
 
+## 5d. Restricting kinetic input to specific cells (`KineticMultiblock`)
+
+By default, every filler cell of a multiblock is treated as a coaxial
+shaft passthrough: a shaft against any face of any cell will join the
+network. That's correct for a 1×1×3 drum (the Kinetic Sieve), but wrong
+for anything with a visible shaft stub on only one side, like the Kinetic
+Bore: you don't want power flowing in through the back of the housing
+just because the BFS found a matching axis there.
+
+Add the `KineticMultiblock` block-entity behavior and declare which cells
+accept input. Two ways to declare, mixable on the same block:
+
+```json
+"entityBehaviorsByType": {
+  "*-n": [
+    { "name": "Kinetic",         "properties": { "role": "Shaft", "stressImpact": 96, "axis": "Z" } },
+    { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } },
+    { "name": "KineticMultiblock" }
+  ]
+},
+"attributes": {
+  "kineticShaftCells":    [ { "x": 1, "y": 1, "z": 2 } ],
+  "kineticShaftElements": [ "ShaftStub" ]
+}
+```
+
+- `kineticShaftCells` — explicit cell coords in the **unrotated**
+  (rotateY=0) claim. Useful when the input cell isn't pinned to a visible
+  element (e.g. a hidden coupler on top of the housing).
+- `kineticShaftElements` — names of shape elements; the behavior resolves
+  each name to the cell containing the element's bounding-box centroid.
+  This is the path of least resistance: the input cell stays in lockstep
+  with whatever cell the visible socket actually lives in, so moving the
+  stub in the model doesn't require touching JSON.
+
+The behavior reads the variant's `shape.rotateY` and the `cposition` from
+the vanilla `Multiblock` behavior, rotates the declared cells in place,
+and subtracts cposition to produce the controller-relative offsets the
+network uses. You only declare cells / elements **once**, in the base
+orientation; every facing variant is derived automatically.
+
+Behavior under the hood:
+
+- Cells listed (directly or via element) form coaxial edges with external
+  shafts as normal.
+- Every other cell of the claim is demoted to `Role.Custom` for
+  edge-formation only, so the default coaxial rule refuses to bridge into
+  it. Internal connectivity to the controller still works through the
+  intra-multiblock free edge in `WorldNodeProvider`.
+- The vanilla MP bridge also refuses to bridge into non-shaft cells, so
+  vanilla axles can't sneak in through a side face either.
+
+When to skip this:
+
+- Your multiblock is genuinely a 1×N coaxial shaft (sieve drum, conveyor
+  drum). The default "every filler is a shaft cell" is what you want.
+- Your machine only has one input face anyway because the other faces are
+  occupied by inventory / fuel / output blocks in the model.
+
+When to use it:
+
+- Any multiblock with directional input (one stub on one face, blank on
+  the others) — the bore, future excavators / drills.
+- Multiblocks where the input cell isn't on a face of the controller and
+  the default coaxial rule wouldn't form the edge.
+
 ## 6. What the API does for free
 
 - Network membership and stress accounting on placement / removal.
@@ -259,6 +325,9 @@ need to set those per cell.
   pulpers are nearby.
 - Auto-pause when the network goes conflicted or overstressed; auto-resume
   on recovery.
+- Multiblock kinetic-input restriction via the `KineticMultiblock`
+  behavior: declare shaft cells in JSON, get variant-rotation and
+  cposition math for free (see 5d).
 
 ## 7. What's still your responsibility
 

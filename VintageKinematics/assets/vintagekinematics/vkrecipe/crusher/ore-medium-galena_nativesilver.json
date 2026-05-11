@@ -1,0 +1,20 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-medium-galena_nativesilver-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-nativesilver",
+            "quantity": 3
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-galena",
+            "quantity": 2
+        }
+    ],
+    "crushTicks": 4
+}

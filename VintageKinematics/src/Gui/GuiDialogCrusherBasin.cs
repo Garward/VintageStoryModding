@@ -23,15 +23,12 @@ namespace VintageKinematics.Gui
         {
             double slotPad = GuiElementItemSlotGridBase.unscaledSlotPadding;
             double slotSize = GuiElementPassiveItemSlot.unscaledSlotSize;
-            // Title bar needs ~250px to fit the title text + close + lock buttons. Two slots
-            // alone (~110px) made the bar overflow; widen the label rows so FitToChildren keeps
-            // the dialog wide enough.
-            double rowWidth = System.Math.Max(2 * (slotSize + slotPad), 260.0);
+            double rowWidth = System.Math.Max(3 * (slotSize + slotPad), 260.0);
 
             ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad, rowWidth, 22.0);
             ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + 24.0, 1, 1);
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + 24.0 + inputSlotBounds.fixedHeight + 8.0, rowWidth, 22.0);
-            ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 2, 1);
+            ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
 
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
@@ -44,7 +41,7 @@ namespace VintageKinematics.Gui
             string inputLabel = Lang.Get("vintagekinematics:basin-input");
             string outputLabel = Lang.Get("vintagekinematics:basin-outputs");
             int[] inputSlot = new int[] { 0 };
-            int[] outputSlots = new int[] { 1, 2 };
+            int[] outputSlots = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             SingleComposer = capi.Gui.CreateCompo("crusherbasin-" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
@@ -53,7 +50,7 @@ namespace VintageKinematics.Gui
                     .AddStaticText(inputLabel, CairoFont.WhiteSmallText(), inputLabelBounds)
                     .AddItemSlotGrid(Inventory, DoSendPacket, 1, inputSlot, inputSlotBounds, "inputslot")
                     .AddStaticText(outputLabel, CairoFont.WhiteSmallText(), outputLabelBounds)
-                    .AddItemSlotGrid(Inventory, DoSendPacket, 2, outputSlots, outputSlotsBounds, "outputslots")
+                    .AddItemSlotGrid(Inventory, DoSendPacket, 3, outputSlots, outputSlotsBounds, "outputslots")
                 .EndChildElements()
                 .Compose();
         }

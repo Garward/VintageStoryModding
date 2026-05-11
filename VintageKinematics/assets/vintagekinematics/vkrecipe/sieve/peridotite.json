@@ -1,16 +1,66 @@
 {
-	"ingredient": { "type": "item", "code": "peridotite-grit" },
-	"sieveTicks": 6,
-	"outputs": [
-		{ "type": "block", "code": "game:sand-peridotite", "weight": 38 },
-		{ "weight": 10, "nothing": true },
-		{ "type": "item", "code": "game:metalbit-nickel", "weight": 14 },
-		{ "type": "item", "code": "game:metalbit-chromium", "weight": 10 },
-		{ "type": "item", "code": "game:metalbit-copper", "weight": 8 },
-		{ "type": "item", "code": "game:metalbit-iron", "weight": 7 },
-		{ "type": "item", "code": "game:metalbit-tin", "weight": 6 },
-		{ "type": "item", "code": "game:metalbit-titanium", "weight": 4 },
-		{ "type": "item", "code": "game:metalbit-zinc", "weight": 2 },
-		{ "type": "item", "code": "game:metalbit-bismuth", "weight": 1 }
-	]
+    "ingredient": {
+        "type": "item",
+        "code": "peridotite-grit"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-peridotite",
+            "weight": 38
+        },
+        {
+            "weight": 10,
+            "nothing": true
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-pentlandite",
+            "quantity": 2,
+            "weight": 14
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-chromite",
+            "quantity": 2,
+            "weight": 10
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 8
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 7
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-cassiterite",
+            "quantity": 2,
+            "weight": 6
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-ilmenite",
+            "quantity": 2,
+            "weight": 4
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2,
+            "weight": 2
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-bismuthinite",
+            "quantity": 2,
+            "weight": 1
+        }
+    ]
 }

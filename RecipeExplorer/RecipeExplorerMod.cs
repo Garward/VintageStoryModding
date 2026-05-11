@@ -45,11 +45,25 @@ namespace RecipeExplorer
 
         private void OnLevelFinalize()
         {
+            BuildIndexNow();
+
+            // 1.22 timing: grid recipes may not be synced to client at LevelFinalize. Retry once
+            // a couple seconds later if the first pass came up empty.
+            capi.Event.RegisterCallback(_ =>
+            {
+                if (recipeIndex.IndexedItemCount == 0)
+                {
+                    capi.Logger.Notification("[RecipeExplorer] First index pass was empty; retrying after sync delay");
+                    BuildIndexNow();
+                }
+            }, 3000);
+        }
+
+        private void BuildIndexNow()
+        {
             capi.Logger.Notification("[RecipeExplorer] Building recipe index...");
             var startTime = capi.World.ElapsedMilliseconds;
-
             recipeIndex.BuildIndex();
-
             var elapsed = capi.World.ElapsedMilliseconds - startTime;
             capi.Logger.Notification("[RecipeExplorer] Recipe index built in {0}ms", elapsed);
         }
@@ -77,26 +91,13 @@ namespace RecipeExplorer
                 return false;
             }
 
-            string itemName = slot.Itemstack.GetName();
-            string itemKey = string.Format("{0}:{1}", slot.Itemstack.Class, slot.Itemstack.Collectible.Code);
+            var ingredientRecipes = recipeIndex.GetRecipesThatUse(slot.Itemstack);
+            var toolRecipes = recipeIndex.GetRecipesUsingAsTool(slot.Itemstack);
+            var producesRecipes = recipeIndex.GetRecipesThatProduce(slot.Itemstack);
+            var machineRecipes = recipeIndex.GetRecipesProducedByMachine(slot.Itemstack);
 
-            capi.Logger.Debug("[RecipeExplorer] Show uses for: {0} (key: {1})", itemName, itemKey);
-
-            // Get recipes that use this item
-            var recipes = recipeIndex.GetRecipesThatUse(slot.Itemstack);
-            capi.Logger.Debug("[RecipeExplorer] Found {0} recipes", recipes != null ? recipes.Count : -1);
-
-            if (recipes != null && recipes.Count > 0)
-            {
-                capi.Logger.Debug("[RecipeExplorer] First recipe: {0}", recipes[0]?.Name ?? "NULL");
-            }
-
-            // Open GUI dialog showing recipes
-            capi.Logger.Debug("[RecipeExplorer] Creating dialog");
-            var dialog = new GuiDialogRecipeUses(capi, slot.Itemstack, recipes);
-            capi.Logger.Debug("[RecipeExplorer] Calling TryOpen");
+            var dialog = new GuiDialogRecipeUses(capi, slot.Itemstack, ingredientRecipes, toolRecipes, producesRecipes, machineRecipes);
             dialog.TryOpen();
-            capi.Logger.Debug("[RecipeExplorer] TryOpen complete");
 
             return true;
         }

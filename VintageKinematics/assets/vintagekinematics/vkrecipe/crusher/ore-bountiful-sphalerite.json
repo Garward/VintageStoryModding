@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-bountiful-sphalerite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 10
+        }
+    ],
+    "crushTicks": 6
+}

@@ -1,5 +1,0 @@
-{
-    "ingredient": { "type": "item", "code": "game:fruit-redapple", "quantity": 1 },
-    "liquid": { "code": "game:juiceportion-apple", "litres": 0.2 },
-    "pressTicks": 6
-}

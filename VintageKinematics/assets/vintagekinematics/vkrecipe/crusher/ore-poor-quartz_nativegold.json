@@ -1,0 +1,20 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-poor-quartz_nativegold-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-nativegold",
+            "quantity": 2
+        },
+        {
+            "type": "item",
+            "code": "game:clearquartz",
+            "quantity": 1
+        }
+    ],
+    "crushTicks": 3
+}

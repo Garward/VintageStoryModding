@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-rich-ilmenite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-ilmenite",
+            "quantity": 8
+        }
+    ],
+    "crushTicks": 5
+}

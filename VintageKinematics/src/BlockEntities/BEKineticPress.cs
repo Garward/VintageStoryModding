@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -8,6 +9,7 @@ using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Crafting;
+using VintageKinematics.Gui;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
@@ -21,8 +23,10 @@ namespace VintageKinematics.BlockEntities
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
-        public const int SlotOutputLast = 4;
-        public const int InventorySize = 5;
+        public const int SlotOutputLast = 9;
+        public const int InventorySize = 10;
+
+        public const int PacketIdOpenDialog = 5500;
 
         public const float CapacityLitres = 10f;
         // Liquid portion items use stacksize as portions; 100 portions = 1 litre per the
@@ -37,19 +41,42 @@ namespace VintageKinematics.BlockEntities
         private IOFaceMap ioFaces;
         private ItemStack liquidStack;
         private float liquidLitres;
+        private GuiDialogKineticPress clientDialog;
+        public string DialogTitle { get; private set; }
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticpress";
 
         public BEKineticPress()
         {
-            inventory = new InventoryGeneric(InventorySize, "kineticpress-0", null, null);
+            inventory = new InventoryGeneric(InventorySize, "kineticpress-0", null, null, (slotId, self) =>
+            {
+                return slotId == SlotInput
+                    ? new ItemSlot(self)
+                    : new ItemSlotCrusherOutput(self);
+            });
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
             inventory.SlotModified += _ => MarkDirty(true);
+
+            string title = Lang.Get("vintagekinematics:kineticpress-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Press";
+            DialogTitle = title;
+
+            // FromTreeAttributes can run before Api is set, so resolution there is skipped.
+            // Resolve on first Initialize so liquidStack.Collectible is non-null thereafter.
+            if (liquidStack != null && liquidStack.Collectible == null)
+            {
+                liquidStack.ResolveBlockOrItem(api.World);
+                if (liquidStack.Collectible == null)
+                {
+                    liquidStack = null;
+                    liquidLitres = 0f;
+                }
+            }
 
             ioFaces = new IOFaceMap().MapInput(BlockFacing.UP, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
@@ -91,10 +118,23 @@ namespace VintageKinematics.BlockEntities
             Block belowBlock = Api.World.BlockAccessor.GetBlock(belowPos);
             if (belowBlock is not BlockLiquidContainerBase lcb) return;
 
-            ItemStack pourStack = liquidStack.Clone();
-            // TryPutLiquid uses the stack as a template; sets quantity internally.
-            pourStack.StackSize = 999999;
-            int portionsMoved = lcb.TryPutLiquid(belowPos, pourStack, liquidLitres);
+            // Many BlockLiquidContainerBase subclasses (barrel, crock, bowl) store liquid via
+            // a BlockEntityContainer. Without that BE present, vanilla TryPutLiquid NREs at
+            // BlockLiquidContainerBase.cs:583. Skip if there's no container BE underneath.
+            if (Api.World.BlockAccessor.GetBlockEntity(belowPos) is not BlockEntityContainer) return;
+
+            int portionsMoved;
+            try
+            {
+                ItemStack pourStack = liquidStack.Clone();
+                // TryPutLiquid uses the stack as a template; sets quantity internally.
+                pourStack.StackSize = 999999;
+                portionsMoved = lcb.TryPutLiquid(belowPos, pourStack, liquidLitres);
+            }
+            catch
+            {
+                return;
+            }
             if (portionsMoved <= 0) return;
 
             float litresMoved = portionsMoved / PortionsPerLitre;
@@ -107,7 +147,7 @@ namespace VintageKinematics.BlockEntities
             MarkDirty(true);
         }
 
-        private static readonly AssetLocation PressSound = new AssetLocation("sounds/block/woodcreak.ogg");
+        private static readonly AssetLocation PressSound = new AssetLocation("sounds/player/squeezehoneycomb.ogg");
 
         private void OnWorkCycle(KineticWorkCompletedArgs args)
         {
@@ -117,18 +157,28 @@ namespace VintageKinematics.BlockEntities
             ItemStack input = slot.Itemstack;
             var registry = Api.ModLoader.GetModSystem<KineticPressRecipeRegistry>();
             var recipe = registry?.FindRecipe(input);
-            if (recipe == null) return;
+            if (recipe != null)
+            {
+                if (!TryCustomRecipeCycle(slot, recipe)) return;
+            }
+            else if (!TryVanillaJuiceableCycle(slot, input))
+            {
+                return;
+            }
+            MarkDirty(true);
+        }
 
+        private bool TryCustomRecipeCycle(ItemSlot slot, KineticPressRecipe recipe)
+        {
             // Liquid output gates the cycle: refuse to consume input if the buffer can't hold the produced amount.
             if (recipe.Liquid != null && recipe.Liquid.Code != null)
             {
-                if (liquidStack != null && !liquidStack.Collectible.Code.Equals(recipe.Liquid.Code)) return;
-                if (liquidLitres + recipe.Liquid.Litres > CapacityLitres + 0.0001f) return;
+                if (liquidStack?.Collectible != null && !liquidStack.Collectible.Code.Equals(recipe.Liquid.Code)) return false;
+                if (liquidLitres + recipe.Liquid.Litres > CapacityLitres + 0.0001f) return false;
             }
 
             slot.TakeOut(1);
             slot.MarkDirty();
-
             Api.World.PlaySoundAt(PressSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 16, volume: 0.5f);
 
             if (recipe.Outputs != null)
@@ -149,7 +199,48 @@ namespace VintageKinematics.BlockEntities
                 }
                 if (liquidStack != null) liquidLitres += recipe.Liquid.Litres;
             }
-            MarkDirty(true);
+            return true;
+        }
+
+        // Vanilla juiceableProperties parity. Items like fruit/honeycomb declare their press
+        // liquid in JSON attributes; we read those and apply a 20% yield bonus so the auto-press
+        // remains a meaningful upgrade over the hand-cranked fruit press.
+        private const float VanillaYieldBonus = 1.2f;
+
+        private bool TryVanillaJuiceableCycle(ItemSlot slot, ItemStack input)
+        {
+            if (input?.Collectible == null) return false;
+            var attrs = input.ItemAttributes;
+            if (attrs == null || !attrs["juiceableProperties"].Exists) return false;
+
+            var props = attrs["juiceableProperties"].AsObject<JuiceableProperties>(null, input.Collectible.Code.Domain);
+            if (props == null || !props.LitresPerItem.HasValue || props.LiquidStack == null) return false;
+
+            props.LiquidStack.Resolve(Api.World, "vintagekinematics press juiceable", input.Collectible.Code, true);
+            ItemStack resolvedLiquid = props.LiquidStack.ResolvedItemstack;
+            if (resolvedLiquid?.Collectible == null) return false;
+
+            float litres = props.LitresPerItem.Value * VanillaYieldBonus;
+            AssetLocation liquidCode = resolvedLiquid.Collectible.Code;
+            if (liquidStack?.Collectible != null && !liquidStack.Collectible.Code.Equals(liquidCode)) return false;
+            if (liquidLitres + litres > CapacityLitres + 0.0001f) return false;
+
+            slot.TakeOut(1);
+            slot.MarkDirty();
+            Api.World.PlaySoundAt(PressSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 16, volume: 0.5f);
+
+            if (liquidStack == null) liquidStack = resolvedLiquid.Clone();
+            liquidLitres += litres;
+
+            if (props.PressedStack != null)
+            {
+                props.PressedStack.Resolve(Api.World, "vintagekinematics press juiceable", input.Collectible.Code, true);
+                if (props.PressedStack.ResolvedItemstack != null)
+                {
+                    DepositOutput(props.PressedStack.ResolvedItemstack.Clone());
+                }
+            }
+            return true;
         }
 
         private void DepositOutput(ItemStack stack)
@@ -189,13 +280,67 @@ namespace VintageKinematics.BlockEntities
             if (Api.World is IServerWorldAccessor)
             {
                 string title = Lang.Get("vintagekinematics:kineticpress-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Press";
-                byte[] data = BlockEntityContainerOpen.ToBytes("BlockEntityInventory", title, InventorySize, inventory);
+                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Press";
+
+                using var ms = new MemoryStream();
+                using var bw = new BinaryWriter(ms);
+                bw.Write(title);
+                var tree = new TreeAttribute();
+                inventory.ToTreeAttributes(tree);
+                tree.ToBytes(bw);
+
                 ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, (int)EnumBlockContainerPacketId.OpenInventory, data);
+                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
                 byPlayer.InventoryManager.OpenInventory(inventory);
             }
             return true;
+        }
+
+        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        {
+            if (packetid == 1001)
+            {
+                player.InventoryManager?.CloseInventory(inventory);
+                return;
+            }
+            if (packetid < 1000)
+            {
+                if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use))
+                {
+                    Api.World.Logger.Audit("Player {0} sent kinetic press packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
+                    return;
+                }
+                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
+                return;
+            }
+            base.OnReceivedClientPacket(player, packetid, data);
+        }
+
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            if (packetid != PacketIdOpenDialog)
+            {
+                base.OnReceivedServerPacket(packetid, data);
+                return;
+            }
+
+            ICoreClientAPI capi = Api as ICoreClientAPI;
+            if (capi == null) return;
+
+            using var ms = new MemoryStream(data);
+            using var br = new BinaryReader(ms);
+            string title = br.ReadString();
+            var tree = new TreeAttribute();
+            tree.FromBytes(br);
+            inventory.FromTreeAttributes(tree);
+            inventory.ResolveBlocksOrItems();
+
+            if (clientDialog == null)
+            {
+                clientDialog = new GuiDialogKineticPress(title, inventory, Pos, capi);
+                clientDialog.OnClosed += () => clientDialog = null;
+                clientDialog.TryOpen();
+            }
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)

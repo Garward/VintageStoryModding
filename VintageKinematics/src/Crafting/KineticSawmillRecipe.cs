@@ -7,13 +7,15 @@ namespace VintageKinematics.Crafting
     public enum SawmillMode
     {
         Plank,
-        Shaft
+        Shaft,
+        Stick,
+        CogwheelSection
     }
 
     /// <summary>
     /// One JSON sawmill recipe. Matches a log by collectible code (wildcards via <c>*</c>) and on
     /// each completed work cycle consumes 1 log and emits each entry in <see cref="Outputs"/>.
-    /// <see cref="Mode"/> selects which sawmill mode (plank/shaft) the recipe is active in.
+    /// <see cref="Mode"/> selects which sawmill mode (plank/shaft/stick/cogwheelsection) the recipe is active in.
     /// </summary>
     public class KineticSawmillRecipe
     {

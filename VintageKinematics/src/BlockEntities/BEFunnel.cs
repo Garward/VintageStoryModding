@@ -20,7 +20,9 @@ namespace VintageKinematics.BlockEntities
     /// </summary>
     public class BEFunnel : BlockEntity
     {
-        private const int AutoPullTickMs = 250;
+        // 50 ms matches belt tick cadence so funnels keep up with max-RPM producers.
+        // The tick early-exits cheaply when nothing is available to pull.
+        private const int AutoPullTickMs = 50;
         // 5 always allocated so save/load is tier-stable; copper only uses slot 0.
         private const int MaxFilterSlots = 5;
 
@@ -41,7 +43,7 @@ namespace VintageKinematics.BlockEntities
         public bool Fuzzy => fuzzy;
         public bool IsIron => Block?.Variant?["tier"] == "iron";
         public int ActiveFilterSlotCount => IsIron ? 5 : 1;
-        public int PullQuantity => IsIron ? 4 : 1;
+        public int PullQuantity => IsIron ? 16 : 1;
 
         public BEFunnel()
         {

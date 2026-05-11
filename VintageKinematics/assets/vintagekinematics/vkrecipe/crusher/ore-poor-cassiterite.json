@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-poor-cassiterite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-cassiterite",
+            "quantity": 2
+        }
+    ],
+    "crushTicks": 3
+}

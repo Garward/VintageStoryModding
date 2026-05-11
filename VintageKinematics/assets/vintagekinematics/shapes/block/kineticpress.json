@@ -153,7 +153,7 @@
         {
             "name": "BasketNorth",
             "from": [4, 5, 3.5],
-            "to": [12, 10, 4.5],
+            "to": [12, 9.5, 4.5],
             "faces": {
                 "north": { "texture": "#wood", "uv": [4, 0, 12, 5] },
                 "east": { "texture": "#wood", "uv": [0, 0, 1, 5] },
@@ -166,7 +166,7 @@
         {
             "name": "BasketSouth",
             "from": [4, 5, 11.5],
-            "to": [12, 10, 12.5],
+            "to": [12, 9.5, 12.5],
             "faces": {
                 "north": { "texture": "#wood", "uv": [4, 0, 12, 5] },
                 "east": { "texture": "#wood", "uv": [0, 0, 1, 5] },
@@ -179,7 +179,7 @@
         {
             "name": "BasketWest",
             "from": [3.5, 5, 4.5],
-            "to": [4.5, 10, 11.5],
+            "to": [4.5, 9.5, 11.5],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 1, 5] },
                 "east": { "texture": "#wood", "uv": [4, 0, 11, 5] },
@@ -192,7 +192,7 @@
         {
             "name": "BasketEast",
             "from": [11.5, 5, 4.5],
-            "to": [12.5, 10, 11.5],
+            "to": [12.5, 9.5, 11.5],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 1, 5] },
                 "east": { "texture": "#wood", "uv": [4, 0, 11, 5] },
@@ -281,23 +281,88 @@
             }
         },
         {
-            "name": "DriveBox",
+            "name": "BearingXneg",
             "from": [2, 6, 5.5],
+            "to": [4.5, 10, 10.5],
+            "faces": {
+                "north": { "texture": "#iron", "uv": [0, 0, 2.5, 4] },
+                "east": { "texture": "#iron", "uv": [5.5, 0, 10.5, 4] },
+                "south": { "texture": "#iron", "uv": [0, 0, 2.5, 4] },
+                "west": { "texture": "#iron", "uv": [5.5, 0, 10.5, 4] },
+                "up": { "texture": "#iron", "uv": [0, 5.5, 2.5, 10.5] },
+                "down": { "texture": "#iron", "uv": [0, 5.5, 2.5, 10.5] }
+            }
+        },
+        {
+            "name": "BearingXpos",
+            "from": [11.5, 6, 5.5],
             "to": [14, 10, 10.5],
             "faces": {
-                "north": { "texture": "#iron", "uv": [2, 0, 14, 4] },
+                "north": { "texture": "#iron", "uv": [0, 0, 2.5, 4] },
                 "east": { "texture": "#iron", "uv": [5.5, 0, 10.5, 4] },
-                "south": { "texture": "#iron", "uv": [2, 0, 14, 4] },
+                "south": { "texture": "#iron", "uv": [0, 0, 2.5, 4] },
                 "west": { "texture": "#iron", "uv": [5.5, 0, 10.5, 4] },
-                "up": { "texture": "#iron", "uv": [2, 5.5, 14, 10.5] },
-                "down": { "texture": "#iron", "uv": [2, 5.5, 14, 10.5] }
+                "up": { "texture": "#iron", "uv": [0, 5.5, 2.5, 10.5] },
+                "down": { "texture": "#iron", "uv": [0, 5.5, 2.5, 10.5] }
+            }
+        },
+        {
+            "name": "GuideNorth",
+            "from": [6, 9.75, 5.75],
+            "to": [10, 14.25, 6.25],
+            "faces": {
+                "north": { "texture": "#iron", "uv": [0, 0, 4, 4.5] },
+                "east": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "south": { "texture": "#iron", "uv": [0, 0, 4, 4.5] },
+                "west": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "up": { "texture": "#iron", "uv": [0, 0, 4, 0.5] },
+                "down": { "texture": "#iron", "uv": [0, 0, 4, 0.5] }
+            }
+        },
+        {
+            "name": "GuideSouth",
+            "from": [6, 9.75, 9.75],
+            "to": [10, 14.25, 10.25],
+            "faces": {
+                "north": { "texture": "#iron", "uv": [0, 0, 4, 4.5] },
+                "east": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "south": { "texture": "#iron", "uv": [0, 0, 4, 4.5] },
+                "west": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "up": { "texture": "#iron", "uv": [0, 0, 4, 0.5] },
+                "down": { "texture": "#iron", "uv": [0, 0, 4, 0.5] }
+            }
+        },
+        {
+            "name": "GuideWest",
+            "from": [5.75, 9.75, 6.25],
+            "to": [6.25, 14.25, 9.75],
+            "faces": {
+                "north": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "east": { "texture": "#iron", "uv": [0, 0, 3.5, 4.5] },
+                "south": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "west": { "texture": "#iron", "uv": [0, 0, 3.5, 4.5] },
+                "up": { "texture": "#iron", "uv": [0, 0, 0.5, 3.5] },
+                "down": { "texture": "#iron", "uv": [0, 0, 0.5, 3.5] }
+            }
+        },
+        {
+            "name": "GuideEast",
+            "from": [9.75, 9.75, 6.25],
+            "to": [10.25, 14.25, 9.75],
+            "faces": {
+                "north": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "east": { "texture": "#iron", "uv": [0, 0, 3.5, 4.5] },
+                "south": { "texture": "#iron", "uv": [0, 0, 0.5, 4.5] },
+                "west": { "texture": "#iron", "uv": [0, 0, 3.5, 4.5] },
+                "up": { "texture": "#iron", "uv": [0, 0, 0.5, 3.5] },
+                "down": { "texture": "#iron", "uv": [0, 0, 0.5, 3.5] }
             }
         },
         {
             "name": "Plate",
-            "from": [4, 10, 4],
-            "to": [12, 12, 12],
-            "rotationOrigin": [8, 11, 8],
+            "from": [4.75, 10.5, 4.75],
+            "to": [11.25, 12.5, 11.25],
+            "rotationOrigin": [8, 11.5, 8],
             "faces": {
                 "north": { "texture": "#iron", "uv": [4, 0, 12, 2] },
                 "east": { "texture": "#iron", "uv": [4, 0, 12, 2] },
@@ -309,8 +374,8 @@
             "children": [
                 {
                     "name": "Ram",
-                    "from": [2.5, 2, 2.5],
-                    "to": [5.5, 5.5, 5.5],
+                    "from": [2.75, 2, 2.75],
+                    "to": [5.25, 5, 5.25],
                     "faces": {
                         "north": { "texture": "#iron", "uv": [0, 0, 3, 3.5] },
                         "east": { "texture": "#iron", "uv": [0, 0, 3, 3.5] },

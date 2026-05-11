@@ -1,11 +1,15 @@
+using System.Collections.Generic;
+using System.IO;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Crafting;
+using VintageKinematics.Gui;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
@@ -20,28 +24,48 @@ namespace VintageKinematics.BlockEntities
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
-        public const int SlotOutputLast  = 3;
+        public const int SlotOutputLast  = 9;
+        public const int InventorySize = 10;
 
         // Match the basin's tick pacing so multi-block kinetic processors all eject at the same
         // visible cadence; 8 items per tick keeps stacks moving without flooding adjacent buffers.
         private const float OutputPushIntervalMs = 250f;
         private const int OutputPushBatch = 8;
 
+        // Vanilla gold pan consumes 1/8 of a block per pan action. Rolling 8 times per
+        // consumed block keeps the kinetic sieve's yield in line with hand panning.
+        private const int PannableRollsPerBlock = 8;
+
+        public const int PacketIdOpenDialog = 5600;
+
         private readonly InventoryGeneric inventory;
         private IOFaceMap ioFaces;
+        private GuiDialogKineticSieve clientDialog;
+        public string DialogTitle { get; private set; }
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticsieve";
 
         public BEKineticSieve()
         {
-            inventory = new InventoryGeneric(4, "kineticsieve-0", null, null);
+            // Output slots refuse player insertion so users can't dump random goods into the
+            // sieve and confuse the workflow. The input slot stays a plain ItemSlot.
+            inventory = new InventoryGeneric(InventorySize, "kineticsieve-0", null, null, (slotId, self) =>
+            {
+                return slotId == SlotInput
+                    ? new ItemSlot(self)
+                    : new ItemSlotCrusherOutput(self);
+            });
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
             inventory.SlotModified += _ => MarkDirty(true);
+
+            string title = Lang.Get("vintagekinematics:kineticsieve-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsieve-title") title = "Kinetic Sieve";
+            DialogTitle = title;
 
             // Top face only feeds the input slot, bottom exposes the output buffer. Without
             // this, a funnel under the drum would pull the unprocessed input back out before
@@ -97,12 +121,66 @@ namespace VintageKinematics.BlockEntities
             {
                 string title = Lang.Get("vintagekinematics:kineticsieve-title");
                 if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsieve-title") title = "Kinetic Sieve";
-                byte[] data = BlockEntityContainerOpen.ToBytes("BlockEntityInventory", title, 4, inventory);
+
+                using var ms = new MemoryStream();
+                using var bw = new BinaryWriter(ms);
+                bw.Write(title);
+                var tree = new TreeAttribute();
+                inventory.ToTreeAttributes(tree);
+                tree.ToBytes(bw);
+
                 ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, (int)EnumBlockContainerPacketId.OpenInventory, data);
+                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
                 byPlayer.InventoryManager.OpenInventory(inventory);
             }
             return true;
+        }
+
+        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        {
+            if (packetid == 1001)
+            {
+                player.InventoryManager?.CloseInventory(inventory);
+                return;
+            }
+            if (packetid < 1000)
+            {
+                if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use))
+                {
+                    Api.World.Logger.Audit("Player {0} sent sieve packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
+                    return;
+                }
+                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
+                return;
+            }
+            base.OnReceivedClientPacket(player, packetid, data);
+        }
+
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            if (packetid != PacketIdOpenDialog)
+            {
+                base.OnReceivedServerPacket(packetid, data);
+                return;
+            }
+
+            ICoreClientAPI capi = Api as ICoreClientAPI;
+            if (capi == null) return;
+
+            using var ms = new MemoryStream(data);
+            using var br = new BinaryReader(ms);
+            string title = br.ReadString();
+            var tree = new TreeAttribute();
+            tree.FromBytes(br);
+            inventory.FromTreeAttributes(tree);
+            inventory.ResolveBlocksOrItems();
+
+            if (clientDialog == null)
+            {
+                clientDialog = new GuiDialogKineticSieve(title, inventory, Pos, capi);
+                clientDialog.OnClosed += () => clientDialog = null;
+                clientDialog.TryOpen();
+            }
         }
 
         private static readonly AssetLocation PanningSound = new AssetLocation("sounds/player/panning.ogg");
@@ -113,7 +191,7 @@ namespace VintageKinematics.BlockEntities
             if (slot.Empty) return;
 
             ItemStack input = slot.Itemstack;
-            ItemStack drop = null;
+            List<ItemStack> drops = null;
             bool consume = false;
 
             // 1) Custom recipe registry first — handles mod-defined inputs (grit items, etc.).
@@ -121,13 +199,20 @@ namespace VintageKinematics.BlockEntities
             var recipe = registry?.FindRecipe(input);
             if (recipe != null)
             {
-                drop = recipe.RollOutput(Api.World);
+                ItemStack d = recipe.RollOutput(Api.World);
+                if (d != null) drops = new List<ItemStack> { d };
                 consume = true;
             }
             // 2) Fall through to vanilla pannable parity for raw blocks like gravel/sand/soil.
+            // Vanilla gold pan consumes 1/8 block per pan, so one sieved block = 8 rolls.
             else if (input.Block != null && PanLootRoller.IsPannable(input.Block))
             {
-                drop = PanLootRoller.RollPannableDrop(Api.World, input.Block);
+                drops = new List<ItemStack>(PannableRollsPerBlock);
+                for (int i = 0; i < PannableRollsPerBlock; i++)
+                {
+                    ItemStack d = PanLootRoller.RollPannableDrop(Api.World, input.Block);
+                    if (d != null) drops.Add(d);
+                }
                 consume = true;
             }
 
@@ -144,8 +229,8 @@ namespace VintageKinematics.BlockEntities
             slot.TakeOut(1);
             slot.MarkDirty();
 
-            if (drop == null) return;
-            DepositOutput(drop);
+            if (drops == null) return;
+            foreach (ItemStack drop in drops) DepositOutput(drop);
         }
 
         // Cascading deposit: prefer same-material slots with headroom (so stacks merge),

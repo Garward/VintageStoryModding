@@ -18,6 +18,7 @@ namespace VintageKinematics.BlockEntities
         public const int SlotFuel = 0;
 
         private readonly InventoryGeneric inventory;
+        public string DialogTitle { get; private set; }
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "coalmotor";
@@ -31,6 +32,10 @@ namespace VintageKinematics.BlockEntities
         {
             base.Initialize(api);
             inventory.SlotModified += _ => MarkDirty(true);
+
+            string title = Lang.Get("vintagekinematics:coalmotor-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:coalmotor-title") title = "Coal Motor";
+            DialogTitle = title;
 
             if (api.Side == EnumAppSide.Server)
             {

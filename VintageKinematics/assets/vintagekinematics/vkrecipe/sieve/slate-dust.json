@@ -1,0 +1,50 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "slate-dust"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-slate",
+            "weight": 18
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 20
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-cassiterite",
+            "quantity": 2,
+            "weight": 18
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-bismuthinite",
+            "quantity": 2,
+            "weight": 12
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 12
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2,
+            "weight": 8
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-ilmenite",
+            "quantity": 2,
+            "weight": 6
+        }
+    ]
+}

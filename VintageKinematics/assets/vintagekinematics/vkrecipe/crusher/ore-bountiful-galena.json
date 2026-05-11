@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-bountiful-galena-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-galena",
+            "quantity": 10
+        }
+    ],
+    "crushTicks": 6
+}

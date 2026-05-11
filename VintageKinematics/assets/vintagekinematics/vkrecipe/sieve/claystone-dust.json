@@ -1,0 +1,43 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "claystone-dust"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-claystone",
+            "weight": 18
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 20
+        },
+        {
+            "type": "block",
+            "code": "game:rawclay-blue-none",
+            "weight": 8
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 14
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2,
+            "weight": 14
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-galena",
+            "quantity": 2,
+            "weight": 12
+        }
+    ]
+}

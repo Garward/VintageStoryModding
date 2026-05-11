@@ -45,30 +45,33 @@ namespace VintageKinematics.Blocks
                 return be.OnPlayerRightClick(byPlayer, blockSel);
             }
 
-            int faceSlot = SlotForFace(be, blockSel.Face);
-            if (faceSlot < 0) return base.OnBlockInteractStart(world, byPlayer, blockSel);
-
-            ItemSlot inv = be.Inventory[faceSlot];
+            FaceKind kind = ClassifyFace(blockSel.Face);
+            if (kind == FaceKind.None) return base.OnBlockInteractStart(world, byPlayer, blockSel);
 
             if (empty)
             {
-                // Pull from the targeted slot
-                if (inv.Empty) return true;
+                // Pull from the targeted face: input face yields the input slot, output faces
+                // yield the first non-empty slot in the shared 9-cell output buffer.
+                ItemSlot src = kind == FaceKind.Input
+                    ? be.Inventory[BECrusherBasin.SlotInput]
+                    : FindNonEmptyOutput(be);
+                if (src == null || src.Empty) return true;
                 if (world.Side == EnumAppSide.Server)
                 {
-                    if (!byPlayer.InventoryManager.TryGiveItemstack(inv.Itemstack, true))
+                    if (!byPlayer.InventoryManager.TryGiveItemstack(src.Itemstack, true))
                     {
-                        world.SpawnItemEntity(inv.Itemstack, blockSel.Position.ToVec3d().Add(0.5, 0.7, 0.5));
+                        world.SpawnItemEntity(src.Itemstack, blockSel.Position.ToVec3d().Add(0.5, 0.7, 0.5));
                     }
-                    inv.Itemstack = null;
-                    inv.MarkDirty();
+                    src.Itemstack = null;
+                    src.MarkDirty();
                 }
                 return true;
             }
 
             // Holding an item → only the input face accepts insertion.
-            if (faceSlot != BECrusherBasin.SlotInput) return true;
+            if (kind != FaceKind.Input) return true;
 
+            ItemSlot inv = be.Inventory[BECrusherBasin.SlotInput];
             if (world.Side == EnumAppSide.Server)
             {
                 int moved = active.TryPutInto(world, inv, active.StackSize);
@@ -77,23 +80,34 @@ namespace VintageKinematics.Blocks
             return true;
         }
 
-        /// <summary>Maps a block face to one of the basin's slots, or -1 if no slot for that face.</summary>
-        private int SlotForFace(BECrusherBasin be, BlockFacing face)
+        private enum FaceKind { None, Input, Output }
+
+        private FaceKind ClassifyFace(BlockFacing face)
         {
-            if (face == BlockFacing.DOWN) return BECrusherBasin.SlotBottomOutput;
+            if (face == BlockFacing.DOWN) return FaceKind.Output;
 
             string axis = Variant["axis"] ?? "x";
             if (axis == "x")
             {
-                if (face == BlockFacing.EAST) return BECrusherBasin.SlotInput;
-                if (face == BlockFacing.WEST) return BECrusherBasin.SlotSideOutput;
+                if (face == BlockFacing.EAST) return FaceKind.Input;
+                if (face == BlockFacing.WEST) return FaceKind.Output;
             }
             else
             {
-                if (face == BlockFacing.SOUTH) return BECrusherBasin.SlotInput;
-                if (face == BlockFacing.NORTH) return BECrusherBasin.SlotSideOutput;
+                if (face == BlockFacing.SOUTH) return FaceKind.Input;
+                if (face == BlockFacing.NORTH) return FaceKind.Output;
             }
-            return -1;
+            return FaceKind.None;
+        }
+
+        private static ItemSlot FindNonEmptyOutput(BECrusherBasin be)
+        {
+            for (int i = BECrusherBasin.SlotOutputFirst; i <= BECrusherBasin.SlotOutputLast; i++)
+            {
+                ItemSlot s = be.Inventory[i];
+                if (s != null && !s.Empty) return s;
+            }
+            return null;
         }
     }
 }

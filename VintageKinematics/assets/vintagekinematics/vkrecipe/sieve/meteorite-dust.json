@@ -1,0 +1,31 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "meteorite-dust"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:metalbit-meteoriciron",
+            "weight": 76
+        },
+        {
+            "type": "block",
+            "code": "game:sand-andesite",
+            "weight": 10
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-pentlandite",
+            "quantity": 2,
+            "weight": 24
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 10
+        }
+    ]
+}

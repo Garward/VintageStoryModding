@@ -1,0 +1,38 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "chalk-dust"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-chalk",
+            "weight": 20
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 20
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 16
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2,
+            "weight": 16
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-galena",
+            "quantity": 2,
+            "weight": 10
+        }
+    ]
+}

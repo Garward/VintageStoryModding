@@ -21,8 +21,8 @@ namespace VintageKinematics.BlockEntities
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
-        public const int SlotOutputLast = 4;
-        public const int InventorySize = 5;
+        public const int SlotOutputLast = 9;
+        public const int InventorySize = 10;
 
         public const int PacketIdOpenDialog = 5400;
         public const int PacketIdToggleMode = 5401;
@@ -39,7 +39,12 @@ namespace VintageKinematics.BlockEntities
 
         public BEKineticSawmill()
         {
-            inventory = new InventoryGeneric(InventorySize, "kineticsawmill-0", null, null);
+            inventory = new InventoryGeneric(InventorySize, "kineticsawmill-0", null, null, (slotId, self) =>
+            {
+                return slotId == SlotInput
+                    ? new ItemSlot(self)
+                    : new ItemSlotCrusherOutput(self);
+            });
         }
 
         public override void Initialize(ICoreAPI api)
@@ -49,10 +54,15 @@ namespace VintageKinematics.BlockEntities
             inventory.ResolveBlocksOrItems();
             inventory.SlotModified += _ => MarkDirty(true);
 
-            ioFaces = new IOFaceMap().MapInput(BlockFacing.UP, SlotInput);
+            // Input and output both sit perpendicular to the shaft axle. Convention matches
+            // the bore: axis=x (shaft running E/W) -> input NORTH, output SOUTH; axis=z -> input EAST, output WEST.
+            string axis = Block?.Variant["axis"] ?? "x";
+            BlockFacing inputFace  = axis == "x" ? BlockFacing.NORTH : BlockFacing.EAST;
+            BlockFacing outputFace = axis == "x" ? BlockFacing.SOUTH : BlockFacing.WEST;
+            ioFaces = new IOFaceMap().MapInput(inputFace, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
-                ioFaces.MapOutput(BlockFacing.DOWN, i);
+                ioFaces.MapOutput(outputFace, i);
             }
             ioFaces.Apply(inventory);
 
@@ -142,7 +152,7 @@ namespace VintageKinematics.BlockEntities
             if (Api.World is IServerWorldAccessor)
             {
                 string title = Lang.Get("vintagekinematics:kineticsawmill-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsawmill-title") title = "Sawmill";
+                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsawmill-title") title = "Kinetic Sawmill";
 
                 using var ms = new MemoryStream();
                 using var bw = new BinaryWriter(ms);
@@ -170,7 +180,7 @@ namespace VintageKinematics.BlockEntities
             if (packetid == PacketIdToggleMode)
             {
                 if (!CheckClaim(player)) return;
-                mode = mode == SawmillMode.Plank ? SawmillMode.Shaft : SawmillMode.Plank;
+                mode = NextMode(mode);
                 MarkDirty(true);
                 return;
             }
@@ -220,10 +230,18 @@ namespace VintageKinematics.BlockEntities
 
         private void OnClientToggleMode()
         {
-            mode = mode == SawmillMode.Plank ? SawmillMode.Shaft : SawmillMode.Plank;
+            mode = NextMode(mode);
             ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleMode);
             clientDialog?.OnModeUpdated();
         }
+
+        private static SawmillMode NextMode(SawmillMode m) => m switch
+        {
+            SawmillMode.Plank => SawmillMode.Shaft,
+            SawmillMode.Shaft => SawmillMode.Stick,
+            SawmillMode.Stick => SawmillMode.CogwheelSection,
+            _ => SawmillMode.Plank
+        };
 
         private void OnDialogClosed()
         {

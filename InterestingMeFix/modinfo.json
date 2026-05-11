@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "side": "server",
+    "modid": "interestingmefix",
+    "name": "Interesting Mining Fix",
+    "authors": ["garward"],
+    "description": "Restores the mined ore block when interestingme's muck spawning fails silently, preventing ore voiding.",
+    "version": "1.0.0",
+    "dependencies": {
+        "game": "",
+        "interestingme": ""
+    }
+}

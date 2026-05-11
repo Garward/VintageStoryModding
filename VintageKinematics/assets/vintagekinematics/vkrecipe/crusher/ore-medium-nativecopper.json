@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-medium-nativecopper-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 5
+        }
+    ],
+    "crushTicks": 4
+}

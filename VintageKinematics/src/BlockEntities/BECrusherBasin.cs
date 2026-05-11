@@ -22,8 +22,9 @@ namespace VintageKinematics.BlockEntities
     public class BECrusherBasin : BlockEntityOpenableContainer
     {
         public const int SlotInput = 0;
-        public const int SlotSideOutput = 1;
-        public const int SlotBottomOutput = 2;
+        public const int SlotOutputFirst = 1;
+        public const int SlotOutputLast = 9;
+        public const int InventorySize = 10;
 
         public const int PacketIdOpenDialog = 5400;
 
@@ -37,6 +38,7 @@ namespace VintageKinematics.BlockEntities
         private GuiDialogCrusherBasin clientDialog;
         private IOFaceMap ioFaces;
         private long pushListenerId;
+        public string DialogTitle { get; private set; }
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "crusherbasin";
@@ -45,7 +47,7 @@ namespace VintageKinematics.BlockEntities
         {
             // Slot 0 is a normal input slot; slots 1-2 are output-only (player can take but
             // not deposit), so users can't accidentally treat the basin as bonus storage.
-            inventory = new InventoryGeneric(3, "crusherbasin-0", null, null, (slotId, self) =>
+            inventory = new InventoryGeneric(InventorySize, "crusherbasin-0", null, null, (slotId, self) =>
             {
                 return slotId == SlotInput
                     ? new ItemSlot(self)
@@ -57,6 +59,10 @@ namespace VintageKinematics.BlockEntities
         {
             base.Initialize(api);
             inventory.SlotModified += OnSlotModified;
+
+            string title = Lang.Get("vintagekinematics:basin-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:basin-title") title = "Crusher Basin";
+            DialogTitle = title;
 
             BuildIOFaceMap();
 
@@ -75,19 +81,22 @@ namespace VintageKinematics.BlockEntities
 
         private void BuildIOFaceMap()
         {
-            // Axis-x: input on +X (east, copper tray), output on -X (west, dark chute).
-            // Axis-z: input on +Z (south), output on -Z (north). Bottom is always an output.
-            // The map drives both the auto-pipe delegates (so funnels see the right faces) and
-            // the active push tick (which ejects from output slots into adjacent storage).
+            // Axis-x: input on +X (east, copper tray), output chute on -X (west).
+            // Axis-z: input on +Z (south), output chute on -Z (north). Bottom is always an output.
+            // Both output faces drain the full 9-slot buffer so a funnel on either face sees
+            // everything — no need to micro-partition the buffer per face.
             string axis = Block?.Variant?["axis"] ?? "x";
             BlockFacing inputFace = axis == "x" ? BlockFacing.EAST : BlockFacing.SOUTH;
             BlockFacing sideOutputFace = axis == "x" ? BlockFacing.WEST : BlockFacing.NORTH;
 
             ioFaces = new IOFaceMap()
                 .MapInput(BlockFacing.UP, SlotInput)
-                .MapInput(inputFace, SlotInput)
-                .MapOutput(sideOutputFace, SlotSideOutput)
-                .MapOutput(BlockFacing.DOWN, SlotBottomOutput);
+                .MapInput(inputFace, SlotInput);
+            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
+            {
+                ioFaces.MapOutput(sideOutputFace, i);
+                ioFaces.MapOutput(BlockFacing.DOWN, i);
+            }
             ioFaces.Apply(inventory);
         }
 
@@ -192,35 +201,34 @@ namespace VintageKinematics.BlockEntities
         {
             if (stack == null || stack.StackSize <= 0) return;
 
-            for (int i = SlotSideOutput; i <= SlotBottomOutput; i++)
+            // First pass: stack-merge into matching slots so the buffer stays compact and
+            // funnels see one big stack per item type instead of fragmenting across cells.
+            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
                 var slot = inventory[i];
-                if (slot.Empty)
-                {
-                    slot.Itemstack = stack.Clone();
-                    slot.MarkDirty();
-                    return;
-                }
-                if (slot.Itemstack.Collectible.Code.Equals(stack.Collectible.Code))
-                {
-                    int max = slot.Itemstack.Collectible.MaxStackSize;
-                    int free = max - slot.Itemstack.StackSize;
-                    if (free >= stack.StackSize)
-                    {
-                        slot.Itemstack.StackSize += stack.StackSize;
-                        slot.MarkDirty();
-                        return;
-                    }
-                    if (free > 0)
-                    {
-                        slot.Itemstack.StackSize = max;
-                        slot.MarkDirty();
-                        stack.StackSize -= free;
-                    }
-                }
+                if (slot.Empty) continue;
+                if (!slot.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
+                int max = slot.Itemstack.Collectible.MaxStackSize;
+                int free = max - slot.Itemstack.StackSize;
+                if (free <= 0) continue;
+                int take = System.Math.Min(free, stack.StackSize);
+                slot.Itemstack.StackSize += take;
+                stack.StackSize -= take;
+                slot.MarkDirty();
+                if (stack.StackSize <= 0) return;
             }
 
-            // Both outputs full; spill at the top of the basin.
+            // Second pass: drop into the first empty slot.
+            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
+            {
+                var slot = inventory[i];
+                if (!slot.Empty) continue;
+                slot.Itemstack = stack.Clone();
+                slot.MarkDirty();
+                return;
+            }
+
+            // Buffer full; spill at the top of the basin so the player has a recoverable failure.
             Vec3d dropAt = new Vec3d(Pos.X + 0.5, Pos.Y + 0.7, Pos.Z + 0.5);
             Api.World.SpawnItemEntity(stack, dropAt);
         }

@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-bountiful-limonite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 10
+        }
+    ],
+    "crushTicks": 6
+}

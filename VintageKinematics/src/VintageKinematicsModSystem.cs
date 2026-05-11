@@ -33,6 +33,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityBehaviorClass("KineticSound", typeof(BEBehaviorKineticSound));
             api.RegisterBlockEntityBehaviorClass("KineticPiston", typeof(BEBehaviorKineticPiston));
             api.RegisterBlockEntityBehaviorClass("KineticAnimationDriver", typeof(BEBehaviorKineticAnimationDriver));
+            api.RegisterBlockEntityBehaviorClass("KineticMultiblock", typeof(BEBehaviorKineticMultiblock));
             api.RegisterBlockEntityBehaviorClass("CrusherProcess", typeof(BEBehaviorCrusherProcess));
             api.RegisterBlockEntityClass("Kinetic", typeof(BlockEntities.BEKinetic));
             api.RegisterBlockEntityClass("HandCrank", typeof(BlockEntities.BEHandCrank));
@@ -46,6 +47,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
             api.RegisterBlockEntityClass("KineticPress", typeof(BlockEntities.BEKineticPress));
             api.RegisterBlockEntityClass("KineticIgniter", typeof(BlockEntities.BEKineticIgniter));
+            api.RegisterBlockEntityClass("KineticBore", typeof(BlockEntities.BEKineticBore));
             api.RegisterBlockClass("BlockShaft", typeof(Blocks.BlockShaft));
             api.RegisterBlockClass("BlockHandCrank", typeof(Blocks.BlockHandCrank));
             api.RegisterBlockClass("BlockCogwheel", typeof(Blocks.BlockCogwheel));
@@ -63,6 +65,7 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticSawmill", typeof(Blocks.BlockKineticSawmill));
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticIgniter", typeof(Blocks.BlockKineticIgniter));
+            api.RegisterBlockClass("BlockKineticBore", typeof(Blocks.BlockKineticBore));
             api.RegisterItemClass("ItemBelt", typeof(Items.ItemBelt));
 
             harmony = new Harmony(HarmonyId);

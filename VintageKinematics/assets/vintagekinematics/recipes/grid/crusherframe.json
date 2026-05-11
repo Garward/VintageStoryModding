@@ -1,8 +1,8 @@
 {
-	"ingredientPattern": "PIP,ISI,PIP",
+	"ingredientPattern": "PNP,PSP,PNP",
 	"ingredients": {
 		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
-		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 4 },
+		"N": { "type": "item", "code": "game:metalnailsandstrips-*", "name": "metal", "quantity": 2 },
 		"S": { "type": "block", "code": "shaft-y" }
 	},
 	"width": 3,

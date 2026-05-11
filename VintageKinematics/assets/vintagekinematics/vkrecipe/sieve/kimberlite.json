@@ -1,15 +1,57 @@
 {
-	"ingredient": { "type": "item", "code": "kimberlite-grit" },
-	"sieveTicks": 6,
-	"outputs": [
-		{ "type": "block", "code": "game:sand-andesite", "weight": 28 },
-		{ "type": "item", "code": "game:metalbit-chromium", "weight": 22 },
-		{ "weight": 12, "nothing": true },
-		{ "type": "item", "code": "game:metalbit-copper", "weight": 10 },
-		{ "type": "item", "code": "game:metalbit-nickel", "weight": 7 },
-		{ "type": "item", "code": "game:gem-diamond-rough", "weight": 6 },
-		{ "type": "item", "code": "game:gem-emerald-rough", "weight": 5 },
-		{ "type": "item", "code": "game:gem-olivine_peridot-rough", "weight": 5 },
-		{ "type": "item", "code": "game:metalbit-titanium", "weight": 5 }
-	]
+    "ingredient": {
+        "type": "item",
+        "code": "kimberlite-grit"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-andesite",
+            "weight": 28
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-chromite",
+            "quantity": 2,
+            "weight": 22
+        },
+        {
+            "weight": 12,
+            "nothing": true
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 10
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-pentlandite",
+            "quantity": 2,
+            "weight": 7
+        },
+        {
+            "type": "item",
+            "code": "game:gem-diamond-rough",
+            "weight": 6
+        },
+        {
+            "type": "item",
+            "code": "game:gem-emerald-rough",
+            "weight": 5
+        },
+        {
+            "type": "item",
+            "code": "game:gem-olivine_peridot-rough",
+            "weight": 5
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-ilmenite",
+            "quantity": 2,
+            "weight": 5
+        }
+    ]
 }

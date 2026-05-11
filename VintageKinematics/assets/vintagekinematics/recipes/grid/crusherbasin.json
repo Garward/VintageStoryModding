@@ -1,8 +1,9 @@
 {
-	"ingredientPattern": "I_I,III,IRI",
+	"ingredientPattern": "RRR,RCR,IRI",
 	"ingredients": {
-		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 7 },
-		"R": { "type": "block", "code": "game:rock-*", "name": "rock", "allowedVariants": ["andesite", "granite", "basalt", "peridotite"] }
+		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 2 },
+		"R": { "type": "block", "code": "game:rock-*", "name": "rock", "allowedVariants": ["andesite", "granite", "basalt", "peridotite"], "quantity": 6 },
+		"C": { "type": "item", "code": "game:clay-*", "name": "clay", "quantity": 1 }
 	},
 	"width": 3,
 	"height": 3,

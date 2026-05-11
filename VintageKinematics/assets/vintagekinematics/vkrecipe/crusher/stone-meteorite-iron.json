@@ -1,0 +1,7 @@
+{
+	"ingredient": { "type": "item", "code": "game:stone-meteorite-iron", "quantity": 1 },
+	"outputs": [
+		{ "type": "item", "code": "meteorite-grit", "quantity": 2 }
+	],
+	"crushTicks": 6
+}

@@ -1,13 +1,47 @@
 {
-	"ingredient": { "type": "item", "code": "chert-grit" },
-	"sieveTicks": 6,
-	"outputs": [
-		{ "type": "block", "code": "game:sand-chert", "weight": 45 },
-		{ "weight": 12, "nothing": true },
-		{ "type": "item", "code": "game:metalbit-iron", "weight": 12 },
-		{ "type": "item", "code": "game:metalbit-copper", "weight": 8 },
-		{ "type": "item", "code": "game:flint", "weight": 8 },
-		{ "type": "item", "code": "game:metalbit-zinc", "weight": 6 },
-		{ "type": "item", "code": "game:metalbit-lead", "weight": 5 }
-	]
+    "ingredient": {
+        "type": "item",
+        "code": "chert-grit"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-chert",
+            "weight": 45
+        },
+        {
+            "weight": 12,
+            "nothing": true
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 12
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 2,
+            "weight": 8
+        },
+        {
+            "type": "item",
+            "code": "game:flint",
+            "weight": 8
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-sphalerite",
+            "quantity": 2,
+            "weight": 6
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-galena",
+            "quantity": 2,
+            "weight": 5
+        }
+    ]
 }

@@ -1,7 +1,7 @@
 {
     "ingredient": { "type": "block", "code": "game:log-placed-maple-*", "quantity": 1 },
     "outputs": [
-        { "type": "item", "code": "game:plank-maple", "quantity": 4 }
+        { "type": "item", "code": "game:plank-maple", "quantity": 16 }
     ],
     "sawTicks": 4
 }

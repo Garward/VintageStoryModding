@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-rich-pentlandite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-pentlandite",
+            "quantity": 8
+        }
+    ],
+    "crushTicks": 5
+}

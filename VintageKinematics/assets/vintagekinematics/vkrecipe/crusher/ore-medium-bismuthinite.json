@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "block",
+        "code": "game:ore-medium-bismuthinite-*",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-bismuthinite",
+            "quantity": 5
+        }
+    ],
+    "crushTicks": 4
+}

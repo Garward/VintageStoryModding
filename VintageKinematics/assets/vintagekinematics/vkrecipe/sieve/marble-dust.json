@@ -1,0 +1,38 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "marble-dust"
+    },
+    "sieveTicks": 6,
+    "outputs": [
+        {
+            "type": "block",
+            "code": "game:sand-andesite",
+            "weight": 12
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 4,
+            "weight": 50
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-limonite",
+            "quantity": 2,
+            "weight": 26
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativegold",
+            "quantity": 2,
+            "weight": 14
+        },
+        {
+            "type": "item",
+            "code": "game:nugget-nativesilver",
+            "quantity": 2,
+            "weight": 10
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "SCS,TFT,SCS",
+	"ingredients": {
+		"S": { "type": "item", "code": "game:metalplate-steel", "quantity": 4 },
+		"T": { "type": "item", "code": "game:gear-temporal", "quantity": 2 },
+		"C": { "type": "block", "code": "largecogwheel-y", "quantity": 2 },
+		"F": { "type": "item", "code": "crusherframe", "quantity": 1 }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticbore-n", "quantity": 1 }
+}

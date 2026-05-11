@@ -69,52 +69,73 @@ namespace RecipeExplorer
             }
         }
 
+        private static bool postfixDumped = false;
+
         public static void InitDetailGuiPostfix(object __instance)
         {
-            if (__instance == null) return;
+            if (__instance == null) { capi?.Logger.Notification("[RecipeExplorer/Postfix] __instance null"); return; }
 
             try
             {
                 var handbookType = __instance.GetType();
 
-                // Initialize BrowseHistoryField if needed
                 if (BrowseHistoryField == null)
                 {
                     BrowseHistoryField = AccessTools.Field(handbookType, "browseHistory");
                 }
 
-                // Get the detail view composer
                 var detailGuiField = AccessTools.Field(handbookType, "detailViewGui");
                 var detailViewGui = detailGuiField?.GetValue(__instance) as GuiComposer;
-                if (detailViewGui == null) return;
+                if (detailViewGui == null) { if (!postfixDumped) capi.Logger.Notification("[RecipeExplorer/Postfix] detailViewGui null (field={0})", detailGuiField?.Name ?? "missing"); return; }
 
-                // Get current page to check if it shows crafting recipes
                 var browseHistory = BrowseHistoryField?.GetValue(__instance);
-                if (browseHistory == null) return;
+                if (browseHistory == null) { if (!postfixDumped) capi.Logger.Notification("[RecipeExplorer/Postfix] browseHistory null"); return; }
 
-                // Use reflection to check count and peek
                 int count = (int)(browseHistory.GetType().GetProperty("Count")?.GetValue(browseHistory) ?? 0);
-                if (count == 0) return;
+                if (count == 0) { if (!postfixDumped) capi.Logger.Notification("[RecipeExplorer/Postfix] browseHistory count=0"); return; }
 
                 var peekMethod = browseHistory.GetType().GetMethod("Peek");
                 var currentElement = peekMethod?.Invoke(browseHistory, null);
-                if (currentElement == null) return;
+                if (currentElement == null) { if (!postfixDumped) capi.Logger.Notification("[RecipeExplorer/Postfix] Peek returned null"); return; }
 
-                // Use AccessTools to get the Page field
-                var pageField = AccessTools.Field(currentElement.GetType(), "Page");
-                if (pageField == null) return;
+                if (!postfixDumped)
+                {
+                    postfixDumped = true;
+                    var et = currentElement.GetType();
+                    var bf = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+                    var sb = new System.Text.StringBuilder("[RecipeExplorer/Postfix] BrowseHistory element type=" + et.FullName + " FIELDS:");
+                    foreach (var f in et.GetFields(bf)) sb.Append(' ').Append(f.Name).Append('=').Append(f.FieldType.Name);
+                    sb.Append(" PROPS:");
+                    foreach (var p in et.GetProperties(bf)) sb.Append(' ').Append(p.Name).Append('=').Append(p.PropertyType.Name);
+                    capi.Logger.Notification(sb.ToString());
+                }
 
-                var currentPage = pageField.GetValue(currentElement);
-                if (currentPage == null) return;
+                var pageField = AccessTools.Field(currentElement.GetType(), "Page")
+                             ?? AccessTools.Field(currentElement.GetType(), "page");
+                var pageProp = currentElement.GetType().GetProperty("Page");
+                object currentPage = pageField?.GetValue(currentElement) ?? pageProp?.GetValue(currentElement);
+                if (currentPage == null) { capi.Logger.Notification("[RecipeExplorer/Postfix] Page null (had pageField={0} pageProp={1})", pageField != null, pageProp != null); return; }
 
-                // Check if it's an ItemStack page
-                var stackField = AccessTools.Field(currentPage.GetType(), "Stack");
-                if (stackField == null) return;
+                if (postfixDumped)
+                {
+                    var pt = currentPage.GetType();
+                    var bf2 = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+                    var sb2 = new System.Text.StringBuilder("[RecipeExplorer/Postfix] Page type=" + pt.FullName + " FIELDS:");
+                    foreach (var f in pt.GetFields(bf2)) sb2.Append(' ').Append(f.Name).Append('=').Append(f.FieldType.Name);
+                    sb2.Append(" PROPS:");
+                    foreach (var p in pt.GetProperties(bf2)) sb2.Append(' ').Append(p.Name).Append('=').Append(p.PropertyType.Name);
+                    capi.Logger.Notification(sb2.ToString());
+                    postfixDumped = false; // dump once per page-type
+                }
 
-                var stack = stackField.GetValue(currentPage) as ItemStack;
-                if (stack == null) return;
+                var stackField = AccessTools.Field(currentPage.GetType(), "Stack")
+                              ?? AccessTools.Field(currentPage.GetType(), "stack")
+                              ?? AccessTools.Field(currentPage.GetType(), "Itemstack");
+                var stackProp = currentPage.GetType().GetProperty("Stack")
+                             ?? currentPage.GetType().GetProperty("Itemstack");
+                ItemStack stack = (stackField?.GetValue(currentPage) ?? stackProp?.GetValue(currentPage)) as ItemStack;
+                if (stack == null) { capi.Logger.Notification("[RecipeExplorer/Postfix] stack null (page type={0})", currentPage.GetType().Name); return; }
 
-                // Add auto-craft button
                 AddAutoCraftButton(__instance, detailViewGui, stack);
             }
             catch (Exception ex)
@@ -125,12 +146,16 @@ namespace RecipeExplorer
 
         private static void AddAutoCraftButton(object dialog, GuiComposer detailViewGui, ItemStack stack)
         {
-            // Check if there's already a button
-            if (detailViewGui.GetButton("autocraft-button") != null) return;
+            if (detailViewGui.GetButton("autocraft-button") != null)
+            {
+                capi.Logger.Notification("[RecipeExplorer/Postfix] Button already present for {0}", stack.Collectible?.Code);
+                return;
+            }
 
-            // Find crafting recipes for this item
             var recipes = FindCraftingRecipes(stack);
+            capi.Logger.Notification("[RecipeExplorer/Postfix] Page item={0} matchedRecipes={1}", stack.Collectible?.Code, recipes.Count);
             if (recipes.Count == 0) return;
+            capi.Logger.Notification("[RecipeExplorer/Postfix] Adding Auto-Fill button");
 
             // Try to get existing scrollbar to position relative to it
             var scrollbar = detailViewGui.GetScrollbar("scrollbar");
@@ -164,15 +189,23 @@ namespace RecipeExplorer
             button.Bounds.CalcWorldBounds();
             detailViewGui.AddInteractiveElement(button, "autocraft-button");
             detailViewGui.ReCompose();
+
+            var verify = detailViewGui.GetButton("autocraft-button");
+            var b = button.Bounds;
+            capi.Logger.Notification("[RecipeExplorer/Postfix] Button post-add verify={0} bounds X={1} Y={2} W={3} H={4} renderX={5} renderY={6}",
+                verify != null, b.fixedX, b.fixedY, b.fixedWidth, b.fixedHeight, b.renderX, b.renderY);
         }
 
         private static List<GridRecipe> FindCraftingRecipes(ItemStack output)
         {
             var recipes = new List<GridRecipe>();
+            int total = 0, nullOutput = 0, nullResolved = 0;
 
             foreach (var recipe in capi.World.GridRecipes)
             {
-                if (recipe?.Output?.ResolvedItemStack == null) continue;
+                total++;
+                if (recipe?.Output == null) { nullOutput++; continue; }
+                if (recipe.Output.ResolvedItemStack == null) { nullResolved++; continue; }
 
                 if (recipe.Output.ResolvedItemStack.Collectible.Code.Equals(output.Collectible.Code))
                 {
@@ -180,11 +213,14 @@ namespace RecipeExplorer
                 }
             }
 
+            capi.Logger.Notification("[RecipeExplorer/Find] target={0} totalRecipes={1} nullOutput={2} nullResolved={3} matched={4}",
+                output.Collectible?.Code, total, nullOutput, nullResolved, recipes.Count);
             return recipes;
         }
 
         private static bool OnAutoCraftClicked(List<GridRecipe> recipes)
         {
+            capi.Logger.Notification("[RecipeExplorer/Click] Auto-Fill clicked, recipes={0}", recipes.Count);
             if (recipes.Count == 0)
             {
                 if (RecipeExplorerMod.Config.ShowAutoFillMessages)
@@ -194,6 +230,8 @@ namespace RecipeExplorer
 
             // Find the player's crafting grid
             var craftingGrid = FindPlayerCraftingGrid();
+            capi.Logger.Notification("[RecipeExplorer/Click] craftingGrid={0} className={1} count={2}",
+                craftingGrid != null, craftingGrid?.ClassName, craftingGrid?.Count);
             if (craftingGrid == null)
             {
                 if (RecipeExplorerMod.Config.ShowAutoFillMessages)
@@ -234,7 +272,22 @@ namespace RecipeExplorer
             if (player?.InventoryManager == null) return null;
 
             var craftingInv = player.InventoryManager.GetOwnInventory("craftinggrid") as InventoryBase;
-            if (craftingInv != null) return craftingInv;
+            if (craftingInv != null) { capi.Logger.Notification("[RecipeExplorer/Click] found craftinggrid count={0}", craftingInv.Count); return craftingInv; }
+
+            // Try other known crafting grid inventory ids
+            foreach (var id in new[] { "character", "crafting", "creativeInventory" })
+            {
+                var inv = player.InventoryManager.GetOwnInventory(id) as InventoryBase;
+                if (inv != null) capi.Logger.Notification("[RecipeExplorer/Click] candidate id={0} count={1}", id, inv.Count);
+            }
+
+            // Dump all opened inventories to find the right id in 1.22
+            var sb = new System.Text.StringBuilder("[RecipeExplorer/Click] opened inventories:");
+            foreach (var inv in player.InventoryManager.OpenedInventories)
+            {
+                sb.Append(' ').Append(inv.InventoryID).Append("(class=").Append(inv.ClassName).Append(",n=").Append(inv.Count).Append(')');
+            }
+            capi.Logger.Notification(sb.ToString());
 
             var charInv = player.InventoryManager.GetOwnInventory("character") as InventoryBase;
             return charInv;
@@ -242,17 +295,10 @@ namespace RecipeExplorer
 
         private static bool TryFillCraftingGrid(GridRecipe recipe, InventoryBase craftingGrid, bool fillMax = false)
         {
-            if (recipe == null || recipe.Ingredients == null || craftingGrid == null) return false;
+            if (recipe == null || craftingGrid == null) return false;
 
-            // Get resolvedIngredients array
-            var resolvedIngredientsField = AccessTools.Field(recipe.GetType(), "resolvedIngredients");
-            CraftingRecipeIngredient[] resolvedIngredients = null;
-
-            if (resolvedIngredientsField != null)
-            {
-                resolvedIngredients = resolvedIngredientsField.GetValue(recipe) as CraftingRecipeIngredient[];
-            }
-
+            // VS 1.22: use the public ResolvedIngredients property (the old private field is gone).
+            CraftingRecipeIngredient[] resolvedIngredients = recipe.ResolvedIngredients;
             if (resolvedIngredients == null) return false;
 
             // Check grid size
@@ -271,6 +317,17 @@ namespace RecipeExplorer
             var hotbarInv = player.InventoryManager?.GetOwnInventory("hotbar") as InventoryBase;
 
             if (playerInv == null && hotbarInv == null) return false;
+
+            capi.Logger.Notification("[RecipeExplorer/AutoFill] Trying recipe: output={0} ingCount={1} W={2} H={3}",
+                recipe.Output?.ResolvedItemStack?.Collectible?.Code, resolvedIngredients.Length, recipeWidth, recipeHeight);
+            for (int dbgI = 0; dbgI < resolvedIngredients.Length; dbgI++)
+            {
+                var ing = resolvedIngredients[dbgI];
+                if (ing == null) continue;
+                capi.Logger.Notification("[RecipeExplorer/AutoFill]   ing[{0}] Code={1} ResolvedStack={2} IsWildCard={3} AllowedVariants={4} Quantity={5} IsTool={6}",
+                    dbgI, ing.Code, ing.ResolvedItemStack?.Collectible?.Code,
+                    ing.IsWildCard, ing.AllowedVariants?.Length ?? 0, ing.Quantity, ing.IsTool);
+            }
 
             // Build ingredient info list
             var ingredientSlots = new ItemSlot[resolvedIngredients.Length];
@@ -310,6 +367,7 @@ namespace RecipeExplorer
                 if (foundSlot == null || foundSlot.Empty)
                 {
                     string ingredientName = ingredient.ResolvedItemStack?.GetName() ?? ingredient.Code?.ToString() ?? "Unknown";
+                    capi.Logger.Notification("[RecipeExplorer/AutoFill]   MISS for ing[{0}] Code={1} (looking for qty>={2})", i, ingredient.Code, ingredient.Quantity);
                     missingIngredients.Add(ingredientName);
                 }
                 else
@@ -344,17 +402,20 @@ namespace RecipeExplorer
                     var positions = group.Value;
                     if (positions.Count == 0) continue;
 
-                    // Count total available from all matching inventory slots
                     var firstOriginal = originalIngredients[positions[0]];
                     int totalAvailable = CountTotalMatchingItems(firstOriginal, playerInv, hotbarInv);
                     int maxStack = ingredientSlots[positions[0]]?.Itemstack?.Collectible?.MaxStackSize ?? 64;
 
-                    // Calculate per-slot quantity (evenly divided)
-                    int perSlot = Math.Min(totalAvailable / positions.Count, maxStack);
+                    // Cap by per-slot stack size first, then distribute total evenly with remainder spread to first N slots.
+                    int budget = Math.Min(totalAvailable, maxStack * positions.Count);
+                    int basePerSlot = budget / positions.Count;
+                    int remainder = budget - (basePerSlot * positions.Count);
 
-                    foreach (int pos in positions)
+                    for (int p = 0; p < positions.Count; p++)
                     {
-                        quantitiesPerSlot[pos] = Math.Max(perSlot, resolvedIngredients[pos].Quantity);
+                        int extra = p < remainder ? 1 : 0;
+                        int q = Math.Min(maxStack, basePerSlot + extra);
+                        quantitiesPerSlot[positions[p]] = Math.Max(q, resolvedIngredients[positions[p]].Quantity);
                     }
                 }
             }
@@ -416,26 +477,50 @@ namespace RecipeExplorer
                         quantity = quantitiesPerSlot[currentIndex];
                     }
 
-                    ItemStackMoveOperation op = new ItemStackMoveOperation(
-                        capi.World,
-                        EnumMouseButton.Left,
-                        0,
-                        EnumMergePriority.AutoMerge,
-                        quantity
-                    );
-                    op.ActingPlayer = player;
+                    int totalMoved = TransferFromAnySource(originalIngredients[currentIndex], targetSlot, quantity, player, playerInv, hotbarInv);
 
-                    object packet = player.InventoryManager.TryTransferTo(foundSlot, targetSlot, ref op);
-
-                    if (packet != null) capi.Network.SendPacketClient(packet);
-
-                    // For fillMax, we just need to move at least the recipe amount
                     int minRequired = ingredient.IsTool ? 1 : ingredient.Quantity;
-                    if (op.MovedQuantity < minRequired) return false;
+                    if (totalMoved < minRequired) return false;
                 }
             }
 
             return true;
+        }
+
+        private static int TransferFromAnySource(CraftingRecipeIngredient ingredient, ItemSlot targetSlot, int desired, IPlayer player, InventoryBase backpack, InventoryBase hotbar)
+        {
+            if (desired <= 0) return 0;
+
+            int moved = 0;
+            foreach (var inv in new[] { backpack, hotbar })
+            {
+                if (inv == null) continue;
+                foreach (var slot in inv)
+                {
+                    if (moved >= desired) break;
+                    if (slot == null || slot.Empty) continue;
+                    if (!DoesSlotMatchIngredient(slot, ingredient)) continue;
+
+                    int want = desired - moved;
+                    var op = new ItemStackMoveOperation(capi.World, EnumMouseButton.Left, 0, EnumMergePriority.AutoMerge, want);
+                    op.ActingPlayer = player;
+
+                    object packet = player.InventoryManager.TryTransferTo(slot, targetSlot, ref op);
+                    if (packet != null) capi.Network.SendPacketClient(packet);
+
+                    if (op.MovedQuantity > 0)
+                    {
+                        moved += op.MovedQuantity;
+                    }
+                    else
+                    {
+                        // target full or incompatible; no point continuing
+                        break;
+                    }
+                }
+                if (moved >= desired) break;
+            }
+            return moved;
         }
 
         private static int CountTotalMatchingItems(CraftingRecipeIngredient ingredient, InventoryBase backpack, InventoryBase hotbar)

@@ -35,32 +35,36 @@ namespace VintageKinematics.Gui
         private void ComposeDialog(string title)
         {
             double slotPad = GuiElementItemSlotGridBase.unscaledSlotPadding;
-            ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad, 1, 1);
-            ElementBounds arrowBounds = ElementBounds.Fixed(slotPad + inputBounds.fixedWidth + 6.0, slotPad + 12.0, 24.0, 24.0);
-            double outputX = slotPad + inputBounds.fixedWidth + 6.0 + 24.0 + 6.0;
-            ElementBounds outputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, outputX, slotPad, 4, 1);
+            double slotSize = GuiElementPassiveItemSlot.unscaledSlotSize;
+            double rowWidth = Math.Max(3 * (slotSize + slotPad), 260.0);
 
-            double btnWidth = Math.Max(outputX + outputBounds.fixedWidth, 200.0);
-            double btnY = slotPad + Math.Max(inputBounds.fixedHeight, outputBounds.fixedHeight) + 12.0;
-            ElementBounds modeBounds = ElementBounds.Fixed(slotPad, btnY, btnWidth, 28.0);
+            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad, rowWidth, 22.0);
+            ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + 24.0, 1, 1);
+            ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, rowWidth, 22.0);
+            ElementBounds outputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
+            ElementBounds modeBounds = ElementBounds.Fixed(slotPad, outputBounds.fixedY + outputBounds.fixedHeight + 12.0, rowWidth, 28.0);
 
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
-            bgBounds.WithChildren(inputBounds, outputBounds, modeBounds);
+            bgBounds.WithChildren(inputLabelBounds, inputBounds, outputLabelBounds, outputBounds, modeBounds);
 
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog
                 .WithAlignment(EnumDialogArea.RightMiddle)
                 .WithFixedAlignmentOffset(-GuiStyle.DialogToScreenPadding, 0.0);
 
+            string inputLabel = Lang.Get("vintagekinematics:kineticsawmill-input");
+            string outputLabel = Lang.Get("vintagekinematics:kineticsawmill-outputs");
             int[] inputSel = new[] { 0 };
-            int[] outputSel = new[] { 1, 2, 3, 4 };
+            int[] outputSel = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             SingleComposer = capi.Gui.CreateCompo("kineticsawmill-" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(title, CloseIconPressed)
                 .BeginChildElements(bgBounds)
+                    .AddStaticText(inputLabel, CairoFont.WhiteSmallText(), inputLabelBounds)
                     .AddItemSlotGrid(Inventory, DoSendPacket, 1, inputSel, inputBounds, "inputslot")
-                    .AddItemSlotGrid(Inventory, DoSendPacket, 4, outputSel, outputBounds, "outputslots")
+                    .AddStaticText(outputLabel, CairoFont.WhiteSmallText(), outputLabelBounds)
+                    .AddItemSlotGrid(Inventory, DoSendPacket, 3, outputSel, outputBounds, "outputslots")
                     .AddSmallButton(GetModeLabel(), OnToggleMode, modeBounds, EnumButtonStyle.Normal, ModeButtonKey)
                 .EndChildElements()
                 .Compose();
@@ -69,9 +73,13 @@ namespace VintageKinematics.Gui
         private string GetModeLabel()
         {
             SawmillMode mode = getMode != null ? getMode() : SawmillMode.Plank;
-            return mode == SawmillMode.Shaft
-                ? Lang.Get("vintagekinematics:kineticsawmill-mode-shaft")
-                : Lang.Get("vintagekinematics:kineticsawmill-mode-plank");
+            return mode switch
+            {
+                SawmillMode.Shaft => Lang.Get("vintagekinematics:kineticsawmill-mode-shaft"),
+                SawmillMode.Stick => Lang.Get("vintagekinematics:kineticsawmill-mode-stick"),
+                SawmillMode.CogwheelSection => Lang.Get("vintagekinematics:kineticsawmill-mode-cogsection"),
+                _ => Lang.Get("vintagekinematics:kineticsawmill-mode-plank")
+            };
         }
 
         private bool OnToggleMode()
