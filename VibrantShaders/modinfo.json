@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "modid": "vibrantshaders",
+  "name": "Vibrant Shaders",
+  "authors": ["Garward"],
+  "description": "Enhanced visual shaders with in-game configuration. Adds vibrance, color temperature, vignette, and film grain effects.",
+  "version": "1.0.0",
+  "side": "Client",
+  "requiredOnClient": false,
+  "requiredOnServer": false,
+  "dependencies": {
+    "configlib": ""
+  }
+}

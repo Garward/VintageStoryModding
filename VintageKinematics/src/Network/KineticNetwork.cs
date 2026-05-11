@@ -82,6 +82,15 @@ namespace VintageKinematics.Network
             StressTotal = 0f;
             StressCapacity = 0f;
             bool anySourceActive = MathF.Abs(sourceRPM) > 0.0001f;
+            // Dedupe vanilla MP bridges by upstream networkId so multiple bridge nodes touching
+            // the same vanilla MP network (e.g. player runs an axle chain past two kinetic shafts)
+            // don't each contribute full capacity — that would multiply SU per connected axle.
+            // Bridges to distinct vanilla networks still each count, since they're genuinely
+            // independent power sources. Within each group we pick the bridge with the largest
+            // capacity contribution; this protects against a transiently-stale bridge (e.g. one
+            // whose vanilla BE was momentarily unloaded, leaving RatedRPM=0) winning by hash order
+            // and zeroing out a network that actually has live power.
+            Dictionary<long, float> bestBridgeCap = null;
             foreach (var n in Nodes.Values)
             {
                 if (n.StressImpact > 0f)
@@ -93,8 +102,20 @@ namespace VintageKinematics.Network
                 }
                 else if (n.StressImpact < 0f && anySourceActive)
                 {
+                    if (n.IsVanillaBridge)
+                    {
+                        bestBridgeCap ??= new Dictionary<long, float>();
+                        float cap = -n.StressImpact * n.RatedRPM;
+                        bestBridgeCap.TryGetValue(n.VanillaNetworkId, out float prev);
+                        if (cap > prev) bestBridgeCap[n.VanillaNetworkId] = cap;
+                        continue;
+                    }
                     StressCapacity += -n.StressImpact * n.RatedRPM;
                 }
+            }
+            if (bestBridgeCap != null)
+            {
+                foreach (var cap in bestBridgeCap.Values) StressCapacity += cap;
             }
             IsOverstressed = StressTotal > StressCapacity + 0.0001f;
         }

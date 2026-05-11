@@ -1,0 +1,22 @@
+{
+    "textureWidth": 32,
+    "textureHeight": 32,
+    "textures": {
+        "metal": "game:block/metal/sheet/iron1"
+    },
+    "elements": [
+        {
+            "name": "Shaft",
+            "from": [7, 0, 7],
+            "to": [9, 16, 9],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [0, 0, 2, 16] },
+                "east":  { "texture": "#metal", "uv": [0, 0, 2, 16] },
+                "south": { "texture": "#metal", "uv": [0, 0, 2, 16] },
+                "west":  { "texture": "#metal", "uv": [0, 0, 2, 16] },
+                "up":    { "texture": "#metal", "uv": [0, 0, 2, 2] },
+                "down":  { "texture": "#metal", "uv": [0, 0, 2, 2] }
+            }
+        }
+    ]
+}

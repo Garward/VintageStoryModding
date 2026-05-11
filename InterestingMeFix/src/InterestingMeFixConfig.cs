@@ -9,6 +9,11 @@ namespace InterestingMeFix
         public bool RightClickPickup { get; set; } = true;
         public bool RecoverMuckOnDestroy { get; set; } = true;
 
+        // When BypassStoneMuck is on, IME's `op: remove /dropsByType` patch leaves rock-* blocks
+        // with no drops at all (so they drop themselves as placed blocks). This flag puts vanilla
+        // chunk drops back on those blocks so mining stone gives stone chunks again.
+        public bool RestoreStoneChunkDrops { get; set; } = true;
+
         private const string ConfigFile = "interestingmefix.json";
 
         public static InterestingMeFixConfig Load(ICoreAPI api)

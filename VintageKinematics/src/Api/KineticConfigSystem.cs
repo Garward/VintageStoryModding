@@ -29,6 +29,8 @@ namespace VintageKinematics.Api
             wrote |= EnsureConsumer(cfg, "kineticquern");
             wrote |= EnsureGenerator(cfg, "handcrank");
             wrote |= EnsureGenerator(cfg, "creativemotor");
+            wrote |= EnsureSieveOverrideStub(cfg, "game:nugget-*");
+            wrote |= EnsureSieveOverrideStub(cfg, "game:gem-*");
 
             try
             {
@@ -39,6 +41,11 @@ namespace VintageKinematics.Api
             {
                 api.Logger.Warning($"[VintageKinematics] Failed to write {ConfigFilename}: {ex.Message}");
             }
+
+            Network.VanillaMPBridge.StableRPM = cfg.VanillaBridgeStableRPM;
+            Network.VanillaMPBridge.CapacityPerTorque = cfg.VanillaBridgeCapacityPerTorque;
+            // Clamp to (0,1]: 0 would freeze the smoothed value forever; >1 amplifies noise.
+            Network.VanillaMPBridge.TorqueSmoothing = System.MathF.Min(1f, System.MathF.Max(0.001f, cfg.VanillaBridgeTorqueSmoothing));
 
             Config = cfg;
         }
@@ -54,6 +61,15 @@ namespace VintageKinematics.Api
         {
             if (cfg.Generators.ContainsKey(code)) return false;
             cfg.Generators[code] = new VintageKinematicsConfig.GeneratorOverride();
+            return true;
+        }
+
+        // Seeds a no-op (1.0) entry so server owners see the per-item override schema in the
+        // generated config without changing default behavior.
+        private static bool EnsureSieveOverrideStub(VintageKinematicsConfig cfg, string code)
+        {
+            if (cfg.SieveYieldOverrides.ContainsKey(code)) return false;
+            cfg.SieveYieldOverrides[code] = 1f;
             return true;
         }
 

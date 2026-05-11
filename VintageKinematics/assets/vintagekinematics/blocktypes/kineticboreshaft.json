@@ -1,0 +1,26 @@
+{
+    "code": "kineticboreshaft",
+    "shape": { "base": "block/kineticboreshaft" },
+    "textures": {
+        "metal": { "base": "game:block/metal/sheet/iron1" }
+    },
+    "blockmaterial": "Metal",
+    "creativeinventory": {},
+    "drops": [],
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "replaceable": 6000,
+    "collisionbox": null,
+    "selectionbox": {
+        "x1": 0.4, "y1": 0, "z1": 0.4,
+        "x2": 0.6, "y2": 1, "z2": 0.6
+    },
+    "resistance": 0.5,
+    "requiredMiningTier": 0,
+    "sounds": {
+        "place": "game:block/anvil",
+        "break": "game:block/anvil",
+        "hit": "game:block/anvil"
+    }
+}

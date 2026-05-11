@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using IME;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 
 namespace InterestingMeFix
@@ -38,6 +40,80 @@ namespace InterestingMeFix
             {
                 api.Logger.Error("[InterestingMeFix] Failed to apply Harmony patches: {0}", ex);
             }
+        }
+
+        public override void AssetsFinalize(ICoreAPI api)
+        {
+            base.AssetsFinalize(api);
+
+            // IME's rock.json patch removes /dropsByType from vanilla rock blocks because muck
+            // is meant to replace the chunks. When BypassStoneMuck nulls the muck entry, the
+            // behavior bails early and there are no vanilla drops left to fall back on, so the
+            // block drops itself. Put the chunk drops back when bypass mode is on.
+            if (!Config.BypassStoneMuck || !Config.RestoreStoneChunkDrops) return;
+            if (api.Side != EnumAppSide.Server) return;
+
+            int restored = 0;
+            int sampled = 0;
+            foreach (Block block in api.World.Blocks)
+            {
+                if (block?.Code == null) continue;
+                if (block.Code.Domain != "game") continue;
+                if (block.Code.Path == null || !block.Code.Path.StartsWith("rock-", StringComparison.Ordinal)) continue;
+
+                string rock = block.Variant != null && block.Variant.TryGetValue("rock", out var rv) ? rv : null;
+                if (string.IsNullOrEmpty(rock)) continue;
+
+                if (sampled < 3)
+                {
+                    int dropCount = block.Drops?.Length ?? -1;
+                    string dropCodes = "(none)";
+                    if (block.Drops != null && block.Drops.Length > 0)
+                    {
+                        var names = new List<string>();
+                        foreach (var d in block.Drops) names.Add(d?.Code?.ToString() ?? "?");
+                        dropCodes = string.Join(",", names);
+                    }
+                    api.Logger.Notification("[InterestingMeFix] rock sample: {0} existingDrops={1} codes=[{2}]", block.Code, dropCount, dropCodes);
+                    sampled++;
+                }
+
+                var drops = new List<BlockDropItemStack>();
+
+                var chunk = new BlockDropItemStack
+                {
+                    Type = EnumItemClass.Item,
+                    Code = new AssetLocation("game", "stone-" + rock),
+                    Quantity = NatFloat.create(EnumDistribution.UNIFORM, 2.5f, 0.5f)
+                };
+                if (chunk.Resolve(api.World, "interestingmefix-restoredrops", block.Code))
+                {
+                    drops.Add(chunk);
+                }
+
+                if (rock == "suevite")
+                {
+                    var diamond = new BlockDropItemStack
+                    {
+                        Type = EnumItemClass.Item,
+                        Code = new AssetLocation("game", "gem-diamond-rough"),
+                        Quantity = NatFloat.create(EnumDistribution.UNIFORM, 0.005f, 0f),
+                        Attributes = new JsonObject(Newtonsoft.Json.Linq.JObject.Parse("{\"potential\":\"low\"}"))
+                    };
+                    if (diamond.Resolve(api.World, "interestingmefix-restoredrops", block.Code))
+                    {
+                        drops.Add(diamond);
+                    }
+                }
+
+                if (drops.Count > 0)
+                {
+                    block.Drops = drops.ToArray();
+                    restored++;
+                }
+            }
+
+            api.Logger.Notification("[InterestingMeFix] Restored chunk drops on {0} rock block(s) (BypassStoneMuck active)", restored);
         }
 
         public override void Dispose()

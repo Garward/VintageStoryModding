@@ -46,16 +46,21 @@ namespace VintageKinematics.Network
                 // adjacent to a VK shaft. Synthesize a Custom-role source node so the BFS sees
                 // it as an endpoint that can drive the network. Custom role + null custom
                 // connection between two vanilla bridges (handled in TryGetCustomConnection)
-                // prevents BFS from spilling into the vanilla MP graph.
-                if (VanillaMPBridge.TryGetState(world, pos, out EnumKineticAxis vAxis, out float vRPM))
+                // prevents BFS from spilling into the vanilla MP graph. IsVanillaBridge marks
+                // the node so the manager's poll loop can still locate it after the source BE
+                // is destroyed (mid-flight axle break).
+                if (VanillaMPBridge.TryGetState(world, pos, out EnumKineticAxis vAxis, out float vRPM, out float vTorque, out long vNetId))
                 {
                     node = new KineticNode
                     {
                         Pos = pos,
                         Axis = vAxis,
                         Role = EnumKineticRole.Custom,
-                        StressImpact = VanillaMPBridge.StressImpact,
+                        StressImpact = VanillaMPBridge.ComputeStressImpact(vTorque),
                         RatedRPM = MathF.Abs(vRPM),
+                        IsVanillaBridge = true,
+                        VanillaNetworkId = vNetId,
+                        SmoothedTorque = vTorque,
                         Tier = null,
                         TierMaxRPM = 0f
                     };

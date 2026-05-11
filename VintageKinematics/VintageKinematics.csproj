@@ -12,9 +12,14 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
+
   <PropertyGroup>
-    <VSPath>/home/garward/Games/Games/VintageStory/vintagestory</VSPath>
-    <ModOutputPath>/home/garward/.config/VintagestoryData/Mods/VintageKinematics</ModOutputPath>
+    <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MOD_OUTPUT)' != ''">$(VINTAGE_STORY_MOD_OUTPUT)</ModOutputPath>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/VintageKinematics</ModOutputPath>
+    <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
+    <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,7 +55,11 @@
     <Compile Remove="tests/**" />
   </ItemGroup>
 
-  <Target Name="DeployToVS" AfterTargets="Build">
+  <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(VSPath)' == ''">
+    <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
+  </Target>
+
+  <Target Name="DeployToVS" AfterTargets="Build" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">
     <ItemGroup>
       <DllFiles Include="$(OutputPath)$(AssemblyName).dll" />
       <PdbFiles Include="$(OutputPath)$(AssemblyName).pdb" />

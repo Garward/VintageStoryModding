@@ -1,10 +1,23 @@
 {
-	"code": "crusherframe",
-	"shape": { "base": "item/crusherframe" },
-	"textures": {
-		"iron": { "base": "game:block/metal/sheet/iron1" },
-		"wood": { "base": "game:block/wood/planks/generic" }
-	},
-	"creativeinventory": { "general": ["*"] },
-	"maxstacksize": 4
+    "code": "crusherframe",
+    "shape": {
+        "base": "item/crusherframe"
+    },
+    "textures": {
+        "iron": {
+            "base": "game:block/metal/sheet/iron1"
+        },
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        }
+    },
+    "creativeinventory": {
+        "general": [
+            "*"
+        ],
+        "vintagekinematics": [
+            "*"
+        ]
+    },
+    "maxstacksize": 4
 }

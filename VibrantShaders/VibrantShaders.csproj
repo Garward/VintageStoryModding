@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <!-- Output directly to mod folder -->
+    <OutputPath>./</OutputPath>
+    <AssemblyName>VibrantShaders</AssemblyName>
+  </PropertyGroup>
+
+  <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
+
+  <PropertyGroup>
+    <GameDirectory Condition="'$(GameDirectory)' == '' and '$(VSPath)' != ''">$(VSPath)</GameDirectory>
+    <GameDirectory Condition="'$(GameDirectory)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</GameDirectory>
+    <ModsDirectory Condition="'$(ModsDirectory)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)</ModsDirectory>
+    <ConfigLibPath Condition="'$(ConfigLibPath)' == '' and '$(CONFIGLIB_DLL)' != ''">$(CONFIGLIB_DLL)</ConfigLibPath>
+    <ConfigLibPath Condition="'$(ConfigLibPath)' == '' and '$(ModsDirectory)' != ''">$(ModsDirectory)/configlib_1.12.0/configlib.dll</ConfigLibPath>
+  </PropertyGroup>
+
+  <Target Name="ValidateVintageStoryPaths" BeforeTargets="ResolveReferences" Condition="'$(GameDirectory)' == '' or '$(ConfigLibPath)' == ''">
+    <Error Text="Set GameDirectory and ConfigLibPath in Directory.Build.local.props, pass /p:GameDirectory=... /p:ConfigLibPath=..., or set VINTAGE_STORY and CONFIGLIB_DLL." />
+  </Target>
+
+  <!-- VS API References -->
+  <ItemGroup>
+    <Reference Include="VintagestoryAPI">
+      <HintPath>$(GameDirectory)/VintagestoryAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="VintagestoryLib">
+      <HintPath>$(GameDirectory)/VintagestoryLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(GameDirectory)/Lib/Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- ConfigLib Reference -->
+  <ItemGroup>
+    <Reference Include="configlib">
+      <HintPath>$(ConfigLibPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

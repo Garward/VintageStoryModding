@@ -8,6 +8,9 @@
     "creativeinventory": {
         "general": [
             "*"
+        ],
+        "vintagekinematics": [
+            "*"
         ]
     },
     "maxstacksize": 64,

@@ -1,7 +1,16 @@
 {
     "code": "belt",
     "class": "ItemBelt",
-    "creativeinventory": { "general": ["*"] },
+    "creativeinventory": {
+        "general": [
+            "*"
+        ],
+        "vintagekinematics": [
+            "*"
+        ]
+    },
     "maxstacksize": 64,
-    "texture": { "base": "vintagekinematics:block/belt" }
+    "texture": {
+        "base": "vintagekinematics:block/belt"
+    }
 }

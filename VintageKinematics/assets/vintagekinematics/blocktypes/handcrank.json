@@ -3,34 +3,134 @@
     "class": "BlockHandCrank",
     "entityClass": "HandCrank",
     "entityBehaviors": [
-        { "name": "Kinetic", "properties": { "role": "HandCrank", "stressImpact": -32 } },
-        { "name": "KineticSource", "properties": { "targetRPM": 8 } }
+        {
+            "name": "Kinetic",
+            "properties": {
+                "role": "HandCrank",
+                "stressImpact": -32
+            }
+        },
+        {
+            "name": "KineticSource",
+            "properties": {
+                "targetRPM": 8
+            }
+        }
     ],
     "variantgroups": [
-        { "code": "axis", "states": ["x", "y", "z"] }
+        {
+            "code": "axis",
+            "states": [
+                "x",
+                "y",
+                "z"
+            ]
+        }
     ],
-    "shape": { "base": "block/handcrank" },
+    "shape": {
+        "base": "block/handcrank"
+    },
     "shapeByType": {
-        "handcrank-x": { "base": "block/handcrank", "rotateY": 0, "rotateZ": 90 },
-        "handcrank-y": { "base": "block/handcrank" },
-        "handcrank-z": { "base": "block/handcrank", "rotateX": 90 }
+        "handcrank-x": {
+            "base": "block/handcrank",
+            "rotateY": 0,
+            "rotateZ": 90
+        },
+        "handcrank-y": {
+            "base": "block/handcrank"
+        },
+        "handcrank-z": {
+            "base": "block/handcrank",
+            "rotateX": 90
+        }
     },
-    "textures": { "wood": { "base": "game:block/wood/planks/generic" } },
+    "textures": {
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        }
+    },
     "blockmaterial": "Wood",
-    "creativeinventory": { "general": ["*-y"] },
-    "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.875, "y2": 1, "z2": 0.625 },
-    "collisionboxByType": {
-        "handcrank-x": { "x1": 0, "y1": 0.375, "z1": 0.375, "x2": 1, "y2": 0.625, "z2": 0.875 },
-        "handcrank-y": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.875, "y2": 1, "z2": 0.625 },
-        "handcrank-z": { "x1": 0.375, "y1": 0.375, "z1": 0, "x2": 0.625, "y2": 0.875, "z2": 1 }
+    "creativeinventory": {
+        "general": [
+            "*-y"
+        ],
+        "vintagekinematics": [
+            "*-y"
+        ]
     },
-    "selectionbox": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.875, "y2": 1, "z2": 0.625 },
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0.375,
+        "y1": 0,
+        "z1": 0.375,
+        "x2": 0.875,
+        "y2": 1,
+        "z2": 0.625
+    },
+    "collisionboxByType": {
+        "handcrank-x": {
+            "x1": 0,
+            "y1": 0.375,
+            "z1": 0.375,
+            "x2": 1,
+            "y2": 0.625,
+            "z2": 0.875
+        },
+        "handcrank-y": {
+            "x1": 0.375,
+            "y1": 0,
+            "z1": 0.375,
+            "x2": 0.875,
+            "y2": 1,
+            "z2": 0.625
+        },
+        "handcrank-z": {
+            "x1": 0.375,
+            "y1": 0.375,
+            "z1": 0,
+            "x2": 0.625,
+            "y2": 0.875,
+            "z2": 1
+        }
+    },
+    "selectionbox": {
+        "x1": 0.375,
+        "y1": 0,
+        "z1": 0.375,
+        "x2": 0.875,
+        "y2": 1,
+        "z2": 0.625
+    },
     "selectionboxByType": {
-        "handcrank-x": { "x1": 0, "y1": 0.375, "z1": 0.375, "x2": 1, "y2": 0.625, "z2": 0.875 },
-        "handcrank-y": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.875, "y2": 1, "z2": 0.625 },
-        "handcrank-z": { "x1": 0.375, "y1": 0.375, "z1": 0, "x2": 0.625, "y2": 0.875, "z2": 1 }
+        "handcrank-x": {
+            "x1": 0,
+            "y1": 0.375,
+            "z1": 0.375,
+            "x2": 1,
+            "y2": 0.625,
+            "z2": 0.875
+        },
+        "handcrank-y": {
+            "x1": 0.375,
+            "y1": 0,
+            "z1": 0.375,
+            "x2": 0.875,
+            "y2": 1,
+            "z2": 0.625
+        },
+        "handcrank-z": {
+            "x1": 0.375,
+            "y1": 0.375,
+            "z1": 0,
+            "x2": 0.625,
+            "y2": 0.875,
+            "z2": 1
+        }
     }
 }

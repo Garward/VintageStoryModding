@@ -4,6 +4,9 @@ raw_assets/
 # Test project
 tests/
 
+# Local MSBuild machine paths
+Directory.Build.local.props
+
 # Local-only design docs
 docs/processing-design.md
 docs/modeling-guide.md

@@ -9,35 +9,128 @@
         "*-z": []
     },
     "entityBehaviors": [
-        { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 0 } }
+        {
+            "name": "Kinetic",
+            "properties": {
+                "role": "Shaft",
+                "stressImpact": 0
+            }
+        }
     ],
     "variantgroups": [
-        { "code": "axis", "states": ["x", "y", "z"] }
+        {
+            "code": "axis",
+            "states": [
+                "x",
+                "y",
+                "z"
+            ]
+        }
     ],
-    "shape": { "base": "block/shaft" },
+    "shape": {
+        "base": "block/shaft"
+    },
     "shapeByType": {
-        "shaft-x": { "base": "block/shaft", "rotateY": 0, "rotateZ": 90 },
-        "shaft-y": { "base": "block/shaft" },
-        "shaft-z": { "base": "block/shaft", "rotateX": 90 }
+        "shaft-x": {
+            "base": "block/shaft",
+            "rotateY": 0,
+            "rotateZ": 90
+        },
+        "shaft-y": {
+            "base": "block/shaft"
+        },
+        "shaft-z": {
+            "base": "block/shaft",
+            "rotateX": 90
+        }
     },
     "textures": {
-        "wood": { "base": "game:block/wood/planks/generic" }
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        }
     },
     "blockmaterial": "Wood",
-    "creativeinventory": { "general": ["*-y"] },
-    "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.625, "y2": 1, "z2": 0.625 },
-    "collisionboxByType": {
-        "shaft-x": { "x1": 0, "y1": 0.375, "z1": 0.375, "x2": 1, "y2": 0.625, "z2": 0.625 },
-        "shaft-y": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.625, "y2": 1, "z2": 0.625 },
-        "shaft-z": { "x1": 0.375, "y1": 0.375, "z1": 0, "x2": 0.625, "y2": 0.625, "z2": 1 }
+    "creativeinventory": {
+        "general": [
+            "*-y"
+        ],
+        "vintagekinematics": [
+            "*-y"
+        ]
     },
-    "selectionbox": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.625, "y2": 1, "z2": 0.625 },
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0.375,
+        "y1": 0,
+        "z1": 0.375,
+        "x2": 0.625,
+        "y2": 1,
+        "z2": 0.625
+    },
+    "collisionboxByType": {
+        "shaft-x": {
+            "x1": 0,
+            "y1": 0.375,
+            "z1": 0.375,
+            "x2": 1,
+            "y2": 0.625,
+            "z2": 0.625
+        },
+        "shaft-y": {
+            "x1": 0.375,
+            "y1": 0,
+            "z1": 0.375,
+            "x2": 0.625,
+            "y2": 1,
+            "z2": 0.625
+        },
+        "shaft-z": {
+            "x1": 0.375,
+            "y1": 0.375,
+            "z1": 0,
+            "x2": 0.625,
+            "y2": 0.625,
+            "z2": 1
+        }
+    },
+    "selectionbox": {
+        "x1": 0.375,
+        "y1": 0,
+        "z1": 0.375,
+        "x2": 0.625,
+        "y2": 1,
+        "z2": 0.625
+    },
     "selectionboxByType": {
-        "shaft-x": { "x1": 0, "y1": 0.375, "z1": 0.375, "x2": 1, "y2": 0.625, "z2": 0.625 },
-        "shaft-y": { "x1": 0.375, "y1": 0, "z1": 0.375, "x2": 0.625, "y2": 1, "z2": 0.625 },
-        "shaft-z": { "x1": 0.375, "y1": 0.375, "z1": 0, "x2": 0.625, "y2": 0.625, "z2": 1 }
+        "shaft-x": {
+            "x1": 0,
+            "y1": 0.375,
+            "z1": 0.375,
+            "x2": 1,
+            "y2": 0.625,
+            "z2": 0.625
+        },
+        "shaft-y": {
+            "x1": 0.375,
+            "y1": 0,
+            "z1": 0.375,
+            "x2": 0.625,
+            "y2": 1,
+            "z2": 0.625
+        },
+        "shaft-z": {
+            "x1": 0.375,
+            "y1": 0.375,
+            "z1": 0,
+            "x2": 0.625,
+            "y2": 0.625,
+            "z2": 1
+        }
     }
 }

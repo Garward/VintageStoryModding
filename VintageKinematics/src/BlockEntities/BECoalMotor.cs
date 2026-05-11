@@ -1,9 +1,13 @@
+using System.IO;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
+using VintageKinematics.Gui;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
@@ -16,8 +20,10 @@ namespace VintageKinematics.BlockEntities
     public class BECoalMotor : BlockEntityOpenableContainer
     {
         public const int SlotFuel = 0;
+        public const int PacketIdOpenDialog = 5800;
 
         private readonly InventoryGeneric inventory;
+        private GuiDialogCoalMotor clientDialog;
         public string DialogTitle { get; private set; }
 
         public override InventoryBase Inventory => inventory;
@@ -57,12 +63,78 @@ namespace VintageKinematics.BlockEntities
             {
                 string title = Lang.Get("vintagekinematics:coalmotor-title");
                 if (string.IsNullOrEmpty(title) || title == "vintagekinematics:coalmotor-title") title = "Coal Motor";
-                byte[] data = BlockEntityContainerOpen.ToBytes("BlockEntityInventory", title, 1, inventory);
+
+                using var ms = new MemoryStream();
+                using var bw = new BinaryWriter(ms);
+                bw.Write(title);
+                var tree = new TreeAttribute();
+                inventory.ToTreeAttributes(tree);
+                tree.ToBytes(bw);
+
                 ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, (int)EnumBlockContainerPacketId.OpenInventory, data);
+                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
                 byPlayer.InventoryManager.OpenInventory(inventory);
             }
             return true;
+        }
+
+        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        {
+            if (packetid == 1001)
+            {
+                player.InventoryManager?.CloseInventory(inventory);
+                return;
+            }
+            if (packetid < 1000)
+            {
+                if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use))
+                {
+                    Api.World.Logger.Audit("Player {0} sent coalmotor packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
+                    return;
+                }
+                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
+                return;
+            }
+            base.OnReceivedClientPacket(player, packetid, data);
+        }
+
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            if (packetid != PacketIdOpenDialog)
+            {
+                base.OnReceivedServerPacket(packetid, data);
+                return;
+            }
+
+            ICoreClientAPI capi = Api as ICoreClientAPI;
+            if (capi == null) return;
+
+            using var ms = new MemoryStream(data);
+            using var br = new BinaryReader(ms);
+            string title = br.ReadString();
+            var tree = new TreeAttribute();
+            tree.FromBytes(br);
+            inventory.FromTreeAttributes(tree);
+            inventory.ResolveBlocksOrItems();
+
+            if (clientDialog == null)
+            {
+                clientDialog = new GuiDialogCoalMotor(title, inventory, Pos, capi);
+                clientDialog.OnClosed += () => clientDialog = null;
+                clientDialog.TryOpen();
+            }
+        }
+
+        public override void OnBlockUnloaded()
+        {
+            base.OnBlockUnloaded();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
+        }
+
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         private void OnFuelTick(float dt)
@@ -70,7 +142,6 @@ namespace VintageKinematics.BlockEntities
             BEBehaviorKineticSource src = GetBehavior<BEBehaviorKineticSource>();
             if (src == null) return;
 
-            // Top up before the current burn fully ends so RPM stays continuous when fuel is queued.
             if (src.DecaySeconds > 1f) return;
 
             ItemSlot slot = inventory[SlotFuel];

@@ -78,7 +78,14 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            ioFaces = new IOFaceMap().MapInput(BlockFacing.UP, SlotInput);
+            // Inputs accepted on the top and on every horizontal face so belts and funnels can
+            // feed the press from any side. Output buffer is exposed only on the bottom.
+            ioFaces = new IOFaceMap()
+                .MapInput(BlockFacing.UP, SlotInput)
+                .MapInput(BlockFacing.NORTH, SlotInput)
+                .MapInput(BlockFacing.EAST, SlotInput)
+                .MapInput(BlockFacing.SOUTH, SlotInput)
+                .MapInput(BlockFacing.WEST, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
                 ioFaces.MapOutput(BlockFacing.DOWN, i);
@@ -385,6 +392,18 @@ namespace VintageKinematics.BlockEntities
             {
                 liquidStack.ResolveBlockOrItem(Api.World);
             }
+        }
+
+        public override void OnBlockUnloaded()
+        {
+            base.OnBlockUnloaded();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
+        }
+
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
     }
 }

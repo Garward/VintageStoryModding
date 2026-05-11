@@ -3,108 +3,501 @@
     "class": "BlockCoalMotor",
     "entityClass": "CoalMotor",
     "entityBehaviors": [
-        { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -1024, "axis": "X" } },
-        { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-        { "name": "KineticAnimator", "properties": { "rotators": [
-            { "element": "stubXpos", "axis": "X", "ratio":  1 },
-            { "element": "stubXneg", "axis": "X", "ratio":  1 },
-            { "element": "hubXpos", "axis": "X", "ratio":  1 },
-            { "element": "hubXneg", "axis": "X", "ratio":  1 },
-            { "element": "flywheelTop", "axis": "X", "ratio":  1 },
-            { "element": "flywheelBottom", "axis": "X", "ratio":  1 },
-            { "element": "flywheelFront", "axis": "X", "ratio":  1 },
-            { "element": "flywheelRear", "axis": "X", "ratio":  1 },
-            { "element": "flywheelSpokeVertical", "axis": "X", "ratio":  1 },
-            { "element": "flywheelSpokeHorizontal", "axis": "X", "ratio":  1 }
-        ] } }
+        {
+            "name": "Kinetic",
+            "properties": {
+                "role": "Shaft",
+                "stressImpact": -1024,
+                "axis": "X"
+            }
+        },
+        {
+            "name": "KineticSource",
+            "properties": {
+                "targetRPM": 16,
+                "alwaysActive": false
+            }
+        },
+        {
+            "name": "KineticAnimator",
+            "properties": {
+                "rotators": [
+                    {
+                        "element": "stubXpos",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "stubXneg",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "hubXpos",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "hubXneg",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "flywheelTop",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "flywheelBottom",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "flywheelFront",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "flywheelRear",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "flywheelSpokeVertical",
+                        "axis": "X",
+                        "ratio": 1
+                    },
+                    {
+                        "element": "flywheelSpokeHorizontal",
+                        "axis": "X",
+                        "ratio": 1
+                    }
+                ]
+            }
+        }
     ],
     "entityBehaviorsByType": {
         "*-n": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -1024, "axis": "X" } },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubXpos", "axis": "X", "ratio":  1 },
-                { "element": "stubXneg", "axis": "X", "ratio":  1 },
-                { "element": "hubXpos", "axis": "X", "ratio":  1 },
-                { "element": "hubXneg", "axis": "X", "ratio":  1 },
-                { "element": "flywheelTop", "axis": "X", "ratio":  1 },
-                { "element": "flywheelBottom", "axis": "X", "ratio":  1 },
-                { "element": "flywheelFront", "axis": "X", "ratio":  1 },
-                { "element": "flywheelRear", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeVertical", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeHorizontal", "axis": "X", "ratio":  1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -1024,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelTop",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelBottom",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelFront",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelRear",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeVertical",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeHorizontal",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ],
         "*-s": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -1024, "axis": "X" } },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubXpos", "axis": "X", "ratio":  1 },
-                { "element": "stubXneg", "axis": "X", "ratio":  1 },
-                { "element": "hubXpos", "axis": "X", "ratio":  1 },
-                { "element": "hubXneg", "axis": "X", "ratio":  1 },
-                { "element": "flywheelTop", "axis": "X", "ratio":  1 },
-                { "element": "flywheelBottom", "axis": "X", "ratio":  1 },
-                { "element": "flywheelFront", "axis": "X", "ratio":  1 },
-                { "element": "flywheelRear", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeVertical", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeHorizontal", "axis": "X", "ratio":  1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -1024,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelTop",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelBottom",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelFront",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelRear",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeVertical",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeHorizontal",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ],
         "*-e": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -1024, "axis": "Z" } },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubXpos", "axis": "X", "ratio":  1 },
-                { "element": "stubXneg", "axis": "X", "ratio":  1 },
-                { "element": "hubXpos", "axis": "X", "ratio":  1 },
-                { "element": "hubXneg", "axis": "X", "ratio":  1 },
-                { "element": "flywheelTop", "axis": "X", "ratio":  1 },
-                { "element": "flywheelBottom", "axis": "X", "ratio":  1 },
-                { "element": "flywheelFront", "axis": "X", "ratio":  1 },
-                { "element": "flywheelRear", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeVertical", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeHorizontal", "axis": "X", "ratio":  1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -1024,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelTop",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelBottom",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelFront",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelRear",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeVertical",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeHorizontal",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ],
         "*-w": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -1024, "axis": "Z" } },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubXpos", "axis": "X", "ratio":  1 },
-                { "element": "stubXneg", "axis": "X", "ratio":  1 },
-                { "element": "hubXpos", "axis": "X", "ratio":  1 },
-                { "element": "hubXneg", "axis": "X", "ratio":  1 },
-                { "element": "flywheelTop", "axis": "X", "ratio":  1 },
-                { "element": "flywheelBottom", "axis": "X", "ratio":  1 },
-                { "element": "flywheelFront", "axis": "X", "ratio":  1 },
-                { "element": "flywheelRear", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeVertical", "axis": "X", "ratio":  1 },
-                { "element": "flywheelSpokeHorizontal", "axis": "X", "ratio":  1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -1024,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "hubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelTop",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelBottom",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelFront",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelRear",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeVertical",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "flywheelSpokeHorizontal",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ]
     },
     "variantgroups": [
-        { "code": "side", "states": ["n", "e", "s", "w"] }
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
+        }
     ],
     "behaviorsByType": {
-        "*-n": [{ "name": "Multiblock", "properties": { "sizex": 1, "sizey": 1, "sizez": 2, "cposition": { "x": 0, "y": 0, "z": 0 } } }],
-        "*-s": [{ "name": "Multiblock", "properties": { "sizex": 1, "sizey": 1, "sizez": 2, "cposition": { "x": 0, "y": 0, "z": 1 } } }],
-        "*-e": [{ "name": "Multiblock", "properties": { "sizex": 2, "sizey": 1, "sizez": 1, "cposition": { "x": 1, "y": 0, "z": 0 } } }],
-        "*-w": [{ "name": "Multiblock", "properties": { "sizex": 2, "sizey": 1, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } }]
+        "*-n": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 1,
+                    "sizey": 1,
+                    "sizez": 2,
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            }
+        ],
+        "*-s": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 1,
+                    "sizey": 1,
+                    "sizez": 2,
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                }
+            }
+        ],
+        "*-e": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 2,
+                    "sizey": 1,
+                    "sizez": 1,
+                    "cposition": {
+                        "x": 1,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            }
+        ],
+        "*-w": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 2,
+                    "sizey": 1,
+                    "sizez": 1,
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            }
+        ]
     },
-    "shape": { "base": "block/coalmotor" },
+    "shape": {
+        "base": "block/coalmotor"
+    },
     "shapeByType": {
-        "*-n": { "base": "block/coalmotor", "rotateY":   0 },
-        "*-e": { "base": "block/coalmotor", "rotateY": 270 },
-        "*-s": { "base": "block/coalmotor", "rotateY": 180 },
-        "*-w": { "base": "block/coalmotor", "rotateY":  90 }
+        "*-n": {
+            "base": "block/coalmotor",
+            "rotateY": 0
+        },
+        "*-e": {
+            "base": "block/coalmotor",
+            "rotateY": 270
+        },
+        "*-s": {
+            "base": "block/coalmotor",
+            "rotateY": 180
+        },
+        "*-w": {
+            "base": "block/coalmotor",
+            "rotateY": 90
+        }
     },
     "blockmaterial": "Metal",
-    "creativeinventory": { "general": ["*-n"] },
+    "creativeinventory": {
+        "general": [
+            "*-n"
+        ],
+        "vintagekinematics": [
+            "*-n"
+        ]
+    },
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    }
 }

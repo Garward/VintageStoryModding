@@ -329,7 +329,50 @@ When to use it:
   behavior: declare shaft cells in JSON, get variant-rotation and
   cposition math for free (see 5d).
 
-## 7. What's still your responsibility
+## 7. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
+
+If your block entity opens a `GuiDialogBlockEntity` on the client, **always**
+dispose it through `VintageKinematics.Api.GuiDialogUtil.SafeDispose` from
+both `OnBlockUnloaded` and `OnBlockRemoved`. Do not roll your own
+close-then-dispose sequence.
+
+```csharp
+private GuiDialogMyMachine clientDialog;
+
+public override void OnBlockUnloaded()
+{
+    base.OnBlockUnloaded();
+    GuiDialogUtil.SafeDispose(ref clientDialog);
+}
+
+public override void OnBlockRemoved()
+{
+    base.OnBlockRemoved();
+    GuiDialogUtil.SafeDispose(ref clientDialog);
+}
+```
+
+Why this matters: `dialog.TryClose()` **synchronously** fires the
+`OnClosed` event. The standard pattern of `dialog.OnClosed += () => clientDialog = null;`
+means the field is nulled mid-dispose. The naïve sequence
+
+```csharp
+// DON'T DO THIS — NPEs when the player breaks the block with the GUI open
+if (clientDialog.IsOpened()) clientDialog.TryClose(); // OnClosed nulls the field
+clientDialog.Dispose();                               // NullReferenceException
+```
+
+crashes the client whenever a block is broken while its GUI is open.
+`SafeDispose` snapshots the reference and nulls the field *before* any
+callback can fire, so re-entrant nulling from `OnClosed` is harmless.
+
+The helper takes any `GuiDialogBlockEntity` subclass by `ref`:
+
+```csharp
+public static void SafeDispose<T>(ref T dialog) where T : GuiDialogBlockEntity
+```
+
+## 8. What's still your responsibility
 
 - Recipe-matching logic (`MyModRecipeRegistry.MatchPulper`).
 - Inventory wiring and output drop / slot logic.

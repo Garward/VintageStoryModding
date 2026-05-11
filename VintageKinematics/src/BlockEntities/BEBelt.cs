@@ -303,19 +303,56 @@ namespace VintageKinematics.BlockEntities
                 return funnel.TryAcceptFromBelt(item.Stack);
             }
 
-            if (Api.World.BlockAccessor.GetBlockEntity(nextPos) is not BEBelt nb) return false;
-            BEBelt ctl = nb.IsController
-                ? nb
-                : Api.World.BlockAccessor.GetBlockEntity(nb.ControllerPos) as BEBelt;
-            if (ctl == null || ctl.ChainLength <= 0) return false;
+            BlockEntity nextBe = Api.World.BlockAccessor.GetBlockEntity(nextPos);
 
-            Vec3d wp = ProgressToWorld(atHeadEnd ? ChainLength : 0f);
-            float p = ctl.ProjectOntoChain(wp);
-            if (p < -0.05f || p > ctl.ChainLength + 0.05f) return false;
-            if (p < 0.05f) p = 0.05f;
-            if (p > ctl.ChainLength - 0.05f) p = ctl.ChainLength - 0.05f;
+            // If the next block is another belt, hand off directly into its chain so the item never
+            // round-trips through the entity layer.
+            if (nextBe is BEBelt nb)
+            {
+                BEBelt ctl = nb.IsController
+                    ? nb
+                    : Api.World.BlockAccessor.GetBlockEntity(nb.ControllerPos) as BEBelt;
+                if (ctl == null || ctl.ChainLength <= 0) return false;
 
-            return ctl.TryInsertItem(item.Stack, p);
+                Vec3d wp = ProgressToWorld(atHeadEnd ? ChainLength : 0f);
+                float p = ctl.ProjectOntoChain(wp);
+                if (p < -0.05f || p > ctl.ChainLength + 0.05f) return false;
+                if (p < 0.05f) p = 0.05f;
+                if (p > ctl.ChainLength - 0.05f) p = ctl.ChainLength - 0.05f;
+
+                return ctl.TryInsertItem(item.Stack, p);
+            }
+
+            // Otherwise, if the next block is a container with at least one input slot mapped to the
+            // face the belt is approaching from, push the stack directly into it. This is how belts
+            // feed machine input slots without a funnel in between. Honours the target's IOFaceMap
+            // automatically via InventoryPusher.
+            if (nextBe is IBlockEntityContainer)
+            {
+                BlockFacing exitFace = BlockFacing.FromNormal(new Vec3i(
+                    fwd.X * (atHeadEnd ? 1 : -1),
+                    0,
+                    fwd.Z * (atHeadEnd ? 1 : -1)));
+                if (exitFace == null) return false;
+
+                // Push must originate from the segment adjacent to the container, not the
+                // controller's Pos (which is the chain's start). Otherwise InventoryPusher
+                // computes targetPos = Pos + exitFace, which on a multi-segment belt lands on
+                // the second segment of THIS chain — and the BEBelt target path would happily
+                // reinsert the item near the start, causing it to loop.
+                BlockPos pushFrom = atHeadEnd
+                    ? Pos.AddCopy(fwd.X * (ChainLength - 1), 0, fwd.Z * (ChainLength - 1))
+                    : Pos;
+
+                DummySlot probe = new DummySlot(item.Stack);
+                int moved = InventoryPusher.TryPush(Api.World, pushFrom, exitFace, probe);
+                // Probe shares the stack reference, so item.Stack.StackSize has already been
+                // reduced. Caller drops the belt item only when its stack is fully consumed; partial
+                // acceptance lets the remainder fall off as an entity (see TryMovePastEnd).
+                return probe.Empty || (item.Stack?.StackSize ?? 0) <= 0;
+            }
+
+            return false;
         }
 
         private bool HasBeltAtExit(bool atHeadEnd)

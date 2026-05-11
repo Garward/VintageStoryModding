@@ -67,10 +67,15 @@ namespace VintageKinematics.BlockEntities
             if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsieve-title") title = "Kinetic Sieve";
             DialogTitle = title;
 
-            // Top face only feeds the input slot, bottom exposes the output buffer. Without
-            // this, a funnel under the drum would pull the unprocessed input back out before
-            // the sieve gets a chance to work.
-            ioFaces = new IOFaceMap().MapInput(BlockFacing.UP, SlotInput);
+            // Inputs accepted on the top and on every horizontal face so belts and funnels can
+            // feed the drum from any side. Output buffer is exposed only on the bottom, which
+            // also keeps a funnel placed under the sieve from pulling unprocessed input back out.
+            ioFaces = new IOFaceMap()
+                .MapInput(BlockFacing.UP, SlotInput)
+                .MapInput(BlockFacing.NORTH, SlotInput)
+                .MapInput(BlockFacing.EAST, SlotInput)
+                .MapInput(BlockFacing.SOUTH, SlotInput)
+                .MapInput(BlockFacing.WEST, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
                 ioFaces.MapOutput(BlockFacing.DOWN, i);
@@ -230,7 +235,32 @@ namespace VintageKinematics.BlockEntities
             slot.MarkDirty();
 
             if (drops == null) return;
-            foreach (ItemStack drop in drops) DepositOutput(drop);
+            var cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
+            foreach (ItemStack drop in drops)
+            {
+                ItemStack scaled = ApplyYieldMultiplier(drop, cfg);
+                if (scaled != null) DepositOutput(scaled);
+            }
+        }
+
+        // Probabilistic rounding: a fractional yield like 2.5x on a 1-item drop produces 3 items
+        // half the time and 2 the other half, preserving the average. Returns null when the roll
+        // ends up at zero (e.g. a 0.3x multiplier sometimes eats a single-item drop entirely).
+        private ItemStack ApplyYieldMultiplier(ItemStack drop, VintageKinematicsConfig cfg)
+        {
+            if (drop == null || drop.StackSize <= 0) return drop;
+            float mult = cfg?.ResolveSieveYield(drop.Collectible?.Code) ?? 1f;
+            if (mult <= 0f) return null;
+            // Fast path: 1.0 leaves stacks exactly as authored.
+            if (System.Math.Abs(mult - 1f) < 1e-4f) return drop;
+
+            float scaled = drop.StackSize * mult;
+            int whole = (int)System.Math.Floor(scaled);
+            float frac = scaled - whole;
+            if (frac > 0f && Api.World.Rand.NextDouble() < frac) whole++;
+            if (whole <= 0) return null;
+            drop.StackSize = whole;
+            return drop;
         }
 
         // Cascading deposit: prefer same-material slots with headroom (so stacks merge),
@@ -283,6 +313,18 @@ namespace VintageKinematics.BlockEntities
                 case "w": dx =  1; break;
             }
             return new BlockPos(Pos.X + dx, Pos.Y, Pos.Z + dz, Pos.dimension);
+        }
+
+        public override void OnBlockUnloaded()
+        {
+            base.OnBlockUnloaded();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
+        }
+
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
     }
 }

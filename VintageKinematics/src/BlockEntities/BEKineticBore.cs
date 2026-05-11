@@ -54,6 +54,13 @@ namespace VintageKinematics.BlockEntities
         private readonly List<ItemStack> deployedShafts = new List<ItemStack>();
 
         private GuiDialogKineticBore clientDialog;
+        private BoreDrillDescentRenderer descentRenderer;
+        // Locally placed visual stubs in the center column. Tracked so we can pop them in reverse
+        // on retract, on chunk-unload, and on bore removal. Stored as world positions because the
+        // controller's Pos is a corner of the multiblock, not the column origin — we'd otherwise
+        // have to re-derive the center cell from the side variant every step.
+        private readonly List<BlockPos> placedShaftPositions = new List<BlockPos>();
+        private static int boreShaftBlockId = -1;
 
         public InventoryBase Inventory => inventory;
 
@@ -80,17 +87,40 @@ namespace VintageKinematics.BlockEntities
 
             miningTier = Block?.Attributes?["miningTier"].AsInt(DefaultMiningTier) ?? DefaultMiningTier;
 
+            Block shaftBlock = api.World.GetBlock(new AssetLocation("vintagekinematics:kineticboreshaft"));
+            if (boreShaftBlockId < 0 && shaftBlock != null) boreShaftBlockId = shaftBlock.Id;
+
             if (api.Side == EnumAppSide.Server)
             {
                 RegisterGameTickListener(OnServerPushTick, (int)OutputPushIntervalMs);
                 var worker = GetBehavior<BEBehaviorKineticWorker>();
                 if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
+                // FromTreeAttributes runs before Initialize on world load, with Api still null,
+                // so its RebuildPlacedShaftPositions call early-exits and the tracking list is
+                // never populated. Without this re-call, breaking a bore that was descended in
+                // a previous session would leave the shaft column orphaned forever.
+                RebuildPlacedShaftPositions();
+            }
+
+            if (api is ICoreClientAPI capi)
+            {
+                var kineticBeh = GetBehavior<BEBehaviorKinetic>();
+                descentRenderer = new BoreDrillDescentRenderer(capi, Pos, this, kineticBeh, shaftBlock);
+                capi.Event.RegisterRenderer(descentRenderer, EnumRenderStage.Opaque);
             }
         }
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
         {
-            string[] excluded = KineticMeshSplitter.CollectManagedElements(this);
+            // CollectManagedElements only knows about behaviors (animator/piston). The descent
+            // renderer is on the BE itself and owns DrillAssembly independently, so we have to
+            // append it to the exclusion list by hand — otherwise the static body mesh would
+            // render the drill at its baked position while the renderer draws a second copy
+            // at the descended position.
+            string[] managed = KineticMeshSplitter.CollectManagedElements(this);
+            string[] excluded = new string[managed.Length + 1];
+            System.Array.Copy(managed, excluded, managed.Length);
+            excluded[managed.Length] = "DrillAssembly";
             var body = KineticMeshSplitter.TesselateBodyExcluding(Api as ICoreClientAPI, Block, tessThreadTesselator, excluded);
             if (body != null) mesher.AddMeshData(body);
             return true;
@@ -281,6 +311,10 @@ namespace VintageKinematics.BlockEntities
             ItemStack shaft = deployedShafts[lastIdx];
             deployedShafts.RemoveAt(lastIdx);
             drillDepth--;
+            // Pop the visual shaft at the layer the drill is rising through, before the depth
+            // change reaches the client. Otherwise the renderer would briefly draw the drill mesh
+            // overlapping the still-present fake block.
+            RemoveVisualShaft();
 
             if (shaft != null && shaft.StackSize > 0) ReturnShaftToInput(shaft);
             MarkDirty(true);
@@ -363,7 +397,54 @@ namespace VintageKinematics.BlockEntities
             }
 
             drillDepth++;
+            // Shaft placed at every mined cell, including the very first descent. The drill mesh
+            // only occupies the top quarter of its cell (the cutter plate sits where the housing's
+            // drill stub used to be), so the bottom 3/4 needs the shaft block to fill the chamber
+            // visually. The drill renders on top of the shaft — reads as "drill bit hanging off
+            // the bottom of the drill string".
+            int shaftY = baseCorner.Y - drillDepth;
+            PlaceVisualShaft(baseCorner, shaftY);
             MarkDirty(true);
+        }
+
+        // Center cell of the 3x3 footprint at the just-mined layer.
+        private BlockPos CenterColumnPos(BlockPos baseCorner, int y) =>
+            new BlockPos(baseCorner.X + 1, y, baseCorner.Z + 1, Pos.dimension);
+
+        // World-space X/Z of the bore's central drill column. Used by the descent renderer
+        // to draw the shaft fill-mesh in the housing notch at the correct cell regardless
+        // of which corner the controller occupies for this rotation variant.
+        public bool TryGetCenterColumnXZ(out int x, out int z)
+        {
+            if (Block != null && MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _))
+            {
+                x = baseCorner.X + 1;
+                z = baseCorner.Z + 1;
+                return true;
+            }
+            x = Pos.X;
+            z = Pos.Z;
+            return false;
+        }
+
+        private void PlaceVisualShaft(BlockPos baseCorner, int atY)
+        {
+            if (boreShaftBlockId < 0) return;
+            BlockPos columnPos = CenterColumnPos(baseCorner, atY);
+            Api.World.BlockAccessor.SetBlock(boreShaftBlockId, columnPos);
+            placedShaftPositions.Add(columnPos.Copy());
+        }
+
+        private void RemoveVisualShaft()
+        {
+            if (placedShaftPositions.Count == 0) return;
+            int lastIdx = placedShaftPositions.Count - 1;
+            BlockPos columnPos = placedShaftPositions[lastIdx];
+            placedShaftPositions.RemoveAt(lastIdx);
+            // Only clear if it's still our shaft block — a player who manually broke the column
+            // would leave air, and a falling-block landing on the cell would be theirs to keep.
+            Block here = Api.World.BlockAccessor.GetBlock(columnPos);
+            if (here?.Id == boreShaftBlockId) Api.World.BlockAccessor.SetBlock(0, columnPos);
         }
 
         private ItemSlot FindShaftSlot()
@@ -469,6 +550,26 @@ namespace VintageKinematics.BlockEntities
 
             if (Api != null) inventory?.ResolveBlocksOrItems();
             clientDialog?.OnStateUpdated();
+            RebuildPlacedShaftPositions();
+        }
+
+        // Reconstructs the placed-column tracking list from drillDepth so OnBlockRemoved knows
+        // where to clear and StepRetract knows where to pop. The column always runs at the center
+        // cell of the bore's 3x3 footprint, descending one cell per drillDepth step. Skipped on
+        // client (the renderer derives the offset purely from drillDepth, and only the server
+        // mutates the world).
+        private void RebuildPlacedShaftPositions()
+        {
+            placedShaftPositions.Clear();
+            if (Api == null || Api.Side != EnumAppSide.Server || drillDepth <= 0) return;
+            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _)) return;
+            // Shafts exist at baseY-1 (top of column, placed first) through baseY-drillDepth
+            // (deepest, placed last). Adding in this order keeps the list LIFO so retract pops
+            // the deepest shaft first — the cell the drill is rising back into.
+            for (int d = 1; d <= drillDepth; d++)
+            {
+                placedShaftPositions.Add(CenterColumnPos(baseCorner, baseCorner.Y - d));
+            }
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -502,20 +603,40 @@ namespace VintageKinematics.BlockEntities
         {
             base.OnBlockUnloaded();
             DisposeDialog();
+            DisposeDescentRenderer();
         }
 
         public override void OnBlockRemoved()
         {
+            // Wipe the column BEFORE base.OnBlockRemoved tears down behaviours / state. The
+            // tracking list is derived from drillDepth + the multiblock claim, both of which
+            // need this BE's Block and Pos to still be wired up. Rebuild defensively so a
+            // stale or never-populated list (e.g. controller broken via a placeholder cell
+            // right after world load) still clears every shaft we ever placed.
+            if (Api?.Side == EnumAppSide.Server)
+            {
+                if (placedShaftPositions.Count == 0 && drillDepth > 0) RebuildPlacedShaftPositions();
+                for (int i = placedShaftPositions.Count - 1; i >= 0; i--)
+                {
+                    BlockPos columnPos = placedShaftPositions[i];
+                    Block here = Api.World.BlockAccessor.GetBlock(columnPos);
+                    if (here?.Id == boreShaftBlockId) Api.World.BlockAccessor.SetBlock(0, columnPos);
+                }
+                placedShaftPositions.Clear();
+            }
             base.OnBlockRemoved();
             DisposeDialog();
+            DisposeDescentRenderer();
         }
 
-        private void DisposeDialog()
+        private void DisposeDescentRenderer()
         {
-            if (clientDialog == null) return;
-            if (clientDialog.IsOpened()) clientDialog.TryClose();
-            clientDialog.Dispose();
-            clientDialog = null;
+            if (descentRenderer == null) return;
+            if (Api is ICoreClientAPI capi) capi.Event.UnregisterRenderer(descentRenderer, EnumRenderStage.Opaque);
+            descentRenderer.Dispose();
+            descentRenderer = null;
         }
+
+        private void DisposeDialog() => GuiDialogUtil.SafeDispose(ref clientDialog);
     }
 }

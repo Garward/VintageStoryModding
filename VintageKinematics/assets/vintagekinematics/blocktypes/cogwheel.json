@@ -3,36 +3,131 @@
     "class": "BlockCogwheel",
     "entityClass": "Kinetic",
     "entityBehaviors": [
-        { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 0 } }
+        {
+            "name": "Kinetic",
+            "properties": {
+                "role": "SmallCogwheel",
+                "stressImpact": 0
+            }
+        }
     ],
     "variantgroups": [
-        { "code": "axis", "states": ["x", "y", "z"] }
+        {
+            "code": "axis",
+            "states": [
+                "x",
+                "y",
+                "z"
+            ]
+        }
     ],
-    "shape": { "base": "block/cogwheel" },
+    "shape": {
+        "base": "block/cogwheel"
+    },
     "shapeByType": {
-        "cogwheel-x": { "base": "block/cogwheel", "rotateY": 0, "rotateZ": 90 },
-        "cogwheel-y": { "base": "block/cogwheel" },
-        "cogwheel-z": { "base": "block/cogwheel", "rotateX": 90 }
+        "cogwheel-x": {
+            "base": "block/cogwheel",
+            "rotateY": 0,
+            "rotateZ": 90
+        },
+        "cogwheel-y": {
+            "base": "block/cogwheel"
+        },
+        "cogwheel-z": {
+            "base": "block/cogwheel",
+            "rotateX": 90
+        }
     },
     "textures": {
-        "cog": { "base": "game:block/wood/planks/generic" },
-        "wood": { "base": "game:block/wood/planks/generic" }
+        "cog": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        }
     },
     "blockmaterial": "Wood",
-    "creativeinventory": { "general": ["*-y"] },
-    "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0.125, "y1": 0.375, "z1": 0.125, "x2": 0.875, "y2": 0.625, "z2": 0.875 },
-    "collisionboxByType": {
-        "cogwheel-x": { "x1": 0.375, "y1": 0.125, "z1": 0.125, "x2": 0.625, "y2": 0.875, "z2": 0.875 },
-        "cogwheel-y": { "x1": 0.125, "y1": 0.375, "z1": 0.125, "x2": 0.875, "y2": 0.625, "z2": 0.875 },
-        "cogwheel-z": { "x1": 0.125, "y1": 0.125, "z1": 0.375, "x2": 0.875, "y2": 0.875, "z2": 0.625 }
+    "creativeinventory": {
+        "general": [
+            "*-y"
+        ],
+        "vintagekinematics": [
+            "*-y"
+        ]
     },
-    "selectionbox": { "x1": 0.125, "y1": 0.375, "z1": 0.125, "x2": 0.875, "y2": 0.625, "z2": 0.875 },
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0.125,
+        "y1": 0.375,
+        "z1": 0.125,
+        "x2": 0.875,
+        "y2": 0.625,
+        "z2": 0.875
+    },
+    "collisionboxByType": {
+        "cogwheel-x": {
+            "x1": 0.375,
+            "y1": 0.125,
+            "z1": 0.125,
+            "x2": 0.625,
+            "y2": 0.875,
+            "z2": 0.875
+        },
+        "cogwheel-y": {
+            "x1": 0.125,
+            "y1": 0.375,
+            "z1": 0.125,
+            "x2": 0.875,
+            "y2": 0.625,
+            "z2": 0.875
+        },
+        "cogwheel-z": {
+            "x1": 0.125,
+            "y1": 0.125,
+            "z1": 0.375,
+            "x2": 0.875,
+            "y2": 0.875,
+            "z2": 0.625
+        }
+    },
+    "selectionbox": {
+        "x1": 0.125,
+        "y1": 0.375,
+        "z1": 0.125,
+        "x2": 0.875,
+        "y2": 0.625,
+        "z2": 0.875
+    },
     "selectionboxByType": {
-        "cogwheel-x": { "x1": 0.375, "y1": 0.125, "z1": 0.125, "x2": 0.625, "y2": 0.875, "z2": 0.875 },
-        "cogwheel-y": { "x1": 0.125, "y1": 0.375, "z1": 0.125, "x2": 0.875, "y2": 0.625, "z2": 0.875 },
-        "cogwheel-z": { "x1": 0.125, "y1": 0.125, "z1": 0.375, "x2": 0.875, "y2": 0.875, "z2": 0.625 }
+        "cogwheel-x": {
+            "x1": 0.375,
+            "y1": 0.125,
+            "z1": 0.125,
+            "x2": 0.625,
+            "y2": 0.875,
+            "z2": 0.875
+        },
+        "cogwheel-y": {
+            "x1": 0.125,
+            "y1": 0.375,
+            "z1": 0.125,
+            "x2": 0.875,
+            "y2": 0.625,
+            "z2": 0.875
+        },
+        "cogwheel-z": {
+            "x1": 0.125,
+            "y1": 0.125,
+            "z1": 0.375,
+            "x2": 0.875,
+            "y2": 0.875,
+            "z2": 0.625
+        }
     }
 }

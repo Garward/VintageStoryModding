@@ -12,10 +12,15 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
+
   <PropertyGroup>
-    <VSPath>/home/garward/Games/Games/VintageStory/vintagestory</VSPath>
-    <ModOutputPath>/home/garward/.config/VintagestoryData/Mods/NetSpy</ModOutputPath>
+    <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MOD_OUTPUT)' != ''">$(VINTAGE_STORY_MOD_OUTPUT)</ModOutputPath>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/NetSpy</ModOutputPath>
     <PackageOutputPath>$(MSBuildProjectDirectory)/dist</PackageOutputPath>
+    <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
+    <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +42,11 @@
     <None Include="modinfo.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
-  <Target Name="DeployToVS" AfterTargets="Build">
+  <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(VSPath)' == ''">
+    <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
+  </Target>
+
+  <Target Name="DeployToVS" AfterTargets="Build" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">
     <RemoveDir Directories="$(ModOutputPath)" />
     <MakeDir Directories="$(ModOutputPath)" />
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ModOutputPath)" />
@@ -45,7 +54,7 @@
     <Copy SourceFiles="modinfo.json" DestinationFolder="$(ModOutputPath)" />
   </Target>
 
-  <Target Name="PackageZip" AfterTargets="DeployToVS">
+  <Target Name="PackageZip" AfterTargets="DeployToVS" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">
     <MakeDir Directories="$(PackageOutputPath)" />
     <Delete Files="$(PackageOutputPath)/NetSpy.zip" />
     <Exec Command="python3 -c &quot;import zipfile, os; os.makedirs(r'$(PackageOutputPath)', exist_ok=True); z=zipfile.ZipFile(r'$(PackageOutputPath)/NetSpy.zip','w',zipfile.ZIP_DEFLATED); z.write(r'$(ModOutputPath)/NetSpy.dll','NetSpy.dll'); z.write(r'$(ModOutputPath)/modinfo.json','modinfo.json'); z.close()&quot;" />

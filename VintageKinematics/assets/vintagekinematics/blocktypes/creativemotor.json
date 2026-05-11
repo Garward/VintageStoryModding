@@ -3,57 +3,216 @@
     "class": "BlockGearbox",
     "entityClass": "KineticAnimated",
     "entityBehaviors": [
-        { "name": "Kinetic", "properties": { "role": "Gearbox", "stressImpact": -39063 } },
-        { "name": "KineticSource", "properties": { "targetRPM": 256, "alwaysActive": true } },
-        { "name": "KineticAnimator" }
+        {
+            "name": "Kinetic",
+            "properties": {
+                "role": "Gearbox",
+                "stressImpact": -39063
+            }
+        },
+        {
+            "name": "KineticSource",
+            "properties": {
+                "targetRPM": 256,
+                "alwaysActive": true
+            }
+        },
+        {
+            "name": "KineticAnimator"
+        }
     ],
     "entityBehaviorsByType": {
         "*-x": [
-            { "name": "Kinetic", "properties": { "role": "Gearbox", "stressImpact": -39063 } },
-            { "name": "KineticSource", "properties": { "targetRPM": 256, "alwaysActive": true } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubYpos", "axis": "Y", "ratio":  1 },
-                { "element": "stubYneg", "axis": "Y", "ratio": -1 },
-                { "element": "stubZpos", "axis": "Z", "ratio":  1 },
-                { "element": "stubZneg", "axis": "Z", "ratio": -1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Gearbox",
+                    "stressImpact": -39063
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 256,
+                    "alwaysActive": true
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubYpos",
+                            "axis": "Y",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubYneg",
+                            "axis": "Y",
+                            "ratio": -1
+                        },
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": -1
+                        }
+                    ]
+                }
+            }
         ],
         "*-y": [
-            { "name": "Kinetic", "properties": { "role": "Gearbox", "stressImpact": -39063 } },
-            { "name": "KineticSource", "properties": { "targetRPM": 256, "alwaysActive": true } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubXpos", "axis": "X", "ratio":  1 },
-                { "element": "stubXneg", "axis": "X", "ratio": -1 },
-                { "element": "stubZpos", "axis": "Z", "ratio":  1 },
-                { "element": "stubZneg", "axis": "Z", "ratio": -1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Gearbox",
+                    "stressImpact": -39063
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 256,
+                    "alwaysActive": true
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": -1
+                        },
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": -1
+                        }
+                    ]
+                }
+            }
         ],
         "*-z": [
-            { "name": "Kinetic", "properties": { "role": "Gearbox", "stressImpact": -39063 } },
-            { "name": "KineticSource", "properties": { "targetRPM": 256, "alwaysActive": true } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "stubXpos", "axis": "X", "ratio":  1 },
-                { "element": "stubXneg", "axis": "X", "ratio": -1 },
-                { "element": "stubYpos", "axis": "Y", "ratio":  1 },
-                { "element": "stubYneg", "axis": "Y", "ratio": -1 }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Gearbox",
+                    "stressImpact": -39063
+                }
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 256,
+                    "alwaysActive": true
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": -1
+                        },
+                        {
+                            "element": "stubYpos",
+                            "axis": "Y",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubYneg",
+                            "axis": "Y",
+                            "ratio": -1
+                        }
+                    ]
+                }
+            }
         ]
     },
     "variantgroups": [
-        { "code": "axis", "states": ["x", "y", "z"] }
+        {
+            "code": "axis",
+            "states": [
+                "x",
+                "y",
+                "z"
+            ]
+        }
     ],
-    "shape": { "base": "block/gearbox_y" },
-    "shapeByType": {
-        "*-x": { "base": "block/gearbox_x" },
-        "*-y": { "base": "block/gearbox_y" },
-        "*-z": { "base": "block/gearbox_z" }
+    "shape": {
+        "base": "block/gearbox_y"
     },
-    "textures": { "wood": { "base": "game:block/metal/plate/steel" } },
+    "shapeByType": {
+        "*-x": {
+            "base": "block/gearbox_x"
+        },
+        "*-y": {
+            "base": "block/gearbox_y"
+        },
+        "*-z": {
+            "base": "block/gearbox_z"
+        }
+    },
+    "textures": {
+        "wood": {
+            "base": "game:block/metal/plate/steel"
+        }
+    },
     "blockmaterial": "Metal",
-    "creativeinventory": { "general": ["*-y", "*-x"] },
+    "creativeinventory": {
+        "general": [
+            "*-y",
+            "*-x"
+        ],
+        "vintagekinematics": [
+            "*-y",
+            "*-x"
+        ]
+    },
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
-    "selectionbox": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 }
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0.125,
+        "y1": 0.125,
+        "z1": 0.125,
+        "x2": 0.875,
+        "y2": 0.875,
+        "z2": 0.875
+    },
+    "selectionbox": {
+        "x1": 0.125,
+        "y1": 0.125,
+        "z1": 0.125,
+        "x2": 0.875,
+        "y2": 0.875,
+        "z2": 0.875
+    }
 }

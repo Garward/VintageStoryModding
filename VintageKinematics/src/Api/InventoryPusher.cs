@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Api
 {
@@ -23,6 +24,12 @@ namespace VintageKinematics.Api
 
             BlockPos targetPos = fromPos.AddCopy(toFace);
             BlockEntity targetBe = MultiblockHelper.GetMultiblockAwareBE(world, targetPos);
+
+            // Belts aren't IBlockEntityContainer (items live in a virtual list on the controller),
+            // but we still want machines and funnels to push directly onto a belt instead of dropping
+            // items as world entities. Treat BEBelt as a first-class push target.
+            if (targetBe is BEBelt belt) return TryPushOntoBelt(world, belt, source, maxQuantity);
+
             if (targetBe is not IBlockEntityContainer container) return 0;
 
             IInventory inventory = container.Inventory;
@@ -83,6 +90,33 @@ namespace VintageKinematics.Api
             if (source.Itemstack.StackSize <= 0) source.Itemstack = null;
             source.MarkDirty();
             return movedTotal;
+        }
+
+        private static int TryPushOntoBelt(IWorldAccessor world, BEBelt belt, ItemSlot source, int maxQuantity)
+        {
+            BEBelt controller = belt.IsController
+                ? belt
+                : world.BlockAccessor.GetBlockEntity(belt.ControllerPos) as BEBelt;
+            if (controller == null || controller.ChainLength <= 0) return 0;
+
+            Vec3d targetCenter = new Vec3d(
+                belt.Pos.X + 0.5,
+                belt.Pos.Y + BEBelt.BeltTopY,
+                belt.Pos.Z + 0.5);
+            float progress = controller.ProjectOntoChain(targetCenter);
+            if (progress < 0.05f) progress = 0.05f;
+            if (progress > controller.ChainLength - 0.05f) progress = controller.ChainLength - 0.05f;
+
+            int requested = System.Math.Min(maxQuantity, source.Itemstack.StackSize);
+            ItemStack moving = source.Itemstack.Clone();
+            moving.StackSize = requested;
+
+            if (!controller.TryInsertItem(moving, progress)) return 0;
+
+            source.Itemstack.StackSize -= requested;
+            if (source.Itemstack.StackSize <= 0) source.Itemstack = null;
+            source.MarkDirty();
+            return requested;
         }
 
         private static int MoveIntoSlot(IWorldAccessor world, ItemSlot source, ItemSlot target)

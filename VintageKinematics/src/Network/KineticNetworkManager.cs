@@ -58,6 +58,12 @@ namespace VintageKinematics.Network
                             foreach (var net in networks.Values)
                             {
                                 sb.AppendLine($"  #{net.NetworkId}: {net.NodeCount} nodes, source={net.SourceRPM:F1} RPM, stress={net.StressTotal:F0}/{net.StressCapacity:F0}, conflict={net.IsConflicted}");
+                                foreach (var kvp in net.Nodes)
+                                {
+                                    if (!kvp.Value.IsVanillaBridge) continue;
+                                    var b = kvp.Value;
+                                    sb.AppendLine($"    bridge @ {kvp.Key.X},{kvp.Key.Y},{kvp.Key.Z}: vNet={b.VanillaNetworkId}, smTorque={b.SmoothedTorque:F3}, ratedRPM={b.RatedRPM:F1}, impact={b.StressImpact:F1}");
+                                }
                             }
                         }
                         return Vintagestory.API.Common.TextCommandResult.Success(sb.ToString());
@@ -221,7 +227,7 @@ namespace VintageKinematics.Network
                     net.SourcePos = kvp.Key;
                     return;
                 }
-                if (VanillaMPBridge.TryGetState(api.World, kvp.Key, out _, out float vRPM) && vRPM != 0f)
+                if (VanillaMPBridge.TryGetState(api.World, kvp.Key, out _, out float vRPM, out _, out _) && vRPM != 0f)
                 {
                     net.SourceRPM = vRPM;
                     net.SourcePos = kvp.Key;
@@ -248,9 +254,14 @@ namespace VintageKinematics.Network
                 {
                     node.RatedRPM = src.IsActive ? src.TargetRPM : 0f;
                 }
-                else if (VanillaMPBridge.TryGetState(api.World, pos, out _, out float vRPM))
+                else if (VanillaMPBridge.TryGetState(api.World, pos, out _, out float vRPM, out float vTorque, out long vNetId))
                 {
                     node.RatedRPM = MathF.Abs(vRPM);
+                    // Re-seed the EMA history on rebuild (otherwise carries stale torque from
+                    // before the network changed) and derive impact from that fresh reading.
+                    node.VanillaNetworkId = vNetId;
+                    node.SmoothedTorque = vTorque;
+                    node.StressImpact = VanillaMPBridge.ComputeStressImpact(vTorque);
                 }
                 else
                 {
@@ -260,10 +271,22 @@ namespace VintageKinematics.Network
             }
         }
 
-        // Polls every network for vanilla MP bridge sources and pushes a SourceRPM update when
-        // the live vanilla speed has drifted beyond a small deadband. Reading a snapshot of the
-        // network list under lock and processing outside it avoids holding the lock across
-        // BlockAccessor calls (which can be slow under load).
+        // Polls every network for vanilla MP bridge sources and pushes updates when either:
+        // (a) live vanilla speed has zero-crossed or reversed sign — SourceRPM jumps to ±StableRPM
+        //     or 0, since the bridge publishes a fixed magnitude regardless of vanilla speed; or
+        // (b) live vanilla torque has drifted beyond a small deadband — capacity scales linearly
+        //     with TotalAvailableTorque, so a 4-sail windmill genuinely outpowers a 1-sail.
+        //
+        // Bridge detection uses the IsVanillaBridge flag stamped at node-build time. Vanilla axle
+        // removal does not notify VK, so the bridge node persists in net.Nodes after the BE is
+        // gone; matching on a flag (not a live BE lookup) keeps the "axle removed mid-flight"
+        // flush path below reachable. Without this, a broken vanilla axle would leave SourceRPM
+        // frozen at its last polled value (+SU exploit).
+        //
+        // Reading a snapshot of the network list under lock and processing outside it avoids
+        // holding the lock across BlockAccessor calls (which can be slow under load).
+        private const float TorqueDriftDeadband = 0.05f; // ~25 SU at CapacityPerTorque=500
+
         private void PollVanillaBridgeSources()
         {
             if (api.Side != EnumAppSide.Server) return;
@@ -272,29 +295,95 @@ namespace VintageKinematics.Network
 
             foreach (var net in snapshot)
             {
-                BlockPos vanillaPos = null;
+                var bridgePositions = new List<BlockPos>();
                 foreach (var kvp in net.Nodes)
                 {
-                    if (kvp.Value.StressImpact >= 0f) continue;
-                    if (!VanillaMPBridge.IsVanillaMP(api.World, kvp.Key)) continue;
-                    vanillaPos = kvp.Key;
-                    break;
+                    if (kvp.Value.IsVanillaBridge) bridgePositions.Add(kvp.Key);
                 }
-                if (vanillaPos == null) continue;
+                if (bridgePositions.Count == 0) continue;
 
-                if (!VanillaMPBridge.TryGetState(api.World, vanillaPos, out _, out float liveRPM))
+                bool anyChange = false;
+                bool sourceFlushed = false;
+                BlockPos firstLiveRPMChange = null;
+                float firstLiveRPMValue = 0f;
+
+                foreach (var vanillaPos in bridgePositions)
                 {
-                    // Vanilla axle was removed mid-flight; flush the source so consumers stop
-                    // and the next placement event will rebuild the network without it.
-                    if (net.SourceRPM != 0f) OnSourceChanged(vanillaPos, 0f);
-                    continue;
+                    if (!VanillaMPBridge.TryGetState(api.World, vanillaPos, out _, out float liveRPM, out float liveTorque, out long liveNetId))
+                    {
+                        // Vanilla axle was removed mid-flight; flush the source so consumers stop.
+                        // The phantom bridge node stays in net.Nodes until the next adjacent VK
+                        // placement/removal triggers a rebuild, but SourceRPM = 0 keeps the network
+                        // idle in the meantime.
+                        if (!sourceFlushed && net.SourceRPM != 0f)
+                        {
+                            OnSourceChanged(vanillaPos, 0f);
+                            sourceFlushed = true;
+                        }
+                        continue;
+                    }
+
+                    // 0.5 RPM deadband — picks up the only meaningful RPM transitions (stopped ↔
+                    // running, direction reversal) since the bridge publishes ±StableRPM otherwise.
+                    // Only the first bridge's RPM change drives OnSourceChanged; all bridges on a
+                    // shared vanilla network publish the same RPM, and different vanilla networks
+                    // shouldn't both win the SourceRPM seat — pick one and stick with it.
+                    if (firstLiveRPMChange == null && MathF.Abs(net.SourceRPM - liveRPM) > 0.5f)
+                    {
+                        firstLiveRPMChange = vanillaPos;
+                        firstLiveRPMValue = liveRPM;
+                    }
+
+                    // Live torque tracking: EMA-blend the fresh reading into the bridge's
+                    // SmoothedTorque, then derive capacity from the smoothed value. Raw vanilla
+                    // wind/torque jitters per tick; smoothing flattens sub-second noise while
+                    // still tracking the genuine wind drift on a ~1-2s timescale.
+                    var node = net.Nodes[vanillaPos];
+                    float alpha = VanillaMPBridge.TorqueSmoothing;
+                    bool netIdChanged = node.VanillaNetworkId != liveNetId;
+                    if (netIdChanged)
+                    {
+                        // Network swap (axle topology changed under us): drop history rather than
+                        // blending a value from a different source.
+                        node.SmoothedTorque = liveTorque;
+                    }
+                    else
+                    {
+                        node.SmoothedTorque = node.SmoothedTorque * (1f - alpha) + liveTorque * alpha;
+                    }
+                    float newImpact = VanillaMPBridge.ComputeStressImpact(node.SmoothedTorque);
+                    float newRated = MathF.Abs(liveRPM);
+                    bool driftPastDeadband = MathF.Abs(MathF.Abs(node.StressImpact) - MathF.Abs(newImpact)) > VanillaMPBridge.CapacityPerTorque * TorqueDriftDeadband / VanillaMPBridge.StableRPM;
+                    // Always keep RatedRPM live with the vanilla reading. Without this, a bridge
+                    // node born at a moment Network.Speed=0 keeps RatedRPM=0 forever (RPM updates
+                    // only flow through OnSourceChanged when |Δ| > 0.5, which never fires once
+                    // the network steady-states). That bridge then wins dedupe and zeroes capacity
+                    // despite a spinning windmill.
+                    bool ratedChanged = MathF.Abs(node.RatedRPM - newRated) > 0.5f;
+                    if (driftPastDeadband || netIdChanged || ratedChanged)
+                    {
+                        node.StressImpact = newImpact;
+                        node.VanillaNetworkId = liveNetId;
+                        node.RatedRPM = newRated;
+                        net.Nodes[vanillaPos] = node;
+                        anyChange = true;
+                    }
+                    else
+                    {
+                        // SmoothedTorque advanced but didn't cross the deadband — still persist the
+                        // EMA history so it keeps integrating across ticks instead of resetting.
+                        net.Nodes[vanillaPos] = node;
+                    }
                 }
 
-                // 0.5 RPM deadband — below VK's MinAbsRPM=8 floor anyway, so finer changes
-                // wouldn't move any consumer.
-                if (MathF.Abs(net.SourceRPM - liveRPM) > 0.5f)
+                if (firstLiveRPMChange != null)
                 {
-                    OnSourceChanged(vanillaPos, liveRPM);
+                    OnSourceChanged(firstLiveRPMChange, firstLiveRPMValue);
+                }
+                else if (anyChange)
+                {
+                    net.RecomputeStressForRPM(net.SourceRPM);
+                    PropagateNetworkState(net);
                 }
             }
         }

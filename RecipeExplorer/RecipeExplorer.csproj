@@ -8,17 +8,27 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
 
+  <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
+
+  <PropertyGroup>
+    <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
+  </PropertyGroup>
+
+  <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(VSPath)' == ''">
+    <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
+  </Target>
+
   <ItemGroup>
     <Reference Include="VintagestoryAPI">
-      <HintPath>/home/garward/Games/Games/VintageStory/vintagestory/VintagestoryAPI.dll</HintPath>
+      <HintPath>$(VSPath)/VintagestoryAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VintagestoryLib">
-      <HintPath>/home/garward/Games/Games/VintageStory/vintagestory/VintagestoryLib.dll</HintPath>
+      <HintPath>$(VSPath)/VintagestoryLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>/home/garward/Games/Games/VintageStory/vintagestory/Lib/0Harmony.dll</HintPath>
+      <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

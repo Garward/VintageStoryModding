@@ -11,10 +11,10 @@
         {
             "code": "oil",
             "validStacks": [
-                { "type": "item", "code": "game:oilportion-flax",  "shapeElement": "bowl/liquid" },
-                { "type": "item", "code": "game:oilportion-olive", "shapeElement": "bowl/liquid" }
+                { "type": "item", "code": "game:oilportion-flax" },
+                { "type": "item", "code": "game:oilportion-olive" }
             ],
-            "minQuantity": 1,
+            "minQuantity": 0,
             "maxQuantity": 1,
             "portionSizeLitres": 0.1,
             "typeName": "oil"

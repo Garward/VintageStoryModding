@@ -490,13 +490,7 @@ namespace VintageKinematics.BlockEntities
             DisposeDialog();
         }
 
-        private void DisposeDialog()
-        {
-            if (invDialog == null) return;
-            if (invDialog.IsOpened()) invDialog.TryClose();
-            invDialog.Dispose();
-            invDialog = null;
-        }
+        private void DisposeDialog() => GuiDialogUtil.SafeDispose(ref invDialog);
 
         public static BlockFacing BlockFunnelFacing(string code)
         {

@@ -1,0 +1,94 @@
+{
+  "setting-vibrance_strength": "Vibrance Strength",
+  "setting-vibrance_strength-tooltip": "KWin-style vibrance in linear RGB. 0 = disabled, 0.5 = KWin 150%, 0.911 = default, 1.0 = maximum.",
+
+  "setting-warm_shadows": "Warm Shadows",
+  "setting-warm_shadows-tooltip": "Adds warm (orange/yellow) tint to dark areas. Creates a cozy atmosphere.",
+
+  "setting-cool_highlights": "Cool Highlights",
+  "setting-cool_highlights-tooltip": "Adds cool (blue) tint to bright areas. Enhances sky and snow reflections.",
+
+  "setting-vignette_strength": "Vignette Strength",
+  "setting-vignette_strength-tooltip": "Darkens screen edges for a cinematic look. 0 = disabled.",
+
+  "setting-vignette_softness": "Vignette Softness",
+  "setting-vignette_softness-tooltip": "How gradually the vignette fades. Lower = harder edge, higher = softer blend.",
+
+  "setting-film_grain": "Film Grain",
+  "setting-film_grain-tooltip": "Adds subtle animated noise for a cinematic film look. 0 = disabled.",
+
+  "setting-moonlight_strength": "Moonlight Strength",
+  "setting-moonlight_strength-tooltip": "How much moonlight illuminates dark areas at night. Brightness varies with moon phase. 0 = disabled.",
+
+  "setting-moonlight_blue_tint": "Moonlight Blue Tint",
+  "setting-moonlight_blue_tint-tooltip": "How blue the moonlight appears. 0 = white light, 1.0 = full blue tint.",
+
+  "setting-blue_boost": "Blue/Cyan Boost",
+  "setting-blue_boost-tooltip": "Enhances blues and cyans. Makes snow, sky, and water more vibrant.",
+
+  "setting-green_boost": "Green Boost",
+  "setting-green_boost-tooltip": "Enhances greens. Makes foliage and grass more lush.",
+
+  "setting-warm_boost": "Warm Color Boost",
+  "setting-warm_boost-tooltip": "Enhances oranges, yellows, and reds. Makes autumn colors and warm light pop.",
+
+  "setting-shadow_blueness": "Shadow Blue Tint",
+  "setting-shadow_blueness-tooltip": "Adds blue tint to shadows for outdoor realism. Simulates sky ambient light in shadows.",
+
+  "setting-tonemap_strength": "Tonemap Strength",
+  "setting-tonemap_strength-tooltip": "ACES-style highlight rolloff. Higher values make bright areas softer and more cinematic.",
+
+  "setting-bloom_strength": "Bloom Strength",
+  "setting-bloom_strength-tooltip": "Controls soft bloom intensity from bright and glowing parts of the scene.",
+
+  "setting-bloom_soft_knee": "Bloom Soft Knee",
+  "setting-bloom_soft_knee-tooltip": "How gently bloom enters highlights. Higher values make bloom broader and smoother.",
+
+  "setting-depth_haze_strength": "Depth Haze Strength",
+  "setting-depth_haze_strength-tooltip": "Adds subtle distance haze using the scene depth buffer. 0 = disabled.",
+
+  "setting-depth_haze_distance": "Depth Haze Distance",
+  "setting-depth_haze_distance-tooltip": "Controls where distance haze starts. Lower = closer haze, higher = farther haze.",
+
+  "setting-godray_strength": "Godray Strength",
+  "setting-godray_strength-tooltip": "Balances vanilla godrays before VibrantShaders grading. Lower values reduce sunrise glare.",
+
+  "setting-scene_lift_strength": "Scene Lift",
+  "setting-scene_lift_strength-tooltip": "Raises dull shadows and midtones so outdoor scenes feel less flat.",
+
+  "setting-local_contrast_strength": "Local Contrast",
+  "setting-local_contrast_strength-tooltip": "Adds screen-space midtone detail contrast to keep terrain and objects from looking smeared.",
+
+  "setting-color_richness": "Color Richness",
+  "setting-color_richness-tooltip": "Adds filmic midtone color density without pushing already saturated pixels as hard.",
+
+  "setting-earth_tone_separation": "Earth Tone Separation",
+  "setting-earth_tone_separation-tooltip": "Separates flat yellow and brown terrain into slightly warmer and greener tones.",
+
+  "setting-season_grass_correction": "Season Grass Correction",
+  "setting-season_grass_correction-tooltip": "Deprecated broad final-color correction. Keep disabled unless testing.",
+
+  "setting-seasonal_grass_influence": "Seasonal Grass Influence",
+  "setting-seasonal_grass_influence-tooltip": "Controls how strongly vanilla seasonal grass colormaps affect topsoil and grass. 1 = vanilla, 0 = climate tint only.",
+
+  "setting-climate_plant_influence": "Climate Plant Influence",
+  "setting-climate_plant_influence-tooltip": "Controls how strongly vanilla climatePlantTint affects grass, leaves, and plant-tinted terrain. 1 = vanilla, 0 = base texture only.",
+
+  "setting-frost_tint_influence": "Frost Tint Influence",
+  "setting-frost_tint_influence-tooltip": "Controls the white shader frost overlay applied to frostable terrain in freezing temperatures. 0 keeps winter color changes to actual snow blocks and snow-covered variants.",
+
+  "setting-colormap_naturalize_strength": "Colormap Naturalize",
+  "setting-colormap_naturalize_strength-tooltip": "Tames extreme vanilla climate and season tint colors before they multiply terrain and foliage. 0 = vanilla tint hue, 1 = strongest correction.",
+
+  "setting-colormap_chroma_strength": "Colormap Chroma",
+  "setting-colormap_chroma_strength-tooltip": "Controls saturation of sampled climate and season colormap tints. 1 = vanilla saturation, lower = flatter tint, higher = stronger tint color.",
+
+  "setting-colormap_yellow_green_guard": "Yellow-Green Guard",
+  "setting-colormap_yellow_green_guard-tooltip": "Reduces acidic yellow-green bias in vanilla terrain and foliage colormap tints without changing unrelated screen colors.",
+
+  "setting-colormap_brightness": "Colormap Brightness",
+  "setting-colormap_brightness-tooltip": "Brightens or darkens sampled climate and season colormap tints before they multiply base textures. 1 = unchanged.",
+
+  "setting-golden_hour_strength": "Golden Hour",
+  "setting-golden_hour_strength-tooltip": "Adds warm highlight and cool shadow separation around sunrise and sunset."
+}

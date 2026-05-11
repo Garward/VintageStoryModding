@@ -237,12 +237,14 @@ namespace VintageKinematics.BlockEntities
         {
             base.OnBlockUnloaded();
             DisposeRenderer();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         public override void OnBlockRemoved()
         {
             base.OnBlockRemoved();
             DisposeRenderer();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         private void DisposeRenderer()

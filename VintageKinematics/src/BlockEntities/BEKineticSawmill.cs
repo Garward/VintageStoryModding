@@ -284,12 +284,6 @@ namespace VintageKinematics.BlockEntities
             DisposeDialog();
         }
 
-        private void DisposeDialog()
-        {
-            if (clientDialog == null) return;
-            if (clientDialog.IsOpened()) clientDialog.TryClose();
-            clientDialog.Dispose();
-            clientDialog = null;
-        }
+        private void DisposeDialog() => GuiDialogUtil.SafeDispose(ref clientDialog);
     }
 }
