@@ -30,9 +30,7 @@ namespace VintageKinematics.Blocks
             bool offsetAlongTravel = travelAxis == EnumKineticAxis.X ? offset.X != 0 : offset.Z != 0;
 
             // Chain-internal belt-to-belt: same direction belts sharing a face along the travel
-            // axis always couple at 1:1 regardless of node axis. Middle+HasShaft segments expose
-            // their inserted shaft's axis to the network, which may differ from the pulley axis
-            // of their neighbours, so we can't apply the pulley-axis check here.
+            // axis always couple at 1:1 regardless of node axis.
             if (offsetAlongTravel && IsBeltCode(other.BlockCode))
             {
                 string otherDir = DirectionFromBeltCode(other.BlockCode);
@@ -40,13 +38,13 @@ namespace VintageKinematics.Blocks
                 return null;
             }
 
-            // External shaft entering at a pulley face: must be at the head/tail end (offset along
-            // travel axis), running on the pulley axis (perpendicular to travel).
-            EnumKineticAxis pulleyAxis = travelAxis == EnumKineticAxis.X ? EnumKineticAxis.Z : EnumKineticAxis.X;
-            if (!offsetAlongTravel) return null;
-            if (other.Axis != pulleyAxis) return null;
-
-            return new KineticConnectionResult(1f, 1);
+            // Anything else: no opinion. The cell past head/tail (offset along travel, non-belt)
+            // is empty pulley-space and must not propagate kinetics — returning null leaves the
+            // default coaxial rule as the only path to an edge, and that rule only fires for
+            // pulleyAxis-aligned neighbours coaxial with the pulley axle (i.e. side faces). The
+            // travel-axis cell past the chain end isn't along the pulley axis, so no edge forms
+            // there.
+            return null;
         }
 
         private static bool IsBeltCode(string code)
@@ -116,6 +114,19 @@ namespace VintageKinematics.Blocks
 
             ItemSlot slot = byPlayer.InventoryManager.ActiveHotbarSlot;
             bool sneaking = byPlayer.Entity?.Controls?.Sneak == true;
+
+            // Empty-hand right-click on any belt segment scoops every item currently on the chain
+            // into the player's inventory. The escape hatch when items are parked at a blocked
+            // exit (e.g., the adjacent container refuses the push) — recoverable without breaking
+            // the belt.
+            if (!sneaking && (slot == null || slot.Empty))
+            {
+                if (world.Side == EnumAppSide.Server)
+                {
+                    belt.ClaimItemsAt(blockSel.Position, byPlayer);
+                }
+                return true;
+            }
 
             // Only middle segments accept shaft insertion (Start/End already have pulleys).
             if (belt.Part != EnumBeltPart.Middle)

@@ -54,10 +54,10 @@
     <Copy SourceFiles="modinfo.json" DestinationFolder="$(ModOutputPath)" />
   </Target>
 
-  <Target Name="PackageZip" AfterTargets="DeployToVS" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">
+  <Target Name="PackageZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <MakeDir Directories="$(PackageOutputPath)" />
     <Delete Files="$(PackageOutputPath)/NetSpy.zip" />
-    <Exec Command="python3 -c &quot;import zipfile, os; os.makedirs(r'$(PackageOutputPath)', exist_ok=True); z=zipfile.ZipFile(r'$(PackageOutputPath)/NetSpy.zip','w',zipfile.ZIP_DEFLATED); z.write(r'$(ModOutputPath)/NetSpy.dll','NetSpy.dll'); z.write(r'$(ModOutputPath)/modinfo.json','modinfo.json'); z.close()&quot;" />
+    <Exec Command="python3 -c &quot;import zipfile, os; z=zipfile.ZipFile(r'$(PackageOutputPath)/NetSpy.zip','w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','NetSpy.dll'),(r'$(TargetDir)NetSpy.pdb','NetSpy.pdb'),(r'$(MSBuildProjectDirectory)/modinfo.json','modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
     <Message Text="Packaged: $(PackageOutputPath)/NetSpy.zip" Importance="high" />
   </Target>
 

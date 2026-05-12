@@ -8,6 +8,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Gui;
 
@@ -159,9 +160,8 @@ namespace VintageKinematics.BlockEntities
             IInventory inventory = container.Inventory;
             if (inventory == null || inventory.TakeLocked) return;
 
-            ItemSlot sourceSlot = GetPullSlot(inventory);
+            ItemSlot sourceSlot = GetPullSlot(inventory, sourceBe, sourcePos);
             if (sourceSlot == null || sourceSlot.Empty || !sourceSlot.CanTake()) return;
-            if (!MatchesFilter(sourceSlot.Itemstack)) return;
 
             ItemStack moving = sourceSlot.Itemstack.Clone();
             moving.StackSize = Math.Min(moving.StackSize, PullQuantity);
@@ -179,24 +179,55 @@ namespace VintageKinematics.BlockEntities
             MarkDirty(false);
         }
 
-        private ItemSlot GetPullSlot(IInventory inventory)
+        private ItemSlot GetPullSlot(IInventory inventory, BlockEntity sourceBe, BlockPos sourceCell)
         {
-            InventoryBase invBase = inventory as InventoryBase;
-            ItemSlot slot = invBase?.GetAutoPullFromSlot(BlockFacing.DOWN);
-            if (slot != null && !slot.Empty) return slot;
-
-            // If the inventory has opted in to auto-pull semantics (e.g. our sieve restricting
-            // pulls to its output slots), respect the null result. Otherwise fall back to
-            // scanning so plain chests / barrels still drain.
-            if (invBase is InventoryGeneric ig && ig.OnGetAutoPullFromSlot != null) return null;
-
-            for (int i = 0; i < inventory.Count; i++)
+            // Cell-aware VK source: only pull from explicitly declared (cell, DOWN) outputs.
+            // The face on the source touching the funnel is DOWN regardless of multiblock layout.
+            // The mapped slot is the contract: if its contents fail the filter, we don't scan
+            // around it (that would let the funnel reach into input slots).
+            if (sourceBe is IFaceMappedContainer faceMapped)
             {
-                slot = inventory[i];
-                if (slot != null && !slot.Empty && slot.CanTake()) return slot;
+                ItemSlot mapped = faceMapped.IOFaces.GetPullSlot(inventory, sourceCell, BlockFacing.DOWN);
+                if (mapped == null || mapped.Empty || !mapped.CanTake()) return null;
+                return MatchesFilter(mapped.Itemstack) ? mapped : null;
             }
 
-            return null;
+            // Vanilla quern's inventory has slot 0 = input (grain) and slot 1 = output (flour);
+            // it overrides GetAutoPushIntoSlot to return slot 0, but doesn't expose a face-only
+            // pull at all. The scanning fallback below would happily grab slot 0 and unfeed the
+            // quern, so route quern pulls to the output slot explicitly.
+            if (inventory is InventoryQuern quern)
+            {
+                ItemSlot outSlot = quern[1];
+                if (outSlot == null || outSlot.Empty || !outSlot.CanTake()) return null;
+                return MatchesFilter(outSlot.Itemstack) ? outSlot : null;
+            }
+
+            InventoryBase invBase = inventory as InventoryBase;
+
+            // Plain storage (vanilla chest, barrel, vessel, basket, shelf, etc.) all use
+            // InventoryGeneric. The vanilla chest's OnGetAutoPullFromSlot just returns the
+            // first non-empty slot with no face restriction, so honouring that as the only
+            // pull candidate strands everything behind a filtered-out slot 0. Scan the
+            // whole inventory for the first filter-matching slot instead.
+            if (invBase is InventoryGeneric)
+            {
+                for (int i = 0; i < inventory.Count; i++)
+                {
+                    ItemSlot s = inventory[i];
+                    if (s == null || s.Empty || !s.CanTake()) continue;
+                    if (!MatchesFilter(s.Itemstack)) continue;
+                    return s;
+                }
+                return null;
+            }
+
+            // Machine-specific InventoryBase subclass (or non-InventoryBase inventory): honour
+            // the delegate's choice strictly so we don't reach into input slots that were
+            // deliberately walled off from auto-pull. Filter is still applied on top.
+            ItemSlot slot = invBase?.GetAutoPullFromSlot(BlockFacing.DOWN);
+            if (slot == null || slot.Empty || !slot.CanTake()) return null;
+            return MatchesFilter(slot.Itemstack) ? slot : null;
         }
 
         private bool TryOutputStack(ItemStack stack)
@@ -212,9 +243,11 @@ namespace VintageKinematics.BlockEntities
                 return TryOutputToBelt(stack, belt);
             }
 
-            if (targetBe is not IBlockEntityContainer container) return false;
+            if (targetBe is not IBlockEntityContainer) return false;
 
-            return TryOutputToInventory(stack, container, output, targetBe);
+            DummySlot probe = new DummySlot(stack);
+            int moved = InventoryPusher.TryPush(Api.World, Pos, output, probe);
+            return moved > 0 && (stack.StackSize <= 0);
         }
 
         private bool TryOutputToBelt(ItemStack stack, BEBelt belt)
@@ -238,75 +271,6 @@ namespace VintageKinematics.BlockEntities
 
             stack.StackSize = 0;
             return true;
-        }
-
-        private bool TryOutputToInventory(ItemStack stack, IBlockEntityContainer container, BlockFacing output, BlockEntity targetBe)
-        {
-            IInventory inventory = container.Inventory;
-            if (inventory == null || inventory.PutLocked) return false;
-
-            DummySlot source = new DummySlot(stack.Clone());
-            int startSize = source.Itemstack.StackSize;
-            var skip = new List<ItemSlot>();
-            bool restrictedPush = inventory is InventoryGeneric pushInv && pushInv.OnGetAutoPushIntoSlot != null;
-
-            while (!source.Empty && source.Itemstack.StackSize > 0)
-            {
-                ItemSlot targetSlot = (inventory as InventoryBase)?.GetAutoPushIntoSlot(output.Opposite, source);
-                int moved = 0;
-
-                if (targetSlot != null)
-                {
-                    moved = MoveIntoSlot(source, targetSlot);
-                    if (moved <= 0) skip.Add(targetSlot);
-                }
-                else if (restrictedPush)
-                {
-                    // Inventory explicitly disallowed pushing on this face — don't bypass it.
-                    break;
-                }
-
-                if (moved <= 0)
-                {
-                    WeightedSlot weighted = inventory.GetBestSuitedSlot(source, null, skip);
-                    targetSlot = weighted?.slot;
-                    if (targetSlot == null) break;
-
-                    moved = MoveIntoSlot(source, targetSlot);
-                    if (moved <= 0)
-                    {
-                        skip.Add(targetSlot);
-                        if (skip.Count >= inventory.Count) break;
-                    }
-                }
-
-                if (moved > 0)
-                {
-                    targetSlot.MarkDirty();
-                    targetBe.MarkDirty(true);
-                    skip.Clear();
-                }
-            }
-
-            int remaining = source.Empty ? 0 : source.Itemstack.StackSize;
-            int movedTotal = startSize - remaining;
-            if (movedTotal <= 0) return false;
-
-            stack.StackSize -= movedTotal;
-            if (stack.StackSize < 0) stack.StackSize = 0;
-            return stack.StackSize <= 0;
-        }
-
-        private int MoveIntoSlot(ItemSlot source, ItemSlot target)
-        {
-            if (source == null || target == null || source.Empty) return 0;
-            ItemStackMoveOperation op = new ItemStackMoveOperation(
-                Api.World,
-                EnumMouseButton.Left,
-                0,
-                EnumMergePriority.DirectMerge,
-                source.Itemstack.StackSize);
-            return source.TryPutInto(target, ref op);
         }
 
         public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)

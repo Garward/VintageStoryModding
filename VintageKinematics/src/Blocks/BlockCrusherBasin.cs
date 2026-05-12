@@ -1,32 +1,51 @@
 using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
     /// <summary>
-    /// Two horizontal axis variants: <c>basin-x</c> (input on +X, side-output on −X) and <c>basin-z</c>
-    /// (input on +Z, side-output on −Z). The bottom face is always a passive output. Shift-right-click
-    /// empty-handed opens the GUI; plain right-click on a face inserts (with item) or extracts (empty)
-    /// from that face's slot.
+    /// Side-oriented crusher basin. New variants use <c>side</c> to encode the placement facing:
+    /// left face is input, right face is output. Legacy x/z variants are kept as aliases.
     /// </summary>
-    public class BlockCrusherBasin : BlockAxisOriented
+    public class BlockCrusherBasin : Block, IPlacementPreviewProvider
     {
-        public override string GetPlacementVariantAxis(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel)
+        public bool TryResolvePlacementPreview(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, out BlockPos targetPos, out Block variant)
         {
-            if (byPlayer?.Entity != null)
+            targetPos = null;
+            variant = null;
+            if (blockSel?.Face == null) return false;
+
+            targetPos = PlacementPreview.DefaultTargetPos(world, blockSel, this);
+            string desired = PlacementSide(byPlayer);
+            if (desired == null)
             {
-                float yaw = byPlayer.Entity.Pos.Yaw;
-                // Yaw 0 = south (+Z); pi/2 = west (-X). Pick axis perpendicular to the player so the
-                // input face naturally points at them.
-                double rad = yaw % (Math.PI * 2);
-                if (rad < 0) rad += Math.PI * 2;
-                bool eastWestLook = (rad > Math.PI / 4 && rad < 3 * Math.PI / 4)
-                                    || (rad > 5 * Math.PI / 4 && rad < 7 * Math.PI / 4);
-                return eastWestLook ? "x" : "z";
+                variant = this;
+                return true;
             }
-            return base.GetPlacementVariantAxis(world, byPlayer, itemStack, blockSel);
+
+            variant = world.GetBlock(CodeWithVariant("side", desired)) ?? this;
+            return true;
+        }
+
+        public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel, ref string failureCode)
+        {
+            if (!TryResolvePlacementPreview(world, byPlayer, blockSel, out _, out Block variant) || variant == this)
+                return base.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
+            return variant.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
+        }
+
+        private static string PlacementSide(IPlayer byPlayer)
+        {
+            if (byPlayer?.Entity == null) return null;
+            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
+            if (facing == BlockFacing.NORTH) return "n";
+            if (facing == BlockFacing.EAST) return "e";
+            if (facing == BlockFacing.SOUTH) return "s";
+            if (facing == BlockFacing.WEST) return "w";
+            return null;
         }
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
@@ -86,18 +105,42 @@ namespace VintageKinematics.Blocks
         {
             if (face == BlockFacing.DOWN) return FaceKind.Output;
 
-            string axis = Variant["axis"] ?? "x";
-            if (axis == "x")
-            {
-                if (face == BlockFacing.EAST) return FaceKind.Input;
-                if (face == BlockFacing.WEST) return FaceKind.Output;
-            }
-            else
-            {
-                if (face == BlockFacing.SOUTH) return FaceKind.Input;
-                if (face == BlockFacing.NORTH) return FaceKind.Output;
-            }
+            BlockFacing facing = FacingFromVariant(Variant?["side"]);
+            if (face == LeftOf(facing)) return FaceKind.Input;
+            if (face == RightOf(facing)) return FaceKind.Output;
             return FaceKind.None;
+        }
+
+        private static BlockFacing FacingFromVariant(string side)
+        {
+            switch (side)
+            {
+                case "n": return BlockFacing.NORTH;
+                case "e": return BlockFacing.EAST;
+                case "w": return BlockFacing.WEST;
+                case "z": return BlockFacing.WEST;
+                case "s":
+                case "x":
+                default: return BlockFacing.SOUTH;
+            }
+        }
+
+        private static BlockFacing LeftOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.EAST) return BlockFacing.NORTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.WEST) return BlockFacing.SOUTH;
+            return BlockFacing.EAST;
+        }
+
+        private static BlockFacing RightOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.EAST) return BlockFacing.SOUTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.WEST) return BlockFacing.NORTH;
+            return BlockFacing.WEST;
         }
 
         private static ItemSlot FindNonEmptyOutput(BECrusherBasin be)

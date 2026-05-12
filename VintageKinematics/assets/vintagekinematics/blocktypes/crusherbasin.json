@@ -4,19 +4,44 @@
     "entityClass": "CrusherBasin",
     "variantgroups": [
         {
-            "code": "axis",
+            "code": "side",
             "states": [
+                "n",
+                "e",
+                "s",
+                "w",
                 "x",
                 "z"
             ]
         }
     ],
+    "shape": {
+        "base": "block/crusherbasin"
+    },
     "shapeByType": {
+        "*-n": {
+            "base": "block/crusherbasin",
+            "rotateY": 180
+        },
+        "*-e": {
+            "base": "block/crusherbasin",
+            "rotateY": 90
+        },
+        "*-s": {
+            "base": "block/crusherbasin",
+            "rotateY": 0
+        },
+        "*-w": {
+            "base": "block/crusherbasin",
+            "rotateY": 270
+        },
         "*-x": {
-            "base": "block/crusherbasin_x"
+            "base": "block/crusherbasin",
+            "rotateY": 0
         },
         "*-z": {
-            "base": "block/crusherbasin_z"
+            "base": "block/crusherbasin",
+            "rotateY": 270
         }
     },
     "textures": {
@@ -27,10 +52,10 @@
     "blockmaterial": "Metal",
     "creativeinventory": {
         "general": [
-            "*-x"
+            "*-s"
         ],
         "vintagekinematics": [
-            "*-x"
+            "*-s"
         ]
     },
     "lightAbsorption": 0,

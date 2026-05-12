@@ -7,5 +7,5 @@
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "block", "code": "crusherbasin-x", "quantity": 1 }
+	"output": { "type": "block", "code": "crusherbasin-s", "quantity": 1 }
 }

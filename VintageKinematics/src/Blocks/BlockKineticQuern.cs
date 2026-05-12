@@ -49,5 +49,25 @@ namespace VintageKinematics.Blocks
             capi.World.Player.Entity.WalkYaw += yawDelta;
             capi.World.Player.Entity.Pos.Yaw += yawDelta;
         }
+
+        public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel, ref string failureCode)
+        {
+            BlockPos targetPos = blockSel?.Face == null
+                ? blockSel?.Position
+                : PlacementPreview.DefaultTargetPos(world, blockSel, this);
+
+            bool placed = base.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
+            if (placed && targetPos != null && world.BlockAccessor.GetBlockEntity(targetPos) is BEKineticQuern be)
+            {
+                be.SetPlacementFacing(PlacementFacing(byPlayer));
+            }
+            return placed;
+        }
+
+        private static BlockFacing PlacementFacing(IPlayer byPlayer)
+        {
+            if (byPlayer?.Entity == null) return BlockFacing.SOUTH;
+            return BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
+        }
     }
 }

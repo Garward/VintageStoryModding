@@ -61,6 +61,7 @@ namespace VintageKinematics.BlockEntities
         private const float ItemCaptureMargin = 0.35f;
         private const float ItemEjectVelocityScale = 0.2f;
         private const float ItemInsertClearance = 0.3f;
+        private const float ItemEndStopMargin = 0.05f;
 
         private BeltAnimationRenderer animationRenderer;
         private long tickListenerId;
@@ -175,6 +176,31 @@ namespace VintageKinematics.BlockEntities
                 for (int i = items.Count - 1; i >= 0; i--)
                 {
                     items[i].Progress += velocity * dt;
+
+                    if (IsAtBlockedExit(items[i].Progress, velocity, out bool atBlockedHeadEnd))
+                    {
+                        if (TryHandOffToNeighbor(items[i], atBlockedHeadEnd))
+                        {
+                            items.RemoveAt(i);
+                            changed = true;
+                            continue;
+                        }
+
+                        // Side-funnels at the head/tail segment should still get a shot at parked
+                        // items — otherwise a chest that refuses input would leave the item
+                        // unrecoverable even when a perfectly good funnel sits next to the belt end.
+                        if (TryTransferToAdjacentFunnel(items[i]))
+                        {
+                            items.RemoveAt(i);
+                            changed = true;
+                            continue;
+                        }
+
+                        items[i].Progress = atBlockedHeadEnd ? ChainLength - ItemEndStopMargin : ItemEndStopMargin;
+                        changed = true;
+                        continue;
+                    }
+
                     int stackSizeBeforeTransfer = items[i].Stack?.StackSize ?? 0;
                     if (items[i].Progress >= 0f
                      && items[i].Progress <= ChainLength
@@ -216,6 +242,10 @@ namespace VintageKinematics.BlockEntities
             for (int i = 0; i < items.Count; i++)
             {
                 items[i].Progress += velocity * dt;
+                if (IsAtBlockedExit(items[i].Progress, velocity, out bool atBlockedHeadEnd))
+                {
+                    items[i].Progress = atBlockedHeadEnd ? ChainLength - ItemEndStopMargin : ItemEndStopMargin;
+                }
             }
         }
 
@@ -265,13 +295,91 @@ namespace VintageKinematics.BlockEntities
             return changed;
         }
 
+        /// <summary>
+        /// Hand every item on this chain to <paramref name="player"/>, and also vacuum up any
+        /// EntityItems hovering above the clicked segment (those are the items the belt's capture
+        /// pass skipped because they sat too close to a chain end — they look "stuck" to the
+        /// player even though they are real world entities). Routes via the controller for the
+        /// chain-item half; the entity sweep runs on the clicked segment's bounding column.
+        /// </summary>
+        public int ClaimItemsAt(BlockPos clickedSegmentPos, IPlayer player)
+        {
+            int claimed = 0;
+
+            // 1. Belt-chain items — always handled by the controller.
+            BEBelt ctl = IsController
+                ? this
+                : Api.World.BlockAccessor.GetBlockEntity(ControllerPos) as BEBelt;
+            if (ctl != null && ctl.items.Count > 0)
+            {
+                for (int i = ctl.items.Count - 1; i >= 0; i--)
+                {
+                    ItemStack stack = ctl.items[i].Stack;
+                    if (stack == null || stack.StackSize <= 0) { ctl.items.RemoveAt(i); continue; }
+                    Vec3d at = ctl.ProgressToWorld(ctl.items[i].Progress);
+                    if (!player.InventoryManager.TryGiveItemstack(stack, true))
+                    {
+                        Api.World.SpawnItemEntity(stack, at);
+                    }
+                    claimed += stack.StackSize;
+                    ctl.items.RemoveAt(i);
+                }
+                ctl.MarkDirty(true);
+            }
+
+            // 2. EntityItems anywhere along the chain's footprint, plus one block past either
+            // end. CaptureNearbyItems intentionally ignores entities within 0.05 of a chain end,
+            // so a chest that spits items back onto the belt edge leaves them as world entities
+            // that look pinned to the belt surface; chest collision can also nudge them sideways
+            // by a fraction of a block. Sweep the whole chain bbox (inflated by 1 on every side)
+            // so the player doesn't have to click the exact segment the entity sits on.
+            BEBelt sweepCtl = ctl ?? this;
+            Vec3i sweepFwd = BlockBelt.HeadOffset(sweepCtl.Direction ?? Direction);
+            BlockPos endPos = sweepCtl.Pos.AddCopy(
+                sweepFwd.X * (sweepCtl.ChainLength - 1), 0, sweepFwd.Z * (sweepCtl.ChainLength - 1));
+            BlockPos minBp = new BlockPos(
+                Math.Min(sweepCtl.Pos.X, endPos.X) - 1,
+                sweepCtl.Pos.Y,
+                Math.Min(sweepCtl.Pos.Z, endPos.Z) - 1,
+                sweepCtl.Pos.dimension);
+            BlockPos maxBp = new BlockPos(
+                Math.Max(sweepCtl.Pos.X, endPos.X) + 2,
+                sweepCtl.Pos.Y + 2,
+                Math.Max(sweepCtl.Pos.Z, endPos.Z) + 2,
+                sweepCtl.Pos.dimension);
+            Entity[] found = Api.World.GetEntitiesInsideCuboid(minBp, maxBp,
+                e => e is EntityItem ei && ei.Alive && ei.Itemstack != null);
+            for (int i = 0; i < found.Length; i++)
+            {
+                EntityItem ei = (EntityItem)found[i];
+                ItemStack stack = ei.Itemstack;
+                int before = stack.StackSize;
+                if (player.InventoryManager.TryGiveItemstack(stack, true))
+                {
+                    claimed += before;
+                    ei.Die(EnumDespawnReason.PickedUp);
+                }
+                else if (stack.StackSize < before)
+                {
+                    claimed += before - stack.StackSize;
+                }
+            }
+            return claimed;
+        }
+
         private bool TryMovePastEnd(BeltItem item, bool atHeadEnd, float velocity)
         {
             if (TryHandOffToNeighbor(item, atHeadEnd)) return true;
 
             if (HasBeltAtExit(atHeadEnd))
             {
-                item.Progress = atHeadEnd ? ChainLength - 0.05f : 0.05f;
+                item.Progress = atHeadEnd ? ChainLength - ItemEndStopMargin : ItemEndStopMargin;
+                return false;
+            }
+
+            if (HasBlockAtExit(atHeadEnd))
+            {
+                item.Progress = atHeadEnd ? ChainLength - ItemEndStopMargin : ItemEndStopMargin;
                 return false;
             }
 
@@ -327,7 +435,8 @@ namespace VintageKinematics.BlockEntities
             // face the belt is approaching from, push the stack directly into it. This is how belts
             // feed machine input slots without a funnel in between. Honours the target's IOFaceMap
             // automatically via InventoryPusher.
-            if (nextBe is IBlockEntityContainer)
+            BlockEntity targetBe = MultiblockHelper.GetMultiblockAwareBE(Api.World, nextPos);
+            if (targetBe is IBlockEntityContainer)
             {
                 BlockFacing exitFace = BlockFacing.FromNormal(new Vec3i(
                     fwd.X * (atHeadEnd ? 1 : -1),
@@ -362,6 +471,31 @@ namespace VintageKinematics.BlockEntities
             int exitOffset = atHeadEnd ? ChainLength : -1;
             BlockPos nextPos = Pos.AddCopy(fwd.X * exitOffset, 0, fwd.Z * exitOffset);
             return Api.World.BlockAccessor.GetBlockEntity(nextPos) is BEBelt;
+        }
+
+        private bool HasBlockAtExit(bool atHeadEnd)
+        {
+            if (Direction == null) return false;
+            Vec3i fwd = BlockBelt.HeadOffset(Direction);
+            int exitOffset = atHeadEnd ? ChainLength : -1;
+            BlockPos nextPos = Pos.AddCopy(fwd.X * exitOffset, 0, fwd.Z * exitOffset);
+            Block block = Api.World.BlockAccessor.GetBlock(nextPos);
+            return block != null && block.Id != 0;
+        }
+
+        private bool IsAtBlockedExit(float progress, float velocity, out bool atHeadEnd)
+        {
+            atHeadEnd = velocity > 0f;
+            if (velocity > 0f)
+            {
+                return progress >= ChainLength - ItemEndStopMargin && HasBlockAtExit(true);
+            }
+            if (velocity < 0f)
+            {
+                atHeadEnd = false;
+                return progress <= ItemEndStopMargin && HasBlockAtExit(false);
+            }
+            return false;
         }
 
         private bool TryTransferToAdjacentFunnel(BeltItem item)

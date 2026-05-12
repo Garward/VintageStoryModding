@@ -19,7 +19,7 @@ namespace VintageKinematics.BlockEntities
     /// Uses <see cref="BlockEntityOpenableContainer"/> so the GUI dialog opens via the standard
     /// server→client packet flow.
     /// </summary>
-    public class BECrusherBasin : BlockEntityOpenableContainer
+    public class BECrusherBasin : BlockEntityOpenableContainer, IFaceMappedContainer
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
@@ -42,6 +42,7 @@ namespace VintageKinematics.BlockEntities
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "crusherbasin";
+        public IOFaceMap IOFaces => ioFaces;
 
         public BECrusherBasin()
         {
@@ -81,23 +82,55 @@ namespace VintageKinematics.BlockEntities
 
         private void BuildIOFaceMap()
         {
-            // Axis-x: input on +X (east, copper tray), output chute on -X (west).
-            // Axis-z: input on +Z (south), output chute on -Z (north). Bottom is always an output.
+            // New variants encode placement facing: left face is input, right face is output.
+            // Legacy side=x maps to facing south; side=z maps to facing west.
             // Both output faces drain the full 9-slot buffer so a funnel on either face sees
             // everything — no need to micro-partition the buffer per face.
-            string axis = Block?.Variant?["axis"] ?? "x";
-            BlockFacing inputFace = axis == "x" ? BlockFacing.EAST : BlockFacing.SOUTH;
-            BlockFacing sideOutputFace = axis == "x" ? BlockFacing.WEST : BlockFacing.NORTH;
+            BlockFacing facing = FacingFromVariant(Block?.Variant?["side"]);
+            BlockFacing inputFace = LeftOf(facing);
+            BlockFacing sideOutputFace = RightOf(facing);
 
-            ioFaces = new IOFaceMap()
-                .MapInput(BlockFacing.UP, SlotInput)
-                .MapInput(inputFace, SlotInput);
+            ioFaces = new IOFaceMap(Pos)
+                .MapInput(inputFace, SlotInput)
+                .MapInput(BlockFacing.UP, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
                 ioFaces.MapOutput(sideOutputFace, i);
                 ioFaces.MapOutput(BlockFacing.DOWN, i);
             }
             ioFaces.Apply(inventory);
+        }
+
+        private static BlockFacing FacingFromVariant(string side)
+        {
+            switch (side)
+            {
+                case "n": return BlockFacing.NORTH;
+                case "e": return BlockFacing.EAST;
+                case "w": return BlockFacing.WEST;
+                case "z": return BlockFacing.WEST;
+                case "s":
+                case "x":
+                default: return BlockFacing.SOUTH;
+            }
+        }
+
+        private static BlockFacing LeftOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.EAST) return BlockFacing.NORTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.WEST) return BlockFacing.SOUTH;
+            return BlockFacing.EAST;
+        }
+
+        private static BlockFacing RightOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.EAST) return BlockFacing.SOUTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.WEST) return BlockFacing.NORTH;
+            return BlockFacing.WEST;
         }
 
         private void OnServerPushTick(float dt)

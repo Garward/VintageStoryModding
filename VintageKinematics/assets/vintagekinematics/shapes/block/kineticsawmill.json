@@ -10,20 +10,20 @@
         {
             "name": "Base",
             "from": [0, 0, 2],
-            "to": [16, 2.5, 14],
+            "to": [16, 8, 14],
             "faces": {
-                "north": { "texture": "#wood", "uv": [0, 0, 16, 2.5] },
-                "east": { "texture": "#wood", "uv": [2, 0, 14, 2.5] },
-                "south": { "texture": "#wood", "uv": [0, 0, 16, 2.5] },
-                "west": { "texture": "#wood", "uv": [2, 0, 14, 2.5] },
+                "north": { "texture": "#wood", "uv": [0, 0, 16, 8] },
+                "east": { "texture": "#wood", "uv": [2, 0, 14, 8] },
+                "south": { "texture": "#wood", "uv": [0, 0, 16, 8] },
+                "west": { "texture": "#wood", "uv": [2, 0, 14, 8] },
                 "up": { "texture": "#wood", "uv": [0, 2, 16, 14] },
                 "down": { "texture": "#wood", "uv": [0, 2, 16, 14] }
             }
         },
         {
             "name": "InfeedDeck",
-            "from": [0, 2.5, 4.25],
-            "to": [6.65, 4.5, 11.75],
+            "from": [0, 8.5, 4.25],
+            "to": [6.65, 10.5, 11.75],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 6.65, 2] },
                 "east": { "texture": "#wood", "uv": [4.25, 0, 11.75, 2] },
@@ -35,8 +35,8 @@
         },
         {
             "name": "OutfeedDeck",
-            "from": [9.35, 2.5, 4.25],
-            "to": [16, 4.5, 11.75],
+            "from": [9.35, 8.5, 4.25],
+            "to": [16, 10.5, 11.75],
             "faces": {
                 "north": { "texture": "#wood", "uv": [9.35, 0, 16, 2] },
                 "east": { "texture": "#wood", "uv": [4.25, 0, 11.75, 2] },
@@ -48,8 +48,8 @@
         },
         {
             "name": "CutSlot",
-            "from": [6.95, 2.65, 4.5],
-            "to": [9.05, 2.85, 11.5],
+            "from": [6.95, 10.65, 4.5],
+            "to": [9.05, 10.85, 11.5],
             "faces": {
                 "north": { "texture": "#dark", "uv": [0, 0, 2.1, 0.2] },
                 "east": { "texture": "#dark", "uv": [0, 0, 7, 0.2] },
@@ -61,8 +61,8 @@
         },
         {
             "name": "InfeedRailNorth",
-            "from": [0, 4.5, 3.5],
-            "to": [6.5, 5.5, 4.25],
+            "from": [0, 10.5, 3.5],
+            "to": [6.5, 11.5, 4.25],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 6.5, 1] },
                 "east": { "texture": "#wood", "uv": [0, 0, 0.75, 1] },
@@ -74,8 +74,8 @@
         },
         {
             "name": "InfeedRailSouth",
-            "from": [0, 4.5, 11.75],
-            "to": [6.5, 5.5, 12.5],
+            "from": [0, 10.5, 11.75],
+            "to": [6.5, 11.5, 12.5],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 6.5, 1] },
                 "east": { "texture": "#wood", "uv": [0, 0, 0.75, 1] },
@@ -87,8 +87,8 @@
         },
         {
             "name": "OutfeedRailNorth",
-            "from": [9.5, 4.5, 3.5],
-            "to": [16, 5.5, 4.25],
+            "from": [9.5, 10.5, 3.5],
+            "to": [16, 11.5, 4.25],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 6.5, 1] },
                 "east": { "texture": "#wood", "uv": [0, 0, 0.75, 1] },
@@ -100,8 +100,8 @@
         },
         {
             "name": "OutfeedRailSouth",
-            "from": [9.5, 4.5, 11.75],
-            "to": [16, 5.5, 12.5],
+            "from": [9.5, 10.5, 11.75],
+            "to": [16, 11.5, 12.5],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 6.5, 1] },
                 "east": { "texture": "#wood", "uv": [0, 0, 0.75, 1] },
@@ -113,8 +113,8 @@
         },
         {
             "name": "OutputLip",
-            "from": [15.25, 2.75, 4.25],
-            "to": [16, 3.75, 11.75],
+            "from": [15.25, 8.75, 4.25],
+            "to": [16, 10.25, 11.75],
             "faces": {
                 "north": { "texture": "#iron", "uv": [0, 0, 0.75, 1] },
                 "east": { "texture": "#iron", "uv": [4.25, 0, 11.75, 1] },
@@ -126,8 +126,8 @@
         },
         {
             "name": "FrontBracket",
-            "from": [6.25, 5.5, 2.25],
-            "to": [9.75, 13, 3.75],
+            "from": [6.25, 7, 2.25],
+            "to": [9.75, 15, 3.75],
             "faces": {
                 "north": { "texture": "#iron", "uv": [0, 0, 3.5, 7.5] },
                 "east": { "texture": "#iron", "uv": [0, 0, 1.5, 7.5] },
@@ -139,8 +139,8 @@
         },
         {
             "name": "BackBracket",
-            "from": [6.25, 5.5, 12.25],
-            "to": [9.75, 13, 13.75],
+            "from": [6.25, 7, 12.25],
+            "to": [9.75, 15, 13.75],
             "faces": {
                 "north": { "texture": "#iron", "uv": [0, 0, 3.5, 7.5] },
                 "east": { "texture": "#iron", "uv": [0, 0, 1.5, 7.5] },
@@ -152,8 +152,8 @@
         },
         {
             "name": "Bridge",
-            "from": [5.5, 12, 3],
-            "to": [10.5, 14, 13],
+            "from": [5.5, 14, 3],
+            "to": [10.5, 16, 13],
             "faces": {
                 "north": { "texture": "#iron", "uv": [0, 0, 5, 2] },
                 "east": { "texture": "#iron", "uv": [0, 0, 10, 2] },
@@ -165,16 +165,16 @@
         },
         {
             "name": "Blade",
-            "from": [7.625, 7, 7],
-            "to": [8.375, 9, 9],
-            "rotationOrigin": [8, 8, 8],
+            "from": [7.625, 10, 7],
+            "to": [8.375, 12, 9],
+            "rotationOrigin": [8, 11, 8],
             "faces": {
-                "north": { "texture": "#iron", "uv": [7.625, 7, 8.375, 9] },
-                "east": { "texture": "#iron", "uv": [7, 7, 9, 9] },
-                "south": { "texture": "#iron", "uv": [7.625, 7, 8.375, 9] },
-                "west": { "texture": "#iron", "uv": [7, 7, 9, 9] },
-                "up": { "texture": "#iron", "uv": [7.625, 7, 8.375, 9] },
-                "down": { "texture": "#iron", "uv": [7.625, 7, 8.375, 9] }
+                "north": { "texture": "#iron", "uv": [7.625, 10, 8.375, 12] },
+                "east": { "texture": "#iron", "uv": [7, 10, 9, 12] },
+                "south": { "texture": "#iron", "uv": [7.625, 10, 8.375, 12] },
+                "west": { "texture": "#iron", "uv": [7, 10, 9, 12] },
+                "up": { "texture": "#iron", "uv": [7.625, 10, 8.375, 12] },
+                "down": { "texture": "#iron", "uv": [7.625, 10, 8.375, 12] }
             },
             "children": [
                 {
@@ -246,9 +246,9 @@
         },
         {
             "name": "StubXpos",
-            "from": [14.25, 6.35, 6.35],
-            "to": [16, 9.65, 9.65],
-            "rotationOrigin": [8, 8, 8],
+            "from": [14.25, 9.35, 6.35],
+            "to": [16, 12.65, 9.65],
+            "rotationOrigin": [8, 11, 8],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 1.75, 3.3] },
                 "east": { "texture": "#wood", "uv": [6.35, 6.35, 9.65, 9.65] },
@@ -260,9 +260,9 @@
         },
         {
             "name": "StubXneg",
-            "from": [0, 6.35, 6.35],
-            "to": [1.75, 9.65, 9.65],
-            "rotationOrigin": [8, 8, 8],
+            "from": [0, 9.35, 6.35],
+            "to": [1.75, 12.65, 9.65],
+            "rotationOrigin": [8, 11, 8],
             "faces": {
                 "north": { "texture": "#wood", "uv": [0, 0, 1.75, 3.3] },
                 "east": { "texture": "#wood", "uv": [6.35, 6.35, 9.65, 9.65] },

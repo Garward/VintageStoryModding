@@ -20,7 +20,7 @@ namespace VintageKinematics.BlockEntities
     /// and cascades it into the first available output slot (matching same-material first,
     /// then empty). If all outputs are full, the drop spills at the middle cell.
     /// </summary>
-    public class BEKineticSieve : BlockEntityOpenableContainer
+    public class BEKineticSieve : BlockEntityOpenableContainer, IFaceMappedContainer
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
@@ -45,6 +45,7 @@ namespace VintageKinematics.BlockEntities
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticsieve";
+        public IOFaceMap IOFaces => ioFaces;
 
         public BEKineticSieve()
         {
@@ -67,18 +68,23 @@ namespace VintageKinematics.BlockEntities
             if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsieve-title") title = "Kinetic Sieve";
             DialogTitle = title;
 
-            // Inputs accepted on the top and on every horizontal face so belts and funnels can
-            // feed the drum from any side. Output buffer is exposed only on the bottom, which
-            // also keeps a funnel placed under the sieve from pulling unprocessed input back out.
-            ioFaces = new IOFaceMap()
-                .MapInput(BlockFacing.UP, SlotInput)
-                .MapInput(BlockFacing.NORTH, SlotInput)
-                .MapInput(BlockFacing.EAST, SlotInput)
-                .MapInput(BlockFacing.SOUTH, SlotInput)
-                .MapInput(BlockFacing.WEST, SlotInput);
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
+            // The drum is 3 cells long. Expose input on the perpendicular face and on UP of every
+            // cell, and outputs on the opposite perpendicular face and DOWN of every cell, so a
+            // funnel can sit above/below/beside any segment of the drum and still find the right
+            // slot. Without per-cell coverage, funnels on non-controller / non-middle cells silently
+            // miss the map.
+            BlockFacing inputFace = AutomationInputFace();
+            BlockFacing outputSideFace = inputFace.Opposite;
+            ioFaces = new IOFaceMap(Pos);
+            foreach (BlockPos cell in AllCells())
             {
-                ioFaces.MapOutput(BlockFacing.DOWN, i);
+                ioFaces.MapInput(cell, inputFace, SlotInput);
+                ioFaces.MapInput(cell, BlockFacing.UP, SlotInput);
+                for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
+                {
+                    ioFaces.MapOutput(cell, outputSideFace, i);
+                    ioFaces.MapOutput(cell, BlockFacing.DOWN, i);
+                }
             }
             ioFaces.Apply(inventory);
 
@@ -92,21 +98,35 @@ namespace VintageKinematics.BlockEntities
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
         }
 
-        // Active eject from the drum's center cell, downward. The sieve is a 1×1×3 multiblock
-        // and the controller sits at one end, so pushing from Pos would drop items beneath the
-        // wrong cell. The middle cell is where the panning particles spawn, so the visible
-        // exit point matches where items land.
+        // The drum axis runs along the "side" direction — that's where the shaft plugs in and
+        // where the multiblock extends. Automation input must land on the perpendicular axis so
+        // the feed face doesn't fight the shaft connection.
+        private BlockFacing AutomationInputFace()
+        {
+            string side = Block?.Variant?["side"] ?? "n";
+            switch (side)
+            {
+                case "n":
+                case "s": return BlockFacing.EAST;
+                case "e":
+                case "w": return BlockFacing.SOUTH;
+                default:  return BlockFacing.EAST;
+            }
+        }
+
+        // Active eject driven entirely by the declarative output map: each entry's cell is the
+        // origin of the push and its face is the direction outward. The middle cell is the only
+        // mapped output cell for the sieve, so this iterates exactly the slots that should drain.
         private void OnServerPushTick(float dt)
         {
             if (ioFaces == null) return;
-            BlockPos middle = MiddleCellPos();
-            foreach (BlockFacing face in ioFaces.OutputFaces)
+            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
             {
-                foreach (int slotId in ioFaces.OutputSlotsFor(face))
+                foreach (int slotId in entry.SlotIds)
                 {
                     ItemSlot slot = inventory[slotId];
                     if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, middle, face, slot, OutputPushBatch);
+                    int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
                     if (moved > 0) MarkDirty(true);
                 }
             }
@@ -297,6 +317,17 @@ namespace VintageKinematics.BlockEntities
             BlockPos mid = MiddleCellPos();
             Vec3d at = new Vec3d(mid.X + 0.5, mid.Y + 0.1, mid.Z + 0.5);
             Api.World.SpawnItemEntity(stack, at);
+        }
+
+        // All three cells of the drum: controller, middle, far. Used for cell-aware IO mapping
+        // so funnels above/below any segment hit the same slot map.
+        private BlockPos[] AllCells()
+        {
+            BlockPos mid = MiddleCellPos();
+            int dx = mid.X - Pos.X;
+            int dz = mid.Z - Pos.Z;
+            BlockPos far = new BlockPos(Pos.X + 2 * dx, Pos.Y, Pos.Z + 2 * dz, Pos.dimension);
+            return new[] { Pos, mid, far };
         }
 
         // Drum center cell — one step from the controller along the drum axis, in the direction

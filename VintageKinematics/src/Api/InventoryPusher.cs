@@ -23,6 +23,18 @@ namespace VintageKinematics.Api
             if (source == null || source.Empty || maxQuantity <= 0) return 0;
 
             BlockPos targetPos = fromPos.AddCopy(toFace);
+
+            // Some blocks (e.g. crusher head sitting on its basin) declare themselves transparent
+            // to downward push so a funnel above the head still reaches the basin's inventory.
+            if (toFace == BlockFacing.DOWN)
+            {
+                Block intermediate = world.BlockAccessor.GetBlock(targetPos);
+                if (intermediate?.Attributes?["ioPassthroughDown"].AsBool(false) == true)
+                {
+                    targetPos = targetPos.DownCopy();
+                }
+            }
+
             BlockEntity targetBe = MultiblockHelper.GetMultiblockAwareBE(world, targetPos);
 
             // Belts aren't IBlockEntityContainer (items live in a virtual list on the controller),
@@ -36,7 +48,9 @@ namespace VintageKinematics.Api
             if (inventory == null || inventory.PutLocked) return 0;
 
             BlockFacing fromFace = toFace.Opposite;
-            bool restrictedPush = inventory is InventoryGeneric pushInv && pushInv.OnGetAutoPushIntoSlot != null;
+            IOFaceMap faceMap = (targetBe as IFaceMappedContainer)?.IOFaces;
+            bool restrictedPush = faceMap != null
+                || (inventory is InventoryGeneric pushInv && pushInv.OnGetAutoPushIntoSlot != null);
             InventoryBase invBase = inventory as InventoryBase;
 
             int requested = System.Math.Min(maxQuantity, source.Itemstack.StackSize);
@@ -47,7 +61,9 @@ namespace VintageKinematics.Api
 
             while (!probe.Empty && probe.Itemstack.StackSize > 0)
             {
-                ItemSlot targetSlot = invBase?.GetAutoPushIntoSlot(fromFace, probe);
+                ItemSlot targetSlot = faceMap != null
+                    ? faceMap.GetPushSlot(inventory, targetPos, fromFace, probe)
+                    : invBase?.GetAutoPushIntoSlot(fromFace, probe);
                 int moved = 0;
 
                 if (targetSlot != null)
@@ -62,6 +78,8 @@ namespace VintageKinematics.Api
 
                 if (moved <= 0)
                 {
+                    if (restrictedPush) break;
+
                     WeightedSlot weighted = inventory.GetBestSuitedSlot(probe, null, skip);
                     targetSlot = weighted?.slot;
                     if (targetSlot == null) break;

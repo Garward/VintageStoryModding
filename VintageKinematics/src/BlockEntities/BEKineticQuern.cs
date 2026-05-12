@@ -3,15 +3,22 @@ using System.Collections;
 using System.Reflection;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
+using VintageKinematics.Blocks;
 using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEKineticQuern : BlockEntityQuern
+    public class BEKineticQuern : BlockEntityQuern, IFaceMappedContainer
     {
+        private const int SlotInput = 0;
+        private const int SlotOutput = 1;
+        private const float OutputPushIntervalMs = 250f;
+        private const int OutputPushBatch = 8;
+
         // Reflected once: vanilla BEQuern fields are private. The tick handler keeps
         // quantityPlayersGrinding in sync with (real player count + 1 if network active),
         // which drives vanilla's render/sync paths without needing a vanilla MP network.
@@ -33,10 +40,15 @@ namespace VintageKinematics.BlockEntities
         private MeshData baseMesh;
         private MeshData topMesh;
         private KineticQuernTopRenderer topRenderer;
+        private IOFaceMap ioFaces;
+        private string placementFacingCode;
+
+        public IOFaceMap IOFaces => ioFaces;
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
+            BuildIOFaceMap();
 
             if (api.Side == EnumAppSide.Client)
             {
@@ -46,6 +58,7 @@ namespace VintageKinematics.BlockEntities
             if (api.Side == EnumAppSide.Server)
             {
                 RegisterGameTickListener(OnKineticTick, 250);
+                RegisterGameTickListener(OnServerPushTick, (int)OutputPushIntervalMs);
             }
         }
 
@@ -57,6 +70,100 @@ namespace VintageKinematics.BlockEntities
             if (baseMesh != null) mesher.AddMeshData(baseMesh);
 
             return true;
+        }
+
+        private void BuildIOFaceMap()
+        {
+            BlockFacing facing = FaceFromCode(placementFacingCode) ?? BlockFacing.SOUTH;
+            BlockFacing inputFace = LeftOf(facing);
+            BlockFacing outputFace = RightOf(facing);
+
+            ioFaces = new IOFaceMap(Pos)
+                .MapInput(BlockFacing.UP, SlotInput)
+                .MapInput(inputFace, SlotInput)
+                .MapOutput(outputFace, SlotOutput)
+                .MapOutput(BlockFacing.DOWN, SlotOutput);
+        }
+
+        public void SetPlacementFacing(BlockFacing facing)
+        {
+            if (facing == null) return;
+            placementFacingCode = facing.Code;
+            BuildIOFaceMap();
+            MarkDirty(true);
+        }
+
+        private static BlockFacing LeftOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.EAST) return BlockFacing.NORTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.WEST) return BlockFacing.SOUTH;
+            return BlockFacing.EAST;
+        }
+
+        private static BlockFacing RightOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.EAST) return BlockFacing.SOUTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.WEST) return BlockFacing.NORTH;
+            return BlockFacing.WEST;
+        }
+
+        private static BlockFacing FaceFromCode(string code)
+        {
+            switch (code)
+            {
+                case "north":
+                case "n": return BlockFacing.NORTH;
+                case "east":
+                case "e": return BlockFacing.EAST;
+                case "south":
+                case "s": return BlockFacing.SOUTH;
+                case "west":
+                case "w": return BlockFacing.WEST;
+                default: return null;
+            }
+        }
+
+        private void OnServerPushTick(float dt)
+        {
+            if (Api?.Side != EnumAppSide.Server || Inventory == null || ioFaces == null) return;
+
+            ItemSlot slot = Inventory[SlotOutput];
+            if (slot == null || slot.Empty) return;
+
+            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
+            {
+                BlockPos targetPos = entry.Cell.AddCopy(entry.Face);
+                if (Api.World.BlockAccessor.GetBlockEntity(targetPos) is not BEBelt belt) continue;
+                if (!BeltMovesAwayFromQuern(belt, entry.Face)) continue;
+
+                int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
+                if (moved > 0)
+                {
+                    MarkDirty(true);
+                    if (slot.Empty) return;
+                }
+            }
+        }
+
+        private bool BeltMovesAwayFromQuern(BEBelt belt, BlockFacing outputFace)
+        {
+            BEBelt controller = belt.IsController
+                ? belt
+                : Api.World.BlockAccessor.GetBlockEntity(belt.ControllerPos) as BEBelt;
+            if (controller == null || controller.ChainLength <= 0) return false;
+
+            BEBehaviorKinetic kinetic = controller.GetBehavior<BEBehaviorKinetic>();
+            float velocity = controller.ChainVelocity(kinetic?.ActualRPM ?? 0f);
+            if (MathF.Abs(velocity) < 0.0001f) return false;
+
+            Vec3i head = BlockBelt.HeadOffset(controller.Direction);
+            int sign = velocity > 0f ? 1 : -1;
+            return outputFace.Normali.X == head.X * sign
+                && outputFace.Normali.Z == head.Z * sign;
         }
 
         private void OnKineticTick(float dt)
@@ -88,6 +195,22 @@ namespace VintageKinematics.BlockEntities
             topRenderer?.Dispose();
             topRenderer = null;
             base.OnBlockRemoved();
+        }
+
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            base.ToTreeAttributes(tree);
+            if (!string.IsNullOrEmpty(placementFacingCode))
+            {
+                tree.SetString("placementFacing", placementFacingCode);
+            }
+        }
+
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
+        {
+            base.FromTreeAttributes(tree, worldForResolving);
+            placementFacingCode = tree.GetString("placementFacing", placementFacingCode);
+            if (Api != null) BuildIOFaceMap();
         }
 
         private void ReplaceVanillaRenderer(ICoreClientAPI capi)

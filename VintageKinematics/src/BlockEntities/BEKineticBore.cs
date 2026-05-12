@@ -20,7 +20,7 @@ namespace VintageKinematics.BlockEntities
     /// bedrock / out-of-mining-tier blocks. Right-clicking opens the dialog with a Retract button
     /// that walks the bore back to the surface, returning one shaft per layer.
     /// </summary>
-    public class BEKineticBore : BlockEntity
+    public class BEKineticBore : BlockEntity, IFaceMappedContainer
     {
         public const int InputSlotFirst = 0;
         public const int InputSlotLast = 2;
@@ -55,6 +55,7 @@ namespace VintageKinematics.BlockEntities
 
         private GuiDialogKineticBore clientDialog;
         private BoreDrillDescentRenderer descentRenderer;
+        private IOFaceMap ioFaces;
         // Locally placed visual stubs in the center column. Tracked so we can pop them in reverse
         // on retract, on chunk-unload, and on bore removal. Stored as world positions because the
         // controller's Pos is a corner of the multiblock, not the column origin — we'd otherwise
@@ -63,6 +64,7 @@ namespace VintageKinematics.BlockEntities
         private static int boreShaftBlockId = -1;
 
         public InventoryBase Inventory => inventory;
+        public IOFaceMap IOFaces => ioFaces;
 
         public int DrillDepth => drillDepth;
         public bool Halted => halted;
@@ -89,6 +91,8 @@ namespace VintageKinematics.BlockEntities
 
             Block shaftBlock = api.World.GetBlock(new AssetLocation("vintagekinematics:kineticboreshaft"));
             if (boreShaftBlockId < 0 && shaftBlock != null) boreShaftBlockId = shaftBlock.Id;
+
+            BuildIOFaceMap();
 
             if (api.Side == EnumAppSide.Server)
             {
@@ -247,34 +251,53 @@ namespace VintageKinematics.BlockEntities
             clientDialog = null;
         }
 
-        // Push out the back face — opposite the shaft input — from the upper (non-spinning) cell
-        // so a funnel, chest, or belt placed against the back of the bore drains automatically.
-        // The upper layer is the static housing; the lower layer holds the rotating drill bit, so
-        // anchoring the push origin on the upper cell avoids visual conflict with the drum.
-        private void OnServerPushTick(float dt)
+        // Declarative IO surface: shaft inputs map to whichever multiblock-aware shaft stubs the
+        // BEBehaviorKineticMultiblock already exposes (handled elsewhere), and the output buffer is
+        // mapped to the upper-back-center cell pushing outward on the back face. The push tick just
+        // iterates the declared outputs; per-variant coord math lives here in one place so neighbour
+        // pipes / funnels see a consistent cell-aware IO surface.
+        private void BuildIOFaceMap()
         {
+            ioFaces = new IOFaceMap(Pos);
+            if (Block == null) return;
             if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size)) return;
 
-            string side = Block?.Variant["side"] ?? "n";
+            string side = Block.Variant?["side"] ?? "n";
             BlockFacing backFace;
             int backX, backZ;
             int midX = baseCorner.X + size.X / 2;
             int midZ = baseCorner.Z + size.Z / 2;
             switch (side)
             {
-                case "s": backFace = BlockFacing.SOUTH; backX = midX;                          backZ = baseCorner.Z + size.Z - 1; break;
-                case "e": backFace = BlockFacing.EAST;  backX = baseCorner.X + size.X - 1;     backZ = midZ;                      break;
-                case "w": backFace = BlockFacing.WEST;  backX = baseCorner.X;                  backZ = midZ;                      break;
-                default:  backFace = BlockFacing.NORTH; backX = midX;                          backZ = baseCorner.Z;              break;
+                case "s": backFace = BlockFacing.SOUTH; backX = midX;                      backZ = baseCorner.Z + size.Z - 1; break;
+                case "e": backFace = BlockFacing.EAST;  backX = baseCorner.X + size.X - 1; backZ = midZ;                      break;
+                case "w": backFace = BlockFacing.WEST;  backX = baseCorner.X;              backZ = midZ;                      break;
+                default:  backFace = BlockFacing.NORTH; backX = midX;                      backZ = baseCorner.Z;              break;
             }
-            BlockPos pushFrom = new BlockPos(backX, baseCorner.Y + size.Y - 1, backZ, Pos.dimension);
-
+            BlockPos outputCell = new BlockPos(backX, baseCorner.Y + size.Y - 1, backZ, Pos.dimension);
             for (int slotId = OutputSlotFirst; slotId <= OutputSlotLast; slotId++)
             {
-                ItemSlot slot = inventory[slotId];
-                if (slot.Empty) continue;
-                int moved = InventoryPusher.TryPush(Api.World, pushFrom, backFace, slot, OutputPushBatch);
-                if (moved > 0) MarkDirty(true);
+                ioFaces.MapOutput(outputCell, backFace, slotId);
+            }
+            ioFaces.Apply(inventory);
+        }
+
+        // Push out the back face — opposite the shaft input — from the upper (non-spinning) cell so
+        // a funnel, chest, or belt placed against the back of the bore drains automatically. The
+        // upper layer is the static housing; the lower layer holds the rotating drill bit, so
+        // anchoring the push origin on the upper cell avoids visual conflict with the drum.
+        private void OnServerPushTick(float dt)
+        {
+            if (ioFaces == null) return;
+            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
+            {
+                foreach (int slotId in entry.SlotIds)
+                {
+                    ItemSlot slot = inventory[slotId];
+                    if (slot.Empty) continue;
+                    int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
+                    if (moved > 0) MarkDirty(true);
+                }
             }
         }
 

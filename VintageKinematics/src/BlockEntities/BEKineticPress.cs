@@ -19,7 +19,7 @@ namespace VintageKinematics.BlockEntities
     /// into any <see cref="BlockLiquidContainerBase"/> directly below (e.g. a barrel). Each work
     /// cycle consumes 1 input and produces the recipe's solid and/or liquid outputs.
     /// </summary>
-    public class BEKineticPress : BlockEntityOpenableContainer
+    public class BEKineticPress : BlockEntityOpenableContainer, IFaceMappedContainer
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
@@ -46,6 +46,7 @@ namespace VintageKinematics.BlockEntities
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticpress";
+        public IOFaceMap IOFaces => ioFaces;
 
         public BEKineticPress()
         {
@@ -78,14 +79,12 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            // Inputs accepted on the top and on every horizontal face so belts and funnels can
-            // feed the press from any side. Output buffer is exposed only on the bottom.
-            ioFaces = new IOFaceMap()
-                .MapInput(BlockFacing.UP, SlotInput)
-                .MapInput(BlockFacing.NORTH, SlotInput)
-                .MapInput(BlockFacing.EAST, SlotInput)
-                .MapInput(BlockFacing.SOUTH, SlotInput)
-                .MapInput(BlockFacing.WEST, SlotInput);
+            // Automation input is side-specific so belts can target the press deliberately.
+            // Output buffer stays on the bottom for barrels/funnels below the press.
+            BlockFacing inputFace = AutomationInputFace();
+            ioFaces = new IOFaceMap(Pos)
+                .MapInput(inputFace, SlotInput)
+                .MapInput(BlockFacing.UP, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
                 ioFaces.MapOutput(BlockFacing.DOWN, i);
@@ -100,6 +99,14 @@ namespace VintageKinematics.BlockEntities
 
             BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
+        }
+
+        // Shaft sits on the variant axis (axis-x → east/west, axis-z → north/south). Automation
+        // input belongs on the perpendicular axis so the feed face doesn't fight the shaft.
+        private BlockFacing AutomationInputFace()
+        {
+            string axis = Block?.Variant?["axis"] ?? "x";
+            return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
         }
 
         private void OnServerPushTick(float dt)

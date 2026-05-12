@@ -5,6 +5,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Crafting;
 using VintageKinematics.Gui;
@@ -17,7 +18,7 @@ namespace VintageKinematics.BlockEntities
     /// kinetic-work cycle consumes 1 log and produces the recipe outputs (planks or shafts depending
     /// on the toggled mode), pushing them downward to any adjacent funnel/storage.
     /// </summary>
-    public class BEKineticSawmill : BlockEntity
+    public class BEKineticSawmill : BlockEntityOpenableContainer, IFaceMappedContainer
     {
         public const int SlotInput = 0;
         public const int SlotOutputFirst = 1;
@@ -34,8 +35,12 @@ namespace VintageKinematics.BlockEntities
         private IOFaceMap ioFaces;
         private SawmillMode mode = SawmillMode.Plank;
         private GuiDialogKineticSawmill clientDialog;
+        private string automationInputFaceCode;
 
         public SawmillMode Mode => mode;
+        public override InventoryBase Inventory => inventory;
+        public override string InventoryClassName => "kineticsawmill";
+        public IOFaceMap IOFaces => ioFaces;
 
         public BEKineticSawmill()
         {
@@ -54,17 +59,7 @@ namespace VintageKinematics.BlockEntities
             inventory.ResolveBlocksOrItems();
             inventory.SlotModified += _ => MarkDirty(true);
 
-            // Input and output both sit perpendicular to the shaft axle. Convention matches
-            // the bore: axis=x (shaft running E/W) -> input NORTH, output SOUTH; axis=z -> input EAST, output WEST.
-            string axis = Block?.Variant["axis"] ?? "x";
-            BlockFacing inputFace  = axis == "x" ? BlockFacing.NORTH : BlockFacing.EAST;
-            BlockFacing outputFace = axis == "x" ? BlockFacing.SOUTH : BlockFacing.WEST;
-            ioFaces = new IOFaceMap().MapInput(inputFace, SlotInput);
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ioFaces.MapOutput(outputFace, i);
-            }
-            ioFaces.Apply(inventory);
+            ConfigureIOFaceMap();
 
             if (api.Side == EnumAppSide.Server)
             {
@@ -73,6 +68,58 @@ namespace VintageKinematics.BlockEntities
 
             BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
+        }
+
+        private BlockFacing AutomationInputFace()
+        {
+            BlockFacing saved = FaceFromCode(automationInputFaceCode);
+            if (saved != null) return saved;
+
+            // Shaft runs along the variant axis (axis-x → shaft on east/west, axis-z → shaft on
+            // north/south). Automation input belongs on a perpendicular face so the log feed
+            // doesn't fight the shaft connection.
+            string axis = Block?.Variant?["axis"] ?? "x";
+            return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
+        }
+
+        public void SetAutomationInputFace(BlockFacing face)
+        {
+            if (face == null) return;
+            automationInputFaceCode = face.Code;
+            ConfigureIOFaceMap();
+            MarkDirty(true);
+        }
+
+        private void ConfigureIOFaceMap()
+        {
+            BlockFacing inputFace = AutomationInputFace();
+            BlockFacing outputFace = inputFace.Opposite;
+
+            ioFaces = new IOFaceMap(Pos)
+                .MapInput(inputFace, SlotInput)
+                .MapInput(BlockFacing.UP, SlotInput);
+            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
+            {
+                ioFaces.MapOutput(outputFace, i);
+                ioFaces.MapOutput(BlockFacing.DOWN, i);
+            }
+            ioFaces.Apply(inventory);
+        }
+
+        private static BlockFacing FaceFromCode(string code)
+        {
+            switch (code)
+            {
+                case "north":
+                case "n": return BlockFacing.NORTH;
+                case "east":
+                case "e": return BlockFacing.EAST;
+                case "south":
+                case "s": return BlockFacing.SOUTH;
+                case "west":
+                case "w": return BlockFacing.WEST;
+                default: return null;
+            }
         }
 
         private void OnServerPushTick(float dt)
@@ -147,7 +194,7 @@ namespace VintageKinematics.BlockEntities
             Api.World.SpawnItemEntity(stack, at);
         }
 
-        public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
+        public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
             if (Api.World is IServerWorldAccessor)
             {
@@ -261,6 +308,10 @@ namespace VintageKinematics.BlockEntities
             base.ToTreeAttributes(tree);
             inventory?.ToTreeAttributes(tree);
             tree.SetInt("sawmillMode", (int)mode);
+            if (!string.IsNullOrEmpty(automationInputFaceCode))
+            {
+                tree.SetString("automationInputFace", automationInputFaceCode);
+            }
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -268,7 +319,12 @@ namespace VintageKinematics.BlockEntities
             base.FromTreeAttributes(tree, worldForResolving);
             inventory?.FromTreeAttributes(tree);
             mode = (SawmillMode)tree.GetInt("sawmillMode", 0);
-            if (Api != null) inventory?.ResolveBlocksOrItems();
+            automationInputFaceCode = tree.GetString("automationInputFace", automationInputFaceCode);
+            if (Api != null)
+            {
+                inventory?.ResolveBlocksOrItems();
+                ConfigureIOFaceMap();
+            }
             clientDialog?.OnModeUpdated();
         }
 
