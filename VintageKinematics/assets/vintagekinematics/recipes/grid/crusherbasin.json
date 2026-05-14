@@ -1,9 +1,9 @@
 {
-	"ingredientPattern": "RRR,RCR,IRI",
+	"ingredientPattern": "RRR,RCR,BRB",
 	"ingredients": {
-		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 2 },
-		"R": { "type": "block", "code": "game:rock-*", "name": "rock", "allowedVariants": ["andesite", "granite", "basalt", "peridotite"], "quantity": 6 },
-		"C": { "type": "item", "code": "game:clay-*", "name": "clay", "quantity": 1 }
+		"B": { "type": "item", "code": "game:metalplate-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze" ] },
+		"R": { "type": "block", "code": "game:rock-*", "name": "rock", "allowedVariants": ["andesite", "granite", "basalt", "peridotite"], "quantity": 2 },
+		"C": { "type": "item", "code": "game:clay-*", "name": "clay", "quantity": 4 }
 	},
 	"width": 3,
 	"height": 3,

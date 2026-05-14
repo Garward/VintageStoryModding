@@ -52,7 +52,7 @@ namespace RecipeExplorer
             // Index machine/process recipes from any mod that exposes Ingredient/Outputs registries
             totalRecipes += IndexModRecipeRegistries();
 
-            capi.Logger.Notification("[RecipeExplorer] Indexed {0} recipes, tracking {1} unique ingredients, {2} unique outputs ({3} wildcard patterns cached)",
+            BetterHandbookLog.Info(capi, "[BetterHandbook/RecipeExplorer] Indexed {0} recipes, tracking {1} unique ingredients, {2} unique outputs ({3} wildcard patterns cached)",
                 totalRecipes, ingredientToRecipes.Count, outputToRecipes.Count, wildcardCache.Count);
         }
 
@@ -122,7 +122,7 @@ namespace RecipeExplorer
 
             if (recipes == null)
             {
-                capi.Logger.Warning("[RecipeExplorer] No grid recipe source found; index will be empty");
+                BetterHandbookLog.Failure(capi, "[BetterHandbook/RecipeExplorer] No grid recipe source found; index will be empty");
                 return 0;
             }
 
@@ -184,7 +184,7 @@ namespace RecipeExplorer
             int worldCount = capi.World.GridRecipes?.Count ?? 0;
             if (worldCount > 0)
             {
-                capi.Logger.Notification("[RecipeExplorer] Grid recipes via capi.World.GridRecipes: {0}", worldCount);
+                BetterHandbookLog.Info(capi, "[BetterHandbook/RecipeExplorer] Grid recipes via capi.World.GridRecipes: {0}", worldCount);
                 return capi.World.GridRecipes;
             }
 
@@ -205,7 +205,7 @@ namespace RecipeExplorer
                         }
                         if (typed.Count > 0)
                         {
-                            capi.Logger.Notification("[RecipeExplorer] Grid recipes via RecipeRegistrySystem.{0}: {1}", prop.Name, typed.Count);
+                            BetterHandbookLog.Info(capi, "[BetterHandbook/RecipeExplorer] Grid recipes via RecipeRegistrySystem.{0}: {1}", prop.Name, typed.Count);
                             return typed;
                         }
                     }
@@ -213,7 +213,7 @@ namespace RecipeExplorer
             }
             catch (Exception ex)
             {
-                capi.Logger.Debug("[RecipeExplorer] RecipeRegistrySystem walk failed: {0}", ex.Message);
+                capi.Logger.Debug("[BetterHandbook/RecipeExplorer] RecipeRegistrySystem walk failed: {0}", ex.Message);
             }
 
             return null;
@@ -229,7 +229,7 @@ namespace RecipeExplorer
                 var recipeRegistry = capi.ModLoader.GetModSystem("Vintagestory.GameContent.RecipeRegistrySystem");
                 if (recipeRegistry == null)
                 {
-                    capi.Logger.Warning("[RecipeExplorer] Could not find RecipeRegistrySystem");
+                    BetterHandbookLog.Failure(capi, "[BetterHandbook/RecipeExplorer] Could not find RecipeRegistrySystem");
                     return 0;
                 }
 
@@ -245,7 +245,7 @@ namespace RecipeExplorer
             }
             catch (Exception ex)
             {
-                capi.Logger.Warning("[RecipeExplorer] Failed to index additional recipes: {0}", ex.Message);
+                BetterHandbookLog.Failure(capi, "[BetterHandbook/RecipeExplorer] Failed to index additional recipes: {0}", ex.Message);
             }
 
             return count;
@@ -290,7 +290,7 @@ namespace RecipeExplorer
             }
             catch (Exception ex)
             {
-                capi.Logger.Debug("[RecipeExplorer] Failed to index {0}: {1}", propertyName, ex.Message);
+                capi.Logger.Debug("[BetterHandbook/RecipeExplorer] Failed to index {0}: {1}", propertyName, ex.Message);
             }
 
             return count;
@@ -330,7 +330,7 @@ namespace RecipeExplorer
             }
             catch (Exception ex)
             {
-                capi.Logger.Debug("[RecipeExplorer] Mod registry scan failed: {0}", ex.Message);
+                capi.Logger.Debug("[BetterHandbook/RecipeExplorer] Mod registry scan failed: {0}", ex.Message);
             }
 
             return count;
@@ -385,8 +385,9 @@ namespace RecipeExplorer
                 var primary = outputStacks[0];
                 var recipeInfo = new RecipeInfo
                 {
-                    Name = string.Format("{0} ({1})", primary?.GetName() ?? itemType.Name, ownerName),
-                    OutputStack = primary
+                    Name = primary?.GetName() ?? itemType.Name,
+                    OutputStack = primary,
+                    SourceName = ownerName
                 };
 
                 foreach (var output in outputStacks)
@@ -412,7 +413,7 @@ namespace RecipeExplorer
                 string machineDesc = (machineCodes != null && machineCodes.Count > 0)
                     ? string.Format(" -> machine(s): {0}", string.Join(", ", machineCodes))
                     : "";
-                capi.Logger.Notification("[RecipeExplorer] Indexed {0} {1} recipe(s) from {2}{3}",
+                BetterHandbookLog.Info(capi, "[BetterHandbook/RecipeExplorer] Indexed {0} {1} recipe(s) from {2}{3}",
                     count, sampledTypeName ?? "?", ownerName, machineDesc);
             }
 
@@ -719,7 +720,7 @@ namespace RecipeExplorer
             }
             catch (Exception ex)
             {
-                capi.Logger.Debug("[RecipeExplorer] Failed to index ingredient {0}: {1}", code, ex.Message);
+                capi.Logger.Debug("[BetterHandbook/RecipeExplorer] Failed to index ingredient {0}: {1}", code, ex.Message);
             }
         }
 
@@ -782,7 +783,7 @@ namespace RecipeExplorer
             }
             catch (Exception ex)
             {
-                capi.Logger.Warning("[RecipeExplorer] Failed to index wildcard ingredient {0}: {1}", codePattern, ex.Message);
+                BetterHandbookLog.Failure(capi, "[BetterHandbook/RecipeExplorer] Failed to index wildcard ingredient {0}: {1}", codePattern, ex.Message);
             }
         }
 
@@ -813,6 +814,7 @@ namespace RecipeExplorer
     public class RecipeInfo
     {
         public string Name { get; set; }
+        public string SourceName { get; set; }
         public ItemStack OutputStack { get; set; }
 
         public string GetHandbookPageCode()
@@ -826,12 +828,18 @@ namespace RecipeExplorer
 
         public override bool Equals(object obj)
         {
-            return obj is RecipeInfo other && Name == other.Name;
+            return obj is RecipeInfo other && Name == other.Name && SourceName == other.SourceName;
         }
 
         public override int GetHashCode()
         {
-            return Name?.GetHashCode() ?? 0;
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 31 + (Name?.GetHashCode() ?? 0);
+                hash = hash * 31 + (SourceName?.GetHashCode() ?? 0);
+                return hash;
+            }
         }
     }
 }

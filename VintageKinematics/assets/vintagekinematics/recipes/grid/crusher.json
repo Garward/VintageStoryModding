@@ -1,12 +1,12 @@
 {
-	"ingredientPattern": "_G_,_F_,RPR",
+	"ingredientPattern": "_G_,PFP,RPR",
 	"ingredients": {
 		"F": { "type": "item", "code": "crusherframe" },
 		"P": { "type": "item", "code": "game:metalplate-iron" },
 		"G": { "type": "block", "code": "largecogwheel-y" },
-		"R": { "type": "item", "code": "game:resin", "quantity": 2 }
+		"R": { "type": "item", "code": "game:resin" }
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "block", "code": "crusher-x", "quantity": 1 }
+	"output": { "type": "block", "code": "crusher-iron-x", "quantity": 1 }
 }

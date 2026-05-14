@@ -11,51 +11,53 @@ namespace VibrantShaders
     {
         private ICoreClientAPI? capi;
         private IConfigProvider? configLib;
-        private string shaderPath = "";
         private string colorMapShaderPath = "";
         private string colorMapFragmentShaderPath = "";
         private bool pendingShaderReload = false;
+        private bool canRewriteShaderAssets = false;
         private long? updateListenerId;
         private FinalShaderBindings? finalShaderBindings;
 
+        private bool enableVibrantShaders = true;
+
         // Current settings
-        private float vibranceStrength = 0.91133004f;
-        private float warmShadows = 0.035960592f;
-        private float coolHighlights = 0.018719211f;
-        private float vignetteStrength = 0.20197044f;
-        private float vignetteSoftness = 0.44532022f;
-        private float filmGrain = 0.006650246f;
+        private float vibranceStrength = 0.256f;
+        private float warmShadows = 0.028f;
+        private float coolHighlights = 0.023f;
+        private float vignetteStrength = 0.037f;
+        private float vignetteSoftness = 0.705f;
+        private float filmGrain = 0.000f;
 
         // Moonlight settings
-        private float moonlightStrength = 0.17955671f;
-        private float moonlightBlueTint = 0.0f;
+        private float moonlightStrength = 0.000f;
+        private float moonlightBlueTint = 0.000f;
 
         // Color enhancement settings
-        private float blueBoost = 0.13546798f;
-        private float greenBoost = 0.018719226f;
-        private float warmBoost = 0.13231528f;
-        private float shadowBlueness = 0.072413795f;
+        private float blueBoost = 0.148f;
+        private float greenBoost = 0.000f;
+        private float warmBoost = 0.209f;
+        private float shadowBlueness = 0.055f;
 
         // Shaderpack-style finishing settings
-        private float tonemapStrength = 0.35f;
-        private float bloomStrength = 0.34f;
-        private float bloomSoftKnee = 0.55f;
-        private float depthHazeStrength = 0.16f;
-        private float depthHazeDistance = 0.55f;
-        private float godrayStrength = 0.86f;
-        private float sceneLiftStrength = 0.18f;
-        private float localContrastStrength = 0.24f;
-        private float colorRichness = 0.22f;
-        private float earthToneSeparation = 0.20f;
-        private float seasonGrassCorrection = 0.0f;
-        private float seasonalGrassInfluence = 0.45f;
-        private float climatePlantInfluence = 0.35f;
-        private float frostTintInfluence = 0.0f;
-        private float colormapNaturalizeStrength = 0.35f;
-        private float colormapChromaStrength = 0.85f;
-        private float colormapYellowGreenGuard = 0.35f;
-        private float colormapBrightness = 1.05f;
-        private float goldenHourStrength = 0.08f;
+        private float tonemapStrength = 0.773f;
+        private float bloomStrength = 0.990f;
+        private float bloomSoftKnee = 0.575f;
+        private float depthHazeStrength = 0.449f;
+        private float depthHazeDistance = 0.552f;
+        private float godrayStrength = 0.967f;
+        private float sceneLiftStrength = 0.092f;
+        private float localContrastStrength = 0.187f;
+        private float colorRichness = 0.800f;
+        private float earthToneSeparation = 0.441f;
+        private float seasonGrassCorrection = 0.000f;
+        private float seasonalGrassInfluence = 1.000f;
+        private float climatePlantInfluence = 0.443f;
+        private float frostTintInfluence = 0.015f;
+        private float colormapNaturalizeStrength = 0.670f;
+        private float colormapChromaStrength = 1.256f;
+        private float colormapYellowGreenGuard = 0.833f;
+        private float colormapBrightness = 0.500f;
+        private float goldenHourStrength = 0.000f;
         private int seasonalGrassMapIndex = 14;
         private int climatePlantMapIndex = 0;
 
@@ -65,10 +67,12 @@ namespace VibrantShaders
         {
             capi = api;
 
-            // Find our shader file path using Mod.SourcePath
-            shaderPath = Path.Combine(Mod.SourcePath, "assets", "game", "shaders", "final.fsh");
-            colorMapShaderPath = Path.Combine(Mod.SourcePath, "assets", "game", "shaderincludes", "colormap.vsh");
-            colorMapFragmentShaderPath = Path.Combine(Mod.SourcePath, "assets", "game", "shaderincludes", "colormap.fsh");
+            canRewriteShaderAssets = Directory.Exists(Mod.SourcePath);
+            if (canRewriteShaderAssets)
+            {
+                colorMapShaderPath = Path.Combine(Mod.SourcePath, "assets", "game", "shaderincludes", "colormap.vsh");
+                colorMapFragmentShaderPath = Path.Combine(Mod.SourcePath, "assets", "game", "shaderincludes", "colormap.fsh");
+            }
 
             // Get ConfigLib API
             configLib = api.ModLoader.GetModSystem<ConfigLibModSystem>();
@@ -89,10 +93,10 @@ namespace VibrantShaders
 
             ResolveSeasonalColorMapIndices();
 
-            // Initial shader update
+            // Initial shader update for unpacked dev installs. Zipped installs are driven by live uniforms.
             UpdateShader();
 
-            finalShaderBindings = new FinalShaderBindings(api);
+            finalShaderBindings = new FinalShaderBindings(this, api);
             api.Event.RegisterRenderer(finalShaderBindings, EnumRenderStage.AfterPostProcessing, "vibrantshaders-final-bindings");
 
             // Register tick listener for deferred shader reload and moon phase updates
@@ -123,40 +127,6 @@ namespace VibrantShaders
                 }
             }
 
-            // Update moon phase brightness in shader (every tick is fine, shader update only when changed)
-            UpdateMoonPhaseBrightness();
-        }
-
-        private float lastMoonBrightness = -1f;
-
-        private void UpdateMoonPhaseBrightness()
-        {
-            if (capi?.World?.Calendar == null) return;
-
-            float moonBrightness = capi.World.Calendar.MoonPhaseBrightness;
-
-            // Only update shader if brightness changed significantly
-            if (Math.Abs(moonBrightness - lastMoonBrightness) > 0.01f)
-            {
-                lastMoonBrightness = moonBrightness;
-
-                try
-                {
-                    if (File.Exists(shaderPath))
-                    {
-                        string shaderCode = File.ReadAllText(shaderPath);
-                        shaderCode = UpdateConstValue(shaderCode, "MOON_PHASE_BRIGHTNESS", moonBrightness);
-                        File.WriteAllText(shaderPath, shaderCode);
-
-                        // Schedule reload for next tick
-                        pendingShaderReload = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    capi.Logger.Debug($"[VibrantShaders] Moon phase update failed: {ex.Message}");
-                }
-            }
         }
 
         private void LoadSettings()
@@ -164,6 +134,7 @@ namespace VibrantShaders
             var config = configLib?.GetConfig("vibrantshaders");
             if (config == null) return;
 
+            enableVibrantShaders = GetBoolSetting(config, "enable_vibrant_shaders", enableVibrantShaders);
             vibranceStrength = GetFloatSetting(config, "vibrance_strength", vibranceStrength);
             warmShadows = GetFloatSetting(config, "warm_shadows", warmShadows);
             coolHighlights = GetFloatSetting(config, "cool_highlights", coolHighlights);
@@ -207,6 +178,16 @@ namespace VibrantShaders
             return defaultValue;
         }
 
+        private bool GetBoolSetting(IConfig config, string code, bool defaultValue)
+        {
+            var setting = config.GetSetting(code);
+            if (setting != null)
+            {
+                return setting.Value.AsBool(defaultValue);
+            }
+            return defaultValue;
+        }
+
         private void OnSettingChanged(string domain, IConfig config, ISetting setting)
         {
             if (domain != "vibrantshaders") return;
@@ -216,6 +197,9 @@ namespace VibrantShaders
             // Update the relevant setting
             switch (setting.YamlCode)
             {
+                case "enable_vibrant_shaders":
+                    enableVibrantShaders = setting.Value.AsBool(enableVibrantShaders);
+                    break;
                 case "vibrance_strength":
                     vibranceStrength = setting.Value.AsFloat(vibranceStrength);
                     break;
@@ -311,63 +295,16 @@ namespace VibrantShaders
                     break;
             }
 
-            // Update shader and schedule deferred reload
+            // Live uniforms handle in-game changes. Asset rewriting is only for unpacked dev installs.
             UpdateShader();
-            pendingShaderReload = true;
         }
 
         private void UpdateShader()
         {
-            UpdateFinalShader();
+            if (!canRewriteShaderAssets) return;
+
             UpdateColorMapShader();
-        }
-
-        private void UpdateFinalShader()
-        {
-            if (!File.Exists(shaderPath))
-            {
-                capi?.Logger.Error($"[VibrantShaders] Shader file not found: {shaderPath}");
-                return;
-            }
-
-            try
-            {
-                string shaderCode = File.ReadAllText(shaderPath);
-
-                // Update const values using regex
-                shaderCode = UpdateConstValue(shaderCode, "VIBRANCE_STRENGTH", vibranceStrength);
-                shaderCode = UpdateConstValue(shaderCode, "WARM_SHADOWS", warmShadows);
-                shaderCode = UpdateConstValue(shaderCode, "COOL_HIGHLIGHTS", coolHighlights);
-                shaderCode = UpdateConstValue(shaderCode, "VIGNETTE_STRENGTH", vignetteStrength);
-                shaderCode = UpdateConstValue(shaderCode, "VIGNETTE_SOFTNESS", vignetteSoftness);
-                shaderCode = UpdateConstValue(shaderCode, "FILM_GRAIN", filmGrain);
-                shaderCode = UpdateConstValue(shaderCode, "MOONLIGHT_STRENGTH", moonlightStrength);
-                shaderCode = UpdateConstValue(shaderCode, "MOONLIGHT_BLUE_TINT", moonlightBlueTint);
-                shaderCode = UpdateConstValue(shaderCode, "BLUE_BOOST", blueBoost);
-                shaderCode = UpdateConstValue(shaderCode, "GREEN_BOOST", greenBoost);
-                shaderCode = UpdateConstValue(shaderCode, "WARM_BOOST", warmBoost);
-                shaderCode = UpdateConstValue(shaderCode, "SHADOW_BLUENESS", shadowBlueness);
-                shaderCode = UpdateConstValue(shaderCode, "TONEMAP_STRENGTH", tonemapStrength);
-                shaderCode = UpdateConstValue(shaderCode, "BLOOM_STRENGTH", bloomStrength);
-                shaderCode = UpdateConstValue(shaderCode, "BLOOM_SOFT_KNEE", bloomSoftKnee);
-                shaderCode = UpdateConstValue(shaderCode, "DEPTH_HAZE_STRENGTH", depthHazeStrength);
-                shaderCode = UpdateConstValue(shaderCode, "DEPTH_HAZE_DISTANCE", depthHazeDistance);
-                shaderCode = UpdateConstValue(shaderCode, "GODRAY_STRENGTH", godrayStrength);
-                shaderCode = UpdateConstValue(shaderCode, "SCENE_LIFT_STRENGTH", sceneLiftStrength);
-                shaderCode = UpdateConstValue(shaderCode, "LOCAL_CONTRAST_STRENGTH", localContrastStrength);
-                shaderCode = UpdateConstValue(shaderCode, "COLOR_RICHNESS", colorRichness);
-                shaderCode = UpdateConstValue(shaderCode, "EARTH_TONE_SEPARATION", earthToneSeparation);
-                shaderCode = UpdateConstValue(shaderCode, "SEASON_GRASS_CORRECTION", seasonGrassCorrection);
-                shaderCode = UpdateConstValue(shaderCode, "GOLDEN_HOUR_STRENGTH", goldenHourStrength);
-
-                File.WriteAllText(shaderPath, shaderCode);
-
-                capi?.Logger.Debug("[VibrantShaders] Shader updated");
-            }
-            catch (Exception ex)
-            {
-                capi?.Logger.Error($"[VibrantShaders] Failed to update shader: {ex.Message}");
-            }
+            pendingShaderReload = true;
         }
 
         private void UpdateColorMapShader()
@@ -383,18 +320,18 @@ namespace VibrantShaders
                 string shaderCode = File.ReadAllText(colorMapShaderPath);
                 shaderCode = UpdateConstIntValue(shaderCode, "VIBRANT_SEASONAL_GRASS_MAP_INDEX", seasonalGrassMapIndex);
                 shaderCode = UpdateConstIntValue(shaderCode, "VIBRANT_CLIMATE_PLANT_MAP_INDEX", climatePlantMapIndex);
-                shaderCode = UpdateConstValue(shaderCode, "VIBRANT_SEASONAL_GRASS_INFLUENCE", seasonalGrassInfluence);
-                shaderCode = UpdateConstValue(shaderCode, "VIBRANT_CLIMATE_PLANT_INFLUENCE", climatePlantInfluence);
-                shaderCode = UpdateConstValue(shaderCode, "VIBRANT_FROST_TINT_INFLUENCE", frostTintInfluence);
+                shaderCode = UpdateConstValue(shaderCode, "VIBRANT_SEASONAL_GRASS_INFLUENCE", Effective(seasonalGrassInfluence, 1f));
+                shaderCode = UpdateConstValue(shaderCode, "VIBRANT_CLIMATE_PLANT_INFLUENCE", Effective(climatePlantInfluence, 1f));
+                shaderCode = UpdateConstValue(shaderCode, "VIBRANT_FROST_TINT_INFLUENCE", Effective(frostTintInfluence, 1f));
                 File.WriteAllText(colorMapShaderPath, shaderCode);
 
                 if (File.Exists(colorMapFragmentShaderPath))
                 {
                     shaderCode = File.ReadAllText(colorMapFragmentShaderPath);
-                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_NATURALIZE_STRENGTH", colormapNaturalizeStrength);
-                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_CHROMA_STRENGTH", colormapChromaStrength);
-                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_YELLOW_GREEN_GUARD", colormapYellowGreenGuard);
-                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_BRIGHTNESS", colormapBrightness);
+                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_NATURALIZE_STRENGTH", Effective(colormapNaturalizeStrength, 0f));
+                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_CHROMA_STRENGTH", Effective(colormapChromaStrength, 1f));
+                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_YELLOW_GREEN_GUARD", Effective(colormapYellowGreenGuard, 0f));
+                    shaderCode = UpdateConstValue(shaderCode, "VIBRANT_COLORMAP_BRIGHTNESS", Effective(colormapBrightness, 1f));
                     File.WriteAllText(colorMapFragmentShaderPath, shaderCode);
                 }
             }
@@ -447,11 +384,69 @@ namespace VibrantShaders
 
         private string UpdateConstValue(string code, string name, float value)
         {
-            // Match: const float NAME = 0.123;
+            // Match: const/uniform float NAME = 0.123;
             // Using invariant culture for consistent decimal format
-            string pattern = $@"(const\s+float\s+{name}\s*=\s*)-?[0-9.]+(\s*;)";
+            string pattern = $@"((?:const|uniform)\s+float\s+{name}\s*=\s*)-?[0-9.]+(\s*;)";
             string replacement = $"${{1}}{value.ToString("0.########", System.Globalization.CultureInfo.InvariantCulture)}${{2}}";
             return Regex.Replace(code, pattern, replacement);
+        }
+
+        private float Effective(float configuredValue, float disabledValue)
+        {
+            return enableVibrantShaders ? configuredValue : disabledValue;
+        }
+
+        private void ApplyFinalShaderUniforms(IShaderProgram shader, int depthTextureId)
+        {
+            SetFloatIfPresent(shader, "VIBRANCE_STRENGTH", Effective(vibranceStrength, 0f));
+            SetFloatIfPresent(shader, "WARM_SHADOWS", Effective(warmShadows, 0f));
+            SetFloatIfPresent(shader, "COOL_HIGHLIGHTS", Effective(coolHighlights, 0f));
+            SetFloatIfPresent(shader, "VIGNETTE_STRENGTH", Effective(vignetteStrength, 0f));
+            SetFloatIfPresent(shader, "VIGNETTE_SOFTNESS", vignetteSoftness);
+            SetFloatIfPresent(shader, "FILM_GRAIN", Effective(filmGrain, 0f));
+            SetFloatIfPresent(shader, "MOONLIGHT_STRENGTH", Effective(moonlightStrength, 0f));
+            SetFloatIfPresent(shader, "MOONLIGHT_BLUE_TINT", Effective(moonlightBlueTint, 0f));
+            SetFloatIfPresent(shader, "MOON_PHASE_BRIGHTNESS", capi?.World?.Calendar?.MoonPhaseBrightness ?? 1f);
+            SetFloatIfPresent(shader, "BLUE_BOOST", Effective(blueBoost, 0f));
+            SetFloatIfPresent(shader, "GREEN_BOOST", Effective(greenBoost, 0f));
+            SetFloatIfPresent(shader, "WARM_BOOST", Effective(warmBoost, 0f));
+            SetFloatIfPresent(shader, "SHADOW_BLUENESS", Effective(shadowBlueness, 0f));
+            SetFloatIfPresent(shader, "TONEMAP_STRENGTH", Effective(tonemapStrength, 0f));
+            SetFloatIfPresent(shader, "BLOOM_STRENGTH", Effective(bloomStrength, 0f));
+            SetFloatIfPresent(shader, "BLOOM_SOFT_KNEE", bloomSoftKnee);
+            SetFloatIfPresent(shader, "DEPTH_HAZE_STRENGTH", Effective(depthHazeStrength, 0f));
+            SetFloatIfPresent(shader, "DEPTH_HAZE_DISTANCE", depthHazeDistance);
+            SetFloatIfPresent(shader, "GODRAY_STRENGTH", Effective(godrayStrength, 1f));
+            SetFloatIfPresent(shader, "SCENE_LIFT_STRENGTH", Effective(sceneLiftStrength, 0f));
+            SetFloatIfPresent(shader, "LOCAL_CONTRAST_STRENGTH", Effective(localContrastStrength, 0f));
+            SetFloatIfPresent(shader, "COLOR_RICHNESS", Effective(colorRichness, 0f));
+            SetFloatIfPresent(shader, "EARTH_TONE_SEPARATION", Effective(earthToneSeparation, 0f));
+            SetFloatIfPresent(shader, "SEASON_GRASS_CORRECTION", Effective(seasonGrassCorrection, 0f));
+            SetFloatIfPresent(shader, "GOLDEN_HOUR_STRENGTH", Effective(goldenHourStrength, 0f));
+
+            if (shader.HasUniform("depthHazeEnabled"))
+            {
+                shader.Uniform("depthHazeEnabled", depthTextureId > 0 && Effective(depthHazeStrength, 0f) > 0f ? 1 : 0);
+            }
+        }
+
+        private void ApplyColorMapShaderUniforms(IShaderProgram shader)
+        {
+            SetFloatIfPresent(shader, "VIBRANT_SEASONAL_GRASS_INFLUENCE", Effective(seasonalGrassInfluence, 1f));
+            SetFloatIfPresent(shader, "VIBRANT_CLIMATE_PLANT_INFLUENCE", Effective(climatePlantInfluence, 1f));
+            SetFloatIfPresent(shader, "VIBRANT_FROST_TINT_INFLUENCE", Effective(frostTintInfluence, 1f));
+            SetFloatIfPresent(shader, "VIBRANT_COLORMAP_NATURALIZE_STRENGTH", Effective(colormapNaturalizeStrength, 0f));
+            SetFloatIfPresent(shader, "VIBRANT_COLORMAP_CHROMA_STRENGTH", Effective(colormapChromaStrength, 1f));
+            SetFloatIfPresent(shader, "VIBRANT_COLORMAP_YELLOW_GREEN_GUARD", Effective(colormapYellowGreenGuard, 0f));
+            SetFloatIfPresent(shader, "VIBRANT_COLORMAP_BRIGHTNESS", Effective(colormapBrightness, 1f));
+        }
+
+        private void SetFloatIfPresent(IShaderProgram shader, string name, float value)
+        {
+            if (shader.HasUniform(name))
+            {
+                shader.Uniform(name, value);
+            }
         }
 
         private string UpdateConstIntValue(string code, string name, int value)
@@ -481,13 +476,29 @@ namespace VibrantShaders
 
         private sealed class FinalShaderBindings : IRenderer
         {
+            private static readonly EnumShaderProgram[] ColorMapShaderPrograms =
+            {
+                EnumShaderProgram.Chunkopaque,
+                EnumShaderProgram.Chunktopsoil,
+                EnumShaderProgram.Chunktransparent,
+                EnumShaderProgram.Chunkliquid,
+                EnumShaderProgram.Helditem,
+                EnumShaderProgram.Gui,
+                EnumShaderProgram.Guitopsoil,
+                EnumShaderProgram.Standard,
+                EnumShaderProgram.Entityanimated,
+                EnumShaderProgram.Entityanimated_Oit
+            };
+
+            private readonly VibrantShadersModSystem modSystem;
             private readonly ICoreClientAPI capi;
 
             public double RenderOrder => 1.0;
             public int RenderRange => 1;
 
-            public FinalShaderBindings(ICoreClientAPI capi)
+            public FinalShaderBindings(VibrantShadersModSystem modSystem, ICoreClientAPI capi)
             {
+                this.modSystem = modSystem;
                 this.capi = capi;
             }
 
@@ -527,10 +538,29 @@ namespace VibrantShaders
                 {
                     finalShader.Uniform("zFar", capi.Render.ShaderUniforms.ZFar);
                 }
+                modSystem.ApplyFinalShaderUniforms(finalShader, depthTextureId);
 
                 if (!wasActive)
                 {
                     finalShader.Stop();
+                }
+
+                if (capi.Render.CurrentActiveShader == null)
+                {
+                    ApplyColorMapUniformsToEngineShaders();
+                }
+            }
+
+            private void ApplyColorMapUniformsToEngineShaders()
+            {
+                foreach (EnumShaderProgram program in ColorMapShaderPrograms)
+                {
+                    IShaderProgram shader = capi.Render.GetEngineShader(program);
+                    if (shader == null || shader.Disposed || shader.LoadError) continue;
+
+                    shader.Use();
+                    modSystem.ApplyColorMapShaderUniforms(shader);
+                    shader.Stop();
                 }
             }
 

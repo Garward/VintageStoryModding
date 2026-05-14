@@ -44,8 +44,10 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("Funnel", typeof(BlockEntities.BEFunnel));
             api.RegisterBlockEntityClass("CoalMotor", typeof(BlockEntities.BECoalMotor));
             api.RegisterBlockEntityClass("KineticSieve", typeof(BlockEntities.BEKineticSieve));
+            api.RegisterBlockEntityClass("PrimitiveSieve", typeof(BlockEntities.BEPrimitiveSieve));
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
             api.RegisterBlockEntityClass("KineticPress", typeof(BlockEntities.BEKineticPress));
+            api.RegisterBlockEntityClass("KineticForgePress", typeof(BlockEntities.BEKineticForgePress));
             api.RegisterBlockEntityClass("KineticIgniter", typeof(BlockEntities.BEKineticIgniter));
             api.RegisterBlockEntityClass("KineticBore", typeof(BlockEntities.BEKineticBore));
             api.RegisterBlockClass("BlockShaft", typeof(Blocks.BlockShaft));
@@ -62,8 +64,10 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockFunnel", typeof(Blocks.BlockFunnel));
             api.RegisterBlockClass("BlockCoalMotor", typeof(Blocks.BlockCoalMotor));
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
+            api.RegisterBlockClass("BlockPrimitiveSieve", typeof(Blocks.BlockPrimitiveSieve));
             api.RegisterBlockClass("BlockKineticSawmill", typeof(Blocks.BlockKineticSawmill));
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
+            api.RegisterBlockClass("BlockKineticForgePress", typeof(Blocks.BlockKineticForgePress));
             api.RegisterBlockClass("BlockKineticIgniter", typeof(Blocks.BlockKineticIgniter));
             api.RegisterBlockClass("BlockKineticBore", typeof(Blocks.BlockKineticBore));
             api.RegisterItemClass("ItemBelt", typeof(Items.ItemBelt));

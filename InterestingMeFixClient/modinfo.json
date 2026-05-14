@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "side": "client",
+    "modid": "interestingmefixclient",
+    "name": "Interesting Mining Fix - Client",
+    "authors": ["garward"],
+    "description": "Optional client companion to InterestingMeFix. Lets right-click on bugged (BE-less) muck piles be forwarded to the server so the server-side auto-heal can attach the missing block entity. Without this mod, right-clicks on bugged piles are silently dropped by the client; pickaxe breaks still heal them, but right-click only starts working after the first heal.",
+    "version": "1.0.1",
+    "dependencies": {
+        "game": "",
+        "interestingme": ""
+    }
+}

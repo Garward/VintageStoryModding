@@ -1,4 +1,7 @@
 {
+  "setting-enable_vibrant_shaders": "Enable Vibrant Shaders",
+  "setting-enable_vibrant_shaders-tooltip": "Master toggle for every VibrantShaders effect. Disable for quick side-by-side comparison with neutral shader values.",
+
   "setting-vibrance_strength": "Vibrance Strength",
   "setting-vibrance_strength-tooltip": "KWin-style vibrance in linear RGB. 0 = disabled, 0.5 = KWin 150%, 0.911 = default, 1.0 = maximum.",
 

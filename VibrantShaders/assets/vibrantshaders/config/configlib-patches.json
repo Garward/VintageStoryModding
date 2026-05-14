@@ -4,14 +4,21 @@
   "patches": {},
   "settings": [
     {
+      "code": "enable_vibrant_shaders",
+      "type": "boolean",
+      "ingui": "vibrantshaders:setting-enable_vibrant_shaders",
+      "clientSide": true,
+      "default": true
+    },
+    {
       "code": "vibrance_strength",
       "type": "float",
       "ingui": "vibrantshaders:setting-vibrance_strength",
       "clientSide": true,
-      "default": 0.91133004,
+      "default": 0.256,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -19,7 +26,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-warm_shadows",
       "clientSide": true,
-      "default": 0.035960592,
+      "default": 0.028,
       "range": {
         "min": 0.0,
         "max": 0.1
@@ -30,7 +37,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-cool_highlights",
       "clientSide": true,
-      "default": 0.018719211,
+      "default": 0.023,
       "range": {
         "min": 0.0,
         "max": 0.1
@@ -41,10 +48,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-vignette_strength",
       "clientSide": true,
-      "default": 0.20197044,
+      "default": 0.037,
       "range": {
         "min": 0.0,
-        "max": 0.5
+        "max": 0.500
       }
     },
     {
@@ -52,10 +59,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-vignette_softness",
       "clientSide": true,
-      "default": 0.44532022,
+      "default": 0.705,
       "range": {
         "min": 0.2,
-        "max": 0.8
+        "max": 0.800
       }
     },
     {
@@ -63,7 +70,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-film_grain",
       "clientSide": true,
-      "default": 0.006650246,
+      "default": 0.000,
       "range": {
         "min": 0.0,
         "max": 0.05
@@ -74,10 +81,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-moonlight_strength",
       "clientSide": true,
-      "default": 0.17955671,
+      "default": 0.000,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -85,10 +92,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-moonlight_blue_tint",
       "clientSide": true,
-      "default": 0.0,
+      "default": 0.000,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -96,10 +103,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-blue_boost",
       "clientSide": true,
-      "default": 0.13546798,
+      "default": 0.148,
       "range": {
         "min": 0.0,
-        "max": 0.5
+        "max": 0.500
       }
     },
     {
@@ -107,10 +114,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-green_boost",
       "clientSide": true,
-      "default": 0.018719226,
+      "default": 0.000,
       "range": {
         "min": 0.0,
-        "max": 0.5
+        "max": 0.500
       }
     },
     {
@@ -118,10 +125,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-warm_boost",
       "clientSide": true,
-      "default": 0.13231528,
+      "default": 0.209,
       "range": {
         "min": 0.0,
-        "max": 0.5
+        "max": 0.500
       }
     },
     {
@@ -129,7 +136,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-shadow_blueness",
       "clientSide": true,
-      "default": 0.072413795,
+      "default": 0.055,
       "range": {
         "min": 0.0,
         "max": 0.3
@@ -140,10 +147,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-tonemap_strength",
       "clientSide": true,
-      "default": 0.35,
+      "default": 0.773,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -151,7 +158,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-bloom_strength",
       "clientSide": true,
-      "default": 0.34,
+      "default": 0.990,
       "range": {
         "min": 0.0,
         "max": 1.5
@@ -162,10 +169,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-bloom_soft_knee",
       "clientSide": true,
-      "default": 0.55,
+      "default": 0.575,
       "range": {
         "min": 0.03,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -173,7 +180,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-depth_haze_strength",
       "clientSide": true,
-      "default": 0.16,
+      "default": 0.449,
       "range": {
         "min": 0.0,
         "max": 0.6
@@ -184,10 +191,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-depth_haze_distance",
       "clientSide": true,
-      "default": 0.55,
+      "default": 0.552,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -195,7 +202,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-godray_strength",
       "clientSide": true,
-      "default": 0.86,
+      "default": 0.967,
       "range": {
         "min": 0.0,
         "max": 1.25
@@ -206,7 +213,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-scene_lift_strength",
       "clientSide": true,
-      "default": 0.18,
+      "default": 0.092,
       "range": {
         "min": 0.0,
         "max": 0.6
@@ -217,10 +224,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-local_contrast_strength",
       "clientSide": true,
-      "default": 0.24,
+      "default": 0.187,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -228,10 +235,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-color_richness",
       "clientSide": true,
-      "default": 0.22,
+      "default": 0.800,
       "range": {
         "min": 0.0,
-        "max": 0.8
+        "max": 0.800
       }
     },
     {
@@ -239,10 +246,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-earth_tone_separation",
       "clientSide": true,
-      "default": 0.20,
+      "default": 0.441,
       "range": {
         "min": 0.0,
-        "max": 0.8
+        "max": 0.800
       }
     },
     {
@@ -250,10 +257,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-season_grass_correction",
       "clientSide": true,
-      "default": 0.0,
+      "default": 0.000,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -261,10 +268,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-seasonal_grass_influence",
       "clientSide": true,
-      "default": 0.45,
+      "default": 1.000,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -272,10 +279,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-climate_plant_influence",
       "clientSide": true,
-      "default": 0.35,
+      "default": 0.443,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -283,10 +290,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-frost_tint_influence",
       "clientSide": true,
-      "default": 0.0,
+      "default": 0.015,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -294,10 +301,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-colormap_naturalize_strength",
       "clientSide": true,
-      "default": 0.35,
+      "default": 0.670,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -305,7 +312,7 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-colormap_chroma_strength",
       "clientSide": true,
-      "default": 0.85,
+      "default": 1.256,
       "range": {
         "min": 0.0,
         "max": 1.5
@@ -316,10 +323,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-colormap_yellow_green_guard",
       "clientSide": true,
-      "default": 0.35,
+      "default": 0.833,
       "range": {
         "min": 0.0,
-        "max": 1.0
+        "max": 1.000
       }
     },
     {
@@ -327,9 +334,9 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-colormap_brightness",
       "clientSide": true,
-      "default": 1.05,
+      "default": 0.500,
       "range": {
-        "min": 0.5,
+        "min": 0.500,
         "max": 1.5
       }
     },
@@ -338,10 +345,10 @@
       "type": "float",
       "ingui": "vibrantshaders:setting-golden_hour_strength",
       "clientSide": true,
-      "default": 0.08,
+      "default": 0.000,
       "range": {
         "min": 0.0,
-        "max": 0.5
+        "max": 0.500
       }
     }
   ]

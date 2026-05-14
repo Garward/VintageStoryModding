@@ -55,6 +55,39 @@ What each behavior does:
 Drop more files in the same folder to add more recipes. No code changes
 needed.
 
+### Adding Forge Press operations
+
+Downstream mods can add Kinetic Forge Press operations with JSON only. Put
+files under `assets/<modid>/vkrecipe/forgepress/`. Each distinct
+`operationCode` becomes one entry in the Forge Press dropdown; multiple
+recipes may share the same operation and differ by ingredient.
+
+```json
+{
+  "ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 2 },
+  "operationCode": "plate",
+  "operationName": "Plate",
+  "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "iron" ],
+  "outputs": [
+    { "type": "item", "code": "game:metalplate-*", "quantity": 1 }
+  ],
+  "requiredTemperature": 1100,
+  "pressTicks": 4
+}
+```
+
+Fields:
+
+- `operationCode`: stable machine-readable dropdown value. Reuse it to
+  group several ingredient variants under one visible operation.
+- `operationName`: visible dropdown text.
+- `ingredient`: input stack; wildcard captures can be reused in wildcard
+  output codes.
+- `allowedVariants`: optional whitelist for the captured wildcard value.
+- `outputs`: item/block outputs produced by one completed operation.
+- `requiredTemperature`: chamber temperature required before work can run.
+- `pressTicks`: intended recipe cost in press cycles.
+
 ## 3. The BlockEntity
 
 `src/BEKineticPulper.cs`:

@@ -4,11 +4,11 @@ uniform float seaLevel;
 uniform float atlasHeight;
 uniform float seasonTemperature;
 
-const int VIBRANT_SEASONAL_GRASS_MAP_INDEX = 14;
-const int VIBRANT_CLIMATE_PLANT_MAP_INDEX = 0;
-const float VIBRANT_SEASONAL_GRASS_INFLUENCE = 0.45;
-const float VIBRANT_CLIMATE_PLANT_INFLUENCE = 0.35;
-const float VIBRANT_FROST_TINT_INFLUENCE = 0.0;
+uniform int VIBRANT_SEASONAL_GRASS_MAP_INDEX = 14;
+uniform int VIBRANT_CLIMATE_PLANT_MAP_INDEX = 0;
+uniform float VIBRANT_SEASONAL_GRASS_INFLUENCE = 1.000;
+uniform float VIBRANT_CLIMATE_PLANT_INFLUENCE = 0.443;
+uniform float VIBRANT_FROST_TINT_INFLUENCE = 0.015;
 
 out vec2 climateColorMapUv;
 out vec2 seasonColorMapUv;

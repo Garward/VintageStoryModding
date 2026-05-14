@@ -4,6 +4,10 @@ A Create-inspired kinetic power, item logistics, and automation mod for [Vintage
 
 Build a network of shafts, cogwheels, and gearboxes; power it with hand cranks or coal motors (or hook into vanilla wind/water); use it to drive querns, crushers, sieves, belts, and more.
 
+> **Important:** Vintage Kinematics is a **completely separate kinetic power system** from vanilla mechanical rotation. It has its own shafts, stress values (SU), gearboxes, and machines designed to feel more polished, consistent, and fun to use.
+>
+> You can still connect the two systems using the included **Vanilla → VK Bridge** (so your windmills and water wheels can power Kinematics machines). However, Kinematics is not an expansion or replacement of vanilla mechanical power, it's its own thing with an optional compatibility bridge.
+
 ## Features
 
 ### Power

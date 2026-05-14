@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 2 },
+	"operationCode": "plate",
+	"operationName": "Plate",
+	"allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze" ],
+	"outputs": [
+		{ "type": "item", "code": "game:metalplate-*", "quantity": 1 }
+	],
+	"requiredTemperature": 900,
+	"pressTicks": 4
+}

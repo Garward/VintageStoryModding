@@ -37,6 +37,9 @@ namespace VintageKinematics.Crafting
             {
                 foreach (var o in Outputs)
                 {
+                    // Skip wildcard output codes: they are resolved per-craft against the
+                    // ingredient's captured wildcard value (see BEBehaviorCrusherProcess).
+                    if (o?.Code?.Path?.Contains('*') == true) continue;
                     o?.Resolve(world, sourceForErrors);
                 }
             }

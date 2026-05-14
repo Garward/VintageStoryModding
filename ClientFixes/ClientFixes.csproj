@@ -6,6 +6,8 @@
     <Nullable>disable</Nullable>
     <SignAssembly>false</SignAssembly>
     <DelaySign>false</DelaySign>
+    <AssemblyName>ClientFixes</AssemblyName>
+    <RootNamespace>ClientFixes</RootNamespace>
   </PropertyGroup>
 
   <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
@@ -32,6 +34,10 @@
       <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="modinfo.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <Target Name="PackageDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">

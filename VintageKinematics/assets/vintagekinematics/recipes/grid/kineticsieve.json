@@ -1,11 +1,11 @@
 {
-	"ingredientPattern": "ILI,GFG,ISI",
+	"ingredientPattern": "IRI,GBG,ISI",
 	"ingredients": {
-		"I": { "type": "item", "code": "game:metalplate-iron", "quantity": 4 },
-		"L": { "type": "block", "code": "game:linen-*", "quantity": 4 },
+		"I": { "type": "item", "code": "game:metalplate-iron" },
+		"R": { "type": "block", "code": "game:rushmat", "quantity": 16 },
 		"G": { "type": "block", "code": "cogwheel-y", "quantity": 2 },
 		"S": { "type": "block", "code": "shaft-y" },
-		"F": { "type": "item", "code": "game:fat-rendered" }
+		"B": { "type": "item", "code": "belt" }
 	},
 	"width": 3,
 	"height": 3,

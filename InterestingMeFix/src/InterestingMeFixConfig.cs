@@ -8,6 +8,7 @@ namespace InterestingMeFix
         public bool BypassStoneMuck { get; set; } = false;
         public bool RightClickPickup { get; set; } = true;
         public bool RecoverMuckOnDestroy { get; set; } = true;
+        public bool AutoHealMissingBE { get; set; } = true;
 
         // When BypassStoneMuck is on, IME's `op: remove /dropsByType` patch leaves rock-* blocks
         // with no drops at all (so they drop themselves as placed blocks). This flag puts vanilla

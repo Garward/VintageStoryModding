@@ -1,0 +1,12 @@
+{
+  "type": "code",
+  "name": "Client Fixes",
+  "modid": "clientfixes",
+  "description": "Configurable client-side sanity fixes and quality-of-life patches.",
+  "authors": [ "garward" ],
+  "version": "0.1.0",
+  "dependencies": {
+    "game": "1.21.0"
+  },
+  "side": "client"
+}

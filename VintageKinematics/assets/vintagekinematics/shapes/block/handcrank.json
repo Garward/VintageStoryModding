@@ -1,7 +1,9 @@
 {
     "textureWidth": 16,
     "textureHeight": 16,
-    "textures": { "wood": "game:block/wood/planks/generic" },
+    "textures": {
+        "wood": "game:block/wood/planks/generic"
+    },
     "elements": [
         {
             "name": "shaft",
@@ -18,28 +20,28 @@
         },
         {
             "name": "crankarm",
-            "from": [10, 7, 7],
-            "to": [13, 9, 9],
+            "from": [7, 5, 6.5],
+            "to": [15.25, 10, 9.5],
             "faces": {
-                "north": { "texture": "#wood", "uv": [0, 0, 3, 2] },
-                "east":  { "texture": "#wood", "uv": [0, 0, 2, 2] },
-                "south": { "texture": "#wood", "uv": [0, 0, 3, 2] },
-                "west":  { "texture": "#wood", "uv": [0, 0, 2, 2] },
-                "up":    { "texture": "#wood", "uv": [0, 0, 3, 2] },
-                "down":  { "texture": "#wood", "uv": [0, 0, 3, 2] }
+                "north": { "texture": "#wood", "uv": [0, 0, 8.25, 5] },
+                "east":  { "texture": "#wood", "uv": [0, 0, 3, 5] },
+                "south": { "texture": "#wood", "uv": [0, 0, 8.25, 5] },
+                "west":  { "texture": "#wood", "uv": [0, 0, 3, 5] },
+                "up":    { "texture": "#wood", "uv": [0, 0, 8.25, 3] },
+                "down":  { "texture": "#wood", "uv": [0, 0, 8.25, 3] }
             }
         },
         {
             "name": "grip",
-            "from": [13, 4, 7],
-            "to": [14, 12, 9],
+            "from": [13.5, 1.5, 5.75],
+            "to": [16.5, 6.25, 10.25],
             "faces": {
-                "north": { "texture": "#wood", "uv": [0, 0, 1, 8] },
-                "east":  { "texture": "#wood", "uv": [0, 0, 2, 8] },
-                "south": { "texture": "#wood", "uv": [0, 0, 1, 8] },
-                "west":  { "texture": "#wood", "uv": [0, 0, 2, 8] },
-                "up":    { "texture": "#wood", "uv": [0, 0, 1, 2] },
-                "down":  { "texture": "#wood", "uv": [0, 0, 1, 2] }
+                "north": { "texture": "#wood", "uv": [0, 0, 3, 4.75] },
+                "east":  { "texture": "#wood", "uv": [0, 0, 4.5, 4.75] },
+                "south": { "texture": "#wood", "uv": [0, 0, 3, 4.75] },
+                "west":  { "texture": "#wood", "uv": [0, 0, 4.5, 4.75] },
+                "up":    { "texture": "#wood", "uv": [0, 0, 3, 4.5] },
+                "down":  { "texture": "#wood", "uv": [0, 0, 3, 4.5] }
             }
         }
     ]

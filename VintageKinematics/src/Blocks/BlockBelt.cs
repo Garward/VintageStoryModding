@@ -1,5 +1,6 @@
 using System;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
@@ -93,6 +94,15 @@ namespace VintageKinematics.Blocks
             {
                 belt.OnAxisNeighborChanged(neibpos);
             }
+        }
+
+        public override void OnEntityInside(IWorldAccessor world, Entity entity, BlockPos pos)
+        {
+            if (world.BlockAccessor.GetBlockEntity(pos) is BEBelt belt)
+            {
+                belt.PushRiderInBlock(entity);
+            }
+            base.OnEntityInside(world, entity, pos);
         }
 
         /// <summary>

@@ -1,0 +1,11 @@
+{
+    "type": "code",
+    "modid": "cropgrowthrate",
+    "name": "Crop Growth Rate",
+    "version": "0.1.0",
+    "description": "Server-side global crop growth speed multiplier with per-crop overrides. No client mod required.",
+    "authors": ["garward"],
+    "side": "Server",
+    "requiredOnClient": false,
+    "requiredOnServer": true
+}

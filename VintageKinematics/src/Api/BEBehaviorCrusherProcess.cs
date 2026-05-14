@@ -2,6 +2,7 @@ using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Util;
 using VintageKinematics.BlockEntities;
 using VintageKinematics.Crafting;
 
@@ -17,12 +18,17 @@ namespace VintageKinematics.Api
     {
         private int crushTicksAccumulated = 0;
         private string crushingItemCode = null;
+        private float crushTickMultiplier = 1f;
 
         public BEBehaviorCrusherProcess(BlockEntity be) : base(be) { }
 
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
+            if (properties != null && properties["crushTickMultiplier"].Exists)
+            {
+                crushTickMultiplier = properties["crushTickMultiplier"].AsFloat(1f);
+            }
             var piston = Blockentity.GetBehavior<BEBehaviorKineticPiston>();
             if (piston == null)
             {
@@ -48,6 +54,9 @@ namespace VintageKinematics.Api
             var recipe = registry?.FindRecipe(inputSlot.Itemstack);
             if (recipe == null) return;
 
+            int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
+            if (inputSlot.StackSize < requiredQty) return;
+
             if (Api.Side == EnumAppSide.Client)
             {
                 SpawnImpactEffects(basinPos);
@@ -62,17 +71,28 @@ namespace VintageKinematics.Api
             }
 
             crushTicksAccumulated++;
-            if (crushTicksAccumulated >= recipe.CrushTicks)
+            int effectiveTicks = (int)Math.Ceiling(recipe.CrushTicks * crushTickMultiplier);
+            if (effectiveTicks < 1) effectiveTicks = 1;
+            if (crushTicksAccumulated >= effectiveTicks)
             {
-                inputSlot.TakeOut(1);
+                // Capture wildcard value (e.g. "iron" from "ingot-iron" matched by "ingot-*") so
+                // outputs with '*' in their code resolve to the same metal as the input.
+                string captured = null;
+                if (recipe.Ingredient?.Code?.Path?.Contains('*') == true)
+                {
+                    captured = WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, inputSlot.Itemstack.Collectible.Code);
+                }
+
+                inputSlot.TakeOut(requiredQty);
                 inputSlot.MarkDirty();
 
                 if (recipe.Outputs != null)
                 {
                     foreach (var o in recipe.Outputs)
                     {
-                        if (o?.ResolvedItemstack == null) continue;
-                        ItemStack outStack = o.ResolvedItemstack.Clone();
+                        if (o == null) continue;
+                        ItemStack outStack = ResolveOutputStack(o, captured);
+                        if (outStack == null) continue;
                         outStack.StackSize = o.StackSize;
                         basin.DepositOutput(outStack);
                     }
@@ -81,6 +101,25 @@ namespace VintageKinematics.Api
                 crushTicksAccumulated = 0;
                 if (inputSlot.Empty) crushingItemCode = null;
             }
+        }
+
+        private ItemStack ResolveOutputStack(JsonItemStack o, string captured)
+        {
+            if (captured != null && o.Code?.Path?.Contains('*') == true)
+            {
+                AssetLocation substituted = new AssetLocation(o.Code.Domain, o.Code.Path.Replace("*", captured));
+                if (o.Type == EnumItemClass.Block)
+                {
+                    Block b = Api.World.GetBlock(substituted);
+                    return b == null ? null : new ItemStack(b, 1);
+                }
+                else
+                {
+                    Item it = Api.World.GetItem(substituted);
+                    return it == null ? null : new ItemStack(it, 1);
+                }
+            }
+            return o.ResolvedItemstack?.Clone();
         }
 
         private void SpawnImpactEffects(BlockPos basinPos)

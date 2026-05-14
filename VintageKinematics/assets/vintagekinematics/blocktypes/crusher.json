@@ -24,7 +24,7 @@
         }
     ],
     "entityBehaviorsByType": {
-        "*-x": [
+        "*-bronze-x": [
             {
                 "name": "Kinetic",
                 "properties": {
@@ -36,16 +36,8 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": 1
-                        }
+                        { "element": "stubXpos", "axis": "X", "ratio": 1 },
+                        { "element": "stubXneg", "axis": "X", "ratio": 1 }
                     ]
                 }
             },
@@ -53,24 +45,74 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
+                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
+                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                    ]
+                }
+            },
+            {
+                "name": "CrusherProcess",
+                "properties": {
+                    "crushTickMultiplier": 1.5
+                }
+            }
+        ],
+        "*-bronze-z": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 24
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
+                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
+                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                    ]
+                }
+            },
+            {
+                "name": "CrusherProcess",
+                "properties": {
+                    "crushTickMultiplier": 1.5
+                }
+            }
+        ],
+        "*-iron-x": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 24
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "stubXpos", "axis": "X", "ratio": 1 },
+                        { "element": "stubXneg", "axis": "X", "ratio": 1 }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
+                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
                     ]
                 }
             },
@@ -78,7 +120,7 @@
                 "name": "CrusherProcess"
             }
         ],
-        "*-z": [
+        "*-iron-z": [
             {
                 "name": "Kinetic",
                 "properties": {
@@ -90,16 +132,8 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
+                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
+                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
                     ]
                 }
             },
@@ -107,24 +141,8 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
+                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
+                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
                     ]
                 }
             },
@@ -135,37 +153,36 @@
     },
     "variantgroups": [
         {
+            "code": "metal",
+            "states": [ "bronze", "iron" ]
+        },
+        {
             "code": "axis",
-            "states": [
-                "x",
-                "z"
-            ]
+            "states": [ "x", "z" ]
         }
     ],
     "shapeByType": {
-        "*-x": {
-            "base": "block/crusher_x"
-        },
-        "*-z": {
-            "base": "block/crusher_z"
-        }
+        "*-x": { "base": "block/crusher_x" },
+        "*-z": { "base": "block/crusher_z" }
     },
     "textures": {
-        "iron": {
-            "base": "game:block/metal/sheet/iron1"
+        "iron": { "base": "game:block/metal/sheet/iron1" },
+        "wood": { "base": "game:block/wood/planks/generic" }
+    },
+    "texturesByType": {
+        "*-bronze-*": {
+            "iron": { "base": "game:block/metal/sheet/tinbronze1" },
+            "wood": { "base": "game:block/wood/planks/generic" }
         },
-        "wood": {
-            "base": "game:block/wood/planks/generic"
+        "*-iron-*": {
+            "iron": { "base": "game:block/metal/sheet/iron1" },
+            "wood": { "base": "game:block/wood/planks/generic" }
         }
     },
     "blockmaterial": "Wood",
     "creativeinventory": {
-        "general": [
-            "*-x"
-        ],
-        "vintagekinematics": [
-            "*-x"
-        ]
+        "general": [ "*-bronze-x", "*-iron-x" ],
+        "vintagekinematics": [ "*-bronze-x", "*-iron-x" ]
     },
     "lightAbsorption": 0,
     "sideopaque": {

@@ -3,7 +3,7 @@
   "modid": "vibrantshaders",
   "name": "Vibrant Shaders",
   "authors": ["Garward"],
-  "description": "Enhanced visual shaders with in-game configuration. Adds vibrance, color temperature, vignette, and film grain effects.",
+  "description": "A highly configurable client-side visual shader pack with an extreme level of sliders so you can tune the look exactly how you like. Adjust vibrance, bloom, tonemapping, haze, vignette, color balance, seasonal tinting, colormap behavior, and more directly in game.",
   "version": "1.0.0",
   "side": "Client",
   "requiredOnClient": false,

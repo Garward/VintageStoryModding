@@ -47,6 +47,10 @@
       <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="cairo-sharp">
+      <HintPath>$(VSPath)/Lib/cairo-sharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

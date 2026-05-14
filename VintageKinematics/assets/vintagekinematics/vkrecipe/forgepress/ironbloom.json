@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ironbloom", "quantity": 1 },
+	"operationCode": "refine-bloom",
+	"operationName": "Refine Bloom",
+	"outputs": [
+		{ "type": "item", "code": "game:ingot-iron", "quantity": 1 }
+	],
+	"requiredTemperature": 1100,
+	"pressTicks": 6
+}

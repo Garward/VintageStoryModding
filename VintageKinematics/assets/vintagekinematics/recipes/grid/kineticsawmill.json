@@ -1,9 +1,11 @@
 {
-	"ingredientPattern": "PPP,SBS,PPP",
+	"ingredientPattern": "PBP,SCS,PNP",
 	"ingredients": {
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood" },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
 		"S": { "type": "block", "code": "shaft-y" },
-		"B": { "type": "item", "code": "game:metalplate-iron" }
+		"C": { "type": "block", "code": "cogwheel-y" },
+		"B": { "type": "item", "code": "game:sawblade-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ] },
+		"N": { "type": "item", "code": "game:metalnailsandstrips-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ], "quantity": 2 }
 	},
 	"width": 3,
 	"height": 3,

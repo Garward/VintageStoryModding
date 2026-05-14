@@ -12,12 +12,17 @@ namespace VintageKinematics.Api
     /// </summary>
     public class BEBehaviorKineticSource : BlockEntityBehavior
     {
-        /// <summary>RPM the source produces while active.</summary>
+        /// <summary>RPM the source produces while active. Always non-negative; sign lives on <see cref="Direction"/>.</summary>
         public float TargetRPM { get; set; } = 8f;
         /// <summary>Seconds remaining of active drive. Zero means idle.</summary>
         public float DecaySeconds { get; set; } = 0f;
         /// <summary>If true, the source is permanently active at <see cref="TargetRPM"/> with no winding required.</summary>
         public bool AlwaysActive { get; set; } = false;
+        /// <summary>+1 = clockwise (default), -1 = counter-clockwise. Multiplies TargetRPM when reporting to the network.</summary>
+        public int Direction { get; set; } = 1;
+
+        /// <summary>Signed output RPM. Keeps RatedRPM (magnitude) separate from rotation sign.</summary>
+        public float SignedTargetRPM => Direction * TargetRPM;
 
         /// <summary>True when this source is currently driving the network (winding has time left, or AlwaysActive is set).</summary>
         public bool IsActive => AlwaysActive || DecaySeconds > 0f;
@@ -40,7 +45,7 @@ namespace VintageKinematics.Api
                     api.Event.RegisterCallback(_ =>
                     {
                         var mgr = api.ModLoader.GetModSystem<KineticNetworkManager>();
-                        mgr?.OnSourceChanged(Pos, TargetRPM);
+                        mgr?.OnSourceChanged(Pos, SignedTargetRPM);
                     }, 0);
                 }
                 Blockentity.RegisterGameTickListener(OnTick, 1000);
@@ -59,7 +64,7 @@ namespace VintageKinematics.Api
 
             if (AlwaysActive)
             {
-                mgr.OnSourceChanged(Pos, TargetRPM);
+                mgr.OnSourceChanged(Pos, SignedTargetRPM);
                 return;
             }
 
@@ -67,19 +72,21 @@ namespace VintageKinematics.Api
             {
                 DecaySeconds -= dt;
                 if (DecaySeconds < 0f) DecaySeconds = 0f;
-                mgr.OnSourceChanged(Pos, DecaySeconds > 0f ? TargetRPM : 0f);
+                mgr.OnSourceChanged(Pos, DecaySeconds > 0f ? SignedTargetRPM : 0f);
             }
         }
 
         /// <summary>
-        /// Activate the source for <paramref name="seconds"/>. The kinetic network
-        /// picks up the new state on the next manager tick.
+        /// Activate the source for <paramref name="seconds"/> in the given <paramref name="direction"/>
+        /// (+1 = clockwise, -1 = counter-clockwise). Re-winding with a different direction reverses
+        /// the source immediately. The kinetic network picks up the new state on the next manager tick.
         /// </summary>
-        public void Wind(float seconds = 5f)
+        public void Wind(float seconds = 5f, int direction = 1)
         {
+            Direction = direction >= 0 ? 1 : -1;
             DecaySeconds = seconds;
             var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
-            mgr?.OnSourceChanged(Pos, TargetRPM);
+            mgr?.OnSourceChanged(Pos, SignedTargetRPM);
             Blockentity.MarkDirty(true);
         }
 
@@ -88,6 +95,7 @@ namespace VintageKinematics.Api
             base.ToTreeAttributes(tree);
             tree.SetFloat("targetRPM", TargetRPM);
             tree.SetFloat("decaySeconds", DecaySeconds);
+            tree.SetInt("direction", Direction);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -95,6 +103,8 @@ namespace VintageKinematics.Api
             base.FromTreeAttributes(tree, worldAccessForResolve);
             TargetRPM = tree.GetFloat("targetRPM", 8f);
             DecaySeconds = tree.GetFloat("decaySeconds", 0f);
+            Direction = tree.GetInt("direction", 1);
+            if (Direction != -1) Direction = 1;
         }
     }
 }

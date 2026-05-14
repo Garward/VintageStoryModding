@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "_G_,PFP,RPR",
+	"ingredients": {
+		"F": { "type": "item", "code": "crusherframe" },
+		"P": { "type": "item", "code": "game:metalplate-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze" ] },
+		"G": { "type": "block", "code": "largecogwheel-y" },
+		"R": { "type": "item", "code": "game:resin" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "crusher-bronze-x", "quantity": 1 }
+}

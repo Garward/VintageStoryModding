@@ -20,6 +20,12 @@ namespace VintageKinematics.Blocks
                 {
                     ActionLangCode = "vintagekinematics:blockhelp-handcrank-wind",
                     MouseButton = EnumMouseButton.Right
+                },
+                new WorldInteraction
+                {
+                    ActionLangCode = "blockhelp-handcrank-wind-reverse",
+                    MouseButton = EnumMouseButton.Right,
+                    HotKeyCode = "sneak"
                 }
             };
         }
@@ -40,10 +46,11 @@ namespace VintageKinematics.Blocks
 
             if (world.Side == EnumAppSide.Server)
             {
-                src.Wind(seconds: 5f);
+                int direction = byPlayer?.Entity?.Controls?.ShiftKey == true ? -1 : 1;
+                src.Wind(seconds: 5f, direction: direction);
                 if (byPlayer is IServerPlayer sp)
                 {
-                    world.Api.Logger.Debug($"[VintageKinematics] Hand crank wound by {sp.PlayerName}");
+                    world.Api.Logger.Debug($"[VintageKinematics] Hand crank wound by {sp.PlayerName} dir={direction}");
                 }
             }
             return true;

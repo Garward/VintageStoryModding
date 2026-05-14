@@ -18,7 +18,7 @@ uniform float ambientBloomLevel;
 uniform float damageVignetting;
 uniform float damageVignettingSide;
 uniform float frostVignetting;
-uniform float extraGamma = 1.0;
+uniform float extraGamma = 1.000;
 uniform float windWaveCounter;
 uniform float glitchEffectStrength;
 
@@ -44,38 +44,37 @@ layout(location = 0) out vec4 outColor;
 
 // ============================================
 // VIBRANT SHADERS - NEW EFFECTS ONLY
+// Tunables driven by C# uniform pushes (see VibrantShadersModSystem).
+// Defaults below let the shader compile/run before C# pushes values.
 // ============================================
-const float VIBRANCE_STRENGTH = 0.91133004; // Boost muted colors (0.0-1.0)
-const float WARM_SHADOWS = 0.035960592;    // Warm tint in dark areas
-const float COOL_HIGHLIGHTS = 0.018719211; // Cool tint in bright areas
-const float VIGNETTE_STRENGTH = 0.20197044; // Subtle edge darkening (0.0-0.5)
-const float VIGNETTE_SOFTNESS = 0.44532022; // How soft the vignette is
-const float FILM_GRAIN = 0.006650246;      // Film grain amount (0 to disable)
+uniform float VIBRANCE_STRENGTH = 0.256;
+uniform float WARM_SHADOWS = 0.028;
+uniform float COOL_HIGHLIGHTS = 0.023;
+uniform float VIGNETTE_STRENGTH = 0.037;
+uniform float VIGNETTE_SOFTNESS = 0.705;
+uniform float FILM_GRAIN = 0.000;
 
-// MOONLIGHT SETTINGS
-const float MOONLIGHT_STRENGTH = 0.17955671; // Base moonlight brightness (0.0-1.0)
-const float MOONLIGHT_BLUE_TINT = 0.0;     // Blue tint amount (0.0-1.0)
-const float MOON_PHASE_BRIGHTNESS = 1.0;   // Updated by C# based on moon phase (0.0-1.0)
+uniform float MOONLIGHT_STRENGTH = 0.000;
+uniform float MOONLIGHT_BLUE_TINT = 0.000;
+uniform float MOON_PHASE_BRIGHTNESS = 1.000;
 
-// COLOR ENHANCEMENT SETTINGS
-const float BLUE_BOOST = 0.13546798;       // Boost blues/cyans (snow, sky, water)
-const float GREEN_BOOST = 0.018719226;     // Boost greens (foliage)
-const float WARM_BOOST = 0.13231528;       // Boost oranges/yellows (autumn, warm light)
-const float SHADOW_BLUENESS = 0.072413795; // Push shadows toward blue (outdoor realism)
+uniform float BLUE_BOOST = 0.148;
+uniform float GREEN_BOOST = 0.000;
+uniform float WARM_BOOST = 0.209;
+uniform float SHADOW_BLUENESS = 0.055;
 
-// SHADERPACK-STYLE FINISHING SETTINGS
-const float TONEMAP_STRENGTH = 0.35;       // ACES highlight rolloff amount
-const float BLOOM_STRENGTH = 0.34;         // Bloom intensity after soft-knee shaping
-const float BLOOM_SOFT_KNEE = 0.55;        // How gently bloom enters highlights
-const float DEPTH_HAZE_STRENGTH = 0.16;    // Distance haze amount
-const float DEPTH_HAZE_DISTANCE = 0.55;    // Lower = closer haze, higher = farther haze
-const float GODRAY_STRENGTH = 0.86;        // Tames vanilla godray contribution before final grading
-const float SCENE_LIFT_STRENGTH = 0.18;    // Raises dead shadows/midtones without washing highlights
-const float LOCAL_CONTRAST_STRENGTH = 0.24; // Screen-space midtone detail contrast
-const float COLOR_RICHNESS = 0.22;         // Filmic saturation for midtones
-const float EARTH_TONE_SEPARATION = 0.20;  // Separates flat yellow/brown terrain into warmer/cooler hues
-const float SEASON_GRASS_CORRECTION = 0.0; // Deprecated broad final-pass correction, kept off by default
-const float GOLDEN_HOUR_STRENGTH = 0.08;   // Warm dusk/dawn color separation
+uniform float TONEMAP_STRENGTH = 0.773;
+uniform float BLOOM_STRENGTH = 0.990;
+uniform float BLOOM_SOFT_KNEE = 0.575;
+uniform float DEPTH_HAZE_STRENGTH = 0.449;
+uniform float DEPTH_HAZE_DISTANCE = 0.552;
+uniform float GODRAY_STRENGTH = 0.967;
+uniform float SCENE_LIFT_STRENGTH = 0.092;
+uniform float LOCAL_CONTRAST_STRENGTH = 0.187;
+uniform float COLOR_RICHNESS = 0.800;
+uniform float EARTH_TONE_SEPARATION = 0.441;
+uniform float SEASON_GRASS_CORRECTION = 0.000;
+uniform float GOLDEN_HOUR_STRENGTH = 0.000;
 
 // ============================================
 // NEW EFFECT FUNCTIONS

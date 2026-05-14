@@ -1,8 +1,9 @@
 {
-	"ingredientPattern": "_C_,IPI,_S_",
+	"ingredientPattern": "CFC,RIR,_S_",
 	"ingredients": {
 		"C": { "type": "item", "code": "game:metalplate-copper" },
-		"P": { "type": "item", "code": "game:metalplate-copper" },
+		"F": { "type": "item", "code": "game:firestarter" },
+		"R": { "type": "item", "code": "game:resin" },
 		"I": { "type": "item", "code": "game:metalplate-iron" },
 		"S": { "type": "block", "code": "shaft-z" }
 	},

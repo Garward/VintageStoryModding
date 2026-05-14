@@ -223,7 +223,7 @@ namespace VintageKinematics.Network
                 if (src != null)
                 {
                     if (!src.IsActive) continue;
-                    net.SourceRPM = src.TargetRPM;
+                    net.SourceRPM = src.SignedTargetRPM;
                     net.SourcePos = kvp.Key;
                     return;
                 }

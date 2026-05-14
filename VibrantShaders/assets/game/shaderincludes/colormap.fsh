@@ -5,10 +5,10 @@ in float frostAlpha;
 in float seasonWeight;
 in float heretemp;
 
-const float VIBRANT_COLORMAP_NATURALIZE_STRENGTH = 0.35;
-const float VIBRANT_COLORMAP_CHROMA_STRENGTH = 0.85;
-const float VIBRANT_COLORMAP_YELLOW_GREEN_GUARD = 0.35;
-const float VIBRANT_COLORMAP_BRIGHTNESS = 1.05;
+uniform float VIBRANT_COLORMAP_NATURALIZE_STRENGTH = 0.670;
+uniform float VIBRANT_COLORMAP_CHROMA_STRENGTH = 1.256;
+uniform float VIBRANT_COLORMAP_YELLOW_GREEN_GUARD = 0.833;
+uniform float VIBRANT_COLORMAP_BRIGHTNESS = 0.500;
 
 float vibrantColormapLuma(vec3 color) {
 	return dot(color, vec3(0.2126, 0.7152, 0.0722));

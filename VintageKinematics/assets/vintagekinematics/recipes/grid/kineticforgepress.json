@@ -1,0 +1,14 @@
+{
+	"ingredientPattern": "IPI,SCS,NFN",
+	"ingredients": {
+		"I": { "type": "item", "code": "game:metalplate-iron" },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"S": { "type": "block", "code": "shaft-y" },
+		"C": { "type": "block", "code": "cogwheel-y" },
+		"N": { "type": "item", "code": "game:metalnailsandstrips-iron", "quantity": 2 },
+		"F": { "type": "item", "code": "game:firestarter" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticforgepress-x", "quantity": 1 }
+}
