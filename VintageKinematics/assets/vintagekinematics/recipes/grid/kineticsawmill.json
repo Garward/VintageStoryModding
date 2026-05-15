@@ -5,7 +5,7 @@
 		"S": { "type": "block", "code": "shaft-y" },
 		"C": { "type": "block", "code": "cogwheel-y" },
 		"B": { "type": "item", "code": "game:sawblade-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ] },
-		"N": { "type": "item", "code": "game:metalnailsandstrips-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ], "quantity": 2 }
+		"N": { "type": "item", "code": "machinebracket-iron", "quantity": 1 }
 	},
 	"width": 3,
 	"height": 3,

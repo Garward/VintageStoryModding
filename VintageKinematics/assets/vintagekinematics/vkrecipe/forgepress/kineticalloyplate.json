@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:kineticalloyblank", "quantity": 1 },
+	"operationCode": "kinetic-alloy-plate",
+	"operationName": "Kinetic Alloy Plate",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:kineticalloyplate", "quantity": 2 }
+	],
+	"requiredTemperature": 1000,
+	"pressTicks": 5
+}

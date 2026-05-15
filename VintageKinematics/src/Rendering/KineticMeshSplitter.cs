@@ -28,6 +28,9 @@ namespace VintageKinematics.Rendering
             var piston = be.GetBehavior<BEBehaviorKineticPiston>();
             if (piston != null)
                 foreach (var name in piston.ManagedElementNames) set.Add(name);
+            var stretch = be.GetBehavior<BEBehaviorKineticStretch>();
+            if (stretch != null)
+                foreach (var name in stretch.ManagedElementNames) set.Add(name);
             string[] result = new string[set.Count];
             set.CopyTo(result);
             return result;

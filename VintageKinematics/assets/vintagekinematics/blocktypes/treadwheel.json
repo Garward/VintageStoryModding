@@ -1,0 +1,121 @@
+{
+    "code": "treadwheel",
+    "class": "BlockTreadwheel",
+    "entityClass": "Treadwheel",
+    "attributes": {
+        "kineticShaftControllerOffset": { "x": 0, "y": 1, "z": 0 }
+    },
+    "entityBehaviorsByType": {
+        "*-n": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -256, "axis": "Z" } },
+            { "name": "KineticMultiblock" },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticSound", "properties": { "sound": "sounds/block/waterwheel-wood.ogg", "minRPM": 4, "volumeAt32RPM": 0.45, "pitchAt32RPM": 0.85, "pitchScalesWithRPM": false, "dedupKey": "treadwheel", "maxSimultaneous": 2 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "wheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ],
+        "*-e": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -256, "axis": "X" } },
+            { "name": "KineticMultiblock" },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticSound", "properties": { "sound": "sounds/block/waterwheel-wood.ogg", "minRPM": 4, "volumeAt32RPM": 0.45, "pitchAt32RPM": 0.85, "pitchScalesWithRPM": false, "dedupKey": "treadwheel", "maxSimultaneous": 2 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "wheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ],
+        "*-s": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -256, "axis": "Z" } },
+            { "name": "KineticMultiblock" },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticSound", "properties": { "sound": "sounds/block/waterwheel-wood.ogg", "minRPM": 4, "volumeAt32RPM": 0.45, "pitchAt32RPM": 0.85, "pitchScalesWithRPM": false, "dedupKey": "treadwheel", "maxSimultaneous": 2 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "wheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ],
+        "*-w": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -256, "axis": "X" } },
+            { "name": "KineticMultiblock" },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticSound", "properties": { "sound": "sounds/block/waterwheel-wood.ogg", "minRPM": 4, "volumeAt32RPM": 0.45, "pitchAt32RPM": 0.85, "pitchScalesWithRPM": false, "dedupKey": "treadwheel", "maxSimultaneous": 2 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "wheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ]
+    },
+    "variantgroups": [{ "code": "side", "states": ["n", "e", "s", "w"] }],
+    "behaviorsByType": {
+        "*-n": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 3,
+                    "sizez": 2,
+                    "cposition": { "x": 1, "y": 0, "z": 0 }
+                }
+            }
+        ],
+        "*-e": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 2,
+                    "sizey": 3,
+                    "sizez": 3,
+                    "cposition": { "x": 1, "y": 0, "z": 1 }
+                }
+            }
+        ],
+        "*-s": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 3,
+                    "sizez": 2,
+                    "cposition": { "x": 1, "y": 0, "z": 1 }
+                }
+            }
+        ],
+        "*-w": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 2,
+                    "sizey": 3,
+                    "sizez": 3,
+                    "cposition": { "x": 0, "y": 0, "z": 1 }
+                }
+            }
+        ]
+    },
+    "shapeByType": {
+        "*-n": { "base": "block/treadwheel", "rotateY": 270 },
+        "*-e": { "base": "block/treadwheel", "rotateY": 180 },
+        "*-s": { "base": "block/treadwheel", "rotateY": 90 },
+        "*-w": { "base": "block/treadwheel", "rotateY": 0 }
+    },
+    "textures": {
+        "wood": { "base": "game:block/wood/planks/generic" },
+        "darkwood": { "base": "game:block/wood/debarked/oak" },
+        "metal": { "base": "game:block/metal/sheet/iron1" }
+    },
+    "guiTransform": {
+        "translation": { "x": -4, "y": 7, "z": 19 },
+        "rotation": { "x": -22.6, "y": 134, "z": 0 },
+        "scale": 0.4
+    },
+    "tpHandTransform": {
+        "rotation": { "x": 0, "y": -9, "z": -34 },
+        "scale": 0.5
+    },
+    "blockmaterial": "Wood",
+    "resistance": 2,
+    "creativeinventory": { "general": ["*-n"], "vintagekinematics": ["*-n"] },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+}

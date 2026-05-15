@@ -453,6 +453,9 @@ namespace HandbookCache
         private static readonly AccessTools.FieldRef<GuiDialogHandbook, GuiComposer> OverviewGui =
             AccessTools.FieldRefAccess<GuiDialogHandbook, GuiComposer>("overviewGui");
 
+        private static readonly AccessTools.FieldRef<GuiDialogHandbook, Stack<BrowseHistoryElement>> BrowseHistory =
+            AccessTools.FieldRefAccess<GuiDialogHandbook, Stack<BrowseHistoryElement>>("browseHistory");
+
         private static readonly AccessTools.FieldRef<GuiDialogHandbook, bool> LoadingPagesAsync =
             AccessTools.FieldRefAccess<GuiDialogHandbook, bool>("loadingPagesAsync");
 
@@ -483,8 +486,13 @@ namespace HandbookCache
                 return true;
             }
 
-            HandbookFilterCachePatch.ApplyFilter(__instance);
             ICoreClientAPI capi = ClientApi(__instance);
+            HandbookFilterCachePatch.ApplyFilter(__instance);
+            if (!TryOpenLockedPage(__instance, capi))
+            {
+                FocusSearchField(overviewGui);
+            }
+
             if (capi.IsSinglePlayer && !capi.OpenedToLan && !capi.Settings.Bool["noHandbookPause"])
             {
                 capi.PauseGame(true);
@@ -499,6 +507,7 @@ namespace HandbookCache
             if (LoadingPagesAsync(__instance)) return;
             if (OverviewGui(__instance) == null) return;
 
+            TryOpenLockedPage(__instance, ClientApi(__instance));
             WarmedByDialog.GetOrCreateValue(__instance).Ready = true;
             HandbookCacheDiagnostics.Log(ClientApi(__instance), "Open marked overview warmed");
         }
@@ -507,6 +516,25 @@ namespace HandbookCache
         {
             if (dialog == null) return;
             WarmedByDialog.Remove(dialog);
+        }
+
+        private static void FocusSearchField(GuiComposer overviewGui)
+        {
+            GuiElementTextInput searchField = overviewGui?.GetTextInput("searchField");
+            if (searchField == null) return;
+
+            overviewGui.FocusElement(searchField.TabIndex);
+        }
+
+        private static bool TryOpenLockedPage(GuiDialogHandbook dialog, ICoreClientAPI capi)
+        {
+            if (dialog == null || capi == null) return false;
+            if (BrowseHistory(dialog)?.Count > 0) return false;
+
+            string pageCode = HandbookBookmarks.LockedPageCode(capi);
+            if (string.IsNullOrEmpty(pageCode)) return false;
+
+            return dialog.OpenDetailPageFor(pageCode);
         }
 
         private sealed class WarmedState

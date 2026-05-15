@@ -1,0 +1,56 @@
+{
+	"code": "reinforcedbackpack",
+	"maxstacksize": 1,
+	"behaviors": [
+		{ "name": "GroundStorable", "properties": { "layout": "SingleCenter", "collisionBox": { "x1": 0.25, "y1": 0, "z1": 0.25, "x2": 0.75, "y2": 0.375, "z2": 0.75 } } },
+		{ "name": "HeldBag" },
+		{
+			"name": "GroundStoredHeldBag",
+			"properties": {
+				"dialogTitleLangCode": "backpackcontents"
+			}
+		}
+	],
+	"attributes": {
+		"attachableToEntity": {
+			"categoryCode": "backpack",
+			"attachedShape": { "base": "game:item/bag/backpack-sturdy-attached" }
+		},
+		"wearableAttachment": true,
+		"backpack": {
+			"quantitySlots": 12,
+			"storageFlags": 189,
+			"slotBgColor": "#d0ddd4"
+		}
+	},
+	"shape": { "base": "game:item/bag/backpack-sturdy" },
+	"textures": {
+		"darktone": { "base": "game:block/leather/chromium", "overlays": ["game:block/overlay/gradient1"] },
+		"midtone": { "base": "game:block/metal/sheet/brass2", "overlays": ["game:block/overlay/gradient1"] },
+		"leather": { "base": "game:block/leather/chromium" },
+		"flaps": { "base": "game:block/leather/chromium" },
+		"bucklemetal": { "base": "game:block/metal/sheet/iron2" },
+		"metal": { "base": "game:block/metal/sheet/brass2" },
+		"wood": { "base": "game:block/metal/sheet/iron2" }
+	},
+	"storageFlags": 2,
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"guiTransform": {
+		"translation": { "x": 0, "y": 0, "z": 0 },
+		"rotation": { "x": -20, "y": 21, "z": 180 },
+		"origin": { "x": 0.53, "y": 0.35, "z": 0.5 },
+		"scale": 2.3,
+		"rotate": true
+	},
+	"tpHandTransform": {
+		"translation": { "x": -0.61, "y": -0.67, "z": -0.65 },
+		"rotation": { "x": -6, "y": 1, "z": 3 },
+		"scale": 0.86
+	},
+	"groundTransform": {
+		"translation": { "x": 0, "y": 0, "z": 0 },
+		"rotation": { "x": 180, "y": 33, "z": -180 },
+		"origin": { "x": 0.5, "y": 0, "z": 0.5 },
+		"scale": 4.5
+	}
+}

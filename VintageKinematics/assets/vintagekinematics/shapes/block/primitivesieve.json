@@ -4,7 +4,7 @@
     "textures": {
         "wood": "game:block/wood/planks/generic",
         "rushmat": "game:block/cloth/sisal-rug",
-        "dark": "game:block/wood/debarked/generic"
+        "dark": "game:block/wood/debarked/oak"
     },
     "elements": [
         {

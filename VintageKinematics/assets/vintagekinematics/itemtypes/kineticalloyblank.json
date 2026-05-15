@@ -1,0 +1,11 @@
+{
+	"code": "kineticalloyblank",
+	"shape": { "base": "item/part/kineticalloyblank" },
+	"textures": {
+		"base": { "base": "game:block/metal/ingot/iron" },
+		"accent": { "base": "game:block/metal/ingot/copper" }
+	},
+	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.35 },
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 16
+}

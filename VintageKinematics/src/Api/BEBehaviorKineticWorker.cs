@@ -71,6 +71,8 @@ namespace VintageKinematics.Api
         public float CurrentProgress => acc?.CurrentProgress ?? 0f;
         /// <summary>Threshold at which a work cycle fires.</summary>
         public float WorkPerCycle    => acc?.WorkPerCycle ?? 0f;
+        /// <summary>Minimum absolute RPM required before work progress advances.</summary>
+        public float MinRPM => acc?.MinRPM ?? 0f;
 
         /// <summary>Fires when a work cycle completes; subscribe to do the actual work.</summary>
         public event Action<KineticWorkCompletedArgs> OnWorkCompleted;

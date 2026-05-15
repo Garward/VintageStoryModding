@@ -2,6 +2,12 @@
     "code": "kineticforgepress",
     "class": "BlockKineticForgePress",
     "entityClass": "KineticForgePress",
+    "attributes": {
+        "kineticShaftCells": [
+            { "x": 0, "y": 0, "z": 1 },
+            { "x": 2, "y": 0, "z": 1 }
+        ]
+    },
     "entityBehaviorsByType": {
         "*-x": [
             {
@@ -11,6 +17,9 @@
                     "stressImpact": 40,
                     "axis": "X"
                 }
+            },
+            {
+                "name": "KineticMultiblock"
             },
             {
                 "name": "KineticWorker",
@@ -65,6 +74,9 @@
                 }
             },
             {
+                "name": "KineticMultiblock"
+            },
+            {
                 "name": "KineticWorker",
                 "properties": {
                     "workPerCycle": 360,
@@ -117,16 +129,44 @@
             ]
         }
     ],
+    "behaviorsByType": {
+        "*-x": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 2,
+                    "sizez": 3,
+                    "cposition": { "x": 1, "y": 0, "z": 1 }
+                }
+            }
+        ],
+        "*-z": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 2,
+                    "sizez": 3,
+                    "cposition": { "x": 1, "y": 0, "z": 1 }
+                }
+            }
+        ]
+    },
     "shapeByType": {
         "*-x": {
-            "base": "block/kineticpress"
+            "base": "block/kineticforgepress"
         },
         "*-z": {
-            "base": "block/kineticpress",
+            "base": "block/kineticforgepress",
             "rotateY": 90
         }
     },
+    "guiTransform": {
+        "scale": 0.45
+    },
     "blockmaterial": "Metal",
+    "resistance": 3,
     "creativeinventory": {
         "general": [
             "*-x"

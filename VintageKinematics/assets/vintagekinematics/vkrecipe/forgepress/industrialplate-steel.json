@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 3 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-industrialplate" },
+	"operationCode": "industrial-plate",
+	"operationName": "Industrial Plate",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:industrialplate-steel", "quantity": 1 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 20
+}

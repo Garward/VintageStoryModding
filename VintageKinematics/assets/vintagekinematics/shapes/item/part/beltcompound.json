@@ -1,0 +1,18 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"leather": "game:block/leather/plain",
+		"resin": "game:block/resin",
+		"fiber": "game:item/resource/rope",
+		"fat": "game:item/resource/fat"
+	},
+	"elements": [
+		{ "name": "lower-leather", "from": [2, 4.5, 3], "to": [14, 6.5, 13], "faces": { "north": { "texture": "#leather", "uv": [2, 4, 14, 7] }, "south": { "texture": "#leather", "uv": [2, 4, 14, 7] }, "east": { "texture": "#leather", "uv": [3, 4, 13, 7] }, "west": { "texture": "#leather", "uv": [3, 4, 13, 7] }, "up": { "texture": "#leather", "uv": [2, 3, 14, 13] }, "down": { "texture": "#leather", "uv": [2, 3, 14, 13] } } },
+		{ "name": "resin-layer", "from": [2.5, 6.5, 3.5], "to": [13.5, 7.4, 12.5], "faces": { "north": { "texture": "#resin", "uv": [3, 6, 14, 8] }, "south": { "texture": "#resin", "uv": [3, 6, 14, 8] }, "east": { "texture": "#resin", "uv": [4, 6, 13, 8] }, "west": { "texture": "#resin", "uv": [4, 6, 13, 8] }, "up": { "texture": "#resin", "uv": [3, 4, 14, 13] }, "down": { "texture": "#resin", "uv": [3, 4, 14, 13] } } },
+		{ "name": "upper-leather", "from": [3, 7.4, 4], "to": [13, 9.4, 12], "faces": { "north": { "texture": "#leather", "uv": [3, 7, 13, 10] }, "south": { "texture": "#leather", "uv": [3, 7, 13, 10] }, "east": { "texture": "#leather", "uv": [4, 7, 12, 10] }, "west": { "texture": "#leather", "uv": [4, 7, 12, 10] }, "up": { "texture": "#leather", "uv": [3, 4, 13, 12] }, "down": { "texture": "#leather", "uv": [3, 4, 13, 12] } } },
+		{ "name": "fiber-band-north", "from": [1.5, 9.4, 4], "to": [14.5, 10.4, 5.2], "faces": { "north": { "texture": "#fiber", "uv": [2, 9, 15, 10] }, "south": { "texture": "#fiber", "uv": [2, 9, 15, 10] }, "east": { "texture": "#fiber", "uv": [4, 9, 5, 10] }, "west": { "texture": "#fiber", "uv": [4, 9, 5, 10] }, "up": { "texture": "#fiber", "uv": [2, 4, 15, 5] }, "down": { "texture": "#fiber", "uv": [2, 4, 15, 5] } } },
+		{ "name": "fiber-band-south", "from": [1.5, 9.4, 10.8], "to": [14.5, 10.4, 12], "faces": { "north": { "texture": "#fiber", "uv": [2, 9, 15, 10] }, "south": { "texture": "#fiber", "uv": [2, 9, 15, 10] }, "east": { "texture": "#fiber", "uv": [11, 9, 12, 10] }, "west": { "texture": "#fiber", "uv": [11, 9, 12, 10] }, "up": { "texture": "#fiber", "uv": [2, 11, 15, 12] }, "down": { "texture": "#fiber", "uv": [2, 11, 15, 12] } } },
+		{ "name": "fat-plug", "from": [6.5, 10.4, 6.5], "to": [9.5, 11.8, 9.5], "faces": { "north": { "texture": "#fat", "uv": [6, 10, 10, 12] }, "south": { "texture": "#fat", "uv": [6, 10, 10, 12] }, "east": { "texture": "#fat", "uv": [6, 10, 10, 12] }, "west": { "texture": "#fat", "uv": [6, 10, 10, 12] }, "up": { "texture": "#fat", "uv": [6, 6, 10, 10] }, "down": { "texture": "#fat", "uv": [6, 6, 10, 10] } } }
+	]
+}

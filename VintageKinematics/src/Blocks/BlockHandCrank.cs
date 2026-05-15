@@ -23,7 +23,7 @@ namespace VintageKinematics.Blocks
                 },
                 new WorldInteraction
                 {
-                    ActionLangCode = "blockhelp-handcrank-wind-reverse",
+                    ActionLangCode = "vintagekinematics:blockhelp-handcrank-wind-reverse",
                     MouseButton = EnumMouseButton.Right,
                     HotKeyCode = "sneak"
                 }

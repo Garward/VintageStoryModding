@@ -1,0 +1,16 @@
+{
+	"code": "valvebody",
+	"variantgroups": [
+		{ "code": "metal", "states": ["brass"] }
+	],
+	"shape": { "base": "item/part/valvebody" },
+	"textures": {
+		"metal": { "base": "game:block/metal/ingot/{metal}" }
+	},
+	"attributes": {
+		"handbook": { "groupBy": ["valvebody-*"] }
+	},
+	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.4 },
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 8
+}

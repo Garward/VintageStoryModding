@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:beltcompound", "quantity": 1 },
+	"operationCode": "cure-belt-compound",
+	"operationName": "Cure Belt Compound",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:belt", "quantity": 32 }
+	],
+	"requiredTemperature": 350,
+	"pressTicks": 4
+}

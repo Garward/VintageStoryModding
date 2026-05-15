@@ -1,6 +1,7 @@
 using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
@@ -23,7 +24,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel == null) return false;
-            BEKineticForgePress be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BEKineticForgePress;
+            BEKineticForgePress be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BEKineticForgePress;
             if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
             return be.OnPlayerRightClick(byPlayer, blockSel);
         }

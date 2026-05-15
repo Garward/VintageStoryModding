@@ -1,0 +1,12 @@
+{
+	"code": "poweredtoolassembly",
+	"shape": { "base": "item/part/poweredtoolassembly" },
+	"textures": {
+		"body": { "base": "game:block/metal/plate/brass" },
+		"metal": { "base": "game:block/metal/ingot/iron" },
+		"cog": { "base": "game:block/wood/planks/oak1" }
+	},
+	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.4 },
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 16
+}

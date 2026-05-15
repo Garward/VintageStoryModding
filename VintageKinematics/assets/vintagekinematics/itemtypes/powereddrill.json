@@ -1,0 +1,85 @@
+{
+	"mainpurpose": "Fueled post-forge mining tool",
+	"code": "powereddrill",
+	"class": "ItemPoweredDrill",
+	"tags": ["tool", "tool-pickaxe", "tool-shovel"],
+	"storageFlags": 5,
+	"variantgroups": [
+		{ "code": "metal", "states": ["iron", "meteoriciron", "steel"] }
+	],
+	"shape": { "base": "item/tool/powereddrill" },
+	"textures": {
+		"body": { "base": "game:block/metal/plate/brass" },
+		"metal": { "base": "game:block/metal/ingot/{metal}" },
+		"handle": { "base": "game:block/metal/ingot/iron" },
+		"cog": { "base": "game:block/metal/plate/brass" }
+	},
+	"attributes": {
+		"heldItemPitchFollow": 0.9,
+		"handbook": { "groupBy": ["powereddrill-*"] },
+		"attachableToEntity": { "categoryCode": "toolholding" },
+		"slotRefillIdentifier": "powereddrill"
+	},
+	"behaviors": [
+		{
+			"name": "GroundStorable",
+			"properties": {
+				"layout": "WallHalves",
+				"wallOffY": 1,
+				"ctrlKey": true,
+				"selectionBox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.1, "z2": 1 },
+				"collisionBox": { "x1": 0, "y1": 0, "z1": 0, "x2": 0, "y2": 0, "z2": 0 }
+			}
+		},
+		{ "name": "Buffable" }
+	],
+	"tool": "pickaxe",
+	"heldTpHitAnimation": "drillactive",
+	"heldTpUseAnimation": "drill",
+	"tooltierbytype": {
+		"*-iron": 4,
+		"*-meteoriciron": 4,
+		"*-steel": 5
+	},
+	"miningspeedbytype": {
+		"powereddrill-iron": {
+			"ceramic": 3.4375,
+			"stone": 9.375,
+			"ore": 9.375,
+			"metal": 9.375,
+			"soil": 7.5,
+			"sand": 7.5,
+			"ice": 4.375
+		},
+		"powereddrill-meteoriciron": {
+			"ceramic": 3.75,
+			"stone": 10,
+			"ore": 10,
+			"metal": 10,
+			"soil": 8.125,
+			"sand": 8.125,
+			"ice": 4.6875
+		},
+		"powereddrill-steel": {
+			"ceramic": 4.0625,
+			"stone": 11.25,
+			"ore": 11.25,
+			"metal": 11.25,
+			"soil": 8.75,
+			"sand": 8.75,
+			"ice": 5.3125
+		}
+	},
+	"guiTransform": {
+		"translation": { "x": -11, "y": 15, "z": 0 },
+		"rotation": { "x": -141, "y": -1, "z": -124 },
+		"scale": 2.97
+	},
+	"tpHandTransform": {
+		"translation": { "x": -0.9, "y": -0.65, "z": -0.7 },
+		"rotation": { "x": -2, "y": 7, "z": -169 },
+		"scale": 0.7
+	},
+	"maxstacksize": 1,
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] }
+}

@@ -574,7 +574,7 @@ void main(void)
     // VANILLA VIGNETTE EFFECTS (unchanged)
     // ============================================
 
-    float dist = length(position) * 2.0;  // 0 at center, ~1.4 at corners
+    float dist = length(position);
     float grayvignette = 1 - smoothstep(1.1, 0.75 - 0.45, dist);
 
     // Frost vignetting

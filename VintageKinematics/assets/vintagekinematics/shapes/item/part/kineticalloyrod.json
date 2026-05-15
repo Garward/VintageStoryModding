@@ -1,0 +1,14 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"base": "game:block/metal/ingot/iron",
+		"accent": "game:block/metal/ingot/copper"
+	},
+	"elements": [
+		{ "name": "rod-left", "from": [3, 5, 3], "to": [5.4, 10, 13], "faces": { "north": { "texture": "#base", "uv": [3, 5, 5, 10] }, "south": { "texture": "#base", "uv": [3, 5, 5, 10] }, "east": { "texture": "#base", "uv": [3, 5, 13, 10] }, "west": { "texture": "#base", "uv": [3, 5, 13, 10] }, "up": { "texture": "#base", "uv": [3, 3, 5, 13] }, "down": { "texture": "#base", "uv": [3, 3, 5, 13] } } },
+		{ "name": "rod-right", "from": [10.6, 5, 3], "to": [13, 10, 13], "faces": { "north": { "texture": "#base", "uv": [11, 5, 13, 10] }, "south": { "texture": "#base", "uv": [11, 5, 13, 10] }, "east": { "texture": "#base", "uv": [3, 5, 13, 10] }, "west": { "texture": "#base", "uv": [3, 5, 13, 10] }, "up": { "texture": "#base", "uv": [11, 3, 13, 13] }, "down": { "texture": "#base", "uv": [11, 3, 13, 13] } } },
+		{ "name": "copper-tie-front", "from": [4.6, 7, 4], "to": [11.4, 8.4, 5.7], "faces": { "north": { "texture": "#accent", "uv": [5, 7, 11, 8] }, "south": { "texture": "#accent", "uv": [5, 7, 11, 8] }, "east": { "texture": "#accent", "uv": [4, 7, 6, 8] }, "west": { "texture": "#accent", "uv": [4, 7, 6, 8] }, "up": { "texture": "#accent", "uv": [5, 4, 11, 6] }, "down": { "texture": "#accent", "uv": [5, 4, 11, 6] } } },
+		{ "name": "copper-tie-back", "from": [4.6, 7, 10.3], "to": [11.4, 8.4, 12], "faces": { "north": { "texture": "#accent", "uv": [5, 7, 11, 8] }, "south": { "texture": "#accent", "uv": [5, 7, 11, 8] }, "east": { "texture": "#accent", "uv": [10, 7, 12, 8] }, "west": { "texture": "#accent", "uv": [10, 7, 12, 8] }, "up": { "texture": "#accent", "uv": [5, 10, 11, 12] }, "down": { "texture": "#accent", "uv": [5, 10, 11, 12] } } }
+	]
+}

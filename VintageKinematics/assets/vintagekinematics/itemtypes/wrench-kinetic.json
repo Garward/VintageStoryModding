@@ -1,0 +1,24 @@
+{
+    "code": "wrench-kinetic",
+    "class": "ItemKineticWrench",
+    "shape": { "base": "item/tool/kineticwrench" },
+    "textures": {
+        "metal": { "base": "game:block/metal/plate/copper" },
+        "wood": { "base": "game:block/wood/planks/generic" }
+    },
+    "guiTransform": {
+        "translation": { "x": 0, "y": 2, "z": 0 },
+        "rotation": { "x": 145, "y": -35, "z": 0 },
+        "scale": 2.2
+    },
+    "tpHandTransform": {
+        "translation": { "x": -0.9, "y": -0.8, "z": -0.7 },
+        "rotation": { "x": -8, "y": 0, "z": -115 },
+        "scale": 0.7
+    },
+    "creativeinventory": {
+        "general": [ "*" ],
+        "vintagekinematics": [ "*" ]
+    },
+    "maxstacksize": 1
+}

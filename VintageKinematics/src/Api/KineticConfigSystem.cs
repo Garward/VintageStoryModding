@@ -25,17 +25,20 @@ namespace VintageKinematics.Api
             }
             cfg ??= new VintageKinematicsConfig();
 
-            bool wrote = false;
-            wrote |= EnsureConsumer(cfg, "kineticquern");
-            wrote |= EnsureGenerator(cfg, "handcrank");
-            wrote |= EnsureGenerator(cfg, "creativemotor");
-            wrote |= EnsureSieveOverrideStub(cfg, "game:nugget-*");
-            wrote |= EnsureSieveOverrideStub(cfg, "game:gem-*");
+            cfg.Consumers ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.ConsumerOverride>();
+            cfg.Generators ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.GeneratorOverride>();
+            cfg.SieveYieldOverrides ??= new System.Collections.Generic.Dictionary<string, float>();
+
+            EnsureConsumer(cfg, "kineticquern");
+            EnsureGenerator(cfg, "handcrank");
+            EnsureGenerator(cfg, "creativemotor");
+            EnsureSieveOverrideStub(cfg, "game:nugget-*");
+            EnsureSieveOverrideStub(cfg, "game:gem-*");
 
             try
             {
-                if (wrote || !ConfigFileExists(api))
-                    api.StoreModConfig(cfg, ConfigFilename);
+                // Keep existing config files up to date when new tunables are added.
+                api.StoreModConfig(cfg, ConfigFilename);
             }
             catch (System.Exception ex)
             {
@@ -71,12 +74,6 @@ namespace VintageKinematics.Api
             if (cfg.SieveYieldOverrides.ContainsKey(code)) return false;
             cfg.SieveYieldOverrides[code] = 1f;
             return true;
-        }
-
-        private static bool ConfigFileExists(ICoreAPI api)
-        {
-            try { return api.LoadModConfig<VintageKinematicsConfig>(ConfigFilename) != null; }
-            catch { return false; }
         }
     }
 }

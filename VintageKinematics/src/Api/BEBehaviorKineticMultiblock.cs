@@ -17,6 +17,8 @@ namespace VintageKinematics.Api
     /// Two ways to declare shaft cells, mixable on the same block:
     ///
     ///   "attributes": {
+    ///     "kineticShaftControllerCell": true,                    // controller cell is a shaft
+    ///     "kineticShaftControllerOffset": { "x": 0, "y": 1, "z": 0 },
     ///     "kineticShaftCells":   [ { "x": 1, "y": 1, "z": 2 } ],   // base-orientation claim coords
     ///     "kineticShaftElements": [ "ShaftStub" ]                   // shape element names
     ///   }
@@ -81,6 +83,21 @@ namespace VintageKinematics.Api
             int sz = (int?)MbSizeZ?.GetValue(mb) ?? 1;
 
             var baseCells = new List<Vec3i>();
+
+            if (block.Attributes?["kineticShaftControllerCell"].AsBool(false) == true)
+            {
+                shaftCellOffsets.Add(PackOffset(0, 0, 0));
+            }
+
+            JsonObject controllerOffsetAttr = block.Attributes?["kineticShaftControllerOffset"];
+            if (controllerOffsetAttr != null && controllerOffsetAttr.Exists)
+            {
+                shaftCellOffsets.Add(PackOffset(
+                    controllerOffsetAttr["x"].AsInt(),
+                    controllerOffsetAttr["y"].AsInt(),
+                    controllerOffsetAttr["z"].AsInt()
+                ));
+            }
 
             JsonObject cellsAttr = block.Attributes?["kineticShaftCells"];
             if (cellsAttr != null && cellsAttr.Exists)

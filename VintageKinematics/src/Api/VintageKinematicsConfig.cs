@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 
 namespace VintageKinematics.Api
@@ -55,6 +56,39 @@ namespace VintageKinematics.Api
         public float SieveYieldMultiplier { get; set; } = 1f;
 
         /// <summary>
+        /// If true, sieves roll the loaded vanilla BlockPan panning drops for sand/gravel-like
+        /// blocks. If false, only explicit VK sieve recipes run. Useful when another mod heavily
+        /// rewrites panning and a pack wants to keep that rewrite out of kinetic automation.
+        /// </summary>
+        public bool UseVanillaPanningDrops { get; set; } = true;
+
+        /// <summary>
+        /// Extra multiplier applied only to primitive-sieve drops produced from vanilla panning
+        /// rolls. Multiplies with <see cref="SieveYieldMultiplier"/> and matching
+        /// <see cref="SieveYieldOverrides"/>. Custom VK sieve recipes are unaffected.
+        /// </summary>
+        public float PrimitiveSievePanningYieldMultiplier { get; set; } = 1f;
+
+        /// <summary>
+        /// Extra multiplier applied only to kinetic-sieve drops produced from vanilla panning
+        /// rolls. Multiplies with <see cref="SieveYieldMultiplier"/> and matching
+        /// <see cref="SieveYieldOverrides"/>. Custom VK sieve recipes are unaffected.
+        /// </summary>
+        public float KineticSievePanningYieldMultiplier { get; set; } = 1f;
+
+        /// <summary>
+        /// Fuel burn-rate multiplier for the kinetic forge press. 1.0 = normal fuel duration,
+        /// 2.0 = fuel burns twice as fast, 0.5 = fuel lasts twice as long.
+        /// </summary>
+        public float ForgePressFuelUsageSpeed { get; set; } = 1f;
+
+        /// <summary>
+        /// Fuel burn-rate multiplier for the coal motor. 1.0 = normal fuel duration,
+        /// 2.0 = fuel burns twice as fast, 0.5 = fuel lasts twice as long.
+        /// </summary>
+        public float CoalMotorFuelUsageSpeed { get; set; } = 1f;
+
+        /// <summary>
         /// Per-output-item overrides keyed by the dropped item's full code (wildcards supported,
         /// e.g. <c>"game:nugget-*"</c> or <c>"game:gem-*-rough"</c>). Final yield multiplier =
         /// <see cref="SieveYieldMultiplier"/> × first matching entry. If no entry matches, only the
@@ -103,14 +137,51 @@ namespace VintageKinematics.Api
         /// </summary>
         public float ResolveSieveYield(AssetLocation droppedCode)
         {
+            return ResolveSieveYield(droppedCode, 1f);
+        }
+
+        public float ResolveSieveYield(AssetLocation droppedCode, float sourceMultiplier)
+        {
             if (droppedCode == null || SieveYieldOverrides == null || SieveYieldOverrides.Count == 0)
-                return SieveYieldMultiplier;
+                return ClampYieldMultiplier(SieveYieldMultiplier * sourceMultiplier);
             string codeStr = droppedCode.ToString();
             foreach (var kvp in SieveYieldOverrides)
             {
-                if (WildcardUtil.Match(kvp.Key, codeStr)) return SieveYieldMultiplier * kvp.Value;
+                if (WildcardUtil.Match(kvp.Key, codeStr)) return ClampYieldMultiplier(SieveYieldMultiplier * kvp.Value * sourceMultiplier);
             }
-            return SieveYieldMultiplier;
+            return ClampYieldMultiplier(SieveYieldMultiplier * sourceMultiplier);
+        }
+
+        public float ResolvePrimitiveSievePanningYield()
+        {
+            return ClampYieldMultiplier(PrimitiveSievePanningYieldMultiplier);
+        }
+
+        public float ResolveKineticSievePanningYield()
+        {
+            return ClampYieldMultiplier(KineticSievePanningYieldMultiplier);
+        }
+
+        public float ResolveForgePressFuelUsageSpeed()
+        {
+            return ClampFuelUsageSpeed(ForgePressFuelUsageSpeed);
+        }
+
+        public float ResolveCoalMotorFuelUsageSpeed()
+        {
+            return ClampFuelUsageSpeed(CoalMotorFuelUsageSpeed);
+        }
+
+        private static float ClampFuelUsageSpeed(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value)) return 1f;
+            return GameMath.Clamp(value, 0.01f, 100f);
+        }
+
+        private static float ClampYieldMultiplier(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value)) return 1f;
+            return GameMath.Clamp(value, 0f, 100f);
         }
     }
 }

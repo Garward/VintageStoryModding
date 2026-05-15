@@ -8,12 +8,16 @@ namespace VintageKinematics.BlockEntities
 
         public override bool CanHold(ItemSlot sourceSlot)
         {
-            return base.CanHold(sourceSlot) && !ItemSlotFuelOnly.IsFuel(sourceSlot, inventory);
+            return base.CanHold(sourceSlot)
+                && !ItemSlotFuelOnly.IsFuel(sourceSlot, inventory)
+                && !ItemSlotForgePressDie.IsForgePressDie(sourceSlot);
         }
 
         public override bool CanTakeFrom(ItemSlot sourceSlot, EnumMergePriority priority = EnumMergePriority.AutoMerge)
         {
-            return base.CanTakeFrom(sourceSlot, priority) && !ItemSlotFuelOnly.IsFuel(sourceSlot, inventory);
+            return base.CanTakeFrom(sourceSlot, priority)
+                && !ItemSlotFuelOnly.IsFuel(sourceSlot, inventory)
+                && !ItemSlotForgePressDie.IsForgePressDie(sourceSlot);
         }
     }
 }

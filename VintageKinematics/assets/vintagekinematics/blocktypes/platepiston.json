@@ -213,6 +213,7 @@
         }
     },
     "blockmaterial": "Wood",
+    "resistance": 2,
     "creativeinventory": {
         "general": [
             "*-s"

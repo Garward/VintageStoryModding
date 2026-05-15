@@ -50,6 +50,7 @@
         }
     },
     "blockmaterial": "Metal",
+    "resistance": 1.5,
     "creativeinventory": {
         "general": [
             "*-s"

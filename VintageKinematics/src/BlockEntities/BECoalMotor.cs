@@ -153,7 +153,8 @@ namespace VintageKinematics.BlockEntities
 
             slot.TakeOut(1);
             slot.MarkDirty();
-            src.Wind(props.BurnDuration);
+            float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveCoalMotorFuelUsageSpeed() ?? 1f;
+            src.Wind(props.BurnDuration / fuelUsageSpeed);
         }
     }
 }

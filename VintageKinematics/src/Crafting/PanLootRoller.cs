@@ -14,6 +14,10 @@ namespace VintageKinematics.Crafting
     // Custom (non-pannable) inputs fall through to a separate VK recipe registry — added later.
     public static class PanLootRoller
     {
+        private const string DefaultRockType = "granite";
+        private const string DefaultGravelSourceCode = "gravel-" + DefaultRockType;
+        private const string DefaultSandSourceCode = "sand-" + DefaultRockType;
+
         private static Dictionary<string, PanningDrop[]> panDrops;
         private static bool initialized;
 
@@ -54,6 +58,15 @@ namespace VintageKinematics.Crafting
             return block?.Attributes?.IsTrue("pannable") == true;
         }
 
+        public static bool IsSieveablePanningSource(Block block)
+        {
+            if (block == null) return false;
+            if (IsPannable(block)) return true;
+
+            string path = block.Code?.Path;
+            return IsSandSourcePath(path) || IsGravelSourcePath(path);
+        }
+
         // Mirrors BlockPan.CreateDrop, minus the player-stat multiplier and inventory delivery.
         // Returns one rolled ItemStack or null if no drop landed this cycle.
         public static ItemStack RollPannableDrop(IWorldAccessor world, Block inputBlock)
@@ -63,18 +76,21 @@ namespace VintageKinematics.Crafting
             string code = inputBlock.Code?.ToShortString();
             if (code == null) return null;
 
-            PanningDrop[] drops = null;
-            foreach (string key in panDrops.Keys)
-            {
-                if (WildcardUtil.Match(key, code))
-                {
-                    drops = panDrops[key];
-                    break;
-                }
-            }
+            string sourceCode = GetPanSourceCode(inputBlock);
+            if (sourceCode == null) return null;
+
+            PanningDrop[] drops = FindDrops(sourceCode);
             if (drops == null || drops.Length == 0) return null;
 
-            string rocktype = world.GetBlock(new AssetLocation(code))?.Variant["rock"];
+            string rocktype = inputBlock.Variant["rock"];
+            if (rocktype == null && sourceCode != code)
+            {
+                rocktype = world.GetBlock(new AssetLocation(sourceCode))?.Variant["rock"];
+            }
+            if (rocktype == null && (IsSandSourcePath(inputBlock.Code.Path) || IsGravelSourcePath(inputBlock.Code.Path)))
+            {
+                rocktype = DefaultRockType;
+            }
 
             PanningDrop[] shuffled = (PanningDrop[])drops.Clone();
             shuffled.Shuffle(world.Rand);
@@ -93,6 +109,57 @@ namespace VintageKinematics.Crafting
                 if (rnd < val && stack != null) return stack.Clone();
             }
             return null;
+        }
+
+        private static string GetPanSourceCode(Block block)
+        {
+            string code = block.Code?.ToShortString();
+            if (code == null) return null;
+
+            if (FindDrops(code) != null) return code;
+
+            string path = block.Code.Path;
+            if (path != code && FindDrops(path) != null) return path;
+
+            // VK sieves intentionally accept the broader sand/gravel family. Vanilla panning
+            // excludes muddy/sludgy/dirty gravel, so map those to the standard gravel table.
+            if (IsSandSourcePath(path)) return DefaultSandSourceCode;
+            if (IsGravelSourcePath(path)) return DefaultGravelSourceCode;
+
+            return code;
+        }
+
+        private static PanningDrop[] FindDrops(string sourceCode)
+        {
+            if (panDrops == null || sourceCode == null) return null;
+
+            foreach (string key in panDrops.Keys)
+            {
+                if (WildcardUtil.Match(key, sourceCode)) return panDrops[key];
+            }
+
+            return null;
+        }
+
+        private static bool IsSandSourcePath(string path)
+        {
+            return path != null
+                && (path == "sand"
+                    || path.StartsWith("sand-", StringComparison.Ordinal)
+                    || path == "sandwavy"
+                    || path.StartsWith("sandwavy-", StringComparison.Ordinal));
+        }
+
+        private static bool IsGravelSourcePath(string path)
+        {
+            return path != null
+                && (path == "gravel"
+                    || path.StartsWith("gravel-", StringComparison.Ordinal)
+                    || path.StartsWith("dirtygravel", StringComparison.Ordinal)
+                    || path == "muddygravel"
+                    || path.StartsWith("muddygravel-", StringComparison.Ordinal)
+                    || path == "sludgygravel"
+                    || path.StartsWith("sludgygravel-", StringComparison.Ordinal));
         }
 
         private static ItemStack ResolveRocktype(IWorldAccessor world, PanningDrop drop, string rocktype)

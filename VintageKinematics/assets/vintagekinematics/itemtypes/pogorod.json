@@ -1,0 +1,26 @@
+{
+	"code": "pogorod",
+	"class": "ItemPogoRod",
+	"shape": { "base": "item/tool/pogorod" },
+	"textures": {
+		"metal": { "base": "game:block/metal/ingot/iron" },
+		"alloy": { "base": "game:block/metal/plate/brass" },
+		"leather": { "base": "game:block/leather/plain" },
+		"wood": { "base": "game:block/wood/planks/generic" }
+	},
+	"guiTransform": {
+		"translation": { "x": 0, "y": 6, "z": 0 },
+		"rotation": { "x": 145, "y": -35, "z": 0 },
+		"scale": 2.15
+	},
+	"tpHandTransform": {
+		"translation": { "x": -0.7, "y": -1.1, "z": -0.5 },
+		"rotation": { "x": -6, "y": 86, "z": -12 },
+		"scale": 0.72
+	},
+	"creativeinventory": {
+		"general": ["*"],
+		"vintagekinematics": ["*"]
+	},
+	"maxstacksize": 1
+}

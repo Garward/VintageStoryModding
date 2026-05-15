@@ -26,6 +26,7 @@ namespace VintageKinematics.Api
         private ILoadedSound activeSound;
         private KineticSoundCoordinator.Entry coordEntry;
         private BEBehaviorKinetic parent;
+        private bool soundLoadFailed;
 
         /// <summary>Standard BlockEntityBehavior constructor.</summary>
         public BEBehaviorKineticSound(BlockEntity be) : base(be) { }
@@ -70,13 +71,13 @@ namespace VintageKinematics.Api
             if (parent == null) return;
             if (coordEntry != null) coordEntry.NetworkId = parent.NetworkId;
 
-            float rpm = MathF.Abs(parent.CurrentRPM);
-            bool blocked = parent.IsConflicted || (parent.Network?.IsOverstressed ?? false);
+            float rpm = MathF.Abs(parent.ActualRPM);
+            bool blocked = parent.IsConflicted || parent.EffectiveNetwork.IsOverstressed;
             bool shouldPlay = !blocked && rpm >= minRPM;
 
             if (shouldPlay)
             {
-                if (activeSound == null && Api is ICoreClientAPI capi)
+                if (activeSound == null && !soundLoadFailed && Api is ICoreClientAPI capi)
                 {
                     activeSound = capi.World.LoadSound(new SoundParams
                     {
@@ -86,7 +87,14 @@ namespace VintageKinematics.Api
                         DisposeOnFinish = false,
                         Volume = volumeAt32RPM
                     });
-                    activeSound?.Start();
+                    if (activeSound == null)
+                    {
+                        soundLoadFailed = true;
+                    }
+                    else
+                    {
+                        activeSound.Start();
+                    }
                 }
                 if (activeSound != null)
                 {

@@ -1,0 +1,9 @@
+{
+	"code": "pressdie-collar",
+	"shape": { "base": "item/part/shaftcollar" },
+	"textures": { "metal": { "base": "game:block/metal/ingot/iron" } },
+	"attributes": { "forgePressDie": true },
+	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.4 },
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 1
+}

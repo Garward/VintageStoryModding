@@ -180,6 +180,7 @@
         }
     },
     "blockmaterial": "Wood",
+    "resistance": 2.5,
     "creativeinventory": {
         "general": [ "*-bronze-x", "*-iron-x" ],
         "vintagekinematics": [ "*-bronze-x", "*-iron-x" ]

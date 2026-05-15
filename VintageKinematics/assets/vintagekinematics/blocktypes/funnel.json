@@ -75,7 +75,13 @@
             }
         }
     },
+    "guiTransform": {
+        "translation": { "x": -2, "y": 4, "z": 0 },
+        "rotation": { "x": -39, "y": -127, "z": 18 },
+        "scale": 1.52
+    },
     "blockmaterial": "Metal",
+    "resistance": 1.5,
     "creativeinventory": {
         "general": [
             "*-north"

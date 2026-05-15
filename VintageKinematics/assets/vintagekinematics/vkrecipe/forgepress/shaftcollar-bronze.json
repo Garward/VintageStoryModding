@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 1 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-collar" },
+	"operationCode": "shaft-collar",
+	"operationName": "Shaft Collar",
+	"allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "brass" ],
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:shaftcollar-*", "quantity": 2 }
+	],
+	"requiredTemperature": 900,
+	"pressTicks": 3
+}

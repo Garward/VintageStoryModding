@@ -4,7 +4,7 @@
   "name": "Vibrant Shaders",
   "authors": ["Garward"],
   "description": "A highly configurable client-side visual shader pack with an extreme level of sliders so you can tune the look exactly how you like. Adjust vibrance, bloom, tonemapping, haze, vignette, color balance, seasonal tinting, colormap behavior, and more directly in game.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "side": "Client",
   "requiredOnClient": false,
   "requiredOnServer": false,

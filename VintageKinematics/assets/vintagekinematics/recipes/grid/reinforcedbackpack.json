@@ -1,0 +1,11 @@
+{
+	"ingredientPattern": "RPR,PBP,RPR",
+	"ingredients": {
+		"B": { "type": "item", "code": "game:backpack-sturdy" },
+		"P": { "type": "item", "code": "kineticalloyplate" },
+		"R": { "type": "item", "code": "kineticalloyrod" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "reinforcedbackpack", "quantity": 1 }
+}

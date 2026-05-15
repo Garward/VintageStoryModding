@@ -1,0 +1,13 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"base": "game:block/metal/ingot/iron",
+		"accent": "game:block/metal/ingot/copper"
+	},
+	"elements": [
+		{ "name": "dense-billet", "from": [2, 4, 3], "to": [14, 10, 13], "faces": { "north": { "texture": "#base", "uv": [2, 4, 14, 10] }, "south": { "texture": "#base", "uv": [2, 4, 14, 10] }, "east": { "texture": "#base", "uv": [3, 4, 13, 10] }, "west": { "texture": "#base", "uv": [3, 4, 13, 10] }, "up": { "texture": "#base", "uv": [2, 3, 14, 13] }, "down": { "texture": "#base", "uv": [2, 3, 14, 13] } } },
+		{ "name": "visible-laminate-center", "from": [1.5, 6.7, 4], "to": [14.5, 7.6, 12], "faces": { "north": { "texture": "#accent", "uv": [2, 7, 15, 8] }, "south": { "texture": "#accent", "uv": [2, 7, 15, 8] }, "east": { "texture": "#accent", "uv": [4, 7, 12, 8] }, "west": { "texture": "#accent", "uv": [4, 7, 12, 8] }, "up": { "texture": "#accent", "uv": [2, 4, 15, 12] }, "down": { "texture": "#accent", "uv": [2, 4, 15, 12] } } },
+		{ "name": "pressed-cap", "from": [4, 10, 5], "to": [12, 11.4, 11], "faces": { "north": { "texture": "#base", "uv": [4, 10, 12, 11] }, "south": { "texture": "#base", "uv": [4, 10, 12, 11] }, "east": { "texture": "#base", "uv": [5, 10, 11, 11] }, "west": { "texture": "#base", "uv": [5, 10, 11, 11] }, "up": { "texture": "#base", "uv": [4, 5, 12, 11] }, "down": { "texture": "#base", "uv": [4, 5, 12, 11] } } }
+	]
+}

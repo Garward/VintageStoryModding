@@ -1,0 +1,20 @@
+{
+	"code": "drillhead",
+	"variantgroups": [
+		{ "code": "metal", "states": ["iron", "meteoriciron", "steel"] }
+	],
+	"shape": { "base": "item/tool/drillhead" },
+	"textures": {
+		"metal": { "base": "game:block/metal/ingot/{metal}" }
+	},
+	"attributes": {
+		"handbook": { "groupBy": ["drillhead-*"] }
+	},
+	"guiTransform": {
+		"translation": { "x": -7, "y": 11, "z": 12 },
+		"rotation": { "x": 145, "y": -58, "z": 0 },
+		"scale": 2.8
+	},
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 16
+}

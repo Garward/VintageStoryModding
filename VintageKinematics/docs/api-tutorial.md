@@ -276,6 +276,46 @@ Selection box, collision box, light absorption, and break-on-controller
 behavior are all handled by the vanilla `Multiblock` behavior. You don't
 need to set those per cell.
 
+### Multiblock lessons from Treadwheel / Counterweight Drive
+
+For future large machines, decide these four things separately before
+modeling:
+
+- **Visual shape origin:** where the model is authored in shape-space.
+- **Claim footprint:** the `sizex / sizey / sizez` cells the block occupies.
+- **Controller cell:** the `cposition` cell that owns the BE and placement.
+- **Kinetic input cell:** the exact cell that should connect to shafts.
+
+Rules that came out of the Treadwheel and Counterweight Drive pass:
+
+- Directional multiblocks should use cardinal `side: [n, e, s, w]`
+  variants, not broad `axis: [x, z]` variants, when the entry face,
+  shaft face, exit point, mount point, or model silhouette matters.
+- Use one base shape plus `shapeByType.rotateY`. Do not add per-direction
+  models unless the variant is genuinely different or flipped, not merely
+  rotated.
+- Keep placement grounded by leaving `cposition.y` on the placement layer.
+  If the shaft is one or two blocks above the controller, use
+  `kineticShaftControllerOffset`, e.g. `{ "x": 0, "y": 2, "z": 0 }`.
+  Moving `cposition.y` upward makes placement claim space below the clicked
+  block and can cause false "not enough space" errors.
+- Prefer normal per-cell `selectionbox` / `collisionbox`
+  (`0..1`, `0..1`, `0..1`) with vanilla `Multiblock`. Avoid oversized
+  rotated boxes plus `offsetHitboxes`; they drift by orientation and make
+  hitbox debugging painful.
+- Add `KineticMultiblock` to any machine where only specific cells should
+  accept shaft input. Without it, every filler cell falls back to "shaft
+  passthrough" behavior.
+- Interactions must resolve through `MultiblockHelper.GetMultiblockAwareBE`
+  so clicking filler cells works.
+- Animated rotating elements need explicit `rotationOrigin`; otherwise they
+  fall back to block center and orbit around the model. Visible shaft stubs
+  should stop near the block edge so connected shaft meshes do not collide
+  badly.
+- For visuals tied to source duration, use `sourceTimed` motion:
+  `KineticPiston` for moving parts like a falling weight, and
+  `KineticStretch` for length-changing parts like a rope.
+
 ## 5d. Restricting kinetic input to specific cells (`KineticMultiblock`)
 
 By default, every filler cell of a multiblock is treated as a coaxial

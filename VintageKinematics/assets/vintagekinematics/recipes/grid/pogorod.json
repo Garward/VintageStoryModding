@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": " P ,BRB,LCL",
+	"ingredients": {
+		"P": { "type": "item", "code": "pistonhead-iron" },
+		"B": { "type": "item", "code": "pressedband-iron" },
+		"R": { "type": "item", "code": "kineticalloyrod" },
+		"L": { "type": "item", "code": "game:leather-normal-*", "name": "leather" },
+		"C": { "type": "item", "code": "shaftcollar-iron" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "pogorod", "quantity": 1 }
+}

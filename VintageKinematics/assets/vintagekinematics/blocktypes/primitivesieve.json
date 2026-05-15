@@ -79,9 +79,10 @@
     "textures": {
         "wood": { "base": "game:block/wood/planks/generic" },
         "rushmat": { "base": "game:block/cloth/sisal-rug" },
-        "dark": { "base": "game:block/wood/debarked/generic" }
+        "dark": { "base": "game:block/wood/debarked/oak" }
     },
     "blockmaterial": "Wood",
+    "resistance": 1.5,
     "creativeinventory": {
         "general": [ "*-n" ],
         "vintagekinematics": [ "*-n" ]

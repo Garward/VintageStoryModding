@@ -27,6 +27,7 @@ namespace HandbookCache
         public static bool PageMatchesCategory(GuiHandbookPage page, string categoryCode)
         {
             if (categoryCode == null) return true;
+            if (HandbookBookmarks.IsBookmarksCategory(categoryCode)) return HandbookBookmarks.IsBookmarked(page);
             if (IsModsRootCategory(categoryCode)) return false;
 
             if (TryGetModDomain(categoryCode, out string domain))
@@ -58,32 +59,30 @@ namespace HandbookCache
 
         public static GuiTab[] AppendModTabs(ICoreClientAPI capi, GuiTab[] originalTabs, IList<GuiHandbookPage> pages, string currentCategoryCode, ref int curTab)
         {
-            if (capi == null || originalTabs == null || pages == null || pages.Count == 0)
-            {
-                return originalTabs;
-            }
-
-            List<ModDomainSummary> domains = BuildDomainSummaries(capi, pages);
-            if (domains.Count == 0)
+            if (capi == null || originalTabs == null)
             {
                 return originalTabs;
             }
 
             List<GuiTab> tabs = new List<GuiTab>(originalTabs);
-            int tabIndex = tabs.Count;
-            tabs.Add(new HandbookTab
+            if (pages != null && pages.Count > 0 && BuildDomainSummaries(capi, pages).Count > 0)
             {
-                PaddingTop = 20.0,
-                DataInt = tabIndex,
-                Name = "Mods",
-                CategoryCode = ModsRootCategoryCode
-            });
+                int tabIndex = tabs.Count;
+                tabs.Add(new HandbookTab
+                {
+                    PaddingTop = 20.0,
+                    DataInt = tabIndex,
+                    Name = "Mods",
+                    CategoryCode = ModsRootCategoryCode
+                });
 
-            if (IsModsRootCategory(currentCategoryCode) || IsModDomainCategory(currentCategoryCode))
-            {
-                curTab = tabIndex;
+                if (IsModsRootCategory(currentCategoryCode) || IsModDomainCategory(currentCategoryCode))
+                {
+                    curTab = tabIndex;
+                }
             }
 
+            HandbookBookmarks.AppendBookmarkTab(capi, tabs, currentCategoryCode, ref curTab);
             return tabs.ToArray();
         }
 

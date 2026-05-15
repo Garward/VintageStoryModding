@@ -1,10 +1,10 @@
 {
 	"ingredientPattern": "BIB,BPB,SGS",
 	"ingredients": {
-		"I": { "type": "item", "code": "game:metalplate-iron" },
+		"I": { "type": "item", "code": "pressedcasing-iron" },
 		"G": { "type": "block", "code": "largecogwheel-y" },
 		"S": { "type": "block", "code": "shaft-y" },
-		"P": { "type": "item", "code": "game:metalplate-copper" },
+		"P": { "type": "item", "code": "pistonhead-iron" },
 		"B": { "type": "item", "code": "game:burnedbrick-fire", "quantity": 5 }
 	},
 	"width": 3,

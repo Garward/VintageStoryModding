@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 2 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-casing" },
+	"operationCode": "pressed-casing",
+	"operationName": "Pressed Casing",
+	"allowedVariants": [ "iron", "meteoriciron", "steel" ],
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pressedcasing-*", "quantity": 1 }
+	],
+	"requiredTemperature": 1100,
+	"pressTicks": 5
+}

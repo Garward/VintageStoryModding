@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "RCR,PBP,RCR",
+	"ingredients": {
+		"R": { "type": "item", "code": "kineticalloyrod" },
+		"P": { "type": "item", "code": "kineticalloyplate" },
+		"C": { "type": "block", "code": "cogwheel-y" },
+		"B": { "type": "item", "code": "roughbearingblank-iron" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "poweredtoolassembly", "quantity": 1 }
+}

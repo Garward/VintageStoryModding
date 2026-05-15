@@ -1,0 +1,11 @@
+{
+    "ingredientPattern": "CGC,_S_,_S_",
+    "ingredients": {
+        "C": { "type": "item", "code": "game:metalplate-copper" },
+        "G": { "type": "block", "code": "cogwheel-y" },
+        "S": { "type": "item", "code": "game:stick" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "item", "code": "wrench-kinetic", "quantity": 1 }
+}

@@ -24,9 +24,10 @@ namespace VintageKinematics.BlockEntities
     {
         public const int SlotInput = 0;
         public const int SlotFuel = 1;
+        public const int SlotDie = 11;
         public const int SlotOutputFirst = 2;
         public const int SlotOutputLast = 10;
-        public const int InventorySize = 11;
+        public const int InventorySize = 12;
         public const int PacketIdOpenDialog = 5510;
         public const int PacketIdSelectOperation = 5511;
 
@@ -36,12 +37,23 @@ namespace VintageKinematics.BlockEntities
         private const float HeatTickIntervalMs = 500f;
         private const float HeatRatePerSecond = 80f;
         private const float CoolRatePerSecond = 18f;
+        private const float InputHeatTransferMultiplier = 1.0f;
+        private const float InputCoolTransferMultiplier = 0.25f;
         private const float BellowsHeatRateMultiplier = 1.75f;
         private const float BellowsTemperatureBonus = 150f;
+        private const float SmokeParticleY = 35.5f / 16f;
+        private static readonly AssetLocation PressHitSound = new AssetLocation("sounds/effect/anvilhit");
+        private static readonly AssetLocation PressCompleteSound = new AssetLocation("game:sounds/block/anvil");
+        private static readonly Vec3d[] SmokeStackLocalPositions =
+        {
+            new Vec3d(-6f / 16f, SmokeParticleY, 22f / 16f),
+            new Vec3d(22f / 16f, SmokeParticleY, 22f / 16f)
+        };
 
         private readonly InventoryGeneric inventory;
         private IOFaceMap ioFaces;
         private GuiDialogKineticForgePress clientDialog;
+        private ItemStackDisplayRenderer activeInputRenderer;
         private float chamberTemperature = AmbientTemperature;
         private float burnSecondsRemaining;
         private float activeBurnTemperature;
@@ -49,6 +61,7 @@ namespace VintageKinematics.BlockEntities
         private int pressTicksAccumulated;
         private string pressingItemCode;
         private string pressingOperationCode;
+        private string pressingDieCode;
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticforgepress";
@@ -60,6 +73,7 @@ namespace VintageKinematics.BlockEntities
             {
                 if (slotId == SlotInput) return new ItemSlotForgePressInput(self);
                 if (slotId == SlotFuel) return new ItemSlotFuelOnly(self);
+                if (slotId == SlotDie) return new ItemSlotForgePressDie(self);
                 return new ItemSlotCrusherOutput(self);
             });
         }
@@ -69,18 +83,10 @@ namespace VintageKinematics.BlockEntities
             base.Initialize(api);
             inventory.LateInitialize("kineticforgepress-" + Pos, api);
             inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += _ => MarkDirty(true);
+            inventory.SlotModified += OnSlotModified;
             EnsureSelectedOperation();
 
-            BlockFacing inputFace = AutomationInputFace();
-            ioFaces = new IOFaceMap(Pos)
-                .MapInput(inputFace, SlotInput)
-                .MapInput(BlockFacing.UP, SlotInput);
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ioFaces.MapOutput(BlockFacing.DOWN, i);
-            }
-            ioFaces.Apply(inventory);
+            BuildIOFaceMap();
 
             if (api.Side == EnumAppSide.Server)
             {
@@ -90,6 +96,27 @@ namespace VintageKinematics.BlockEntities
 
             BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
+
+            if (api is ICoreClientAPI capi)
+            {
+                activeInputRenderer = new ItemStackDisplayRenderer(capi, Pos, new ItemStackDisplayTransform
+                {
+                    Translation = new Vec3f(0.5f, 15.25f / 16f, 0.5f),
+                    Scale = new Vec3f(0.4f, 0.4f, 0.4f),
+                    RenderRange = 32
+                });
+                capi.Event.RegisterRenderer(activeInputRenderer, EnumRenderStage.Opaque);
+                activeInputRenderer.UpdateStack(inventory[SlotInput]?.Itemstack);
+            }
+        }
+
+        private void OnSlotModified(int slotId)
+        {
+            MarkDirty(true);
+            if (slotId == SlotInput && activeInputRenderer != null)
+            {
+                activeInputRenderer.UpdateStack(inventory[SlotInput]?.Itemstack);
+            }
         }
 
         private BlockFacing AutomationInputFace()
@@ -98,16 +125,85 @@ namespace VintageKinematics.BlockEntities
             return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
         }
 
+        private void BuildIOFaceMap()
+        {
+            ioFaces = new IOFaceMap(Pos);
+            BlockFacing inputFace = AutomationInputFace();
+            BlockFacing outputFace = inputFace.Opposite;
+
+            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size))
+            {
+                MapInputCell(Pos, inputFace);
+                MapInputCell(Pos, BlockFacing.UP);
+                MapOutputCell(Pos, outputFace);
+                MapOutputCell(Pos, BlockFacing.DOWN);
+                ioFaces.Apply(inventory);
+                return;
+            }
+
+            int centerX = baseCorner.X + size.X / 2;
+            int centerZ = baseCorner.Z + size.Z / 2;
+            int minX = baseCorner.X;
+            int maxX = baseCorner.X + size.X - 1;
+            int minZ = baseCorner.Z;
+            int maxZ = baseCorner.Z + size.Z - 1;
+            int bottomY = baseCorner.Y;
+            int topY = baseCorner.Y + size.Y - 1;
+
+            BlockPos inputCell;
+            BlockPos outputCell;
+            switch (inputFace.Code)
+            {
+                case "east":
+                    inputCell = new BlockPos(maxX, bottomY, centerZ, Pos.dimension);
+                    outputCell = new BlockPos(minX, bottomY, centerZ, Pos.dimension);
+                    break;
+                case "west":
+                    inputCell = new BlockPos(minX, bottomY, centerZ, Pos.dimension);
+                    outputCell = new BlockPos(maxX, bottomY, centerZ, Pos.dimension);
+                    break;
+                case "north":
+                    inputCell = new BlockPos(centerX, bottomY, minZ, Pos.dimension);
+                    outputCell = new BlockPos(centerX, bottomY, maxZ, Pos.dimension);
+                    break;
+                case "south":
+                default:
+                    inputCell = new BlockPos(centerX, bottomY, maxZ, Pos.dimension);
+                    outputCell = new BlockPos(centerX, bottomY, minZ, Pos.dimension);
+                    break;
+            }
+
+            MapInputCell(inputCell, inputFace);
+            MapInputCell(new BlockPos(centerX, topY, centerZ, Pos.dimension), BlockFacing.UP);
+            MapOutputCell(outputCell, outputFace);
+            MapOutputCell(new BlockPos(centerX, bottomY, centerZ, Pos.dimension), BlockFacing.DOWN);
+            ioFaces.Apply(inventory);
+        }
+
+        private void MapInputCell(BlockPos cell, BlockFacing face)
+        {
+            ioFaces.MapInput(cell, face, SlotInput);
+            ioFaces.MapInput(cell, face, SlotFuel);
+        }
+
+        private void MapOutputCell(BlockPos cell, BlockFacing face)
+        {
+            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
+            {
+                ioFaces.MapOutput(cell, face, i);
+            }
+        }
+
         private void OnServerPushTick(float dt)
         {
             if (ioFaces == null) return;
-            foreach (BlockFacing face in ioFaces.OutputFaces)
+            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
             {
-                foreach (int slotId in ioFaces.OutputSlotsFor(face))
+                foreach (int slotId in entry.SlotIds)
                 {
                     ItemSlot slot = inventory[slotId];
                     if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, Pos, face, slot, OutputPushBatch);
+                    int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
                     if (moved > 0) MarkDirty(true);
                 }
             }
@@ -127,8 +223,10 @@ namespace VintageKinematics.BlockEntities
                 bool bellowsAssisted = HasPoweredBellowsAdjacent();
                 float targetTemperature = activeBurnTemperature + (bellowsAssisted ? BellowsTemperatureBonus : 0f);
                 float heatRate = HeatRatePerSecond * (bellowsAssisted ? BellowsHeatRateMultiplier : 1f);
-                burnSecondsRemaining = Math.Max(0f, burnSecondsRemaining - seconds);
+                float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveForgePressFuelUsageSpeed() ?? 1f;
+                burnSecondsRemaining = Math.Max(0f, burnSecondsRemaining - seconds * fuelUsageSpeed);
                 chamberTemperature = Approach(chamberTemperature, targetTemperature, heatRate * seconds);
+                EmitHeatingSmoke();
             }
             else
             {
@@ -136,8 +234,49 @@ namespace VintageKinematics.BlockEntities
                 if (chamberTemperature < AmbientTemperature + 0.5f) chamberTemperature = AmbientTemperature;
             }
 
-            HeatInputStack();
+            HeatInputStack(seconds);
             MarkDirty(true);
+        }
+
+        private void EmitHeatingSmoke()
+        {
+            if (Api.Side != EnumAppSide.Server) return;
+
+            foreach (Vec3d local in SmokeStackLocalPositions)
+            {
+                Vec3d at = LocalShapePointToWorld(local);
+                var particles = new SimpleParticleProperties(
+                    minQuantity: 1,
+                    maxQuantity: 2,
+                    color: ColorUtil.ToRgba(120, 90, 90, 90),
+                    minPos: at.AddCopy(-0.05, 0.0, -0.05),
+                    maxPos: at.AddCopy(0.05, 0.02, 0.05),
+                    minVelocity: new Vec3f(-0.015f, 0.045f, -0.015f),
+                    maxVelocity: new Vec3f(0.015f, 0.085f, 0.015f),
+                    lifeLength: 2.25f,
+                    gravityEffect: -0.03f,
+                    minSize: 0.18f,
+                    maxSize: 0.34f,
+                    model: EnumParticleModel.Quad
+                );
+                Api.World.SpawnParticles(particles);
+            }
+        }
+
+        private Vec3d LocalShapePointToWorld(Vec3d local)
+        {
+            double x = local.X;
+            double z = local.Z;
+            int rotateY = (int)(Block?.Shape?.rotateY ?? 0f);
+            int steps = (((rotateY / 90) % 4) + 4) % 4;
+            for (int i = 0; i < steps; i++)
+            {
+                double dx = x - 0.5;
+                double dz = z - 0.5;
+                x = 0.5 + dz;
+                z = 0.5 - dx;
+            }
+            return new Vec3d(Pos.X + x, Pos.Y + local.Y, Pos.Z + z);
         }
 
         private void TryConsumeFuel()
@@ -156,13 +295,29 @@ namespace VintageKinematics.BlockEntities
             activeBurnTemperature = props.BurnTemperature;
         }
 
-        private void HeatInputStack()
+        private void HeatInputStack(float seconds)
         {
             ItemSlot inputSlot = inventory[SlotInput];
             if (inputSlot.Empty || inputSlot.Itemstack?.Collectible == null) return;
+
             float current = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
-            float target = Math.Max(current, chamberTemperature);
-            inputSlot.Itemstack.Collectible.SetTemperature(Api.World, inputSlot.Itemstack, target);
+            float target = chamberTemperature;
+            if (Math.Abs(current - target) < 0.5f) return;
+
+            float transferSeconds = seconds * (current < target ? InputHeatTransferMultiplier : InputCoolTransferMultiplier);
+            transferSeconds *= 1f + GameMath.Clamp(Math.Abs(target - current) / 30f, 0f, 1.6f);
+
+            float newTemperature = ChangeItemTemperature(current, target, transferSeconds);
+            if (current < target)
+            {
+                float stackSize = Math.Max(1f, inputSlot.Itemstack.StackSize);
+                newTemperature = (newTemperature + (stackSize - 1f) * current) / stackSize;
+            }
+
+            int maxTemperature = MaxItemTemperature(inputSlot.Itemstack);
+            if (maxTemperature > 0) newTemperature = Math.Min(maxTemperature, newTemperature);
+
+            inputSlot.Itemstack.Collectible.SetTemperature(Api.World, inputSlot.Itemstack, newTemperature);
             inputSlot.MarkDirty();
         }
 
@@ -189,16 +344,21 @@ namespace VintageKinematics.BlockEntities
             EnsureSelectedOperation();
 
             KineticForgePressRecipe recipe = CurrentRecipe();
-            if (recipe == null || chamberTemperature < recipe.RequiredTemperature) return;
+            if (recipe == null) return;
+
+            float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
+            if (inputTemperature < recipe.RequiredTemperature) return;
 
             int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
             if (inputSlot.StackSize < requiredQty) return;
 
             string inputCode = inputSlot.Itemstack.Collectible.Code.ToString();
-            if (pressingItemCode != inputCode || pressingOperationCode != selectedOperationCode)
+            string dieCode = inventory[SlotDie].Itemstack?.Collectible?.Code?.ToString() ?? "";
+            if (pressingItemCode != inputCode || pressingOperationCode != selectedOperationCode || pressingDieCode != dieCode)
             {
                 pressingItemCode = inputCode;
                 pressingOperationCode = selectedOperationCode;
+                pressingDieCode = dieCode;
                 pressTicksAccumulated = 0;
             }
 
@@ -206,6 +366,7 @@ namespace VintageKinematics.BlockEntities
             int effectiveTicks = Math.Max(1, recipe.PressTicks);
             if (pressTicksAccumulated < effectiveTicks)
             {
+                Api.World.PlaySoundAt(PressHitSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, true, 14, 0.35f);
                 MarkDirty(true);
                 return;
             }
@@ -227,12 +388,12 @@ namespace VintageKinematics.BlockEntities
                     ItemStack outStack = ResolveOutputStack(output, captured);
                     if (outStack == null) continue;
                     outStack.StackSize = output.StackSize;
-                    outStack.Collectible.SetTemperature(Api.World, outStack, chamberTemperature);
+                    outStack.Collectible.SetTemperature(Api.World, outStack, inputTemperature);
                     DepositOutput(outStack);
                 }
             }
 
-            Api.World.PlaySoundAt(new AssetLocation("game:sounds/block/anvil"), Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, true, 16, 0.6f);
+            Api.World.PlaySoundAt(PressCompleteSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, true, 16, 0.6f);
             pressTicksAccumulated = 0;
             if (inputSlot.Empty) pressingItemCode = null;
             MarkDirty(true);
@@ -243,7 +404,7 @@ namespace VintageKinematics.BlockEntities
             ItemSlot inputSlot = inventory[SlotInput];
             if (inputSlot.Empty) return null;
             EnsureSelectedOperation();
-            return Api.ModLoader.GetModSystem<KineticForgePressRecipeRegistry>()?.FindRecipe(inputSlot.Itemstack, selectedOperationCode);
+            return Api.ModLoader.GetModSystem<KineticForgePressRecipeRegistry>()?.FindRecipe(inputSlot.Itemstack, selectedOperationCode, inventory[SlotDie].Itemstack);
         }
 
         private void EnsureSelectedOperation()
@@ -308,6 +469,22 @@ namespace VintageKinematics.BlockEntities
             return Math.Max(target, current - delta);
         }
 
+        private static float ChangeItemTemperature(float fromTemp, float toTemp, float seconds)
+        {
+            float diff = Math.Abs(fromTemp - toTemp);
+            float delta = seconds + seconds * (diff / 28f);
+            if (diff < delta || diff < 1f) return toTemp;
+            return fromTemp > toTemp ? fromTemp - delta : fromTemp + delta;
+        }
+
+        private int MaxItemTemperature(ItemStack stack)
+        {
+            if (stack == null) return 0;
+            int combustibleMax = stack.Collectible.GetCombustibleProperties(Api.World, stack, null)?.MaxTemperature ?? 0;
+            int attributeMax = stack.ItemAttributes?["maxTemperature"].AsInt(0) ?? 0;
+            return Math.Max(combustibleMax, attributeMax);
+        }
+
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
             if (Api.World is IServerWorldAccessor)
@@ -369,6 +546,7 @@ namespace VintageKinematics.BlockEntities
             pressTicksAccumulated = 0;
             pressingItemCode = null;
             pressingOperationCode = null;
+            pressingDieCode = null;
             MarkDirty(true);
         }
 
@@ -394,7 +572,7 @@ namespace VintageKinematics.BlockEntities
 
             if (clientDialog == null)
             {
-                clientDialog = new GuiDialogKineticForgePress(title, inventory, Pos, () => selectedOperationCode, OnClientSelectOperation, capi);
+                clientDialog = new GuiDialogKineticForgePress(title, inventory, Pos, () => selectedOperationCode, CurrentPressProgress, CurrentPressProgressMax, CanPressCurrentRecipe, OnClientSelectOperation, capi);
                 clientDialog.OnClosed += () => clientDialog = null;
                 clientDialog.TryOpen();
             }
@@ -412,6 +590,40 @@ namespace VintageKinematics.BlockEntities
             bw.Write(selectedOperationCode);
             ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSelectOperation, ms.ToArray());
             clientDialog?.OnOperationUpdated();
+        }
+
+        private float CurrentPressProgress()
+        {
+            return Math.Max(0, pressTicksAccumulated);
+        }
+
+        private float CurrentPressProgressMax()
+        {
+            KineticForgePressRecipe recipe = CurrentRecipe();
+            return Math.Max(1, recipe?.PressTicks ?? 1);
+        }
+
+        private bool CanPressCurrentRecipe()
+        {
+            ItemSlot inputSlot = inventory[SlotInput];
+            if (inputSlot.Empty || inputSlot.Itemstack?.Collectible == null) return false;
+
+            KineticForgePressRecipe recipe = CurrentRecipe();
+            if (recipe == null) return false;
+
+            int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
+            if (inputSlot.StackSize < requiredQty) return false;
+
+            float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
+            if (inputTemperature < recipe.RequiredTemperature) return false;
+
+            BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
+            if (kinetic == null) return false;
+            if (kinetic.IsConflicted || (kinetic.EffectiveNetwork?.IsOverstressed ?? false)) return false;
+
+            BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
+            float minRpm = Math.Max(0.01f, worker?.MinRPM ?? 0.01f);
+            return Math.Abs(kinetic.CurrentRPM) >= minRpm;
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)
@@ -440,6 +652,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetInt("pressTicks", pressTicksAccumulated);
             tree.SetString("pressingItemCode", pressingItemCode ?? "");
             tree.SetString("pressingOperationCode", pressingOperationCode ?? "");
+            tree.SetString("pressingDieCode", pressingDieCode ?? "");
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -455,24 +668,39 @@ namespace VintageKinematics.BlockEntities
             if (string.IsNullOrEmpty(pressingItemCode)) pressingItemCode = null;
             pressingOperationCode = tree.GetString("pressingOperationCode", "");
             if (string.IsNullOrEmpty(pressingOperationCode)) pressingOperationCode = null;
+            pressingDieCode = tree.GetString("pressingDieCode", "");
+            if (string.IsNullOrEmpty(pressingDieCode)) pressingDieCode = null;
             if (Api != null)
             {
                 inventory?.ResolveBlocksOrItems();
                 EnsureSelectedOperation();
             }
+            activeInputRenderer?.UpdateStack(inventory[SlotInput]?.Itemstack);
             clientDialog?.OnOperationUpdated();
         }
 
         public override void OnBlockUnloaded()
         {
             base.OnBlockUnloaded();
+            DisposeActiveInputRenderer();
             GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         public override void OnBlockRemoved()
         {
             base.OnBlockRemoved();
+            DisposeActiveInputRenderer();
             GuiDialogUtil.SafeDispose(ref clientDialog);
+        }
+
+        private void DisposeActiveInputRenderer()
+        {
+            if (Api is ICoreClientAPI capi && activeInputRenderer != null)
+            {
+                capi.Event.UnregisterRenderer(activeInputRenderer, EnumRenderStage.Opaque);
+                activeInputRenderer.Dispose();
+                activeInputRenderer = null;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
 the kinetic network's RPM. It is the system behind the crusher head, the plate
 piston, and any "moving part that goes back and forth or pushes outward."
 
-This document covers the JSON properties, the two motion modes, runtime offset
+This document covers the JSON properties, the motion modes, runtime offset
 queries, and the gotchas you need to know to model and wire pistons correctly.
 
 ## TL;DR
@@ -26,7 +26,7 @@ listing an element in this array is what makes it movable.
 |---------------|--------|-------------|---------|
 | `element`     | string | (required)  | Shape element name to translate. Must exist in the block's shape JSON. |
 | `axis`        | enum   | `Y`         | `X`, `Y`, or `Z`. Direction of motion in block-local space. |
-| `mode`        | enum   | `oscillate` | `oscillate` or `directional` (see below). |
+| `mode`        | enum   | `oscillate` | `oscillate`, `directional`, or `sourceTimed` (see below). |
 | `waveform`    | enum   | `sine`      | `sine` or `triangle`. Oscillate mode only. |
 | `travel`      | float  | `6`         | Distance in 1/16ths (voxels). Same unit as shape `from`/`to`. |
 | `ratio`       | float  | `1`         | Speed multiplier. Negative reverses direction. Semantics differ per mode. |
@@ -187,6 +187,10 @@ list them yourself.
 - **`oscillate` ignores network direction; `directional` doesn't.** If you
   want a piston that reverses when the player swaps the gearbox direction,
   you need `directional` mode. Oscillate just runs whenever there's any RPM.
+- **`sourceTimed` follows a `KineticSource` release.** It maps the current
+  source release duration to `[0, travel]`, so a visual part can make one
+  one-way trip over the whole stored burst regardless of how many seconds
+  were released.
 - **Rest pose is the shape JSON, not zero.** Don't model the element at
   `y = 0` and rely on `invert` to "lift it up to its rest pose" — that's not
   how the offset works. Model it at rest position; the offset is added on top.

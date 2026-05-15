@@ -1,0 +1,13 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": { "metal": "game:block/metal/ingot/iron" },
+	"elements": [
+		{ "name": "collar-n", "from": [3, 5.5, 2], "to": [13, 10.5, 4.2], "faces": { "north": { "texture": "#metal", "uv": [3, 6, 13, 11] }, "south": { "texture": "#metal", "uv": [3, 6, 13, 11] }, "east": { "texture": "#metal", "uv": [2, 6, 4, 11] }, "west": { "texture": "#metal", "uv": [2, 6, 4, 11] }, "up": { "texture": "#metal", "uv": [3, 2, 13, 4] }, "down": { "texture": "#metal", "uv": [3, 2, 13, 4] } } },
+		{ "name": "collar-s", "from": [3, 5.5, 11.8], "to": [13, 10.5, 14], "faces": { "north": { "texture": "#metal", "uv": [3, 6, 13, 11] }, "south": { "texture": "#metal", "uv": [3, 6, 13, 11] }, "east": { "texture": "#metal", "uv": [12, 6, 14, 11] }, "west": { "texture": "#metal", "uv": [12, 6, 14, 11] }, "up": { "texture": "#metal", "uv": [3, 12, 13, 14] }, "down": { "texture": "#metal", "uv": [3, 12, 13, 14] } } },
+		{ "name": "collar-w", "from": [2, 5.5, 4], "to": [4.2, 10.5, 12], "faces": { "north": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "south": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "east": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "west": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "up": { "texture": "#metal", "uv": [2, 4, 4, 12] }, "down": { "texture": "#metal", "uv": [2, 4, 4, 12] } } },
+		{ "name": "collar-e", "from": [11.8, 5.5, 4], "to": [14, 10.5, 12], "faces": { "north": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "south": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "east": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "west": { "texture": "#metal", "uv": [4, 6, 12, 11] }, "up": { "texture": "#metal", "uv": [12, 4, 14, 12] }, "down": { "texture": "#metal", "uv": [12, 4, 14, 12] } } },
+		{ "name": "split-gap-top", "from": [6.8, 10.5, 1.6], "to": [9.2, 12.6, 4.6], "faces": { "north": { "texture": "#metal", "uv": [7, 11, 9, 13] }, "south": { "texture": "#metal", "uv": [7, 11, 9, 13] }, "east": { "texture": "#metal", "uv": [2, 11, 5, 13] }, "west": { "texture": "#metal", "uv": [2, 11, 5, 13] }, "up": { "texture": "#metal", "uv": [7, 2, 9, 5] }, "down": { "texture": "#metal", "uv": [7, 2, 9, 5] } } },
+		{ "name": "set-screw", "from": [7.4, 12.6, 2.1], "to": [8.6, 14.2, 3.3], "faces": { "north": { "texture": "#metal", "uv": [7, 13, 9, 14] }, "south": { "texture": "#metal", "uv": [7, 13, 9, 14] }, "east": { "texture": "#metal", "uv": [2, 13, 3, 14] }, "west": { "texture": "#metal", "uv": [2, 13, 3, 14] }, "up": { "texture": "#metal", "uv": [7, 2, 9, 3] }, "down": { "texture": "#metal", "uv": [7, 2, 9, 3] } } }
+	]
+}

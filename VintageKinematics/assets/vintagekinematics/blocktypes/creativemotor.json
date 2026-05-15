@@ -182,6 +182,7 @@
         }
     },
     "blockmaterial": "Metal",
+    "resistance": 1,
     "creativeinventory": {
         "general": [
             "*-y",

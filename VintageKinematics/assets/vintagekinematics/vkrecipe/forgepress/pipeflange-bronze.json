@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 1 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-flange" },
+	"operationCode": "pipe-flange",
+	"operationName": "Pipe Flange",
+	"allowedVariants": [ "copper", "tinbronze", "bismuthbronze", "blackbronze", "brass" ],
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pipeflange-*", "quantity": 2 }
+	],
+	"requiredTemperature": 900,
+	"pressTicks": 3
+}

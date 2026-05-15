@@ -11,6 +11,10 @@
             "base": "game:block/wood/planks/generic"
         }
     },
+    "guiTransform": {
+        "rotation": { "x": -11, "y": -39, "z": 38 },
+        "scale": 1.13
+    },
     "creativeinventory": {
         "general": [
             "*"

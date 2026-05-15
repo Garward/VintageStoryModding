@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:kineticalloycharge", "quantity": 1 },
+	"operationCode": "kinetic-alloy-blank",
+	"operationName": "Kinetic Alloy Blank",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:kineticalloyblank", "quantity": 1 }
+	],
+	"requiredTemperature": 1100,
+	"pressTicks": 8
+}

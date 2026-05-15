@@ -10,7 +10,7 @@ namespace VintageKinematics.Api
 {
     /// <summary>
     /// JSON-driven piston behavior. Reads <c>pistons</c> array from properties; each entry
-    /// names a shape element, axis, mode (oscillate or directional), travel (1/16ths),
+    /// names a shape element, axis, mode (oscillate, directional, or sourceTimed), travel (1/16ths),
     /// ratio, optional phaseOffset/waveform, and optional <c>invert</c> (negates the offset for
     /// either mode — useful for downward-extending pistons whose axis is Y).
     /// Exposes <see cref="GetOffsetFor"/> for BE authors to translate elements each frame.
@@ -92,7 +92,8 @@ namespace VintageKinematics.Api
                     p.Mesh = mesh;
                 }
 
-                renderer = new KineticPistonRenderer(capi, Pos, kineticBeh, pistons);
+                BEBehaviorKineticSource sourceBeh = Blockentity.GetBehavior<BEBehaviorKineticSource>();
+                renderer = new KineticPistonRenderer(capi, Pos, kineticBeh, sourceBeh, pistons);
                 capi.Event.RegisterRenderer(renderer, EnumRenderStage.Opaque);
             }
 

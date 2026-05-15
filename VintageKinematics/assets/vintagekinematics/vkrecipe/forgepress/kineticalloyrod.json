@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:kineticalloyblank", "quantity": 1 },
+	"operationCode": "kinetic-alloy-rod",
+	"operationName": "Kinetic Alloy Rod",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:kineticalloyrod", "quantity": 2 }
+	],
+	"requiredTemperature": 1000,
+	"pressTicks": 5
+}

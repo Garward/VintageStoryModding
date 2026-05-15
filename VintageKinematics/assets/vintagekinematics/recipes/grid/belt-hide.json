@@ -8,5 +8,5 @@
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "item", "code": "belt", "quantity": 4 }
+	"output": { "type": "item", "code": "belt", "quantity": 8 }
 }

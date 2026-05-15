@@ -1,0 +1,464 @@
+[
+  {
+    "op": "add",
+    "path": "/client/animations/-",
+    "file": "game:entities/humanoid/player.json",
+    "value": {
+      "code": "drill",
+      "animation": "drill",
+      "animationSpeed": 1.5,
+      "blendMode": "Add",
+      "holdEyePosAfterEasein": 0.6,
+      "elementWeight": {
+        "UpperArmR": 40,
+        "LowerArmR": 40,
+        "ItemAnchor": 100
+      },
+      "elementBlendMode": {
+        "UpperArmR": "AddAverage",
+        "LowerArmR": "AddAverage",
+        "ItemAnchor": "AddAverage"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/client/animations/-",
+    "file": "game:entities/humanoid/player.json",
+    "value": {
+      "code": "drillactive",
+      "animation": "drillactive",
+      "animationSpeed": 1,
+      "blendMode": "Add",
+      "holdEyePosAfterEasein": 0.99,
+      "elementWeight": {
+        "UpperArmR": 60,
+        "LowerArmR": 60,
+        "ItemAnchor": 100
+      },
+      "elementBlendMode": {
+        "UpperArmR": "AddAverage",
+        "LowerArmR": "AddAverage",
+        "ItemAnchor": "AddAverage"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/client/animations/-",
+    "file": "game:entities/humanoid/player.json",
+    "value": {
+      "code": "drill-fp",
+      "animation": "drill-fp",
+      "animationSpeed": 1.5,
+      "blendMode": "Add",
+      "holdEyePosAfterEasein": 0.6,
+      "elementWeight": {
+        "UpperArmR": 60,
+        "LowerArmR": 60,
+        "ItemAnchor": 100
+      },
+      "elementBlendMode": {
+        "UpperArmR": "AddAverage",
+        "LowerArmR": "AddAverage",
+        "ItemAnchor": "AddAverage"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/client/animations/-",
+    "file": "game:entities/humanoid/player.json",
+    "value": {
+      "code": "drillactive-fp",
+      "animation": "drillactive-fp",
+      "animationSpeed": 1,
+      "blendMode": "Add",
+      "holdEyePosAfterEasein": 0.99,
+      "elementWeight": {
+        "UpperArmR": 80,
+        "LowerArmR": 80,
+        "ItemAnchor": 100
+      },
+      "elementBlendMode": {
+        "UpperArmR": "AddAverage",
+        "LowerArmR": "AddAverage",
+        "ItemAnchor": "AddAverage"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "file": "game:shapes/entity/humanoid/seraph-faceless.json",
+    "side": "Client",
+    "value":
+      {
+        "name": "Drill",
+        "code": "drill",
+        "quantityframes": 31,
+        "onActivityStopped": "EaseOut",
+        "onAnimationEnd": "EaseOut",
+        "keyframes": [
+          {
+            "frame": 0,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 11,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -80.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              }
+            }
+          },
+          {
+            "frame": 15,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -75.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 20,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -80.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 25,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -75.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 30,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          }
+        ]
+      }
+  },
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "file": "game:shapes/entity/humanoid/seraph-faceless.json",
+    "side": "Client",
+    "value":
+      {
+        "name": "DrillFp",
+        "code": "drill-fp",
+        "quantityframes": 31,
+        "onActivityStopped": "EaseOut",
+        "onAnimationEnd": "EaseOut",
+        "keyframes": [
+          {
+            "frame": 0,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 11,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -80.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              }
+            }
+          },
+          {
+            "frame": 15,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -75.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 20,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -80.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 25,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 6.0,
+                "rotationY": 0.0,
+                "rotationZ": -75.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          },
+          {
+            "frame": 30,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              },
+              "UpperArmL": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 0.0
+              }
+            }
+          }
+        ]
+      }
+  },
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "file": "game:shapes/entity/humanoid/seraph-faceless.json",
+    "side": "Client",
+    "value":
+      {
+        "name": "Drillactive",
+        "code": "drillactive",
+        "quantityframes": 30,
+        "onActivityStopped": "EaseOut",
+        "onAnimationEnd": "Repeat",
+        "keyframes": [
+          {
+            "frame": 0,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 14.0,
+                "rotationY": 0.0,
+                "rotationZ": -66.0
+              },
+              "LowerArmR": {
+                "rotationX": 0.0,
+                "rotationY": -22.0,
+                "rotationZ": 0.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              }
+            }
+          },
+          {
+            "frame": 15,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 14.0,
+                "rotationY": 0.0,
+                "rotationZ": -66.0
+              },
+              "LowerArmR": {
+                "rotationX": 0.0,
+                "rotationY": -22.0,
+                "rotationZ": -8.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              }
+            }
+          }
+        ]
+      }
+  },
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "file": "game:shapes/entity/humanoid/seraph-faceless.json",
+    "side": "Client",
+    "value":
+      {
+        "name": "DrillactiveFp",
+        "code": "drillactive-fp",
+        "quantityframes": 30,
+        "onActivityStopped": "EaseOut",
+        "onAnimationEnd": "Repeat",
+        "keyframes": [
+          {
+            "frame": 0,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 14.0,
+                "rotationY": 0.0,
+                "rotationZ": -66.0
+              },
+              "LowerArmR": {
+                "rotationX": 0.0,
+                "rotationY": -22.0,
+                "rotationZ": 0.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              }
+            }
+          },
+          {
+            "frame": 15,
+            "elements": {
+              "UpperArmR": {
+                "rotationX": 14.0,
+                "rotationY": 0.0,
+                "rotationZ": -66.0
+              },
+              "LowerArmR": {
+                "rotationX": 0.0,
+                "rotationY": -22.0,
+                "rotationZ": -8.0
+              },
+              "ItemAnchor": {
+                "rotationX": 0.0,
+                "rotationY": 0.0,
+                "rotationZ": 50.0
+              }
+            }
+          }
+        ]
+      }
+  }
+]

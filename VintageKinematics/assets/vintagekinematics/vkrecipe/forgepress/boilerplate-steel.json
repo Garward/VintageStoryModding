@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 4 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-boilerplate" },
+	"operationCode": "boiler-plate",
+	"operationName": "Boiler Plate",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:boilerplate-steel", "quantity": 1 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 8
+}

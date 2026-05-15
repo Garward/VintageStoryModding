@@ -218,6 +218,8 @@ namespace VintageKinematics.BlockEntities
             ItemStack input = slot.Itemstack;
             List<ItemStack> drops = null;
             bool consume = false;
+            bool usedPanningDrops = false;
+            var cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
 
             // 1) Custom recipe registry first — handles mod-defined inputs (grit items, etc.).
             var registry = Api.ModLoader.GetModSystem<KineticSieveRecipeRegistry>();
@@ -228,9 +230,9 @@ namespace VintageKinematics.BlockEntities
                 if (d != null) drops = new List<ItemStack> { d };
                 consume = true;
             }
-            // 2) Fall through to vanilla pannable parity for raw blocks like gravel/sand/soil.
+            // 2) Fall through to vanilla pan-loot parity for raw sand/gravel-like blocks.
             // Vanilla gold pan consumes 1/8 block per pan, so one sieved block = 8 rolls.
-            else if (input.Block != null && PanLootRoller.IsPannable(input.Block))
+            else if ((cfg?.UseVanillaPanningDrops ?? true) && input.Block != null && PanLootRoller.IsSieveablePanningSource(input.Block))
             {
                 drops = new List<ItemStack>(PannableRollsPerBlock);
                 for (int i = 0; i < PannableRollsPerBlock; i++)
@@ -239,6 +241,7 @@ namespace VintageKinematics.BlockEntities
                     if (d != null) drops.Add(d);
                 }
                 consume = true;
+                usedPanningDrops = true;
             }
 
             if (!consume) return;
@@ -255,10 +258,10 @@ namespace VintageKinematics.BlockEntities
             slot.MarkDirty();
 
             if (drops == null) return;
-            var cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
+            float sourceYieldMultiplier = usedPanningDrops ? cfg?.ResolveKineticSievePanningYield() ?? 1f : 1f;
             foreach (ItemStack drop in drops)
             {
-                ItemStack scaled = ApplyYieldMultiplier(drop, cfg);
+                ItemStack scaled = ApplyYieldMultiplier(drop, cfg, sourceYieldMultiplier);
                 if (scaled != null) DepositOutput(scaled);
             }
         }
@@ -266,10 +269,10 @@ namespace VintageKinematics.BlockEntities
         // Probabilistic rounding: a fractional yield like 2.5x on a 1-item drop produces 3 items
         // half the time and 2 the other half, preserving the average. Returns null when the roll
         // ends up at zero (e.g. a 0.3x multiplier sometimes eats a single-item drop entirely).
-        private ItemStack ApplyYieldMultiplier(ItemStack drop, VintageKinematicsConfig cfg)
+        private ItemStack ApplyYieldMultiplier(ItemStack drop, VintageKinematicsConfig cfg, float sourceYieldMultiplier)
         {
             if (drop == null || drop.StackSize <= 0) return drop;
-            float mult = cfg?.ResolveSieveYield(drop.Collectible?.Code) ?? 1f;
+            float mult = cfg?.ResolveSieveYield(drop.Collectible?.Code, sourceYieldMultiplier) ?? sourceYieldMultiplier;
             if (mult <= 0f) return null;
             // Fast path: 1.0 leaves stacks exactly as authored.
             if (System.Math.Abs(mult - 1f) < 1e-4f) return drop;

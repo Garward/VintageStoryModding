@@ -2,7 +2,7 @@
 	"ingredientPattern": "I_I,IKI,_I_",
 	"ingredients": {
 		"I": { "type": "item", "code": "game:metalplate-iron" },
-		"K": { "type": "item", "code": "game:stick" }
+		"K": { "type": "item", "code": "pipeflange-iron" }
 	},
 	"width": 3,
 	"height": 3,

@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 2 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-pistonhead" },
+	"operationCode": "piston-head",
+	"operationName": "Piston Head",
+	"allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "brass" ],
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pistonhead-*", "quantity": 1 }
+	],
+	"requiredTemperature": 900,
+	"pressTicks": 5
+}

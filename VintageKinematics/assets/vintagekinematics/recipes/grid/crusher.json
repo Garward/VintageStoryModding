@@ -2,7 +2,7 @@
 	"ingredientPattern": "_G_,PFP,RPR",
 	"ingredients": {
 		"F": { "type": "item", "code": "crusherframe" },
-		"P": { "type": "item", "code": "game:metalplate-iron" },
+		"P": { "type": "item", "code": "machinebracket-iron" },
 		"G": { "type": "block", "code": "largecogwheel-y" },
 		"R": { "type": "item", "code": "game:resin" }
 	},

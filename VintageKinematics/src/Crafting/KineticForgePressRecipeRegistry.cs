@@ -49,12 +49,12 @@ namespace VintageKinematics.Crafting
             operationNames.Add(string.IsNullOrEmpty(name) ? code : name);
         }
 
-        public KineticForgePressRecipe FindRecipe(ItemStack stack, string operationCode)
+        public KineticForgePressRecipe FindRecipe(ItemStack stack, string operationCode, ItemStack dieStack = null)
         {
             if (stack == null) return null;
             foreach (var recipe in recipes)
             {
-                if (recipe.Matches(stack, operationCode)) return recipe;
+                if (recipe.Matches(stack, operationCode, dieStack)) return recipe;
             }
             return null;
         }

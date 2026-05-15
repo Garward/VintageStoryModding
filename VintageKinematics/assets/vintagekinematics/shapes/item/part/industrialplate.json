@@ -1,0 +1,12 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": { "metal": "game:block/metal/ingot/iron" },
+	"elements": [
+		{ "name": "broad-plate", "from": [1, 5, 1], "to": [15, 8, 15], "faces": { "north": { "texture": "#metal", "uv": [1, 5, 15, 8] }, "south": { "texture": "#metal", "uv": [1, 5, 15, 8] }, "east": { "texture": "#metal", "uv": [1, 5, 15, 8] }, "west": { "texture": "#metal", "uv": [1, 5, 15, 8] }, "up": { "texture": "#metal", "uv": [1, 1, 15, 15] }, "down": { "texture": "#metal", "uv": [1, 1, 15, 15] } } },
+		{ "name": "center-rib-long", "from": [2, 8, 7], "to": [14, 10.8, 9], "faces": { "north": { "texture": "#metal", "uv": [2, 8, 14, 11] }, "south": { "texture": "#metal", "uv": [2, 8, 14, 11] }, "east": { "texture": "#metal", "uv": [7, 8, 9, 11] }, "west": { "texture": "#metal", "uv": [7, 8, 9, 11] }, "up": { "texture": "#metal", "uv": [2, 7, 14, 9] }, "down": { "texture": "#metal", "uv": [2, 7, 14, 9] } } },
+		{ "name": "center-rib-cross", "from": [7, 8, 2], "to": [9, 10.8, 14], "faces": { "north": { "texture": "#metal", "uv": [7, 8, 9, 11] }, "south": { "texture": "#metal", "uv": [7, 8, 9, 11] }, "east": { "texture": "#metal", "uv": [2, 8, 14, 11] }, "west": { "texture": "#metal", "uv": [2, 8, 14, 11] }, "up": { "texture": "#metal", "uv": [7, 2, 9, 14] }, "down": { "texture": "#metal", "uv": [7, 2, 9, 14] } } },
+		{ "name": "corner-boss-nw", "from": [1.8, 8, 1.8], "to": [4, 9.4, 4], "faces": { "north": { "texture": "#metal", "uv": [2, 8, 4, 9] }, "south": { "texture": "#metal", "uv": [2, 8, 4, 9] }, "east": { "texture": "#metal", "uv": [2, 8, 4, 9] }, "west": { "texture": "#metal", "uv": [2, 8, 4, 9] }, "up": { "texture": "#metal", "uv": [2, 2, 4, 4] }, "down": { "texture": "#metal", "uv": [2, 2, 4, 4] } } },
+		{ "name": "corner-boss-se", "from": [12, 8, 12], "to": [14.2, 9.4, 14.2], "faces": { "north": { "texture": "#metal", "uv": [12, 8, 14, 9] }, "south": { "texture": "#metal", "uv": [12, 8, 14, 9] }, "east": { "texture": "#metal", "uv": [12, 8, 14, 9] }, "west": { "texture": "#metal", "uv": [12, 8, 14, 9] }, "up": { "texture": "#metal", "uv": [12, 12, 14, 14] }, "down": { "texture": "#metal", "uv": [12, 12, 14, 14] } } }
+	]
+}

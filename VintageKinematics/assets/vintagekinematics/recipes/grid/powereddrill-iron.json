@@ -1,0 +1,10 @@
+{
+	"ingredientPattern": "AD",
+	"ingredients": {
+		"A": { "type": "item", "code": "poweredtoolassembly" },
+		"D": { "type": "item", "code": "drillhead-iron" }
+	},
+	"width": 2,
+	"height": 1,
+	"output": { "type": "item", "code": "powereddrill-iron", "quantity": 1 }
+}

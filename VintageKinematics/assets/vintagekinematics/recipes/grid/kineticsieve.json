@@ -1,7 +1,7 @@
 {
 	"ingredientPattern": "IRI,GBG,ISI",
 	"ingredients": {
-		"I": { "type": "item", "code": "game:metalplate-iron" },
+		"I": { "type": "item", "code": "machinebracket-iron" },
 		"R": { "type": "block", "code": "game:rushmat", "quantity": 16 },
 		"G": { "type": "block", "code": "cogwheel-y", "quantity": 2 },
 		"S": { "type": "block", "code": "shaft-y" },

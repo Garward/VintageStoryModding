@@ -10,6 +10,7 @@ namespace VintageKinematics.Crafting
     public class KineticForgePressRecipe
     {
         public JsonItemStack Ingredient;
+        public JsonItemStack Die;
         public JsonItemStack[] Outputs;
         public string[] AllowedVariants;
         public string OperationCode = "press";
@@ -17,11 +18,12 @@ namespace VintageKinematics.Crafting
         public int PressTicks = 6;
         public float RequiredTemperature = 900f;
 
-        public bool Matches(ItemStack stack, string operationCode)
+        public bool Matches(ItemStack stack, string operationCode, ItemStack dieStack)
         {
             if (!string.IsNullOrEmpty(operationCode) && OperationCode != operationCode) return false;
             if (stack == null || Ingredient?.Code == null) return false;
             if (!WildcardUtil.Match(Ingredient.Code, stack.Collectible.Code)) return false;
+            if (!MatchesDie(dieStack)) return false;
             if (AllowedVariants == null || AllowedVariants.Length == 0) return true;
 
             string captured = WildcardUtil.GetWildcardValue(Ingredient.Code, stack.Collectible.Code);
@@ -33,6 +35,13 @@ namespace VintageKinematics.Crafting
             return false;
         }
 
+        private bool MatchesDie(ItemStack dieStack)
+        {
+            if (Die?.Code == null) return true;
+            if (dieStack == null || dieStack.Collectible?.Code == null) return false;
+            return WildcardUtil.Match(Die.Code, dieStack.Collectible.Code);
+        }
+
         public string DisplayName => string.IsNullOrEmpty(OperationName) ? OperationCode : OperationName;
 
         public bool Resolve(IWorldAccessor world, string sourceForErrors)
@@ -41,6 +50,10 @@ namespace VintageKinematics.Crafting
             if (Ingredient.Code.Path?.Contains('*') != true)
             {
                 Ingredient.Resolve(world, sourceForErrors);
+            }
+            if (Die?.Code != null && Die.Code.Path?.Contains('*') != true)
+            {
+                Die.Resolve(world, sourceForErrors);
             }
             if (Outputs != null)
             {

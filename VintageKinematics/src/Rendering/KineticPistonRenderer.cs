@@ -17,7 +17,7 @@ namespace VintageKinematics.Rendering
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
 
-        public enum EnumPistonMode { Oscillate, Directional }
+        public enum EnumPistonMode { Oscillate, Directional, SourceTimed }
         public enum EnumPistonWaveform { Sine, Triangle }
 
         public class Piston
@@ -37,13 +37,15 @@ namespace VintageKinematics.Rendering
         private readonly ICoreClientAPI capi;
         private readonly BlockPos pos;
         private readonly BEBehaviorKinetic kineticBeh;
+        private readonly BEBehaviorKineticSource sourceBeh;
         public readonly List<Piston> Pistons;
 
-        public KineticPistonRenderer(ICoreClientAPI capi, BlockPos pos, BEBehaviorKinetic kineticBeh, List<Piston> pistons)
+        public KineticPistonRenderer(ICoreClientAPI capi, BlockPos pos, BEBehaviorKinetic kineticBeh, BEBehaviorKineticSource sourceBeh, List<Piston> pistons)
         {
             this.capi = capi;
             this.pos = pos;
             this.kineticBeh = kineticBeh;
+            this.sourceBeh = sourceBeh;
             Pistons = pistons;
         }
 
@@ -115,11 +117,12 @@ namespace VintageKinematics.Rendering
                 EnumPistonMode.Oscillate
                     => KineticPistonMath.OscillateTriangle(t, rpm, p.Ratio, phase, p.Travel),
                 EnumPistonMode.Directional => p.CurrentPos,
+                EnumPistonMode.SourceTimed => p.Travel * (sourceBeh?.TimedProgress01() ?? 0f),
                 _ => 0f
             };
             // Directional already accounts for invert in AdvanceDirectional; oscillate doesn't,
             // so apply the negation here to support downward-extending oscillating pistons.
-            if (p.Invert && p.Mode == EnumPistonMode.Oscillate) scalar = -scalar;
+            if (p.Invert && p.Mode != EnumPistonMode.Directional) scalar = -scalar;
             return scalar;
         }
 

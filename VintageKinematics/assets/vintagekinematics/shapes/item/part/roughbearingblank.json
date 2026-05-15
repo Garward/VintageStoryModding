@@ -1,0 +1,13 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": { "metal": "game:block/metal/ingot/iron" },
+	"elements": [
+		{ "name": "bearing-n", "from": [3, 5, 2], "to": [13, 11, 4.6], "faces": { "north": { "texture": "#metal", "uv": [3, 5, 13, 11] }, "south": { "texture": "#metal", "uv": [3, 5, 13, 11] }, "east": { "texture": "#metal", "uv": [2, 5, 5, 11] }, "west": { "texture": "#metal", "uv": [2, 5, 5, 11] }, "up": { "texture": "#metal", "uv": [3, 2, 13, 5] }, "down": { "texture": "#metal", "uv": [3, 2, 13, 5] } } },
+		{ "name": "bearing-s", "from": [3, 5, 11.4], "to": [13, 11, 14], "faces": { "north": { "texture": "#metal", "uv": [3, 5, 13, 11] }, "south": { "texture": "#metal", "uv": [3, 5, 13, 11] }, "east": { "texture": "#metal", "uv": [11, 5, 14, 11] }, "west": { "texture": "#metal", "uv": [11, 5, 14, 11] }, "up": { "texture": "#metal", "uv": [3, 11, 13, 14] }, "down": { "texture": "#metal", "uv": [3, 11, 13, 14] } } },
+		{ "name": "bearing-w", "from": [2, 5, 4.5], "to": [4.6, 11, 11.5], "faces": { "north": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "south": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "east": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "west": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "up": { "texture": "#metal", "uv": [2, 5, 5, 12] }, "down": { "texture": "#metal", "uv": [2, 5, 5, 12] } } },
+		{ "name": "bearing-e", "from": [11.4, 5, 4.5], "to": [14, 11, 11.5], "faces": { "north": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "south": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "east": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "west": { "texture": "#metal", "uv": [5, 5, 12, 11] }, "up": { "texture": "#metal", "uv": [11, 5, 14, 12] }, "down": { "texture": "#metal", "uv": [11, 5, 14, 12] } } },
+		{ "name": "rough-notch-a", "from": [5.2, 11, 2.6], "to": [7, 13.2, 4.8], "faces": { "north": { "texture": "#metal", "uv": [5, 11, 7, 13] }, "south": { "texture": "#metal", "uv": [5, 11, 7, 13] }, "east": { "texture": "#metal", "uv": [3, 11, 5, 13] }, "west": { "texture": "#metal", "uv": [3, 11, 5, 13] }, "up": { "texture": "#metal", "uv": [5, 3, 7, 5] }, "down": { "texture": "#metal", "uv": [5, 3, 7, 5] } } },
+		{ "name": "rough-notch-b", "from": [9, 11, 11.2], "to": [10.8, 13.2, 13.4], "faces": { "north": { "texture": "#metal", "uv": [9, 11, 11, 13] }, "south": { "texture": "#metal", "uv": [9, 11, 11, 13] }, "east": { "texture": "#metal", "uv": [11, 11, 13, 13] }, "west": { "texture": "#metal", "uv": [11, 11, 13, 13] }, "up": { "texture": "#metal", "uv": [9, 11, 11, 13] }, "down": { "texture": "#metal", "uv": [9, 11, 11, 13] } } }
+	]
+}

@@ -1,0 +1,12 @@
+{
+	"ingredient": { "type": "item", "code": "game:pickaxehead-*", "quantity": 1 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-pickaxehead", "quantity": 1 },
+	"allowedVariants": ["iron", "meteoriciron", "steel"],
+	"operationCode": "drill-head",
+	"operationName": "Drill Head",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:drillhead-*", "quantity": 1 }
+	],
+	"requiredTemperature": 1100,
+	"pressTicks": 8
+}

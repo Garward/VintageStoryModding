@@ -114,6 +114,7 @@ namespace VintageKinematics.Api
             foreach (int slotId in slotIds)
             {
                 ItemSlot slot = inv[slotId];
+                if (fromSlot != null && !slot.CanHold(fromSlot)) continue;
                 if (slot.Empty) return slot;
                 if (fromSlot != null && slot.Itemstack != null && fromSlot.Itemstack != null
                     && slot.Itemstack.Collectible == fromSlot.Itemstack.Collectible

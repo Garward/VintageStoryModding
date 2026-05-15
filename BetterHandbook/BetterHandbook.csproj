@@ -8,6 +8,10 @@
     <DelaySign>false</DelaySign>
     <AssemblyName>BetterHandbook</AssemblyName>
     <RootNamespace>BetterHandbook</RootNamespace>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <PackageFileName>$(AssemblyName)-$(Version).zip</PackageFileName>
   </PropertyGroup>
 
   <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
@@ -34,6 +38,10 @@
       <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="cairo-sharp">
+      <HintPath>$(VSPath)/Lib/cairo-sharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="VSSurvivalMod">
       <HintPath>$(VSPath)/Mods/VSSurvivalMod.dll</HintPath>
       <Private>False</Private>
@@ -46,9 +54,9 @@
 
   <Target Name="PackageDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <MakeDir Directories="$(PackageOutputPath)" />
-    <Delete Files="$(PackageOutputPath)/$(AssemblyName).zip" />
-    <Exec Command="python3 -c &quot;import os, zipfile; out=r'$(PackageOutputPath)/$(AssemblyName).zip'; z=zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','$(AssemblyName).dll'),(r'$(TargetDir)$(AssemblyName).pdb','$(AssemblyName).pdb'),(r'$(MSBuildProjectDirectory)/modinfo.json','modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
-    <Message Text="Packaged: $(PackageOutputPath)/$(AssemblyName).zip" Importance="high" />
+    <Delete Files="$(PackageOutputPath)/$(PackageFileName)" />
+    <Exec Command="python3 -c &quot;import os, zipfile; out=r'$(PackageOutputPath)/$(PackageFileName)'; z=zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','$(AssemblyName).dll'),(r'$(TargetDir)$(AssemblyName).pdb','$(AssemblyName).pdb'),(r'$(MSBuildProjectDirectory)/modinfo.json','modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
+    <Message Text="Packaged: $(PackageOutputPath)/$(PackageFileName)" Importance="high" />
   </Target>
 
 </Project>

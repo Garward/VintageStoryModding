@@ -50,6 +50,7 @@
         }
     },
     "blockmaterial": "Wood",
+    "resistance": 1,
     "creativeinventory": {
         "general": [
             "*-y"

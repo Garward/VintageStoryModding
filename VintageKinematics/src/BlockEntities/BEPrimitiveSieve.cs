@@ -16,8 +16,9 @@ namespace VintageKinematics.BlockEntities
 {
     /// <summary>
     /// Single-cell hand-crank-friendly sieve. One input, four-slot output buffer.
-    /// Pannables only: feeds vanilla panningDrops at parity (8 rolls per block) just
-    /// like the auto-sieve, trading throughput and stack count for a copper-tier price.
+    /// Handles vanilla pannables at parity and can process crusher grit through the same
+    /// recipe table as the full kinetic sieve, but with an extra tax roll so it bridges
+    /// bronze crusher progression without replacing the iron-tier sieve.
     /// </summary>
     public class BEPrimitiveSieve : BlockEntityOpenableContainer, IFaceMappedContainer
     {
@@ -31,6 +32,7 @@ namespace VintageKinematics.BlockEntities
         private const float DustParticleIntervalMs = 350f;
         private const int OutputPushBatch = 8;
         private const int PannableRollsPerBlock = 8;
+        private const float PrimitiveRecipeYieldChance = 0.5f;
         private const float PanTopY = 0.6875f;
 
         public const int PacketIdOpenDialog = 5610;
@@ -91,7 +93,7 @@ namespace VintageKinematics.BlockEntities
             if (kinetic.IsConflicted || (kinetic.Network?.IsOverstressed ?? false)) return;
             ItemSlot input = inventory[SlotInput];
             if (input.Empty || input.Itemstack.Block == null) return;
-            if (!PanLootRoller.IsPannable(input.Itemstack.Block)) return;
+            if (!PanLootRoller.IsSieveablePanningSource(input.Itemstack.Block)) return;
 
             Vec3d at = new Vec3d(Pos.X + 0.5, Pos.Y + PanTopY, Pos.Z + 0.5);
             Api.World.SpawnCubeParticles(at, new ItemStack(input.Itemstack.Block), 0.25f, 3, 0.15f);
@@ -242,34 +244,58 @@ namespace VintageKinematics.BlockEntities
             if (slot.Empty) return;
 
             ItemStack input = slot.Itemstack;
-            if (input.Block == null || !PanLootRoller.IsPannable(input.Block)) return;
+            List<ItemStack> drops = null;
+            bool consume = false;
+            bool usedPanningDrops = false;
+            var cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
 
-            List<ItemStack> drops = new List<ItemStack>(PannableRollsPerBlock);
-            for (int i = 0; i < PannableRollsPerBlock; i++)
+            var registry = Api.ModLoader.GetModSystem<KineticSieveRecipeRegistry>();
+            var recipe = registry?.FindRecipe(input);
+            if (recipe != null)
             {
-                ItemStack d = PanLootRoller.RollPannableDrop(Api.World, input.Block);
-                if (d != null) drops.Add(d);
+                ItemStack d = Api.World.Rand.NextDouble() < PrimitiveRecipeYieldChance
+                    ? recipe.RollOutput(Api.World)
+                    : null;
+                if (d != null) drops = new List<ItemStack> { d };
+                consume = true;
             }
+            else if ((cfg?.UseVanillaPanningDrops ?? true) && input.Block != null && PanLootRoller.IsSieveablePanningSource(input.Block))
+            {
+                drops = new List<ItemStack>(PannableRollsPerBlock);
+                for (int i = 0; i < PannableRollsPerBlock; i++)
+                {
+                    ItemStack d = PanLootRoller.RollPannableDrop(Api.World, input.Block);
+                    if (d != null) drops.Add(d);
+                }
+                consume = true;
+                usedPanningDrops = true;
+            }
+
+            if (!consume) return;
 
             Api.World.PlaySoundAt(PanningSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 16, volume: 0.4f);
             Vec3d particlePos = new Vec3d(Pos.X + 0.5, Pos.Y + PanTopY, Pos.Z + 0.5);
-            Api.World.SpawnCubeParticles(particlePos, new ItemStack(input.Block), 0.3f, 12, 0.4f);
+            if (input.Block != null)
+            {
+                Api.World.SpawnCubeParticles(particlePos, new ItemStack(input.Block), 0.3f, 12, 0.4f);
+            }
 
             slot.TakeOut(1);
             slot.MarkDirty();
 
-            var cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
+            if (drops == null) return;
+            float sourceYieldMultiplier = usedPanningDrops ? cfg?.ResolvePrimitiveSievePanningYield() ?? 1f : 1f;
             foreach (ItemStack drop in drops)
             {
-                ItemStack scaled = ApplyYieldMultiplier(drop, cfg);
+                ItemStack scaled = ApplyYieldMultiplier(drop, cfg, sourceYieldMultiplier);
                 if (scaled != null) DepositOutput(scaled);
             }
         }
 
-        private ItemStack ApplyYieldMultiplier(ItemStack drop, VintageKinematicsConfig cfg)
+        private ItemStack ApplyYieldMultiplier(ItemStack drop, VintageKinematicsConfig cfg, float sourceYieldMultiplier)
         {
             if (drop == null || drop.StackSize <= 0) return drop;
-            float mult = cfg?.ResolveSieveYield(drop.Collectible?.Code) ?? 1f;
+            float mult = cfg?.ResolveSieveYield(drop.Collectible?.Code, sourceYieldMultiplier) ?? sourceYieldMultiplier;
             if (mult <= 0f) return null;
             if (System.Math.Abs(mult - 1f) < 1e-4f) return drop;
 

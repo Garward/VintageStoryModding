@@ -13,6 +13,7 @@ namespace VintageKinematics
         private const string HarmonyId = "vintagekinematics";
         private Harmony harmony;
         private KineticPlacementPreviewRenderer placementPreview;
+        private bool contentClassesRegistered;
 
         public override void StartPre(ICoreAPI api)
         {
@@ -20,11 +21,22 @@ namespace VintageKinematics
             // bottom-out impact effects (the vanilla "recipes" category is server-only).
             // Must run before asset enumeration, hence StartPre.
             new Vintagestory.API.Common.AssetCategory("vkrecipe", true, EnumAppSide.Universal);
+            RegisterContentClasses(api);
         }
 
         public override void Start(ICoreAPI api)
         {
             api.Logger.Notification("[VintageKinematics] Starting...");
+            RegisterContentClasses(api);
+
+            harmony = new Harmony(HarmonyId);
+            harmony.PatchAll();
+        }
+
+        private void RegisterContentClasses(ICoreAPI api)
+        {
+            if (contentClassesRegistered) return;
+            contentClassesRegistered = true;
 
             api.RegisterBlockEntityBehaviorClass("Kinetic", typeof(BEBehaviorKinetic));
             api.RegisterBlockEntityBehaviorClass("KineticSource", typeof(BEBehaviorKineticSource));
@@ -32,8 +44,10 @@ namespace VintageKinematics
             api.RegisterBlockEntityBehaviorClass("KineticAnimator", typeof(BEBehaviorKineticAnimator));
             api.RegisterBlockEntityBehaviorClass("KineticSound", typeof(BEBehaviorKineticSound));
             api.RegisterBlockEntityBehaviorClass("KineticPiston", typeof(BEBehaviorKineticPiston));
+            api.RegisterBlockEntityBehaviorClass("KineticStretch", typeof(BEBehaviorKineticStretch));
             api.RegisterBlockEntityBehaviorClass("KineticAnimationDriver", typeof(BEBehaviorKineticAnimationDriver));
             api.RegisterBlockEntityBehaviorClass("KineticMultiblock", typeof(BEBehaviorKineticMultiblock));
+            api.RegisterBlockEntityBehaviorClass("BellowsPulse", typeof(BEBehaviorBellowsPulse));
             api.RegisterBlockEntityBehaviorClass("CrusherProcess", typeof(BEBehaviorCrusherProcess));
             api.RegisterBlockEntityClass("Kinetic", typeof(BlockEntities.BEKinetic));
             api.RegisterBlockEntityClass("HandCrank", typeof(BlockEntities.BEHandCrank));
@@ -43,6 +57,9 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("Belt", typeof(BlockEntities.BEBelt));
             api.RegisterBlockEntityClass("Funnel", typeof(BlockEntities.BEFunnel));
             api.RegisterBlockEntityClass("CoalMotor", typeof(BlockEntities.BECoalMotor));
+            api.RegisterBlockEntityClass("CounterweightDrive", typeof(BlockEntities.BECounterweightDrive));
+            api.RegisterBlockEntityClass("Treadwheel", typeof(BlockEntities.BETreadwheel));
+            api.RegisterMountable("vktreadwheel", BlockEntities.BETreadwheel.GetMountable);
             api.RegisterBlockEntityClass("KineticSieve", typeof(BlockEntities.BEKineticSieve));
             api.RegisterBlockEntityClass("PrimitiveSieve", typeof(BlockEntities.BEPrimitiveSieve));
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
@@ -63,17 +80,24 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockBelt", typeof(Blocks.BlockBelt));
             api.RegisterBlockClass("BlockFunnel", typeof(Blocks.BlockFunnel));
             api.RegisterBlockClass("BlockCoalMotor", typeof(Blocks.BlockCoalMotor));
+            api.RegisterBlockClass("BlockTreadwheel", typeof(Blocks.BlockTreadwheel));
+            api.RegisterBlockClass("BlockCounterweightDrive", typeof(Blocks.BlockCounterweightDrive));
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
             api.RegisterBlockClass("BlockPrimitiveSieve", typeof(Blocks.BlockPrimitiveSieve));
             api.RegisterBlockClass("BlockKineticSawmill", typeof(Blocks.BlockKineticSawmill));
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticForgePress", typeof(Blocks.BlockKineticForgePress));
+            api.RegisterBlockClass("BlockKineticBellows", typeof(Blocks.BlockKineticBellows));
             api.RegisterBlockClass("BlockKineticIgniter", typeof(Blocks.BlockKineticIgniter));
             api.RegisterBlockClass("BlockKineticBore", typeof(Blocks.BlockKineticBore));
             api.RegisterItemClass("ItemBelt", typeof(Items.ItemBelt));
-
-            harmony = new Harmony(HarmonyId);
-            harmony.PatchAll();
+            api.RegisterItemClass("ItemPoweredDrill", typeof(Items.ItemPoweredDrill));
+            api.RegisterItemClass("ItemKineticWrench", typeof(Items.ItemKineticWrench));
+            api.RegisterItemClass("ItemPogoRod", typeof(Items.ItemPogoRod));
+            api.ClassRegistry.GetType().GetMethod("RegisterInventoryClass")?.Invoke(
+                api.ClassRegistry,
+                new object[] { Items.InventoryPoweredDrillFuel.InventoryClassName, typeof(Items.InventoryPoweredDrillFuel) }
+            );
         }
 
         public override void StartClientSide(ICoreClientAPI capi)

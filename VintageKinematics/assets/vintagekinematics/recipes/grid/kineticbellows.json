@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "LPL,BHB,_S_",
+	"ingredients": {
+		"L": { "type": "item", "code": "game:leather-normal-plain", "quantity": 1 },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"B": { "type": "item", "code": "pressedband-iron", "quantity": 1 },
+		"H": { "type": "item", "code": "machinebracket-iron", "quantity": 1 },
+		"S": { "type": "block", "code": "shaft-y" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticbellows-n", "quantity": 1 }
+}

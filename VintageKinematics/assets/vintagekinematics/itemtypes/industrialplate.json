@@ -1,0 +1,16 @@
+{
+	"code": "industrialplate",
+	"variantgroups": [
+		{ "code": "metal", "states": ["steel"] }
+	],
+	"shape": { "base": "item/part/industrialplate" },
+	"textures": {
+		"metal": { "base": "game:block/metal/ingot/{metal}" }
+	},
+	"attributes": {
+		"handbook": { "groupBy": ["industrialplate-*"] }
+	},
+	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.2 },
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 8
+}

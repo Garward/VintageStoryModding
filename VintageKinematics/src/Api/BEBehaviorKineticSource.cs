@@ -20,6 +20,10 @@ namespace VintageKinematics.Api
         public bool AlwaysActive { get; set; } = false;
         /// <summary>+1 = clockwise (default), -1 = counter-clockwise. Multiplies TargetRPM when reporting to the network.</summary>
         public int Direction { get; set; } = 1;
+        /// <summary>Original duration of the current/last wind. Used by timed visual animations.</summary>
+        public float LastWindSeconds { get; private set; } = 0f;
+        /// <summary>World elapsed milliseconds when the current/last wind began.</summary>
+        public long LastWindWorldMs { get; private set; } = 0;
 
         /// <summary>Signed output RPM. Keeps RatedRPM (magnitude) separate from rotation sign.</summary>
         public float SignedTargetRPM => Direction * TargetRPM;
@@ -84,10 +88,25 @@ namespace VintageKinematics.Api
         public void Wind(float seconds = 5f, int direction = 1)
         {
             Direction = direction >= 0 ? 1 : -1;
-            DecaySeconds = seconds;
+            DecaySeconds = GameMath.Max(0f, seconds);
+            LastWindSeconds = DecaySeconds;
+            LastWindWorldMs = Api?.World?.ElapsedMilliseconds ?? 0;
             var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
-            mgr?.OnSourceChanged(Pos, SignedTargetRPM);
+            mgr?.OnSourceChanged(Pos, DecaySeconds > 0f ? SignedTargetRPM : 0f);
             Blockentity.MarkDirty(true);
+        }
+
+        public float TimedProgress01()
+        {
+            if (LastWindSeconds <= 0f || LastWindWorldMs <= 0) return 0f;
+            float elapsed = (float)((Api?.World?.ElapsedMilliseconds ?? LastWindWorldMs) - LastWindWorldMs) / 1000f;
+            return GameMath.Clamp(elapsed / LastWindSeconds, 0f, 1f);
+        }
+
+        public void ResetTimedProgress()
+        {
+            LastWindSeconds = 0f;
+            LastWindWorldMs = 0;
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -96,6 +115,8 @@ namespace VintageKinematics.Api
             tree.SetFloat("targetRPM", TargetRPM);
             tree.SetFloat("decaySeconds", DecaySeconds);
             tree.SetInt("direction", Direction);
+            tree.SetFloat("lastWindSeconds", LastWindSeconds);
+            tree.SetLong("lastWindWorldMs", LastWindWorldMs);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -104,7 +125,15 @@ namespace VintageKinematics.Api
             TargetRPM = tree.GetFloat("targetRPM", 8f);
             DecaySeconds = tree.GetFloat("decaySeconds", 0f);
             Direction = tree.GetInt("direction", 1);
+            LastWindSeconds = tree.GetFloat("lastWindSeconds", 0f);
+            LastWindWorldMs = tree.GetLong("lastWindWorldMs", 0);
             if (Direction != -1) Direction = 1;
+
+            if (Api?.Side == EnumAppSide.Client && LastWindSeconds > 0f && DecaySeconds > 0f)
+            {
+                float elapsed = GameMath.Max(0f, LastWindSeconds - DecaySeconds);
+                LastWindWorldMs = (Api.World?.ElapsedMilliseconds ?? 0) - (long)(elapsed * 1000f);
+            }
         }
     }
 }
