@@ -299,6 +299,11 @@ Rules that came out of the Treadwheel and Counterweight Drive pass:
   `kineticShaftControllerOffset`, e.g. `{ "x": 0, "y": 2, "z": 0 }`.
   Moving `cposition.y` upward makes placement claim space below the clicked
   block and can cause false "not enough space" errors.
+- Treat kinetic connection points as block-cell centers, not model centers.
+  Choose the exact input cell first, then put the visible stub and any
+  rotator `rotationOrigin` on that cell center (`[8,8,8]` plus 16 units per
+  cell offset in the shape). If the visual shaft looks centered across the
+  whole multiblock, it is probably wrong for the kinetic graph.
 - Prefer normal per-cell `selectionbox` / `collisionbox`
   (`0..1`, `0..1`, `0..1`) with vanilla `Multiblock`. Avoid oversized
   rotated boxes plus `offsetHitboxes`; they drift by orientation and make

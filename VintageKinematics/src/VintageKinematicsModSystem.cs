@@ -65,6 +65,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
             api.RegisterBlockEntityClass("KineticPress", typeof(BlockEntities.BEKineticPress));
             api.RegisterBlockEntityClass("KineticForgePress", typeof(BlockEntities.BEKineticForgePress));
+            api.RegisterBlockEntityClass("KineticMixer", typeof(BlockEntities.BEKineticMixer));
             api.RegisterBlockEntityClass("KineticIgniter", typeof(BlockEntities.BEKineticIgniter));
             api.RegisterBlockEntityClass("KineticBore", typeof(BlockEntities.BEKineticBore));
             api.RegisterBlockClass("BlockShaft", typeof(Blocks.BlockShaft));
@@ -88,6 +89,7 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticForgePress", typeof(Blocks.BlockKineticForgePress));
             api.RegisterBlockClass("BlockKineticBellows", typeof(Blocks.BlockKineticBellows));
+            api.RegisterBlockClass("BlockKineticMixer", typeof(Blocks.BlockKineticMixer));
             api.RegisterBlockClass("BlockKineticIgniter", typeof(Blocks.BlockKineticIgniter));
             api.RegisterBlockClass("BlockKineticBore", typeof(Blocks.BlockKineticBore));
             api.RegisterItemClass("ItemBelt", typeof(Items.ItemBelt));

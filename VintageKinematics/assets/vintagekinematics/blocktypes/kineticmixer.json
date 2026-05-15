@@ -1,0 +1,47 @@
+{
+    "code": "kineticmixer",
+    "class": "BlockKineticMixer",
+    "entityClass": "KineticMixer",
+    "entityBehaviorsByType": {
+        "*-x": [
+            { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 16, "axis": "Y", "stressCurve": "Quadratic" } },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 180, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "DriveCog", "axis": "Y", "ratio": 1 },
+                { "element": "Paddle", "axis": "Y", "ratio": 0.5 }
+            ] } }
+        ],
+        "*-z": [
+            { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 16, "axis": "Y", "stressCurve": "Quadratic" } },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 180, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "DriveCog", "axis": "Y", "ratio": 1 },
+                { "element": "Paddle", "axis": "Y", "ratio": 0.5 }
+            ] } }
+        ]
+    },
+    "variantgroups": [
+        { "code": "axis", "states": [ "x", "z" ] }
+    ],
+    "shapeByType": {
+        "*-x": { "base": "block/kineticmixer" },
+        "*-z": { "base": "block/kineticmixer", "rotateY": 90 }
+    },
+    "textures": {
+        "wood": { "base": "game:block/wood/planks/generic" },
+        "darkwood": { "base": "game:block/wood/debarked/oak" },
+        "metal": { "base": "game:block/metal/sheet/tinbronze1" },
+        "mortar": { "base": "game:block/wood/barrel/mortar" }
+    },
+    "blockmaterial": "Wood",
+    "resistance": 2,
+    "creativeinventory": {
+        "general": [ "*-x" ],
+        "vintagekinematics": [ "*-x" ]
+    },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+}

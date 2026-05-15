@@ -7,7 +7,7 @@
             "name": "Kinetic",
             "properties": {
                 "role": "Shaft",
-                "stressImpact": 2,
+                "stressImpact": 8,
                 "axis": "Z"
             }
         },
@@ -39,25 +39,25 @@
     ],
     "entityBehaviorsByType": {
         "*-n": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 2, "axis": "Z" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "Z" } },
             { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 4, "autoReset": true, "tickInterval": 0.5 } },
             { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } },
             { "name": "KineticPiston", "properties": { "pistons": [ { "element": "Pan", "axis": "X", "mode": "oscillate", "waveform": "sine", "travel": 1, "ratio": 4 } ] } }
         ],
         "*-s": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 2, "axis": "Z" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "Z" } },
             { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 4, "autoReset": true, "tickInterval": 0.5 } },
             { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } },
             { "name": "KineticPiston", "properties": { "pistons": [ { "element": "Pan", "axis": "X", "mode": "oscillate", "waveform": "sine", "travel": 1, "ratio": 4 } ] } }
         ],
         "*-e": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 2, "axis": "X" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "X" } },
             { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 4, "autoReset": true, "tickInterval": 0.5 } },
             { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } },
             { "name": "KineticPiston", "properties": { "pistons": [ { "element": "Pan", "axis": "X", "mode": "oscillate", "waveform": "sine", "travel": 1, "ratio": 4 } ] } }
         ],
         "*-w": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 2, "axis": "X" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "X" } },
             { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 4, "autoReset": true, "tickInterval": 0.5 } },
             { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } },
             { "name": "KineticPiston", "properties": { "pistons": [ { "element": "Pan", "axis": "X", "mode": "oscillate", "waveform": "sine", "travel": 1, "ratio": 4 } ] } }

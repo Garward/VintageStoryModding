@@ -1,6 +1,6 @@
 {
 	pageCode: "vintagekinematics:vkguide-kineticsfordummies",
 	categoryCode: "guide",
-	title: "vintagekinematics:vkguide-kineticsfordummies-title",
-	text: "vintagekinematics:vkguide-kineticsfordummies-text"
+	title: "vkguide-kineticsfordummies-title",
+	text: "vkguide-kineticsfordummies-text"
 }

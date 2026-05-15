@@ -476,7 +476,11 @@ namespace RecipeExplorer
             var originalIngredients = new CraftingRecipeIngredient[resolvedIngredients.Length];
 
             string pattern = recipe.IngredientPattern;
-            string flatPattern = pattern?.Replace(",", "") ?? "";
+            string flatPattern = pattern?
+                .Replace(",", "")
+                .Replace("\t", "")
+                .Replace("\r", "")
+                .Replace("\n", "") ?? "";
 
             for (int i = 0; i < resolvedIngredients.Length; i++)
             {
@@ -907,9 +911,20 @@ namespace RecipeExplorer
             // First try the game's built-in matching logic
             bool matches = ingredient.SatisfiesAsIngredient(slot.Itemstack, checkStackSize: false);
 
-            // If no match, try wildcard and variant matching
+            // If no match, try legacy wildcard matching, but never broaden
+            // tags-only ingredients like tool-axe to the default *:* code.
             if (!matches)
             {
+                if (ingredient.MatchingType == EnumRecipeMatchType.TagsOnly || ingredient.Code == null)
+                {
+                    return false;
+                }
+
+                if (!ingredient.CheckTags(slot.Itemstack, slot.Itemstack.Collectible))
+                {
+                    return false;
+                }
+
                 bool typeMatches = (ingredient.Type == EnumItemClass.Block && slot.Itemstack.Class == EnumItemClass.Block) ||
                                    (ingredient.Type == EnumItemClass.Item && slot.Itemstack.Class == EnumItemClass.Item);
 
@@ -922,6 +937,11 @@ namespace RecipeExplorer
                     else if (ingredient.MatchingType != EnumRecipeMatchType.Exact)
                     {
                         matches = TryWildcardBaseMatch(slot, ingredient);
+                    }
+
+                    if (matches && ingredient.SkipVariants != null && WildcardUtil.Match(ingredient.Code, slot.Itemstack.Collectible.Code, ingredient.SkipVariants))
+                    {
+                        matches = false;
                     }
                 }
             }

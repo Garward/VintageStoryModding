@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "PMP,BSB,PCP",
+	"ingredients": {
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"M": { "type": "item", "code": "game:metalplate-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze" ] },
+		"B": { "type": "item", "code": "game:metalplate-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze" ] },
+		"S": { "type": "block", "code": "shaft-y" },
+		"C": { "type": "block", "code": "cogwheel-y" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticmixer-x", "quantity": 1 }
+}

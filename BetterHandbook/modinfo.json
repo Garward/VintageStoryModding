@@ -4,9 +4,9 @@
   "modid": "betterhandbook",
   "description": "Improves the survival handbook with fast cached opening/scrolling, adds item usage lookup, and adds handbook auto-fill helpers.",
   "authors": [ "garward" ],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "dependencies": {
-    "game": "1.21.0"
+    "game": ""
   },
   "side": "client"
 }

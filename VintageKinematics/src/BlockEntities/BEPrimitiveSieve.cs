@@ -16,9 +16,7 @@ namespace VintageKinematics.BlockEntities
 {
     /// <summary>
     /// Single-cell hand-crank-friendly sieve. One input, four-slot output buffer.
-    /// Handles vanilla pannables at parity and can process crusher grit through the same
-    /// recipe table as the full kinetic sieve, but with an extra tax roll so it bridges
-    /// bronze crusher progression without replacing the iron-tier sieve.
+    /// Handles vanilla pannables at parity; grit and dust are reserved for the full kinetic sieve.
     /// </summary>
     public class BEPrimitiveSieve : BlockEntityOpenableContainer, IFaceMappedContainer
     {
@@ -32,7 +30,6 @@ namespace VintageKinematics.BlockEntities
         private const float DustParticleIntervalMs = 350f;
         private const int OutputPushBatch = 8;
         private const int PannableRollsPerBlock = 8;
-        private const float PrimitiveRecipeYieldChance = 0.5f;
         private const float PanTopY = 0.6875f;
 
         public const int PacketIdOpenDialog = 5610;
@@ -249,17 +246,7 @@ namespace VintageKinematics.BlockEntities
             bool usedPanningDrops = false;
             var cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
 
-            var registry = Api.ModLoader.GetModSystem<KineticSieveRecipeRegistry>();
-            var recipe = registry?.FindRecipe(input);
-            if (recipe != null)
-            {
-                ItemStack d = Api.World.Rand.NextDouble() < PrimitiveRecipeYieldChance
-                    ? recipe.RollOutput(Api.World)
-                    : null;
-                if (d != null) drops = new List<ItemStack> { d };
-                consume = true;
-            }
-            else if ((cfg?.UseVanillaPanningDrops ?? true) && input.Block != null && PanLootRoller.IsSieveablePanningSource(input.Block))
+            if ((cfg?.UseVanillaPanningDrops ?? true) && input.Block != null && PanLootRoller.IsSieveablePanningSource(input.Block))
             {
                 drops = new List<ItemStack>(PannableRollsPerBlock);
                 for (int i = 0; i < PannableRollsPerBlock; i++)
@@ -277,7 +264,7 @@ namespace VintageKinematics.BlockEntities
             Vec3d particlePos = new Vec3d(Pos.X + 0.5, Pos.Y + PanTopY, Pos.Z + 0.5);
             if (input.Block != null)
             {
-                Api.World.SpawnCubeParticles(particlePos, new ItemStack(input.Block), 0.3f, 12, 0.4f);
+                Api.World.SpawnCubeParticles(particlePos, new ItemStack(input.Block), 0.3f, 8, 0.4f);
             }
 
             slot.TakeOut(1);
