@@ -16,6 +16,8 @@ namespace VintageKinematics.Api
     /// </summary>
     public class BEBehaviorCrusherProcess : BlockEntityBehavior
     {
+        private const int DefaultVanillaCrushTicks = 4;
+
         private int crushTicksAccumulated = 0;
         private string crushingItemCode = null;
         private float crushTickMultiplier = 1f;
@@ -50,11 +52,11 @@ namespace VintageKinematics.Api
             ItemSlot inputSlot = basin.Inventory[BECrusherBasin.SlotInput];
             if (inputSlot.Empty) return;
 
-            var registry = Api.ModLoader.GetModSystem<KineticCrusherRecipeRegistry>();
-            var recipe = registry?.FindRecipe(inputSlot.Itemstack);
-            if (recipe == null) return;
+            var recipe = GetUsableCustomRecipe(inputSlot.Itemstack);
+            CrushingProperties vanillaProps = recipe == null ? GetUsableVanillaCrushingProps(inputSlot.Itemstack) : null;
+            if (recipe == null && vanillaProps == null) return;
 
-            int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
+            int requiredQty = recipe == null ? 1 : Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
             if (inputSlot.StackSize < requiredQty) return;
 
             if (Api.Side == EnumAppSide.Client)
@@ -71,35 +73,139 @@ namespace VintageKinematics.Api
             }
 
             crushTicksAccumulated++;
-            int effectiveTicks = (int)Math.Ceiling(recipe.CrushTicks * crushTickMultiplier);
+            int baseCrushTicks = recipe?.CrushTicks ?? DefaultVanillaCrushTicks;
+            int effectiveTicks = (int)Math.Ceiling(baseCrushTicks * crushTickMultiplier);
             if (effectiveTicks < 1) effectiveTicks = 1;
             if (crushTicksAccumulated >= effectiveTicks)
             {
-                // Capture wildcard value (e.g. "iron" from "ingot-iron" matched by "ingot-*") so
-                // outputs with '*' in their code resolve to the same metal as the input.
-                string captured = null;
-                if (recipe.Ingredient?.Code?.Path?.Contains('*') == true)
-                {
-                    captured = WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, inputSlot.Itemstack.Collectible.Code);
-                }
-
-                inputSlot.TakeOut(requiredQty);
-                inputSlot.MarkDirty();
-
-                if (recipe.Outputs != null)
-                {
-                    foreach (var o in recipe.Outputs)
-                    {
-                        if (o == null) continue;
-                        ItemStack outStack = ResolveOutputStack(o, captured);
-                        if (outStack == null) continue;
-                        outStack.StackSize = o.StackSize;
-                        basin.DepositOutput(outStack);
-                    }
-                }
+                if (recipe != null) CompleteCustomRecipe(inputSlot, basin, recipe, requiredQty);
+                else CompleteVanillaCrushing(inputSlot, basin, vanillaProps);
 
                 crushTicksAccumulated = 0;
                 if (inputSlot.Empty) crushingItemCode = null;
+            }
+        }
+
+        private void CompleteCustomRecipe(ItemSlot inputSlot, BECrusherBasin basin, KineticCrusherRecipe recipe, int requiredQty)
+        {
+            // Capture wildcard value (e.g. "iron" from "ingot-iron" matched by "ingot-*") so
+            // outputs with '*' in their code resolve to the same metal as the input.
+            string captured = null;
+            if (recipe.Ingredient?.Code?.Path?.Contains('*') == true)
+            {
+                captured = WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, inputSlot.Itemstack.Collectible.Code);
+            }
+
+            inputSlot.TakeOut(requiredQty);
+            inputSlot.MarkDirty();
+
+            if (recipe.Outputs == null) return;
+            foreach (var o in recipe.Outputs)
+            {
+                if (o == null) continue;
+                ItemStack outStack = ResolveOutputStack(o, captured);
+                if (outStack == null) continue;
+                outStack.StackSize = o.StackSize;
+                basin.DepositOutput(outStack);
+            }
+        }
+
+        private void CompleteVanillaCrushing(ItemSlot inputSlot, BECrusherBasin basin, CrushingProperties props)
+        {
+            ItemStack outStack = props?.CrushedStack?.ResolvedItemstack?.Clone();
+
+            inputSlot.TakeOut(1);
+            inputSlot.MarkDirty();
+
+            if (outStack == null) return;
+            outStack.StackSize = GameMath.RoundRandom(Api.World.Rand, props.Quantity.nextFloat(outStack.StackSize, Api.World.Rand));
+            if (outStack.StackSize <= 0) return;
+
+            basin.DepositOutput(outStack);
+        }
+
+        private CrushingProperties GetUsableVanillaCrushingProps(ItemStack stack)
+        {
+            CrushingProperties props = stack?.Collectible?.GetCrushingProperties(Api.World, stack);
+            if (props?.CrushedStack?.ResolvedItemstack == null) return null;
+            return props.HardnessTier <= PulverizerTier ? props : null;
+        }
+
+        private KineticCrusherRecipe GetUsableCustomRecipe(ItemStack stack)
+        {
+            var registry = Api.ModLoader.GetModSystem<KineticCrusherRecipeRegistry>();
+            var recipe = registry?.FindRecipe(stack);
+            if (recipe == null) return null;
+
+            int requiredTier = GetCustomRecipeTier(stack, recipe);
+            return requiredTier <= PulverizerTier ? recipe : null;
+        }
+
+        private int GetCustomRecipeTier(ItemStack stack, KineticCrusherRecipe recipe)
+        {
+            CrushingProperties props = stack?.Collectible?.GetCrushingProperties(Api.World, stack);
+            if (props != null) return props.HardnessTier;
+
+            string path = stack?.Collectible?.Code?.Path ?? recipe?.Ingredient?.Code?.Path;
+            return GetOreTierFromCodePath(path);
+        }
+
+        private int GetOreTierFromCodePath(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return 0;
+
+            switch (GetOreTypeFromCodePath(path))
+            {
+                case "limonite":
+                case "hematite":
+                case "magnetite":
+                case "quartz_nativesilver":
+                case "quartz_nativegold":
+                    return 3;
+
+                case "pentlandite":
+                case "uranium":
+                case "wolframite":
+                case "rhodochrosite":
+                case "chromite":
+                case "ilmenite":
+                    return 4;
+
+                case "nativecopper":
+                case "malachite":
+                case "galena":
+                case "galena_nativesilver":
+                case "cassiterite":
+                case "sphalerite":
+                case "bismuthinite":
+                    return 2;
+
+                default:
+                    return 0;
+            }
+        }
+
+        private string GetOreTypeFromCodePath(string path)
+        {
+            if (path.StartsWith("nugget-")) return path.Substring("nugget-".Length);
+            if (path.StartsWith("crushed-")) return path.Substring("crushed-".Length);
+
+            if (!path.StartsWith("ore-")) return null;
+            string[] parts = path.Split('-');
+            if (parts.Length < 3) return null;
+            return parts[2];
+        }
+
+        private int PulverizerTier
+        {
+            get
+            {
+                switch (Blockentity.Block?.Variant?["metal"])
+                {
+                    case "bronze": return 3;
+                    case "iron": return int.MaxValue;
+                    default: return 1;
+                }
             }
         }
 

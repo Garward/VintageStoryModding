@@ -170,8 +170,9 @@ public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tess)
 ```
 
 `CollectManagedElements` walks every behavior on this BE and unions the
-element names from `KineticAnimator` and `KineticPiston`. You don't have to
-list them yourself.
+element names from VK movement behaviors such as `KineticAnimator`,
+`KineticPiston`, `KineticStretch`, and `KineticLinkedPleat`. You don't have
+to list them yourself.
 
 ## Gotchas
 

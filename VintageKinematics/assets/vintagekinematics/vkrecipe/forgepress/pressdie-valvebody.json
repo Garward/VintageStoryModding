@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:dieblank-iron", "quantity": 1 },
+	"operationCode": "pressdie-valvebody",
+	"operationName": "Valve Body Die",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pressdie-valvebody", "quantity": 1 }
+	],
+	"requiredTemperature": 700,
+	"pressTicks": 8
+}

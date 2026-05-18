@@ -2,22 +2,101 @@
     "code": "kineticmixer",
     "class": "BlockKineticMixer",
     "entityClass": "KineticMixer",
+    "attributes": {
+        "kineticShaftControllerOffset": { "x": 0, "y": 1, "z": 0 }
+    },
     "entityBehaviorsByType": {
         "*-x": [
             { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 16, "axis": "Y", "stressCurve": "Quadratic" } },
+            { "name": "KineticMultiblock" },
             { "name": "KineticWorker", "properties": { "workPerCycle": 180, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
             { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "DriveCog", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCogShaft", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_144", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_144", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_180", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_216", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_252", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_288", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_324", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_144", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_144", "axis": "Y", "ratio": 1 },
                 { "element": "Paddle", "axis": "Y", "ratio": 0.5 }
             ] } }
         ],
         "*-z": [
             { "name": "Kinetic", "properties": { "role": "SmallCogwheel", "stressImpact": 16, "axis": "Y", "stressCurve": "Quadratic" } },
+            { "name": "KineticMultiblock" },
             { "name": "KineticWorker", "properties": { "workPerCycle": 180, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
             { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "DriveCog", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCogShaft", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hub_outer_144", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_144", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_180", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_216", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_252", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_288", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_tooth_324", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_top_144", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_00", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_36", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_72", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_108", "axis": "Y", "ratio": 1 },
+                { "element": "DriveCog_hubcenter_bottom_144", "axis": "Y", "ratio": 1 },
                 { "element": "Paddle", "axis": "Y", "ratio": 0.5 }
             ] } }
+        ]
+    },
+    "behaviorsByType": {
+        "*-x": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 1,
+                    "sizey": 2,
+                    "sizez": 1,
+                    "cposition": { "x": 0, "y": 0, "z": 0 }
+                }
+            }
+        ],
+        "*-z": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 1,
+                    "sizey": 2,
+                    "sizez": 1,
+                    "cposition": { "x": 0, "y": 0, "z": 0 }
+                }
+            }
         ]
     },
     "variantgroups": [
@@ -31,6 +110,7 @@
         "wood": { "base": "game:block/wood/planks/generic" },
         "darkwood": { "base": "game:block/wood/debarked/oak" },
         "metal": { "base": "game:block/metal/sheet/tinbronze1" },
+        "cog": { "base": "game:block/wood/planks/generic" },
         "mortar": { "base": "game:block/wood/barrel/mortar" }
     },
     "blockmaterial": "Wood",

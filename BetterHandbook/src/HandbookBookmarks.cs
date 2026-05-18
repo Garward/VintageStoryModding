@@ -20,6 +20,18 @@ namespace HandbookCache
         private static bool loaded;
         private static ICoreClientAPI capi;
         private static string lockedPageCode;
+        private static int version;
+
+        public static int Version
+        {
+            get
+            {
+                lock (Sync)
+                {
+                    return version;
+                }
+            }
+        }
 
         public static void EnsureLoaded(ICoreClientAPI api)
         {
@@ -105,6 +117,7 @@ namespace HandbookCache
                     isBookmarked = true;
                 }
 
+                version++;
                 SaveLocked();
             }
 

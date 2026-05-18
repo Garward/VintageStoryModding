@@ -1,6 +1,6 @@
 {
 	pageCode: "vintagekinematics:vkguide-coal-motor-era",
-	categoryCode: "guide",
-	title: "vkguide-coal-motor-era-title",
-	text: "vkguide-coal-motor-era-text"
+	categoryCode: "vintagekinematics:category",
+	title: "vintagekinematics:vkguide-coal-motor-era-title",
+	text: "vintagekinematics:vkguide-coal-motor-era-text"
 }

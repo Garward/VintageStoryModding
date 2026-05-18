@@ -60,9 +60,7 @@ namespace VintageKinematics.Network
                         RatedRPM = MathF.Abs(vRPM),
                         IsVanillaBridge = true,
                         VanillaNetworkId = vNetId,
-                        SmoothedTorque = vTorque,
-                        Tier = null,
-                        TierMaxRPM = 0f
+                        SmoothedTorque = vTorque
                     };
                     return true;
                 }
@@ -74,13 +72,14 @@ namespace VintageKinematics.Network
             // block. Treat the filler as a virtual coaxial shaft segment so kinetic networks
             // pass through the multiblock body — otherwise a long block (e.g. kinetic sieve drum)
             // would only accept input on the controller-side face, since both axial faces of
-            // a 1×1×N kinetic body lie on filler cells. Ghost nodes report StressImpact=0 and
-            // no Tier so they don't double-count toward stress or MaxRPM.
+            // a 1×1×N kinetic body lie on filler cells. Ghost nodes report StressImpact=0 so
+            // they don't double-count toward stress.
             //
-            // Designated shaft cells get Role.Shaft so the default coaxial rule forms external
-            // edges to matching-axis sources. Non-shaft cells get Role.Custom so the default
-            // short-circuits — they remain reachable internally through the intra-multiblock
-            // edge in TryGetCustomConnection, but external blocks can't connect to them.
+            // Designated kinetic cells expose the controller's real role so cogwheel consumers
+            // still mesh as cogs when their connection point lives on a filler cell. Non-shaft
+            // cells get Role.Custom so the default short-circuits — they remain reachable
+            // internally through the intra-multiblock edge in TryGetCustomConnection, but
+            // external blocks can't connect to them.
             // Multiblock controllers without IKineticMultiblockController fall back to "every
             // cell is a shaft cell", which preserves the existing 1×N sieve behaviour.
             if (world.BlockAccessor.GetBlock(pos) is BlockMultiblock mb)
@@ -97,11 +96,9 @@ namespace VintageKinematics.Network
                 {
                     Pos = pos,
                     Axis = ctrlKin.Axis,
-                    Role = isShaftCell ? EnumKineticRole.Shaft : EnumKineticRole.Custom,
+                    Role = isShaftCell ? ctrlKin.Role : EnumKineticRole.Custom,
                     StressImpact = 0f,
-                    RatedRPM = 0f,
-                    Tier = null,
-                    TierMaxRPM = 0f
+                    RatedRPM = 0f
                 };
                 return true;
             }
@@ -162,6 +159,17 @@ namespace VintageKinematics.Network
             Block toBlock = world.BlockAccessor.GetBlock(to.Pos);
             var fromInfo = ToInfo(from, fromBlock);
             var toInfo   = ToInfo(to, toBlock);
+
+            if (MultiblockHelper.GetMultiblockAwareBE(world, from.Pos) is IKineticConnector beConnFrom)
+            {
+                var result = beConnFrom.TryConnect(fromInfo, toInfo, from.Pos, to.Pos);
+                if (result.HasValue) return Translate(result.Value);
+            }
+            if (MultiblockHelper.GetMultiblockAwareBE(world, to.Pos) is IKineticConnector beConnTo)
+            {
+                var result = beConnTo.TryConnect(toInfo, fromInfo, to.Pos, from.Pos);
+                if (result.HasValue) return Translate(result.Value);
+            }
 
             if (fromBlock is IKineticConnector connFrom)
             {

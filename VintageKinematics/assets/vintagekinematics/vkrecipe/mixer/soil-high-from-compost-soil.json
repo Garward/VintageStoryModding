@@ -1,0 +1,12 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "game:compost", "quantity": 16 },
+        { "type": "block", "code": "game:soil-compost-none", "quantity": 1 },
+        { "type": "item", "code": "game:powder-charcoal", "quantity": 8 },
+        { "type": "item", "code": "game:bonemeal", "quantity": 8 }
+    ],
+    "outputs": [
+        { "type": "block", "code": "game:soil-high-none", "quantity": 2 }
+    ],
+    "mixTicks": 12
+}

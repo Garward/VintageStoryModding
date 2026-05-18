@@ -1,7 +1,7 @@
 {
 	"code": "pressedcasing",
 	"variantgroups": [
-		{ "code": "metal", "states": ["tinbronze", "bismuthbronze", "blackbronze", "brass", "iron", "meteoriciron", "steel"] }
+		{ "code": "metal", "states": ["iron"] }
 	],
 	"shape": { "base": "item/part/pressedcasing" },
 	"textures": {

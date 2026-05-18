@@ -1,0 +1,3239 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": {
+        "wood": "game:block/wood/planks/generic",
+        "darkwood": "game:block/wood/oak-dark",
+        "metal": "game:block/metal/sheet/iron1"
+    },
+    "elements": [
+        {
+            "name": "flywheelAssembly",
+            "from": [
+                0,
+                0,
+                0
+            ],
+            "to": [
+                0,
+                0,
+                0
+            ],
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "faces": {},
+            "children": [
+                {
+                    "name": "inputShaftStub",
+                    "from": [
+                        0,
+                        6.5,
+                        6.5
+                    ],
+                    "to": [
+                        8,
+                        9.5,
+                        9.5
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#darkwood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#darkwood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#darkwood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#darkwood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#darkwood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#darkwood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "outputShaftStub",
+                    "from": [
+                        8,
+                        6.5,
+                        6.5
+                    ],
+                    "to": [
+                        16,
+                        9.5,
+                        9.5
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hub",
+                    "from": [
+                        5,
+                        5,
+                        5
+                    ],
+                    "to": [
+                        11,
+                        11,
+                        11
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#metal",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#metal",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#metal",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#metal",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#metal",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#metal",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "spoke00",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 0
+                },
+                {
+                    "name": "spoke01",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 45
+                },
+                {
+                    "name": "spoke02",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 90
+                },
+                {
+                    "name": "spoke03",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 135
+                },
+                {
+                    "name": "spoke04",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 180
+                },
+                {
+                    "name": "spoke05",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 225
+                },
+                {
+                    "name": "spoke06",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 270
+                },
+                {
+                    "name": "spoke07",
+                    "from": [
+                        6.76,
+                        11.03,
+                        7.15
+                    ],
+                    "to": [
+                        9.24,
+                        14.85,
+                        8.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 315
+                },
+                {
+                    "name": "rimSegment00",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 0.0
+                },
+                {
+                    "name": "innerWoodSegment00",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 0.0
+                },
+                {
+                    "name": "rimSegment01",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 22.5
+                },
+                {
+                    "name": "innerWoodSegment01",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 22.5
+                },
+                {
+                    "name": "rimSegment02",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 45.0
+                },
+                {
+                    "name": "innerWoodSegment02",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 45.0
+                },
+                {
+                    "name": "rimSegment03",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 67.5
+                },
+                {
+                    "name": "innerWoodSegment03",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 67.5
+                },
+                {
+                    "name": "rimSegment04",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 90.0
+                },
+                {
+                    "name": "innerWoodSegment04",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 90.0
+                },
+                {
+                    "name": "rimSegment05",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 112.5
+                },
+                {
+                    "name": "innerWoodSegment05",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 112.5
+                },
+                {
+                    "name": "rimSegment06",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 135.0
+                },
+                {
+                    "name": "innerWoodSegment06",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 135.0
+                },
+                {
+                    "name": "rimSegment07",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 157.5
+                },
+                {
+                    "name": "innerWoodSegment07",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 157.5
+                },
+                {
+                    "name": "rimSegment08",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 180.0
+                },
+                {
+                    "name": "innerWoodSegment08",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 180.0
+                },
+                {
+                    "name": "rimSegment09",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 202.5
+                },
+                {
+                    "name": "innerWoodSegment09",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 202.5
+                },
+                {
+                    "name": "rimSegment10",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 225.0
+                },
+                {
+                    "name": "innerWoodSegment10",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 225.0
+                },
+                {
+                    "name": "rimSegment11",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 247.5
+                },
+                {
+                    "name": "innerWoodSegment11",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 247.5
+                },
+                {
+                    "name": "rimSegment12",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 270.0
+                },
+                {
+                    "name": "innerWoodSegment12",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 270.0
+                },
+                {
+                    "name": "rimSegment13",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 292.5
+                },
+                {
+                    "name": "innerWoodSegment13",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 292.5
+                },
+                {
+                    "name": "rimSegment14",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 315.0
+                },
+                {
+                    "name": "innerWoodSegment14",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 315.0
+                },
+                {
+                    "name": "rimSegment15",
+                    "from": [
+                        6.26,
+                        16.25,
+                        6.15
+                    ],
+                    "to": [
+                        9.74,
+                        18.95,
+                        9.85
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 337.5
+                },
+                {
+                    "name": "innerWoodSegment15",
+                    "from": [
+                        6.75,
+                        14.55,
+                        6.65
+                    ],
+                    "to": [
+                        9.25,
+                        16.45,
+                        9.35
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "south": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "east": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "west": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "up": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        },
+                        "down": {
+                            "texture": "#wood",
+                            "uv": [
+                                0,
+                                0,
+                                16,
+                                16
+                            ]
+                        }
+                    },
+                    "rotationOrigin": [
+                        8,
+                        8,
+                        8
+                    ],
+                    "rotationX": 337.5
+                }
+            ]
+        }
+    ]
+}

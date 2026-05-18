@@ -12,6 +12,7 @@ using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Crafting;
 using VintageKinematics.Gui;
+using VintageKinematics.Network;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
@@ -39,8 +40,11 @@ namespace VintageKinematics.BlockEntities
         private const float CoolRatePerSecond = 18f;
         private const float InputHeatTransferMultiplier = 1.0f;
         private const float InputCoolTransferMultiplier = 0.25f;
-        private const float BellowsHeatRateMultiplier = 1.75f;
-        private const float BellowsTemperatureBonus = 150f;
+        private const int MaxBellowsAssistCount = 2;
+        private const float BellowsTemperatureBonusPerUnit = 75f;
+        private const float BellowsHeatRateBonusPerUnit = 0.5f;
+        private const float BellowsStackPenaltyReliefPerUnit = 0.5f;
+        private const float MaxBellowsStackPenaltyRelief = 0.9f;
         private const float SmokeParticleY = 35.5f / 16f;
         private static readonly AssetLocation PressHitSound = new AssetLocation("sounds/effect/anvilhit");
         private static readonly AssetLocation PressCompleteSound = new AssetLocation("game:sounds/block/anvil");
@@ -220,9 +224,9 @@ namespace VintageKinematics.BlockEntities
 
             if (burnSecondsRemaining > 0f)
             {
-                bool bellowsAssisted = HasPoweredBellowsAdjacent();
-                float targetTemperature = activeBurnTemperature + (bellowsAssisted ? BellowsTemperatureBonus : 0f);
-                float heatRate = HeatRatePerSecond * (bellowsAssisted ? BellowsHeatRateMultiplier : 1f);
+                int bellowsCount = PoweredBellowsCount();
+                float targetTemperature = activeBurnTemperature + BellowsTemperatureBonusPerUnit * bellowsCount;
+                float heatRate = HeatRatePerSecond * (1f + BellowsHeatRateBonusPerUnit * bellowsCount);
                 float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveForgePressFuelUsageSpeed() ?? 1f;
                 burnSecondsRemaining = Math.Max(0f, burnSecondsRemaining - seconds * fuelUsageSpeed);
                 chamberTemperature = Approach(chamberTemperature, targetTemperature, heatRate * seconds);
@@ -310,8 +314,8 @@ namespace VintageKinematics.BlockEntities
             float newTemperature = ChangeItemTemperature(current, target, transferSeconds);
             if (current < target)
             {
-                float stackSize = Math.Max(1f, inputSlot.Itemstack.StackSize);
-                newTemperature = (newTemperature + (stackSize - 1f) * current) / stackSize;
+                float effectiveStackSize = EffectiveHeatMass(inputSlot.Itemstack.StackSize, PoweredBellowsCount());
+                newTemperature = (newTemperature + (effectiveStackSize - 1f) * current) / effectiveStackSize;
             }
 
             int maxTemperature = MaxItemTemperature(inputSlot.Itemstack);
@@ -321,20 +325,62 @@ namespace VintageKinematics.BlockEntities
             inputSlot.MarkDirty();
         }
 
-        private bool HasPoweredBellowsAdjacent()
+        private int PoweredBellowsCount()
         {
+            int count = 0;
+
+            if (MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size))
+            {
+                int minX = baseCorner.X;
+                int maxX = baseCorner.X + size.X - 1;
+                int minY = baseCorner.Y;
+                int maxY = baseCorner.Y + size.Y - 1;
+                int minZ = baseCorner.Z;
+                int maxZ = baseCorner.Z + size.Z - 1;
+
+                for (int y = minY; y <= maxY; y++)
+                {
+                    for (int x = minX; x <= maxX; x++)
+                    {
+                        if (IsPoweredBellowsAt(new BlockPos(x, y, minZ - 1, Pos.dimension)) && ++count >= MaxBellowsAssistCount) return count;
+                        if (IsPoweredBellowsAt(new BlockPos(x, y, maxZ + 1, Pos.dimension)) && ++count >= MaxBellowsAssistCount) return count;
+                    }
+
+                    for (int z = minZ; z <= maxZ; z++)
+                    {
+                        if (IsPoweredBellowsAt(new BlockPos(minX - 1, y, z, Pos.dimension)) && ++count >= MaxBellowsAssistCount) return count;
+                        if (IsPoweredBellowsAt(new BlockPos(maxX + 1, y, z, Pos.dimension)) && ++count >= MaxBellowsAssistCount) return count;
+                    }
+                }
+
+                return count;
+            }
+
             foreach (BlockFacing facing in BlockFacing.HORIZONTALS)
             {
-                BlockPos pos = Pos.AddCopy(facing);
-                BlockEntity be = Api.World.BlockAccessor.GetBlockEntity(pos);
-                if (be == null) continue;
-                string path = be.Block?.Code?.Path ?? "";
-                if (!path.Contains("bellows")) continue;
-
-                BEBehaviorKinetic kinetic = be.GetBehavior<BEBehaviorKinetic>();
-                if (kinetic != null && Math.Abs(kinetic.ActualRPM) > 0.01f) return true;
+                if (IsPoweredBellowsAt(Pos.AddCopy(facing)) && ++count >= MaxBellowsAssistCount) return count;
             }
-            return false;
+            return count;
+        }
+
+        private static float EffectiveHeatMass(int stackSize, int bellowsCount)
+        {
+            float mass = Math.Max(1f, stackSize);
+            float relief = MathF.Min(MaxBellowsStackPenaltyRelief, GameMath.Clamp(bellowsCount, 0, MaxBellowsAssistCount) * BellowsStackPenaltyReliefPerUnit);
+            float reducedMass = MathF.Sqrt(mass);
+            return mass + (reducedMass - mass) * relief;
+        }
+
+        private bool IsPoweredBellowsAt(BlockPos pos)
+        {
+            BlockEntity be = Api.World.BlockAccessor.GetBlockEntity(pos);
+            if (be == null) return false;
+
+            string path = be.Block?.Code?.Path ?? "";
+            if (!path.Contains("bellows")) return false;
+
+            BEBehaviorKinetic kinetic = be.GetBehavior<BEBehaviorKinetic>();
+            return kinetic != null && Math.Abs(kinetic.ActualRPM) >= KineticNetwork.MinAbsRPM;
         }
 
         private void OnWorkCycle(KineticWorkCompletedArgs args)
@@ -631,6 +677,8 @@ namespace VintageKinematics.BlockEntities
             base.GetBlockInfo(forPlayer, sb);
             sb.AppendLine();
             sb.AppendLine(Lang.Get("vintagekinematics:kineticforgepress-heat-info", chamberTemperature));
+            int bellowsCount = PoweredBellowsCount();
+            sb.AppendLine($"Bellows heat boost: {bellowsCount}/{MaxBellowsAssistCount}");
         }
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)

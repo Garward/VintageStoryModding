@@ -1,10 +1,9 @@
 {
-	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 2 },
+	"ingredient": { "type": "item", "code": "game:ingot-iron", "quantity": 2 },
 	"operationCode": "die-blank",
 	"operationName": "Die Blank",
-	"allowedVariants": [ "iron", "meteoriciron", "steel" ],
 	"outputs": [
-		{ "type": "item", "code": "vintagekinematics:dieblank-*", "quantity": 1 }
+		{ "type": "item", "code": "vintagekinematics:dieblank-iron", "quantity": 1 }
 	],
 	"requiredTemperature": 1100,
 	"pressTicks": 5

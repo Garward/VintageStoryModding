@@ -27,15 +27,14 @@ namespace VintageKinematics.Api
         public static BlockEntity GetMultiblockAwareBE(IWorldAccessor world, BlockPos pos)
         {
             if (world == null || pos == null) return null;
-            BlockEntity be = world.BlockAccessor.GetBlockEntity(pos);
-            if (be != null) return be;
 
             if (world.BlockAccessor.GetBlock(pos) is BlockMultiblock mb)
             {
                 BlockPos ctrl = new BlockPos(pos.X + mb.OffsetInv.X, pos.Y + mb.OffsetInv.Y, pos.Z + mb.OffsetInv.Z, pos.dimension);
                 return world.BlockAccessor.GetBlockEntity(ctrl);
             }
-            return null;
+
+            return world.BlockAccessor.GetBlockEntity(pos);
         }
 
         /// <summary>

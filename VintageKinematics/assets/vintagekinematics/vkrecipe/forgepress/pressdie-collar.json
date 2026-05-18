@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:dieblank-iron", "quantity": 1 },
+	"operationCode": "pressdie-collar",
+	"operationName": "Collar Die",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pressdie-collar", "quantity": 1 }
+	],
+	"requiredTemperature": 700,
+	"pressTicks": 8
+}

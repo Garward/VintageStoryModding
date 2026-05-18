@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 1 },
+	"die": { "type": "item", "code": "vintagekinematics:pressdie-bearingblank" },
+	"operationCode": "bearing-blank",
+	"operationName": "Bearing Blank",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:roughbearingblank-steel", "quantity": 1 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 4
+}

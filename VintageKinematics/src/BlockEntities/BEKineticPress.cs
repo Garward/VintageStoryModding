@@ -64,7 +64,7 @@ namespace VintageKinematics.BlockEntities
             inventory.SlotModified += _ => MarkDirty(true);
 
             string title = Lang.Get("vintagekinematics:kineticpress-title");
-            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Press";
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Extractor";
             DialogTitle = title;
 
             // FromTreeAttributes can run before Api is set, so resolution there is skipped.
@@ -169,7 +169,7 @@ namespace VintageKinematics.BlockEntities
             if (slot.Empty) return;
 
             ItemStack input = slot.Itemstack;
-            var registry = Api.ModLoader.GetModSystem<KineticPressRecipeRegistry>();
+            var registry = Api.ModLoader.GetModSystem<KineticExtractorRecipeRegistry>();
             var recipe = registry?.FindRecipe(input);
             if (recipe != null)
             {
@@ -182,7 +182,7 @@ namespace VintageKinematics.BlockEntities
             MarkDirty(true);
         }
 
-        private bool TryCustomRecipeCycle(ItemSlot slot, KineticPressRecipe recipe)
+        private bool TryCustomRecipeCycle(ItemSlot slot, KineticExtractorRecipe recipe)
         {
             // Liquid output gates the cycle: refuse to consume input if the buffer can't hold the produced amount.
             if (recipe.Liquid != null && recipe.Liquid.Code != null)
@@ -294,7 +294,7 @@ namespace VintageKinematics.BlockEntities
             if (Api.World is IServerWorldAccessor)
             {
                 string title = Lang.Get("vintagekinematics:kineticpress-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Press";
+                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Extractor";
 
                 using var ms = new MemoryStream();
                 using var bw = new BinaryWriter(ms);

@@ -24,12 +24,24 @@ namespace VintageKinematics.Rendering
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
 
+        public enum EnumRotatorMode { Spin, Oscillate }
+
         public class Rotator
         {
             public string ElementName;
             public EnumKineticAxis Axis;
+            public EnumRotatorMode Mode;
+            public KineticPistonRenderer.EnumPistonWaveform Waveform;
             public float Ratio;
             public float PhaseOffset;
+            public float MinAngle;
+            public float MaxAngle;
+            public bool Invert;
+            public bool AlignToKineticAxis;
+            public EnumKineticAxis TranslateAxis;
+            public float TranslateTravel;
+            public float TranslatePhaseOffset;
+            public bool TranslateInvert;
             public MeshRef Mesh;
             public Vec3f Pivot;
         }
@@ -73,17 +85,22 @@ namespace VintageKinematics.Rendering
             foreach (var r in rotators)
             {
                 if (r.Mesh == null) continue;
-                float angle = KineticAnimatorMath.ComputeAngle(t, rpm, r.Ratio, r.PhaseOffset, kineticPhase);
+                float angle = ComputeAngle(r, t, rpm, kineticPhase);
+                Vec3f offset = ComputeOffset(r, t, rpm, kineticPhase);
 
                 // The rotator declares its axis in canonical (shape-file) frame. After the block
                 // is rotated by shapeByType, the canonical axis may end up anti-parallel to the
                 // network's world kinetic axis — which would make the visual spin backwards.
                 // Sign-flip the angle so positive RPM always rotates CCW around +(kinetic world axis).
-                angle *= AxisAlignmentSign(blockRotMat, r.Axis, kineticWorldAxis);
+                if (r.AlignToKineticAxis)
+                {
+                    angle *= AxisAlignmentSign(blockRotMat, r.Axis, kineticWorldAxis);
+                }
 
                 modelMat.Identity()
                     .Translate((float)(pos.X - camPos.X), (float)(pos.Y - camPos.Y), (float)(pos.Z - camPos.Z))
                     .Translate(0.5f, 0.5f, 0.5f).Rotate(blockRotRad).Translate(-0.5f, -0.5f, -0.5f)
+                    .Translate(offset.X / 16f, offset.Y / 16f, offset.Z / 16f)
                     .Translate(r.Pivot.X, r.Pivot.Y, r.Pivot.Z);
 
                 switch (r.Axis)
@@ -133,14 +150,48 @@ namespace VintageKinematics.Rendering
             foreach (var r in rotators)
             {
                 if (r.ElementName != elementName) continue;
-                return KineticAnimatorMath.ComputeAngle(
+                return ComputeAngle(
+                    r,
                     (float)capi.World.ElapsedMilliseconds / 1000f,
                     kineticBeh?.ActualRPM ?? 0f,
-                    r.Ratio,
-                    r.PhaseOffset,
                     kineticBeh?.PhaseOffset ?? 0f);
             }
             return 0f;
+        }
+
+        private static float ComputeAngle(Rotator r, float timeSeconds, float rpm, float kineticPhase)
+        {
+            if (r.Mode == EnumRotatorMode.Oscillate)
+            {
+                float progress = r.Waveform == KineticPistonRenderer.EnumPistonWaveform.Sine
+                    ? KineticPistonMath.OscillateSine(timeSeconds, rpm, r.Ratio, kineticPhase + r.PhaseOffset, 1f)
+                    : KineticPistonMath.OscillateTriangle(timeSeconds, rpm, r.Ratio, kineticPhase + r.PhaseOffset, 1f);
+
+                if (r.Invert) progress = 1f - progress;
+                return r.MinAngle + (r.MaxAngle - r.MinAngle) * progress;
+            }
+
+            return KineticAnimatorMath.ComputeAngle(timeSeconds, rpm, r.Ratio, r.PhaseOffset, kineticPhase);
+        }
+
+        private static Vec3f ComputeOffset(Rotator r, float timeSeconds, float rpm, float kineticPhase)
+        {
+            if (r.TranslateTravel == 0f) return new Vec3f();
+
+            float progress = r.Waveform == KineticPistonRenderer.EnumPistonWaveform.Sine
+                ? KineticPistonMath.OscillateSine(timeSeconds, rpm, r.Ratio, kineticPhase + r.TranslatePhaseOffset, 1f)
+                : KineticPistonMath.OscillateTriangle(timeSeconds, rpm, r.Ratio, kineticPhase + r.TranslatePhaseOffset, 1f);
+
+            float scalar = r.TranslateTravel * progress;
+            if (r.TranslateInvert) scalar = -scalar;
+
+            return r.TranslateAxis switch
+            {
+                EnumKineticAxis.X => new Vec3f(scalar, 0f, 0f),
+                EnumKineticAxis.Y => new Vec3f(0f, scalar, 0f),
+                EnumKineticAxis.Z => new Vec3f(0f, 0f, scalar),
+                _ => new Vec3f()
+            };
         }
 
         public void Dispose() { }

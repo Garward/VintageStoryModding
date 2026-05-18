@@ -17,8 +17,12 @@ namespace VintageKinematics.Rendering
             public string ElementName;
             public EnumKineticAxis Axis;
             public string Mode;
+            public KineticPistonRenderer.EnumPistonWaveform Waveform;
             public float MinScale;
             public float MaxScale;
+            public float Ratio;
+            public float PhaseOffset;
+            public bool Invert;
             public Vec3f Pivot;
             public MeshRef Mesh;
         }
@@ -80,8 +84,30 @@ namespace VintageKinematics.Rendering
 
         private float ScaleFor(Stretch s)
         {
-            float progress = s.Mode == "sourceTimed" ? sourceBeh?.TimedProgress01() ?? 0f : 0f;
+            float progress = ProgressFor(s);
+            if (s.Invert) progress = 1f - progress;
             return s.MinScale + (s.MaxScale - s.MinScale) * progress;
+        }
+
+        private float ProgressFor(Stretch s)
+        {
+            if (s.Mode == "sourceTimed") return sourceBeh?.TimedProgress01() ?? 0f;
+
+            if (s.Mode == "oscillate")
+            {
+                float rpm = kineticBeh?.ActualRPM ?? 0f;
+                float t = (float)capi.World.ElapsedMilliseconds / 1000f;
+                float phase = (kineticBeh?.PhaseOffset ?? 0f) + s.PhaseOffset;
+                float progress = s.Waveform == KineticPistonRenderer.EnumPistonWaveform.Sine
+                    ? KineticPistonMath.OscillateSine(t, rpm, s.Ratio, phase, 1f)
+                    : KineticPistonMath.OscillateTriangle(t, rpm, s.Ratio, phase, 1f);
+
+                if (progress < 0f) return 0f;
+                if (progress > 1f) return 1f;
+                return progress;
+            }
+
+            return 0f;
         }
 
         public void Dispose() { }

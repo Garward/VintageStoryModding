@@ -32,7 +32,7 @@ namespace VintageKinematics.Gui
         private const string RecipeSearchKey = "forgepress-recipe-search";
         private const string RecipeListKey = "forgepress-recipe-list";
         private const string RecipeScrollbarKey = "forgepress-recipe-scrollbar";
-        private const double BrowserWidth = 390.0;
+        private const double BrowserWidth = 560.0;
         private const double BrowserListHeight = 292.0;
         private const int RecipeListCellHeight = 64;
         private const double TitleBarDragHeight = 32.0;

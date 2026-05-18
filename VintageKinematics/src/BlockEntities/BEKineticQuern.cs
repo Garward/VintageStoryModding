@@ -7,7 +7,6 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
-using VintageKinematics.Blocks;
 using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
@@ -136,10 +135,6 @@ namespace VintageKinematics.BlockEntities
 
             foreach (FaceMapEntry entry in ioFaces.OutputEntries)
             {
-                BlockPos targetPos = entry.Cell.AddCopy(entry.Face);
-                if (Api.World.BlockAccessor.GetBlockEntity(targetPos) is not BEBelt belt) continue;
-                if (!BeltMovesAwayFromQuern(belt, entry.Face)) continue;
-
                 int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
                 if (moved > 0)
                 {
@@ -147,23 +142,6 @@ namespace VintageKinematics.BlockEntities
                     if (slot.Empty) return;
                 }
             }
-        }
-
-        private bool BeltMovesAwayFromQuern(BEBelt belt, BlockFacing outputFace)
-        {
-            BEBelt controller = belt.IsController
-                ? belt
-                : Api.World.BlockAccessor.GetBlockEntity(belt.ControllerPos) as BEBelt;
-            if (controller == null || controller.ChainLength <= 0) return false;
-
-            BEBehaviorKinetic kinetic = controller.GetBehavior<BEBehaviorKinetic>();
-            float velocity = controller.ChainVelocity(kinetic?.ActualRPM ?? 0f);
-            if (MathF.Abs(velocity) < 0.0001f) return false;
-
-            Vec3i head = BlockBelt.HeadOffset(controller.Direction);
-            int sign = velocity > 0f ? 1 : -1;
-            return outputFace.Normali.X == head.X * sign
-                && outputFace.Normali.Z == head.Z * sign;
         }
 
         private void OnKineticTick(float dt)

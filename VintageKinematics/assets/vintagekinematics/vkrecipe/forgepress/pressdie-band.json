@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:dieblank-iron", "quantity": 1 },
+	"operationCode": "pressdie-band",
+	"operationName": "Band Die",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pressdie-band", "quantity": 1 }
+	],
+	"requiredTemperature": 700,
+	"pressTicks": 8
+}

@@ -1,0 +1,12 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "vintagekinematics:*-dust", "quantity": 2 },
+        { "type": "item", "code": "vintagekinematics:sawdust", "quantity": 1 }
+    ],
+    "liquidCode": "game:slakedlimeportion",
+    "liquidLitres": 1,
+    "outputs": [
+        { "type": "item", "code": "game:mortar", "quantity": 6 }
+    ],
+    "mixTicks": 8
+}

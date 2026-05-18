@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:dieblank-iron", "quantity": 1 },
+	"operationCode": "pressdie-flange",
+	"operationName": "Flange Die",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:pressdie-flange", "quantity": 1 }
+	],
+	"requiredTemperature": 700,
+	"pressTicks": 8
+}

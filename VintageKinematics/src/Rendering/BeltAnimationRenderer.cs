@@ -10,11 +10,16 @@ namespace VintageKinematics.Rendering
 {
     public class BeltAnimationRenderer : IRenderer
     {
-        private const int FrameCount = 16;
+        private const int FrameCount = 160;
         private const int RenderRangeBlocks = 24;
         private const int White = unchecked((int)0xffffffff);
         private static readonly int FlagsUp = VertexFlags.PackNormal(0f, 1f, 0f);
         private static readonly int FlagsDown = VertexFlags.PackNormal(0f, -1f, 0f);
+        private static readonly int FlagsNorth = VertexFlags.PackNormal(0f, 0f, -1f);
+        private static readonly int FlagsEast = VertexFlags.PackNormal(1f, 0f, 0f);
+        private static readonly int FlagsWest = VertexFlags.PackNormal(-1f, 0f, 0f);
+        private const float BlankBandU2 = 1f / 64f;
+        private const float BlankBandV2 = 1f / 64f;
 
         private readonly ICoreClientAPI capi;
         private readonly BEBelt belt;
@@ -201,17 +206,78 @@ namespace VintageKinematics.Rendering
 
         private MeshData BuildSurfaceFrame(float phase)
         {
-            MeshData mesh = new MeshData(64, 96);
+            MeshData mesh = new MeshData(128, 192);
 
             float yTop = 11f / 16f;
             float yBot = 5f / 16f;
             float zStart = 0f;
             float zEnd = 1f;
 
-            AddScrollingZQuad(mesh, zStart, zEnd, yTop, phase, isTop: true);
-            AddScrollingZQuad(mesh, zStart, zEnd, yBot, 1f - phase, isTop: false);
+            if (belt.Part == EnumBeltPart.Start)
+            {
+                float chainPhase = PositiveMod(1f - phase, 1f);
+                AddScrollingZQuadReversed(mesh, zStart, zEnd, yTop, chainPhase, isTop: true);
+                AddScrollingZQuadReversed(mesh, zStart, zEnd, yBot, 1f - chainPhase, isTop: false);
+            }
+            else
+            {
+                AddScrollingZQuad(mesh, zStart, zEnd, yTop, phase, isTop: true);
+                AddScrollingZQuad(mesh, zStart, zEnd, yBot, 1f - phase, isTop: false);
+            }
+
+            if (IsEndLike())
+            {
+                float outerWrapPhase = 1f - phase;
+                AddEndWrap(mesh, outerWrapPhase);
+            }
 
             return mesh;
+        }
+
+        private static void AddEndWrap(MeshData mesh, float outerPhase)
+        {
+            const float outerY1 = 5.01f / 16f;
+            const float outerY2 = 10.99f / 16f;
+            const float z1 = 0f;
+            const float zMid = 0.1f / 16f;
+            const float x1 = 0f;
+            const float x2 = 1f;
+
+            AddScrollingAxisQuad(mesh,
+                x1, outerY2, z1,
+                x2, outerY2, z1,
+                x2, outerY1, z1,
+                x1, outerY1, z1,
+                outerPhase, outerY2 - outerY1, FlagsNorth);
+
+            AddBlankAxisQuad(mesh,
+                x2, outerY2, z1,
+                x2, outerY2, zMid,
+                x2, outerY1, zMid,
+                x2, outerY1, z1,
+                FlagsEast);
+
+            AddBlankAxisQuad(mesh,
+                x1, outerY2, zMid,
+                x1, outerY2, z1,
+                x1, outerY1, z1,
+                x1, outerY1, zMid,
+                FlagsWest);
+
+            AddScrollingAxisQuad(mesh,
+                x1, outerY2, zMid,
+                x2, outerY2, zMid,
+                x2, outerY2, z1,
+                x1, outerY2, z1,
+                outerPhase, zMid - z1, FlagsUp);
+
+            AddScrollingAxisQuad(mesh,
+                x1, outerY1, z1,
+                x2, outerY1, z1,
+                x2, outerY1, zMid,
+                x1, outerY1, zMid,
+                1f - outerPhase, zMid - z1, FlagsDown);
+
         }
 
         private static void AddScrollingZQuad(MeshData mesh, float z1, float z2, float y, float phase, bool isTop)
@@ -228,6 +294,21 @@ namespace VintageKinematics.Rendering
                 float zSplit = z1 + (1f - phase);
                 AddSurfaceQuad(mesh, z1, zSplit, y, phase, 1f, isTop);
                 AddSurfaceQuad(mesh, zSplit, z2, y, 0f, vEnd - 1f, isTop);
+            }
+        }
+
+        private static void AddScrollingZQuadReversed(MeshData mesh, float z1, float z2, float y, float phase, bool isTop)
+        {
+            float zLen = z2 - z1;
+            float zSplit = z2 - (1f - phase) * zLen;
+
+            if (zSplit > z1)
+            {
+                AddSurfaceQuad(mesh, z1, zSplit, y, phase, 0f, isTop);
+            }
+            if (zSplit < z2)
+            {
+                AddSurfaceQuad(mesh, zSplit, z2, y, 1f, phase, isTop);
             }
         }
 
@@ -250,6 +331,82 @@ namespace VintageKinematics.Rendering
                 mesh.AddVertexWithFlags(1f, y, z1, 1f, v1, White, flags);
             }
             mesh.AddIndices(v, v + 1, v + 2, v, v + 2, v + 3);
+        }
+
+        private static void AddScrollingAxisQuad(MeshData mesh,
+            float ax1, float ay1, float az1,
+            float ax2, float ay2, float az2,
+            float bx2, float by2, float bz2,
+            float bx1, float by1, float bz1,
+            float phase, float span, int flags)
+        {
+            float vEnd = phase + span;
+            if (vEnd <= 1f)
+            {
+                AddAxisQuad(mesh,
+                    ax1, ay1, az1,
+                    ax2, ay2, az2,
+                    bx2, by2, bz2,
+                    bx1, by1, bz1,
+                    phase, vEnd, flags);
+                return;
+            }
+
+            float frac = (1f - phase) / span;
+            float sx1 = Lerp(ax1, bx1, frac);
+            float sy1 = Lerp(ay1, by1, frac);
+            float sz1 = Lerp(az1, bz1, frac);
+            float sx2 = Lerp(ax2, bx2, frac);
+            float sy2 = Lerp(ay2, by2, frac);
+            float sz2 = Lerp(az2, bz2, frac);
+
+            AddAxisQuad(mesh,
+                ax1, ay1, az1,
+                ax2, ay2, az2,
+                sx2, sy2, sz2,
+                sx1, sy1, sz1,
+                phase, 1f, flags);
+            AddAxisQuad(mesh,
+                sx1, sy1, sz1,
+                sx2, sy2, sz2,
+                bx2, by2, bz2,
+                bx1, by1, bz1,
+                0f, vEnd - 1f, flags);
+        }
+
+        private static void AddAxisQuad(MeshData mesh,
+            float ax1, float ay1, float az1,
+            float ax2, float ay2, float az2,
+            float bx2, float by2, float bz2,
+            float bx1, float by1, float bz1,
+            float v1, float v2, int flags)
+        {
+            int v = mesh.VerticesCount;
+            mesh.AddVertexWithFlags(ax1, ay1, az1, 0f, v1, White, flags);
+            mesh.AddVertexWithFlags(ax2, ay2, az2, 1f, v1, White, flags);
+            mesh.AddVertexWithFlags(bx2, by2, bz2, 1f, v2, White, flags);
+            mesh.AddVertexWithFlags(bx1, by1, bz1, 0f, v2, White, flags);
+            mesh.AddIndices(v, v + 1, v + 2, v, v + 2, v + 3);
+        }
+
+        private static void AddBlankAxisQuad(MeshData mesh,
+            float ax1, float ay1, float az1,
+            float ax2, float ay2, float az2,
+            float bx2, float by2, float bz2,
+            float bx1, float by1, float bz1,
+            int flags)
+        {
+            int v = mesh.VerticesCount;
+            mesh.AddVertexWithFlags(ax1, ay1, az1, 0f, 0f, White, flags);
+            mesh.AddVertexWithFlags(ax2, ay2, az2, BlankBandU2, 0f, White, flags);
+            mesh.AddVertexWithFlags(bx2, by2, bz2, BlankBandU2, BlankBandV2, White, flags);
+            mesh.AddVertexWithFlags(bx1, by1, bz1, 0f, BlankBandV2, White, flags);
+            mesh.AddIndices(v, v + 1, v + 2, v, v + 2, v + 3);
+        }
+
+        private static float Lerp(float a, float b, float t)
+        {
+            return a + (b - a) * t;
         }
 
         private static void AddBox(MeshData mesh, float x1, float y1, float z1, float x2, float y2, float z2)

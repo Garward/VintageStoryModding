@@ -1,0 +1,11 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "game:saltpeter", "quantity": 4 },
+        { "type": "item", "code": "game:powder-sulfur", "quantity": 2 },
+        { "type": "item", "code": "game:ore-bituminouscoal", "quantity": 1 }
+    ],
+    "outputs": [
+        { "type": "item", "code": "game:blastingpowder", "quantity": 6 }
+    ],
+    "mixTicks": 6
+}

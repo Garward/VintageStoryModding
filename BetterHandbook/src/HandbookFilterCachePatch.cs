@@ -369,7 +369,11 @@ namespace HandbookCache
         private static string MakeCacheKey(string categoryCode, string searchText)
         {
             string category = categoryCode ?? "";
-            return category + "\n" + searchText;
+            string bookmarkVersion = HandbookBookmarks.IsBookmarksCategory(categoryCode)
+                ? "\nbookmarks:" + HandbookBookmarks.Version.ToString()
+                : "";
+
+            return category + "\n" + searchText + bookmarkVersion;
         }
 
         private static void UpdateScrollbar(GuiDialogHandbook dialog)

@@ -8,7 +8,7 @@
     <DelaySign>false</DelaySign>
     <AssemblyName>BetterHandbook</AssemblyName>
     <RootNamespace>BetterHandbook</RootNamespace>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <PackageFileName>$(AssemblyName)-$(Version).zip</PackageFileName>

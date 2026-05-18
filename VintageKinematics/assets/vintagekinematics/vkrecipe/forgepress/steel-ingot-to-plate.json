@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 2 },
+	"operationCode": "plate",
+	"operationName": "Plate",
+	"outputs": [
+		{ "type": "item", "code": "game:metalplate-steel", "quantity": 1 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 4
+}

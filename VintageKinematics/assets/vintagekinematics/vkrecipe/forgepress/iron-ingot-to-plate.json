@@ -1,9 +1,10 @@
 {
-	"ingredient": { "type": "item", "code": "game:ingot-iron", "quantity": 2 },
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 2 },
 	"operationCode": "plate",
 	"operationName": "Plate",
+	"allowedVariants": [ "iron", "meteoriciron" ],
 	"outputs": [
-		{ "type": "item", "code": "game:metalplate-iron", "quantity": 1 }
+		{ "type": "item", "code": "game:metalplate-*", "quantity": 1 }
 	],
 	"requiredTemperature": 1100,
 	"pressTicks": 4

@@ -1,11 +1,10 @@
 {
-	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 1 },
+	"ingredient": { "type": "item", "code": "game:ingot-iron", "quantity": 1 },
 	"die": { "type": "item", "code": "vintagekinematics:pressdie-band" },
 	"operationCode": "pressed-band",
 	"operationName": "Pressed Band",
-	"allowedVariants": [ "iron", "meteoriciron", "steel" ],
 	"outputs": [
-		{ "type": "item", "code": "vintagekinematics:pressedband-*", "quantity": 4 }
+		{ "type": "item", "code": "vintagekinematics:pressedband-iron", "quantity": 4 }
 	],
 	"requiredTemperature": 1100,
 	"pressTicks": 3

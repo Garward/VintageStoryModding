@@ -1,6 +1,6 @@
 {
 	pageCode: "vintagekinematics:vkguide-forge-press-era",
-	categoryCode: "guide",
-	title: "vkguide-forge-press-era-title",
-	text: "vkguide-forge-press-era-text"
+	categoryCode: "vintagekinematics:category",
+	title: "vintagekinematics:vkguide-forge-press-era-title",
+	text: "vintagekinematics:vkguide-forge-press-era-text"
 }

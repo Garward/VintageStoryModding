@@ -490,7 +490,6 @@ namespace VintageKinematics.Network
 
             SeedSourceRPM(net);
             RefreshSourceState(net);
-            net.ComputeMaxRPM();
             net.RecomputeStressForRPM(net.SourceRPM);
             PropagateNetworkState(net);
 
@@ -526,7 +525,6 @@ namespace VintageKinematics.Network
 
                 SeedSourceRPM(frag);
                 RefreshSourceState(frag);
-                frag.ComputeMaxRPM();
                 frag.RecomputeStressForRPM(frag.SourceRPM);
                 PropagateNetworkState(frag);
 
@@ -538,12 +536,45 @@ namespace VintageKinematics.Network
         {
             KineticNetwork net = GetNetworkAt(sourcePos);
             if (net == null) return;
+
+            if (MathF.Abs(newRPM) > 0.0001f
+                && net.Nodes.TryGetValue(sourcePos, out KineticNode sourceNode)
+                && (net.SourcePos == null
+                    || !net.SourcePos.Equals(sourcePos)
+                    || MathF.Abs(sourceNode.Ratio - 1f) > 0.0001f
+                    || sourceNode.Direction != 1))
+            {
+                net = RebuildAnchoredAt(sourcePos);
+                if (net == null) return;
+            }
+
             net.SourceRPM = newRPM;
             net.SourcePos = sourcePos;
             RefreshSourceState(net);
-            net.ComputeMaxRPM();
             net.RecomputeStressForRPM(newRPM);
             PropagateNetworkState(net);
+        }
+
+        private KineticNetwork RebuildAnchoredAt(BlockPos sourcePos)
+        {
+            if (api.Side != EnumAppSide.Server) return null;
+
+            long oldId = 0;
+            lock (lockObj)
+            {
+                posToNetwork.TryGetValue(sourcePos, out oldId);
+            }
+            if (oldId != 0) RemoveNetwork(oldId);
+
+            var prov = new WorldNodeProvider(api.World);
+            if (!prov.TryGetNode(sourcePos, out _)) return null;
+
+            long newId = AllocateNetworkId();
+            KineticNetwork rebuilt = NetworkBuilder.BuildFrom(prov, sourcePos, newId);
+            if (rebuilt.NodeCount == 0) return null;
+
+            FinalizeAndStore(rebuilt, reanchorExcludePos: null);
+            return GetNetworkAt(sourcePos);
         }
     }
 }

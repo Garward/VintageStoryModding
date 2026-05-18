@@ -31,6 +31,9 @@ namespace VintageKinematics.Rendering
             var stretch = be.GetBehavior<BEBehaviorKineticStretch>();
             if (stretch != null)
                 foreach (var name in stretch.ManagedElementNames) set.Add(name);
+            var pleat = be.GetBehavior<BEBehaviorKineticLinkedPleat>();
+            if (pleat != null)
+                foreach (var name in pleat.ManagedElementNames) set.Add(name);
             string[] result = new string[set.Count];
             set.CopyTo(result);
             return result;
@@ -157,6 +160,16 @@ namespace VintageKinematics.Rendering
                 new Vec3f(), null, selectiveElements);
             if (mesh == null) return (null, pivot);
             return (capi.Render.UploadMesh(mesh), pivot);
+        }
+
+        public static float GetCanonicalElementLength(ICoreClientAPI capi, Block block, string elementName, string axis)
+        {
+            Shape shape = LoadShape(capi, block);
+            ShapeElement elem = shape?.GetElementByName(elementName);
+            if (elem?.From == null || elem.To == null || elem.From.Length < 3 || elem.To.Length < 3) return 1f;
+
+            int index = axis == "z" ? 2 : axis == "y" ? 1 : 0;
+            return GameMath.Max(0.0001f, (float)System.Math.Abs(elem.To[index] - elem.From[index]));
         }
 
         private static Shape LoadShape(ICoreClientAPI capi, Block block)

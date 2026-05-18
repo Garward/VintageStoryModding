@@ -977,10 +977,13 @@ namespace VintageKinematics.BlockEntities
 
             Shape shape = Shape.TryGet(capi, new AssetLocation(shapePath));
             if (shape == null) return false;
+            shape = shape.Clone();
             if (Part != EnumBeltPart.Middle || HasShaft)
             {
-                shape = KineticMeshSplitter.CloneAndRemoveElements(shape, new[] { "Shaft" });
+                shape.RemoveElements(new[] { "Shaft", "FlatWrap" });
             }
+            UseBlankBeltBandForStaticSideFaces(shape);
+            DisableInternalBeltStripCaps(shape);
 
             int baseRot = Direction switch
             {
@@ -1001,6 +1004,66 @@ namespace VintageKinematics.BlockEntities
             tessThreadTesselator.TesselateShape(Block, shape, out MeshData mesh, new Vec3f(0, baseRot, 0));
             if (mesh != null) mesher.AddMeshData(mesh);
             return true;
+        }
+
+        private static void UseBlankBeltBandForStaticSideFaces(Shape shape)
+        {
+            if (shape == null) return;
+
+            SetElementFacesUv(shape, "TopBelt", BlankStaticSideUv,
+                BlockFacing.NORTH, BlockFacing.EAST, BlockFacing.SOUTH, BlockFacing.WEST);
+            SetElementFacesUv(shape, "BottomBelt", BlankStaticSideUv,
+                BlockFacing.NORTH, BlockFacing.EAST, BlockFacing.SOUTH, BlockFacing.WEST);
+            SetElementFacesUv(shape, "FlatWrapInside", BlankStaticSideUv,
+                BlockFacing.NORTH, BlockFacing.EAST, BlockFacing.SOUTH, BlockFacing.WEST);
+            SetElementFacesUv(shape, "FlatWrapWall1", BlankStaticSideUv,
+                BlockFacing.NORTH, BlockFacing.EAST, BlockFacing.SOUTH, BlockFacing.WEST);
+            SetElementFacesUv(shape, "FlatWrapWall2", BlankStaticSideUv,
+                BlockFacing.NORTH, BlockFacing.EAST, BlockFacing.SOUTH, BlockFacing.WEST);
+        }
+
+        private void DisableInternalBeltStripCaps(Shape shape)
+        {
+            if (shape == null) return;
+
+            if (Part == EnumBeltPart.Middle)
+            {
+                DisableElementFaces(shape, "TopBelt", BlockFacing.NORTH, BlockFacing.SOUTH);
+                DisableElementFaces(shape, "BottomBelt", BlockFacing.NORTH, BlockFacing.SOUTH);
+                return;
+            }
+
+            if (Part == EnumBeltPart.Start || Part == EnumBeltPart.End)
+            {
+                DisableElementFaces(shape, "TopBelt", BlockFacing.SOUTH);
+                DisableElementFaces(shape, "BottomBelt", BlockFacing.SOUTH);
+            }
+        }
+
+        private static void DisableElementFaces(Shape shape, string elementName, params BlockFacing[] faces)
+        {
+            ShapeElement elem = shape.GetElementByName(elementName);
+            if (elem?.FacesResolved == null) return;
+
+            for (int i = 0; i < faces.Length; i++)
+            {
+                ShapeElementFace face = elem.FacesResolved[faces[i].Index];
+                if (face != null) face.Enabled = false;
+            }
+        }
+
+        private static readonly float[] BlankStaticSideUv = new[] { 0f, 0f, 0.25f, 0.25f };
+
+        private static void SetElementFacesUv(Shape shape, string elementName, float[] uv, params BlockFacing[] faces)
+        {
+            ShapeElement elem = shape.GetElementByName(elementName);
+            if (elem?.FacesResolved == null) return;
+
+            for (int i = 0; i < faces.Length; i++)
+            {
+                ShapeElementFace face = elem.FacesResolved[faces[i].Index];
+                if (face != null) face.Uv = (float[])uv.Clone();
+            }
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, System.Text.StringBuilder dsc)

@@ -64,19 +64,22 @@ namespace VintageKinematics.Gui
         {
             EnsureTextures(capi);
 
-            double iconSize = GuiElement.scaled(26.0);
+            double iconSize = GuiElement.scaled(34.0);
             double iconPad = GuiElement.scaled(8.0);
+            double iconClipSize = GuiElement.scaled(64.0);
             if (iconSlot != null)
             {
                 scissorBounds.fixedX = (x + iconPad) / RuntimeEnv.GUIScale;
-                scissorBounds.fixedY = (y - iconSize / 2.0) / RuntimeEnv.GUIScale;
+                scissorBounds.fixedY = (y - (iconClipSize - iconSize) / 2.0) / RuntimeEnv.GUIScale;
+                scissorBounds.fixedWidth = iconClipSize / RuntimeEnv.GUIScale;
+                scissorBounds.fixedHeight = iconClipSize / RuntimeEnv.GUIScale;
                 scissorBounds.CalcWorldBounds();
                 capi.Render.PushScissor(scissorBounds, true);
                 capi.Render.RenderItemstackToGui(iconSlot, x + iconPad + iconSize / 2.0, y + iconSize / 2.0, 100.0, (float)iconSize, -1, true, false, false);
                 capi.Render.PopScissor();
             }
 
-            double textX = x + GuiElement.scaled(48.0);
+            double textX = x + GuiElement.scaled(70.0);
             capi.Render.Render2DTexturePremultipliedAlpha(titleTexture.TextureId, textX, y + GuiElement.scaled(2.0), titleTexture.Width, titleTexture.Height, 50f, (Vec4f)null);
             for (int i = 0; i < detailTextures.Length; i++)
             {
@@ -99,7 +102,7 @@ namespace VintageKinematics.Gui
             {
                 detailTextures[i] = util.GenTextTexture(details[i], detailFont, null);
             }
-            scissorBounds = ElementBounds.FixedSize(50.0, 50.0);
+            scissorBounds = ElementBounds.FixedSize(64.0, 64.0);
             scissorBounds.ParentBounds = capi.Gui.WindowBounds;
         }
 

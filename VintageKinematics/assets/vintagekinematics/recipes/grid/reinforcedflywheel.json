@@ -1,0 +1,12 @@
+{
+	"ingredientPattern": "BRB,GFG,BRB",
+	"ingredients": {
+		"B": { "type": "item", "code": "pressedband-iron" },
+		"R": { "type": "item", "code": "shaftcollar-iron" },
+		"G": { "type": "block", "code": "largecogwheel-y" },
+		"F": { "type": "block", "code": "flywheel-e" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "reinforcedflywheel-e", "quantity": 1 }
+}

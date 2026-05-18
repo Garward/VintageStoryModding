@@ -45,6 +45,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityBehaviorClass("KineticSound", typeof(BEBehaviorKineticSound));
             api.RegisterBlockEntityBehaviorClass("KineticPiston", typeof(BEBehaviorKineticPiston));
             api.RegisterBlockEntityBehaviorClass("KineticStretch", typeof(BEBehaviorKineticStretch));
+            api.RegisterBlockEntityBehaviorClass("KineticLinkedPleat", typeof(BEBehaviorKineticLinkedPleat));
             api.RegisterBlockEntityBehaviorClass("KineticAnimationDriver", typeof(BEBehaviorKineticAnimationDriver));
             api.RegisterBlockEntityBehaviorClass("KineticMultiblock", typeof(BEBehaviorKineticMultiblock));
             api.RegisterBlockEntityBehaviorClass("BellowsPulse", typeof(BEBehaviorBellowsPulse));
@@ -59,6 +60,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("CoalMotor", typeof(BlockEntities.BECoalMotor));
             api.RegisterBlockEntityClass("CounterweightDrive", typeof(BlockEntities.BECounterweightDrive));
             api.RegisterBlockEntityClass("Treadwheel", typeof(BlockEntities.BETreadwheel));
+            api.RegisterBlockEntityClass("Flywheel", typeof(BlockEntities.BEFlywheel));
             api.RegisterMountable("vktreadwheel", BlockEntities.BETreadwheel.GetMountable);
             api.RegisterBlockEntityClass("KineticSieve", typeof(BlockEntities.BEKineticSieve));
             api.RegisterBlockEntityClass("PrimitiveSieve", typeof(BlockEntities.BEPrimitiveSieve));
@@ -82,6 +84,7 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockFunnel", typeof(Blocks.BlockFunnel));
             api.RegisterBlockClass("BlockCoalMotor", typeof(Blocks.BlockCoalMotor));
             api.RegisterBlockClass("BlockTreadwheel", typeof(Blocks.BlockTreadwheel));
+            api.RegisterBlockClass("BlockFlywheel", typeof(Blocks.BlockFlywheel));
             api.RegisterBlockClass("BlockCounterweightDrive", typeof(Blocks.BlockCounterweightDrive));
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
             api.RegisterBlockClass("BlockPrimitiveSieve", typeof(Blocks.BlockPrimitiveSieve));

@@ -19,7 +19,7 @@ namespace VintageKinematics.Network
 
         public BlockPos SourcePos;             // null if no source
         public float SourceRPM;                // signed; sign determines whole-network direction
-        public float MaxRPM = 256f;            // tier-derived per-network cap; fallback when no tiers declared
+        public float MaxRPM = MaxAbsRPMFallback;
         public bool IsConflicted;
         public List<BlockPos> ConflictPositions = new List<BlockPos>();
 
@@ -53,21 +53,6 @@ namespace VintageKinematics.Network
             if (abs < 0.0001f) return 0f;
             if (abs > MaxRPM) return 0f;
             return rpm;
-        }
-
-        public void ComputeMaxRPM()
-        {
-            int count = 0;
-            float sum = 0f;
-            foreach (var n in Nodes.Values)
-            {
-                if (string.IsNullOrEmpty(n.Tier) || n.TierMaxRPM <= 0f) continue;
-                sum += n.TierMaxRPM;
-                count++;
-            }
-            if (count == 0) { MaxRPM = MaxAbsRPMFallback; return; }
-            float avg = sum / count;
-            MaxRPM = MathF.Floor(avg / 8f) * 8f;
         }
 
         /// <summary>

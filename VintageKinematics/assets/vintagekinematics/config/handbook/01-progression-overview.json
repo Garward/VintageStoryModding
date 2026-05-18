@@ -1,6 +1,6 @@
 {
 	pageCode: "vintagekinematics:vkguide-progression-overview",
-	categoryCode: "guide",
-	title: "vkguide-progression-overview-title",
-	text: "vkguide-progression-overview-text"
+	categoryCode: "vintagekinematics:category",
+	title: "vintagekinematics:vkguide-progression-overview-title",
+	text: "vintagekinematics:vkguide-progression-overview-text"
 }

@@ -1,14 +1,25 @@
 {
 	"code": "dieblank",
 	"variantgroups": [
-		{ "code": "metal", "states": ["iron", "meteoriciron", "steel"] }
+		{ "code": "metal", "states": ["iron"] }
 	],
 	"shape": { "base": "item/part/dieblank" },
 	"textures": {
 		"metal": { "base": "game:block/metal/ingot/{metal}" }
 	},
 	"attributes": {
+		"forgable": true,
+		"workableTemperature": 700,
+		"requiresAnvilTier": 2,
 		"handbook": { "groupBy": ["dieblank-*"] }
+	},
+	"combustiblePropsByType": {
+		"dieblank-iron": {
+			"meltingPoint": 1482,
+			"meltingDuration": 30,
+			"smeltedRatio": 1,
+			"smeltedStack": { "type": "item", "code": "game:ingot-iron", "stacksize": 2 }
+		}
 	},
 	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.3 },
 	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },

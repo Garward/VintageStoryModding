@@ -4,7 +4,7 @@
 		"R": { "type": "item", "code": "kineticalloyrod" },
 		"P": { "type": "item", "code": "kineticalloyplate" },
 		"C": { "type": "block", "code": "cogwheel-y" },
-		"B": { "type": "item", "code": "roughbearingblank-iron" }
+		"B": { "type": "item", "code": "shaftcollar-iron" }
 	},
 	"width": 3,
 	"height": 3,

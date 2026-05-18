@@ -1,6 +1,6 @@
 {
 	pageCode: "vintagekinematics:vkguide-crank-era",
-	categoryCode: "guide",
-	title: "vkguide-crank-era-title",
-	text: "vkguide-crank-era-text"
+	categoryCode: "vintagekinematics:category",
+	title: "vintagekinematics:vkguide-crank-era-title",
+	text: "vintagekinematics:vkguide-crank-era-text"
 }

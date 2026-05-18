@@ -1,0 +1,93 @@
+{
+    "code": "flywheel",
+    "class": "BlockFlywheel",
+    "entityClass": "Flywheel",
+    "attributes": {
+        "flywheel": {
+            "chargeStress": 64,
+            "dischargeStress": 64,
+            "maxOutputRPM": 16,
+            "maxStoredSeconds": 180,
+            "chargeEfficiency": 0.75,
+            "leakFullToEmptySeconds": 1800
+        }
+    },
+    "entityBehaviorsByType": {
+        "*-e": [
+            { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "X" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "flywheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ],
+        "*-w": [
+            { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "X" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "flywheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ],
+        "*-s": [
+            { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "Z" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "flywheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ],
+        "*-n": [
+            { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "Z" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [
+                { "element": "flywheelAssembly", "axis": "X", "ratio": 1 }
+            ] } }
+        ]
+    },
+    "variantgroups": [
+        {
+            "code": "side",
+            "states": [ "n", "e", "s", "w" ]
+        }
+    ],
+    "shapeByType": {
+        "flywheel-e": { "base": "block/flywheel" },
+        "flywheel-w": { "base": "block/flywheel", "rotateY": 180 },
+        "flywheel-s": { "base": "block/flywheel", "rotateY": 90 },
+        "flywheel-n": { "base": "block/flywheel", "rotateY": 270 }
+    },
+    "textures": {
+        "wood": { "base": "game:block/wood/planks/generic" },
+        "darkwood": { "base": "game:block/wood/oak-dark" },
+        "metal": { "base": "game:block/metal/sheet/iron1" }
+    },
+    "blockmaterial": "Wood",
+    "resistance": 2,
+    "creativeinventory": {
+        "general": [ "*-e" ],
+        "vintagekinematics": [ "*-e" ]
+    },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0.25,
+        "z1": 0.25,
+        "x2": 1,
+        "y2": 0.75,
+        "z2": 0.75
+    },
+    "collisionboxByType": {
+        "*-e": { "x1": 0, "y1": 0.25, "z1": 0.25, "x2": 1, "y2": 0.75, "z2": 0.75 },
+        "*-w": { "x1": 0, "y1": 0.25, "z1": 0.25, "x2": 1, "y2": 0.75, "z2": 0.75 },
+        "*-n": { "x1": 0.25, "y1": 0.25, "z1": 0, "x2": 0.75, "y2": 0.75, "z2": 1 },
+        "*-s": { "x1": 0.25, "y1": 0.25, "z1": 0, "x2": 0.75, "y2": 0.75, "z2": 1 }
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    }
+}

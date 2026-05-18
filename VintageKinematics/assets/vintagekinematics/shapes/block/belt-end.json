@@ -8,9 +8,6 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"surface": "vintagekinematics:block/belt",
-		"side": "game:block/metal/plate/iron",
-		"wood": "game:block/wood/planks/generic"
 	},
 	"elements": [
 		{
@@ -28,43 +25,86 @@
 		},
 		{
 			"name": "TopBelt",
-			"from": [ 0.0, 10.0, 0.0 ],
+			"from": [ 0.0, 10.0, 0.01 ],
 			"to": [ 16.0, 11.0, 16.0 ],
 			"rotationOrigin": [ 0.0, 1.0, 0.0 ],
 			"faces": {
 				"north": { "texture": "#surface", "uv": [ 0.0, 6.0, 16.0, 7.0 ] },
-				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 15.5, 1.0 ] },
 				"south": { "texture": "#surface", "uv": [ 0.0, 15.0, 16.0, 16.0 ] },
-				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 15.5, 1.0 ] },
 				"up": { "texture": "#surface", "uv": [ 0.0, 6.0, 16.0, 16.0 ], "enabled": false },
 				"down": { "texture": "#side", "uv": [ 0.0, 6.0, 16.0, 16.0 ] }
 			}
 		},
 		{
 			"name": "BottomBelt",
-			"from": [ 0.0, 5.0, 0.0 ],
+			"from": [ 0.0, 5.0, 0.01 ],
 			"to": [ 16.0, 6.0, 16.0 ],
-			"rotationOrigin": [ 0.0, -1.0, 0.0 ],
+			"rotationOrigin": [ 0.0, -1.0, 1.0 ],
 			"faces": {
 				"north": { "texture": "#surface", "uv": [ 0.0, 6.0, 16.0, 7.0 ] },
-				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 15.5, 1.0 ] },
 				"south": { "texture": "#surface", "uv": [ 0.0, 15.0, 16.0, 16.0 ] },
-				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 15.5, 1.0 ] },
 				"up": { "texture": "#side", "uv": [ 0.0, 6.0, 16.0, 16.0 ] },
 				"down": { "texture": "#surface", "uv": [ 0.0, 6.0, 16.0, 16.0 ], "enabled": false }
 			}
 		},
 		{
 			"name": "FlatWrap",
-			"from": [ 0.0, 6.0, 0.0 ],
-			"to": [ 16.0, 10.0, 1.0 ],
+			"from": [ 0.0, 5.01, 0.0 ],
+			"to": [ 16.0, 10.99, 0.1 ],
+			"rotationOrigin": [ 0.0, -1.0, 0.0 ],
 			"faces": {
-				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 4.0 ] },
-				"east":  { "texture": "#surface", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
-				"south": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 4.0 ], "enabled": false },
-				"west":  { "texture": "#surface", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
-				"up":    { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] },
-				"down":  { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 1.0 ] }
+				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 5.5 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 5.5 ] },
+				"south": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 5.5 ], "enabled": false },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 5.5 ] },
+				"up": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 0.5 ] },
+				"down": { "texture": "#surface", "uv": [ 0.0, 0.0, 16.0, 0.5 ] }
+			}
+		},
+		{
+			"name": "FlatWrapInside",
+			"from": [ 0.05, 6.0, 0.9 ],
+			"to": [ 15.95, 10.0, 1.0 ],
+			"rotationOrigin": [ 0.0, 1.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.25, 0.25 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.25, 0.25 ] },
+				"south": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.25, 0.25 ] },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.25, 0.25 ] },
+				"up": { "texture": "#surface", "uv": [ 0.0, 0.0, 15.5, 0.5 ], "enabled": false },
+				"down": { "texture": "#surface", "uv": [ 0.0, 0.0, 15.5, 0.5 ], "enabled": false }
+			}
+		},
+		{
+			"name": "FlatWrapWall1",
+			"from": [ 0.0, 6.0, 0.1 ],
+			"to": [ 0.1, 10.0, 1.0 ],
+			"rotationOrigin": [ 0.0, 1.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+				"south": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ], "enabled": false },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+				"up": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
+				"down": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false }
+			}
+		},
+		{
+			"name": "FlatWrapWall2",
+			"from": [ 15.9, 6.0, 0.1 ],
+			"to": [ 16.0, 10.0, 1.0 ],
+			"rotationOrigin": [ 0.0, 1.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+				"east": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+				"south": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ], "enabled": false },
+				"west": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 4.0 ] },
+				"up": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
+				"down": { "texture": "#surface", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false }
 			}
 		}
 	]}

@@ -1,0 +1,10 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "game:quicklime", "quantity": 1 },
+        { "type": "block", "code": "game:sand-*", "quantity": 1 }
+    ],
+    "outputs": [
+        { "type": "block", "code": "game:plaster-plain", "quantity": 1 }
+    ],
+    "mixTicks": 4
+}

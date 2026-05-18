@@ -247,7 +247,6 @@ namespace VintageKinematics.Items
             tree.RemoveAttribute("netStressCapacity");
             tree.RemoveAttribute("netOverstressed");
             tree.RemoveAttribute("netNodeCount");
-            tree.RemoveAttribute("tierMaxRPM");
         }
 
         private void PlayRotateSound(BlockPos pos)

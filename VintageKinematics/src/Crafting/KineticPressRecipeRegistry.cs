@@ -4,14 +4,14 @@ using Vintagestory.API.Common;
 namespace VintageKinematics.Crafting
 {
     /// <summary>
-    /// Loads press recipes from <c>assets/&lt;mod&gt;/vkrecipe/press/*.json</c> across loaded mods
-    /// during <see cref="ModSystem.AssetsFinalize"/>.
+    /// Loads extractor recipes from <c>assets/&lt;mod&gt;/vkrecipe/extractor/*.json</c> across
+    /// loaded mods during <see cref="ModSystem.AssetsFinalize"/>.
     /// </summary>
-    public class KineticPressRecipeRegistry : ModSystem
+    public class KineticExtractorRecipeRegistry : ModSystem
     {
-        private readonly List<KineticPressRecipe> recipes = new List<KineticPressRecipe>();
+        private readonly List<KineticExtractorRecipe> recipes = new List<KineticExtractorRecipe>();
 
-        public IReadOnlyList<KineticPressRecipe> Recipes => recipes;
+        public IReadOnlyList<KineticExtractorRecipe> Recipes => recipes;
 
         public override double ExecuteOrder() => 1.0;
 
@@ -19,7 +19,13 @@ namespace VintageKinematics.Crafting
         {
             base.AssetsFinalize(api);
             recipes.Clear();
-            var assets = api.Assets.GetMany<KineticPressRecipe>(api.Logger, "vkrecipe/press/");
+            LoadRecipes(api, "vkrecipe/extractor/");
+            api.Logger.Notification($"[VintageKinematics] Loaded {recipes.Count} extractor recipe(s)");
+        }
+
+        private void LoadRecipes(ICoreAPI api, string path)
+        {
+            var assets = api.Assets.GetMany<KineticExtractorRecipe>(api.Logger, path);
             foreach (var entry in assets)
             {
                 var recipe = entry.Value;
@@ -29,10 +35,9 @@ namespace VintageKinematics.Crafting
                     recipes.Add(recipe);
                 }
             }
-            api.Logger.Notification($"[VintageKinematics] Loaded {recipes.Count} press recipe(s)");
         }
 
-        public KineticPressRecipe FindRecipe(ItemStack stack)
+        public KineticExtractorRecipe FindRecipe(ItemStack stack)
         {
             if (stack == null) return null;
             foreach (var r in recipes)

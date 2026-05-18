@@ -49,6 +49,11 @@ namespace HandbookCache
             return TryGetModDomain(categoryCode, out _);
         }
 
+        public static bool IsManagedCategory(string categoryCode)
+        {
+            return IsModsRootCategory(categoryCode) || HandbookBookmarks.IsBookmarksCategory(categoryCode);
+        }
+
         public static void ResetModDomainToRoot(GuiDialogHandbook dialog)
         {
             if (dialog != null && IsModDomainCategory(dialog.currentCatgoryCode))
@@ -325,19 +330,24 @@ namespace HandbookCache
         private static readonly AccessTools.FieldRef<GuiDialog, ICoreClientAPI> ClientApi =
             AccessTools.FieldRefAccess<GuiDialog, ICoreClientAPI>("capi");
 
-        public static bool Prefix(GuiDialogHandbook __instance, GuiTab tab)
+        [HarmonyPriority(Priority.Last)]
+        public static void Postfix(GuiDialogHandbook __instance, GuiTab tab)
         {
-            if (!(tab is HandbookTab handbookTab) || !HandbookModCategories.IsModsRootCategory(handbookTab.CategoryCode))
+            if (!(tab is HandbookTab handbookTab) || !HandbookModCategories.IsManagedCategory(handbookTab.CategoryCode))
             {
-                return true;
+                return;
             }
 
-            __instance.currentCatgoryCode = HandbookModCategories.ModsRootCategoryCode;
-            CurrentSearchText(__instance) = "";
-            OverviewGui(__instance)?.GetTextInput("searchField")?.SetValue("", true);
-            ClientApi(__instance).Settings.String["currentHandbookCategoryCode"] = HandbookModCategories.ModsRootCategoryCode;
-            HandbookFilterCachePatch.ApplyFilter(__instance);
-            return false;
+            SelectManagedTab(__instance, handbookTab.CategoryCode);
+        }
+
+        private static void SelectManagedTab(GuiDialogHandbook dialog, string categoryCode)
+        {
+            dialog.currentCatgoryCode = categoryCode;
+            CurrentSearchText(dialog) = "";
+            OverviewGui(dialog)?.GetTextInput("searchField")?.SetValue("", true);
+            ClientApi(dialog).Settings.String["currentHandbookCategoryCode"] = categoryCode;
+            HandbookFilterCachePatch.ApplyFilter(dialog);
         }
     }
 }

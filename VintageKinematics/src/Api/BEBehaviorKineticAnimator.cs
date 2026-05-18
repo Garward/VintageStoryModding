@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -40,12 +41,32 @@ namespace VintageKinematics.Api
                     if (string.IsNullOrEmpty(elem)) continue;
                     string axisStr = r["axis"].AsString("Y");
                     System.Enum.TryParse(axisStr, true, out EnumKineticAxis axis);
+
+                    string translateAxisStr = r["translateAxis"].AsString(axisStr);
+                    System.Enum.TryParse(translateAxisStr, true, out EnumKineticAxis translateAxis);
+
+                    string modeStr = r["mode"].AsString("spin");
+                    System.Enum.TryParse(modeStr, true, out KineticAnimatorRenderer.EnumRotatorMode mode);
+
+                    string waveStr = r["waveform"].AsString("sine");
+                    System.Enum.TryParse(waveStr, true, out KineticPistonRenderer.EnumPistonWaveform wave);
+
                     rotators.Add(new KineticAnimatorRenderer.Rotator
                     {
                         ElementName = elem,
                         Axis = axis,
+                        Mode = mode,
+                        Waveform = wave,
                         Ratio = r["ratio"].AsFloat(1f),
-                        PhaseOffset = r["phaseOffset"].AsFloat(0f)
+                        PhaseOffset = r["phaseOffset"].AsFloat(0f),
+                        MinAngle = DegToRad(r["minAngle"].AsFloat(0f)),
+                        MaxAngle = DegToRad(r["maxAngle"].AsFloat(0f)),
+                        Invert = r["invert"].AsBool(false),
+                        AlignToKineticAxis = r["alignToKineticAxis"].AsBool(mode == KineticAnimatorRenderer.EnumRotatorMode.Spin),
+                        TranslateAxis = translateAxis,
+                        TranslateTravel = r["translateTravel"].AsFloat(0f),
+                        TranslatePhaseOffset = r["translatePhaseOffset"].AsFloat(0f),
+                        TranslateInvert = r["translateInvert"].AsBool(false)
                     });
                 }
             }
@@ -67,6 +88,8 @@ namespace VintageKinematics.Api
 
         /// <summary>Current angle (radians) for the named shape element, or 0 if unknown.</summary>
         public float GetCurrentAngleFor(string elementName) => renderer?.ComputeAngleFor(elementName) ?? 0f;
+
+        private static float DegToRad(float degrees) => degrees * MathF.PI / 180f;
 
         public override void OnBlockUnloaded()
         {

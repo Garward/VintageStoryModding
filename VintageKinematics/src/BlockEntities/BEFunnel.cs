@@ -91,7 +91,9 @@ namespace VintageKinematics.BlockEntities
             ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSetFilter, ms.ToArray());
         }
 
-        public bool TryAcceptFromBelt(ItemStack stack)
+        public bool TryAcceptFromBelt(ItemStack stack) => TryAcceptFromPush(stack);
+
+        public bool TryAcceptFromPush(ItemStack stack)
         {
             if (Api?.Side != EnumAppSide.Server) return false;
             if (stack == null || stack.StackSize <= 0) return true;

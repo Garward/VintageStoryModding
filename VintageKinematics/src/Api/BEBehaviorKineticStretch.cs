@@ -8,9 +8,9 @@ using VintageKinematics.Rendering;
 namespace VintageKinematics.Api
 {
     /// <summary>
-    /// Client-side element scaling for visual parts such as ropes or belts that need to grow or
-    /// shrink while one end remains anchored. Currently supports sourceTimed progress from a
-    /// sibling KineticSource.
+    /// Client-side element scaling for visual parts such as ropes, belts, or folds that need to
+    /// grow or shrink while one end remains anchored. Supports sourceTimed progress from a sibling
+    /// KineticSource and oscillating progress from a sibling Kinetic behavior.
     /// </summary>
     public class BEBehaviorKineticStretch : BlockEntityBehavior
     {
@@ -40,6 +40,9 @@ namespace VintageKinematics.Api
                     string axisStr = s["axis"].AsString("Y");
                     System.Enum.TryParse(axisStr, true, out EnumKineticAxis axis);
 
+                    string waveStr = s["waveform"].AsString("sine");
+                    System.Enum.TryParse(waveStr, true, out KineticPistonRenderer.EnumPistonWaveform wave);
+
                     JsonObject pivotAttr = s["pivot"];
                     Vec3f pivot = new Vec3f(0.5f, 0.5f, 0.5f);
                     if (pivotAttr != null && pivotAttr.Exists)
@@ -56,8 +59,12 @@ namespace VintageKinematics.Api
                         ElementName = elem,
                         Axis = axis,
                         Mode = s["mode"].AsString("sourceTimed"),
+                        Waveform = wave,
                         MinScale = s["minScale"].AsFloat(1f),
                         MaxScale = s["maxScale"].AsFloat(1f),
+                        Ratio = s["ratio"].AsFloat(1f),
+                        PhaseOffset = s["phaseOffset"].AsFloat(0f),
+                        Invert = s["invert"].AsBool(false),
                         Pivot = pivot
                     });
                 }

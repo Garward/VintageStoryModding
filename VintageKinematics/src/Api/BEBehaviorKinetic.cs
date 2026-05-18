@@ -45,11 +45,6 @@ namespace VintageKinematics.Api
         public bool NetOverstressed { get; set; }
         /// <summary>Cached client-side node count pushed from the server.</summary>
         public int NetNodeCount { get; set; }
-        /// <summary>Tier code (e.g. "wood", "iron"). Null for untiered blocks.</summary>
-        public string Tier { get; set; }
-        /// <summary>Resolved per-block MaxRPM from the tier registry (averaged into the network's MaxRPM).</summary>
-        public float TierMaxRPM { get; set; }
-
         /// <summary>Read-only view of the network this block belongs to. Null on client when the manager doesn't track it.</summary>
         public IKineticNetworkInfo Network
         {
@@ -73,7 +68,7 @@ namespace VintageKinematics.Api
             public CachedNetworkView(BEBehaviorKinetic beh) { this.beh = beh; }
             public long NetworkId      => beh.NetworkId;
             public float SourceRPM     => beh.CurrentRPM;
-            public float MaxRPM        => beh.TierMaxRPM;
+            public float MaxRPM        => KineticNetwork.MaxAbsRPMFallback;
             public bool IsConflicted   => beh.NetworkConflicted;
             public bool IsOverstressed => beh.NetOverstressed;
             public float StressTotal   => beh.NetStressTotal;
@@ -141,10 +136,6 @@ namespace VintageKinematics.Api
                         if (mult > 0f) StressImpact *= mult;
                     }
                 }
-                if (properties["tier"].Exists)
-                {
-                    Tier = properties["tier"].AsString();
-                }
                 if (properties["axis"].Exists)
                 {
                     string axisStr = properties["axis"].AsString();
@@ -162,19 +153,6 @@ namespace VintageKinematics.Api
             if (!axisExplicit)
             {
                 Axis = AxisFromBlockFacing();
-            }
-
-            if (!string.IsNullOrEmpty(Tier))
-            {
-                var reg = api.ModLoader.GetModSystem<KineticTierRegistry>();
-                if (reg != null && reg.TryGetMaxRPM(Tier, out float max))
-                {
-                    TierMaxRPM = max;
-                }
-                else
-                {
-                    api.Logger.Warning($"[VintageKinematics] Unknown kinetic tier '{Tier}' at {Pos}");
-                }
             }
 
             // Networks live in RAM on the manager; chunk load / world load doesn't restore them.
@@ -240,15 +218,13 @@ namespace VintageKinematics.Api
             tree.SetFloat("netStressCapacity", NetStressCapacity);
             tree.SetBool("netOverstressed", NetOverstressed);
             tree.SetInt("netNodeCount", NetNodeCount);
-            tree.SetString("tier", Tier ?? "");
-            tree.SetFloat("tierMaxRPM", TierMaxRPM);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
             Axis = (EnumKineticAxis)tree.GetInt("axis", (int)Axis);
-            // Role / StressImpact / Tier / TierMaxRPM are STRUCTURAL — they come from the
+            // Role and StressImpact are STRUCTURAL — they come from the
             // blocktype JSON via Initialize and must not be overridden by saved state.
             // Reading them from the tree pins legacy worlds to whatever values were current
             // when the block was first placed, defeating any later JSON change.
@@ -273,7 +249,7 @@ namespace VintageKinematics.Api
             if (StressImpact < 0f)
             {
                 var src = Blockentity?.GetBehavior<BEBehaviorKineticSource>();
-                if (src != null) ratedRPM = src.TargetRPM;
+                if (src != null) ratedRPM = src.IsActive ? src.TargetRPM : 0f;
             }
             return new KineticNode
             {
@@ -285,9 +261,7 @@ namespace VintageKinematics.Api
                 PhaseOffset = PhaseOffset,
                 StressImpact = StressImpact,
                 RatedRPM = ratedRPM,
-                NetworkId = NetworkId,
-                Tier = Tier,
-                TierMaxRPM = TierMaxRPM
+                NetworkId = NetworkId
             };
         }
 

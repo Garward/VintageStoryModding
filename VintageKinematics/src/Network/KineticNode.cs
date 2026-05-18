@@ -17,8 +17,6 @@ namespace VintageKinematics.Network
         // network's effective sourceRPM. Zero/unused for consumers and passive nodes.
         public float RatedRPM;
         public long NetworkId;
-        public string Tier;
-        public float TierMaxRPM;
         // Set by WorldNodeProvider for synthesized vanilla MP bridge nodes. Persists in net.Nodes
         // after the source BE is destroyed (vanilla axle break), so the bridge can still be
         // identified for cleanup polling. StressImpact varies per bridge to scale capacity with

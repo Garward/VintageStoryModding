@@ -1,31 +1,35 @@
 using System;
+using System.IO;
 using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Crafting;
+using VintageKinematics.Gui;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
 {
     /// <summary>
-    /// Single-block mixer: solid inputs enter from the top or one side, liquid input can be
+    /// Two-block mixer: solid inputs enter from one side, liquid input can be
     /// transferred by bucket or consumed from an adjacent liquid container, and finished output
     /// drains to the opposite side or bottom.
     /// </summary>
     public class BEKineticMixer : BlockEntityOpenableContainer, IFaceMappedContainer
     {
         public const int SlotInputFirst = 0;
-        public const int SlotInputLast = 2;
-        public const int SlotOutputFirst = 3;
-        public const int SlotOutputLast = 11;
-        public const int InventorySize = 12;
+        public const int SlotInputLast = 8;
+        public const int SlotOutputFirst = 9;
+        public const int SlotOutputLast = 17;
+        public const int InventorySize = 18;
 
         public const float LiquidCapacityLitres = 10f;
+        public const int PacketIdOpenDialog = 5610;
 
         private const float OutputPushIntervalMs = 250f;
         private const int OutputPushBatch = 8;
@@ -34,6 +38,9 @@ namespace VintageKinematics.BlockEntities
         private IOFaceMap ioFaces;
         private ItemStack liquidStack;
         private float liquidLitres;
+        private int mixTicksAccumulated;
+        private string mixingRecipeKey;
+        private GuiDialogKineticMixer clientDialog;
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticmixer";
@@ -76,7 +83,6 @@ namespace VintageKinematics.BlockEntities
             for (int i = SlotInputFirst; i <= SlotInputLast; i++)
             {
                 ioFaces.MapInput(inputFace, i);
-                ioFaces.MapInput(BlockFacing.UP, i);
             }
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
@@ -119,11 +125,36 @@ namespace VintageKinematics.BlockEntities
             if (recipe == null)
             {
                 recipe = FindRecipeUsingAdjacentLiquid(registry);
-                if (recipe == null) return;
+                if (recipe == null)
+                {
+                    ResetMixingProgress();
+                    return;
+                }
             }
 
             int[] slotByIngredient = new int[recipe.Ingredients.Length];
-            if (!recipe.TryMapIngredients(InputStacks(), slotByIngredient)) return;
+            if (!recipe.TryMapIngredients(InputStacks(), slotByIngredient))
+            {
+                ResetMixingProgress();
+                return;
+            }
+
+            string recipeKey = BuildMixingRecipeKey(recipe, slotByIngredient);
+            if (mixingRecipeKey != recipeKey)
+            {
+                mixingRecipeKey = recipeKey;
+                mixTicksAccumulated = 0;
+            }
+
+            mixTicksAccumulated++;
+            int effectiveTicks = Math.Max(1, recipe.MixTicks);
+            if (mixTicksAccumulated < effectiveTicks)
+            {
+                Api.World.PlaySoundAt(MixSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 12, volume: 0.25f);
+                MarkDirty(true);
+                return;
+            }
+
             if (!ConsumeRecipeLiquid(recipe)) return;
 
             for (int i = 0; i < recipe.Ingredients.Length; i++)
@@ -134,6 +165,8 @@ namespace VintageKinematics.BlockEntities
             }
 
             Api.World.PlaySoundAt(MixSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 16, volume: 0.45f);
+            mixTicksAccumulated = 0;
+            if (recipe.TryMapIngredients(InputStacks(), null) == false) mixingRecipeKey = null;
 
             if (recipe.Outputs != null)
             {
@@ -144,6 +177,44 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
+            MarkDirty(true);
+        }
+
+        private string BuildMixingRecipeKey(KineticMixerRecipe recipe, int[] slotByIngredient)
+        {
+            StringBuilder key = new StringBuilder();
+            if (recipe?.Ingredients != null)
+            {
+                for (int i = 0; i < recipe.Ingredients.Length; i++)
+                {
+                    if (i > 0) key.Append('|');
+                    key.Append(recipe.Ingredients[i]?.Code);
+                    key.Append(':');
+                    key.Append(recipe.Ingredients[i]?.StackSize ?? 0);
+                    key.Append('=');
+
+                    int slotId = i < slotByIngredient.Length ? slotByIngredient[i] : -1;
+                    ItemStack stack = slotId >= 0 && slotId < inventory.Count ? inventory[slotId].Itemstack : null;
+                    key.Append(stack?.Collectible?.Code);
+                }
+            }
+
+            key.Append(";liquid=");
+            key.Append(recipe?.LiquidCode);
+            if (recipe?.LiquidCode != null)
+            {
+                key.Append('@');
+                key.Append(liquidStack?.Collectible?.Code);
+            }
+
+            return key.ToString();
+        }
+
+        private void ResetMixingProgress()
+        {
+            if (mixTicksAccumulated == 0 && mixingRecipeKey == null) return;
+            mixTicksAccumulated = 0;
+            mixingRecipeKey = null;
             MarkDirty(true);
         }
 
@@ -250,16 +321,37 @@ namespace VintageKinematics.BlockEntities
             ItemSlot hotbar = byPlayer.InventoryManager?.ActiveHotbarSlot;
             if (hotbar != null && !hotbar.Empty)
             {
-                return TryDepositHeldInput(byPlayer, hotbar);
+                if (TryDepositHeldInput(byPlayer, hotbar)) return true;
             }
 
             if (byPlayer.Entity?.Controls?.Sneak == true)
             {
                 if (TryGiveFirstStack(byPlayer, SlotOutputFirst, SlotOutputLast)) return true;
                 TryGiveFirstStack(byPlayer, SlotInputFirst, SlotInputLast);
+                return true;
             }
 
+            OpenDialog(byPlayer);
             return true;
+        }
+
+        private void OpenDialog(IPlayer byPlayer)
+        {
+            if (Api.World is not IServerWorldAccessor) return;
+
+            string title = Lang.Get("vintagekinematics:kineticmixer-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticmixer-title") title = "Kinetic Mixer";
+
+            using var ms = new MemoryStream();
+            using var bw = new BinaryWriter(ms);
+            bw.Write(title);
+            var tree = new TreeAttribute();
+            inventory.ToTreeAttributes(tree);
+            tree.ToBytes(bw);
+
+            ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
+                (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
+            byPlayer.InventoryManager.OpenInventory(inventory);
         }
 
         private bool TryTransferHeldLiquid(IPlayer byPlayer)
@@ -309,7 +401,7 @@ namespace VintageKinematics.BlockEntities
         private bool TryDepositHeldInput(IPlayer byPlayer, ItemSlot hotbar)
         {
             var registry = Api.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
-            if (registry?.FindPotentialRecipeFor(hotbar.Itemstack) == null) return true;
+            if (registry?.FindPotentialRecipeFor(hotbar.Itemstack) == null) return false;
 
             ItemSlot target = FindMergeInputSlot(hotbar.Itemstack) ?? FindEmptyInputSlot();
             if (target == null) return true;
@@ -330,6 +422,53 @@ namespace VintageKinematics.BlockEntities
             target.MarkDirty();
             MarkDirty(true);
             return true;
+        }
+
+        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        {
+            if (packetid == 1001)
+            {
+                player.InventoryManager?.CloseInventory(inventory);
+                return;
+            }
+            if (packetid < 1000)
+            {
+                if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use))
+                {
+                    Api.World.Logger.Audit("Player {0} sent mixer packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
+                    return;
+                }
+                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
+                return;
+            }
+            base.OnReceivedClientPacket(player, packetid, data);
+        }
+
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            if (packetid != PacketIdOpenDialog)
+            {
+                base.OnReceivedServerPacket(packetid, data);
+                return;
+            }
+
+            ICoreClientAPI capi = Api as ICoreClientAPI;
+            if (capi == null) return;
+
+            using var ms = new MemoryStream(data);
+            using var br = new BinaryReader(ms);
+            string title = br.ReadString();
+            var tree = new TreeAttribute();
+            tree.FromBytes(br);
+            inventory.FromTreeAttributes(tree);
+            inventory.ResolveBlocksOrItems();
+
+            if (clientDialog == null)
+            {
+                clientDialog = new GuiDialogKineticMixer(title, inventory, Pos, capi);
+                clientDialog.OnClosed += () => clientDialog = null;
+                clientDialog.TryOpen();
+            }
         }
 
         private ItemSlot FindMergeInputSlot(ItemStack stack)
@@ -421,6 +560,10 @@ namespace VintageKinematics.BlockEntities
                 sb.AppendLine();
                 sb.AppendLine($"{liquidStack.GetName()}: {liquidLitres:0.##} / {LiquidCapacityLitres:0} L");
             }
+            if (mixTicksAccumulated > 0)
+            {
+                sb.AppendLine($"Mixing: {mixTicksAccumulated} cycle(s)");
+            }
         }
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
@@ -436,6 +579,8 @@ namespace VintageKinematics.BlockEntities
             base.ToTreeAttributes(tree);
             inventory.ToTreeAttributes(tree);
             tree.SetFloat("liquidLitres", liquidLitres);
+            tree.SetInt("mixTicks", mixTicksAccumulated);
+            tree.SetString("mixingRecipeKey", mixingRecipeKey ?? "");
             if (liquidStack != null)
             {
                 tree.SetItemstack("liquidStack", liquidStack);
@@ -452,6 +597,9 @@ namespace VintageKinematics.BlockEntities
             inventory.FromTreeAttributes(tree);
             liquidLitres = tree.GetFloat("liquidLitres", 0f);
             liquidStack = tree.GetItemstack("liquidStack");
+            mixTicksAccumulated = tree.GetInt("mixTicks", 0);
+            mixingRecipeKey = tree.GetString("mixingRecipeKey", "");
+            if (string.IsNullOrEmpty(mixingRecipeKey)) mixingRecipeKey = null;
 
             if (Api != null)
             {
@@ -459,6 +607,18 @@ namespace VintageKinematics.BlockEntities
                 liquidStack?.ResolveBlockOrItem(Api.World);
                 BuildIOFaceMap();
             }
+        }
+
+        public override void OnBlockUnloaded()
+        {
+            base.OnBlockUnloaded();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
+        }
+
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
     }
 }

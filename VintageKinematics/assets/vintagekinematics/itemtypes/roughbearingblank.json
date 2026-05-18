@@ -1,7 +1,7 @@
 {
 	"code": "roughbearingblank",
 	"variantgroups": [
-		{ "code": "metal", "states": ["tinbronze", "bismuthbronze", "blackbronze", "brass", "iron", "meteoriciron", "steel"] }
+		{ "code": "metal", "states": ["steel"] }
 	],
 	"shape": { "base": "item/part/roughbearingblank" },
 	"textures": {

@@ -1,185 +1,4579 @@
 {
-  "textureWidth": 32,
-  "textureHeight": 32,
-  "textures": {
-    "wood": "game:block/wood/planks/generic",
-    "darkwood": "game:block/wood/debarked/oak",
-    "leather": "game:block/leather/plain",
-    "metal": "game:block/metal/sheet/iron1"
-  },
-  "elements": [
-    {
-      "name": "BaseBoard",
-      "from": [1, 0, 2],
-      "to": [15, 2, 15],
-      "faces": {
-        "north": { "texture": "#wood", "uv": [1, 14, 15, 16] },
-        "east": { "texture": "#wood", "uv": [2, 14, 15, 16] },
-        "south": { "texture": "#wood", "uv": [1, 14, 15, 16] },
-        "west": { "texture": "#wood", "uv": [2, 14, 15, 16] },
-        "up": { "texture": "#wood", "uv": [1, 2, 15, 15] },
-        "down": { "texture": "#wood", "uv": [1, 2, 15, 15] }
-      }
-    },
-    {
-      "name": "RearMount",
-      "from": [3, 2, 12],
-      "to": [13, 11, 15],
-      "faces": {
-        "north": { "texture": "#wood", "uv": [3, 5, 13, 14] },
-        "east": { "texture": "#wood", "uv": [12, 5, 15, 14] },
-        "south": { "texture": "#wood", "uv": [3, 5, 13, 14] },
-        "west": { "texture": "#wood", "uv": [12, 5, 15, 14] },
-        "up": { "texture": "#wood", "uv": [3, 12, 13, 15] },
-        "down": { "texture": "#wood", "uv": [3, 12, 13, 15] }
-      }
-    },
-    {
-      "name": "ShaftStub",
-      "from": [6, 5, 14],
-      "to": [10, 9, 16],
-      "rotationOrigin": [8, 7, 15],
-      "faces": {
-        "north": { "texture": "#darkwood", "uv": [6, 5, 10, 9] },
-        "east": { "texture": "#darkwood", "uv": [14, 5, 16, 9] },
-        "south": { "texture": "#darkwood", "uv": [6, 5, 10, 9] },
-        "west": { "texture": "#darkwood", "uv": [14, 5, 16, 9] },
-        "up": { "texture": "#darkwood", "uv": [14, 6, 16, 10] },
-        "down": { "texture": "#darkwood", "uv": [14, 6, 16, 10] }
-      }
-    },
-    {
-      "name": "Collar",
-      "from": [5, 4, 12],
-      "to": [11, 10, 14],
-      "faces": {
-        "north": { "texture": "#metal", "uv": [5, 4, 11, 10] },
-        "east": { "texture": "#metal", "uv": [12, 4, 14, 10] },
-        "south": { "texture": "#metal", "uv": [5, 4, 11, 10] },
-        "west": { "texture": "#metal", "uv": [12, 4, 14, 10] },
-        "up": { "texture": "#metal", "uv": [5, 12, 11, 14] },
-        "down": { "texture": "#metal", "uv": [5, 12, 11, 14] }
-      }
-    },
-    {
-      "name": "BottomBoard",
-      "from": [2, 2, 4],
-      "to": [14, 4, 13],
-      "faces": {
-        "north": { "texture": "#darkwood", "uv": [2, 12, 14, 14] },
-        "east": { "texture": "#darkwood", "uv": [4, 12, 13, 14] },
-        "south": { "texture": "#darkwood", "uv": [2, 12, 14, 14] },
-        "west": { "texture": "#darkwood", "uv": [4, 12, 13, 14] },
-        "up": { "texture": "#darkwood", "uv": [2, 4, 14, 13] },
-        "down": { "texture": "#darkwood", "uv": [2, 4, 14, 13] }
-      }
-    },
-    {
-      "name": "BagBottom",
-      "from": [3, 4, 5],
-      "to": [13, 6, 12],
-      "faces": {
-        "north": { "texture": "#leather", "uv": [3, 10, 13, 12] },
-        "east": { "texture": "#leather", "uv": [5, 10, 12, 12] },
-        "south": { "texture": "#leather", "uv": [3, 10, 13, 12] },
-        "west": { "texture": "#leather", "uv": [5, 10, 12, 12] },
-        "up": { "texture": "#leather", "uv": [3, 5, 13, 12] },
-        "down": { "texture": "#leather", "uv": [3, 5, 13, 12] }
-      }
-    },
-    {
-      "name": "BagTop",
-      "from": [3, 8, 5],
-      "to": [13, 10, 12],
-      "rotationOrigin": [8, 8, 8],
-      "faces": {
-        "north": { "texture": "#leather", "uv": [3, 6, 13, 8] },
-        "east": { "texture": "#leather", "uv": [5, 6, 12, 8] },
-        "south": { "texture": "#leather", "uv": [3, 6, 13, 8] },
-        "west": { "texture": "#leather", "uv": [5, 6, 12, 8] },
-        "up": { "texture": "#leather", "uv": [3, 5, 13, 12] },
-        "down": { "texture": "#leather", "uv": [3, 5, 13, 12] }
-      }
-    },
-    {
-      "name": "LeftFold",
-      "from": [2, 5, 5],
-      "to": [4, 9, 12],
-      "faces": {
-        "north": { "texture": "#leather", "uv": [2, 7, 4, 11] },
-        "east": { "texture": "#leather", "uv": [5, 7, 12, 11] },
-        "south": { "texture": "#leather", "uv": [2, 7, 4, 11] },
-        "west": { "texture": "#leather", "uv": [5, 7, 12, 11] },
-        "up": { "texture": "#leather", "uv": [2, 5, 4, 12] },
-        "down": { "texture": "#leather", "uv": [2, 5, 4, 12] }
-      }
-    },
-    {
-      "name": "RightFold",
-      "from": [12, 5, 5],
-      "to": [14, 9, 12],
-      "faces": {
-        "north": { "texture": "#leather", "uv": [12, 7, 14, 11] },
-        "east": { "texture": "#leather", "uv": [5, 7, 12, 11] },
-        "south": { "texture": "#leather", "uv": [12, 7, 14, 11] },
-        "west": { "texture": "#leather", "uv": [5, 7, 12, 11] },
-        "up": { "texture": "#leather", "uv": [12, 5, 14, 12] },
-        "down": { "texture": "#leather", "uv": [12, 5, 14, 12] }
-      }
-    },
-    {
-      "name": "TopBoard",
-      "from": [2, 10, 4],
-      "to": [14, 12, 13],
-      "rotationOrigin": [8, 10, 8],
-      "faces": {
-        "north": { "texture": "#wood", "uv": [2, 4, 14, 6] },
-        "east": { "texture": "#wood", "uv": [4, 4, 13, 6] },
-        "south": { "texture": "#wood", "uv": [2, 4, 14, 6] },
-        "west": { "texture": "#wood", "uv": [4, 4, 13, 6] },
-        "up": { "texture": "#wood", "uv": [2, 4, 14, 13] },
-        "down": { "texture": "#wood", "uv": [2, 4, 14, 13] }
-      }
-    },
-    {
-      "name": "Handle",
-      "from": [6, 12, 8],
-      "to": [10, 14, 13],
-      "rotationOrigin": [8, 12, 10],
-      "faces": {
-        "north": { "texture": "#wood", "uv": [6, 2, 10, 4] },
-        "east": { "texture": "#wood", "uv": [8, 2, 13, 4] },
-        "south": { "texture": "#wood", "uv": [6, 2, 10, 4] },
-        "west": { "texture": "#wood", "uv": [8, 2, 13, 4] },
-        "up": { "texture": "#wood", "uv": [6, 8, 10, 13] },
-        "down": { "texture": "#wood", "uv": [6, 8, 10, 13] }
-      }
-    },
-    {
-      "name": "Nozzle",
-      "from": [6, 4, 0],
-      "to": [10, 8, 5],
-      "faces": {
-        "north": { "texture": "#metal", "uv": [6, 4, 10, 8] },
-        "east": { "texture": "#metal", "uv": [0, 4, 5, 8] },
-        "south": { "texture": "#metal", "uv": [6, 4, 10, 8] },
-        "west": { "texture": "#metal", "uv": [0, 4, 5, 8] },
-        "up": { "texture": "#metal", "uv": [0, 6, 5, 10] },
-        "down": { "texture": "#metal", "uv": [0, 6, 5, 10] }
-      }
-    },
-    {
-      "name": "NozzleLip",
-      "from": [5, 3, 0],
-      "to": [11, 9, 1],
-      "faces": {
-        "north": { "texture": "#metal", "uv": [5, 3, 11, 9] },
-        "east": { "texture": "#metal", "uv": [0, 3, 1, 9] },
-        "south": { "texture": "#metal", "uv": [5, 3, 11, 9] },
-        "west": { "texture": "#metal", "uv": [0, 3, 1, 9] },
-        "up": { "texture": "#metal", "uv": [5, 0, 11, 1] },
-        "down": { "texture": "#metal", "uv": [5, 0, 11, 1] }
-      }
-    }
-  ]
+	"editor": {
+		"allAngles": false,
+		"entityTextureMode": false
+	},
+	"textureWidth": 32,
+	"textureHeight": 32,
+	"textureSizes": {},
+	"textures": {},
+	"elements": [
+		{
+			"name": "BaseBoard",
+			"from": [
+				1.0,
+				0.0,
+				2.0
+			],
+			"to": [
+				15.0,
+				2.0,
+				15.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#wood",
+					"uv": [
+						1.0,
+						14.0,
+						15.0,
+						16.0
+					]
+				},
+				"east": {
+					"texture": "#wood",
+					"uv": [
+						2.0,
+						14.0,
+						15.0,
+						16.0
+					]
+				},
+				"south": {
+					"texture": "#wood",
+					"uv": [
+						1.0,
+						14.0,
+						15.0,
+						16.0
+					]
+				},
+				"west": {
+					"texture": "#wood",
+					"uv": [
+						2.0,
+						14.0,
+						15.0,
+						16.0
+					]
+				},
+				"up": {
+					"texture": "#wood",
+					"uv": [
+						1.0,
+						2.0,
+						15.0,
+						15.0
+					]
+				},
+				"down": {
+					"texture": "#wood",
+					"uv": [
+						1.0,
+						2.0,
+						15.0,
+						15.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RearMount",
+			"from": [
+				3.0,
+				2.0,
+				12.0
+			],
+			"to": [
+				13.0,
+				11.0,
+				15.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#wood",
+					"uv": [
+						3.0,
+						5.0,
+						13.0,
+						14.0
+					]
+				},
+				"east": {
+					"texture": "#wood",
+					"uv": [
+						12.0,
+						5.0,
+						15.0,
+						14.0
+					]
+				},
+				"south": {
+					"texture": "#wood",
+					"uv": [
+						3.0,
+						5.0,
+						13.0,
+						14.0
+					]
+				},
+				"west": {
+					"texture": "#wood",
+					"uv": [
+						12.0,
+						5.0,
+						15.0,
+						14.0
+					]
+				},
+				"up": {
+					"texture": "#wood",
+					"uv": [
+						3.0,
+						12.0,
+						13.0,
+						15.0
+					]
+				},
+				"down": {
+					"texture": "#wood",
+					"uv": [
+						3.0,
+						12.0,
+						13.0,
+						15.0
+					]
+				}
+			}
+		},
+		{
+			"name": "ShaftStub",
+			"from": [
+				6.0,
+				6.0,
+				15.0
+			],
+			"to": [
+				10.0,
+				10.0,
+				16.0
+			],
+			"rotationOrigin": [
+				8.0,
+				8.0,
+				16.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#darkwood",
+					"uv": [
+						6.0,
+						6.0,
+						10.0,
+						10.0
+					]
+				},
+				"east": {
+					"texture": "#darkwood",
+					"uv": [
+						14.0,
+						6.0,
+						15.0,
+						10.0
+					]
+				},
+				"south": {
+					"texture": "#darkwood",
+					"uv": [
+						6.0,
+						6.0,
+						10.0,
+						10.0
+					]
+				},
+				"west": {
+					"texture": "#darkwood",
+					"uv": [
+						14.0,
+						6.0,
+						15.0,
+						10.0
+					]
+				},
+				"up": {
+					"texture": "#darkwood",
+					"uv": [
+						14.0,
+						6.0,
+						18.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#darkwood",
+					"uv": [
+						14.0,
+						6.0,
+						18.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "Collar",
+			"from": [
+				5.0,
+				11.0,
+				13.0
+			],
+			"to": [
+				11.0,
+				11.1,
+				14.0
+			],
+			"rotationOrigin": [
+				0.0,
+				6.0,
+				1.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						5.0,
+						11.0,
+						5.5
+					]
+				},
+				"east": {
+					"texture": "#metal",
+					"uv": [
+						12.0,
+						5.0,
+						13.0,
+						5.5
+					]
+				},
+				"south": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						5.0,
+						11.0,
+						5.5
+					]
+				},
+				"west": {
+					"texture": "#metal",
+					"uv": [
+						12.0,
+						5.0,
+						13.0,
+						5.5
+					]
+				},
+				"up": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						12.0,
+						11.0,
+						13.0
+					]
+				},
+				"down": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						12.0,
+						11.0,
+						13.0
+					]
+				}
+			}
+		},
+		{
+			"name": "BottomBoard",
+			"from": [
+				2.0,
+				2.0,
+				4.0
+			],
+			"to": [
+				14.0,
+				4.0,
+				13.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#darkwood",
+					"uv": [
+						2.0,
+						12.0,
+						14.0,
+						14.0
+					]
+				},
+				"east": {
+					"texture": "#darkwood",
+					"uv": [
+						4.0,
+						12.0,
+						13.0,
+						14.0
+					]
+				},
+				"south": {
+					"texture": "#darkwood",
+					"uv": [
+						2.0,
+						12.0,
+						14.0,
+						14.0
+					]
+				},
+				"west": {
+					"texture": "#darkwood",
+					"uv": [
+						4.0,
+						12.0,
+						13.0,
+						14.0
+					]
+				},
+				"up": {
+					"texture": "#darkwood",
+					"uv": [
+						2.0,
+						4.0,
+						14.0,
+						13.0
+					]
+				},
+				"down": {
+					"texture": "#darkwood",
+					"uv": [
+						2.0,
+						4.0,
+						14.0,
+						13.0
+					]
+				}
+			}
+		},
+		{
+			"name": "BagBottom",
+			"from": [
+				2.45,
+				4.0,
+				5.0
+			],
+			"to": [
+				13.55,
+				5.0,
+				12.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						10.0,
+						14.0,
+						11.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						5.0,
+						10.0,
+						12.0,
+						11.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						10.0,
+						14.0,
+						11.0
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						5.0,
+						10.0,
+						12.0,
+						11.0
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						5.0,
+						14.0,
+						12.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						5.0,
+						14.0,
+						12.0
+					]
+				}
+			}
+		},
+		{
+			"name": "BagTop",
+			"from": [
+				2.45,
+				9.0,
+				5.0
+			],
+			"to": [
+				13.55,
+				10.0,
+				12.0
+			],
+			"rotationOrigin": [
+				8.0,
+				9.0,
+				8.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						6.0,
+						13.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						5.0,
+						6.0,
+						12.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						6.0,
+						13.0,
+						7.0
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						5.0,
+						6.0,
+						12.0,
+						7.0
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						5.0,
+						13.0,
+						12.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						3.0,
+						5.0,
+						13.0,
+						12.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldBottomAnchor",
+			"from": [
+				2.85,
+				4.96,
+				5.14
+			],
+			"to": [
+				3.12,
+				5.12,
+				11.86
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldBottomAnchor",
+			"from": [
+				12.88,
+				4.96,
+				5.14
+			],
+			"to": [
+				13.15,
+				5.12,
+				11.86
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.35
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldBottomAnchor",
+			"from": [
+				3.05,
+				4.96,
+				5.05
+			],
+			"to": [
+				12.95,
+				5.12,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.35
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.35
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.35
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.35
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagLowerA",
+			"from": [
+				1.9,
+				4.96,
+				5.5
+			],
+			"to": [
+				3.05,
+				5.04,
+				11.86
+			],
+			"rotationOrigin": [
+				3.05,
+				5.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagLowerA",
+			"from": [
+				12.95,
+				4.96,
+				5.5
+			],
+			"to": [
+				14.1,
+				5.04,
+				11.86
+			],
+			"rotationOrigin": [
+				12.95,
+				5.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagLowerB",
+			"from": [
+				1.9,
+				5.46,
+				5.54
+			],
+			"to": [
+				3.05,
+				5.54,
+				11.82
+			],
+			"rotationOrigin": [
+				1.9,
+				5.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagLowerB",
+			"from": [
+				12.95,
+				5.46,
+				5.54
+			],
+			"to": [
+				14.1,
+				5.54,
+				11.82
+			],
+			"rotationOrigin": [
+				14.1,
+				5.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagMiddleA",
+			"from": [
+				1.9,
+				5.96,
+				5.58
+			],
+			"to": [
+				3.05,
+				6.04,
+				11.78
+			],
+			"rotationOrigin": [
+				3.05,
+				6.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagMiddleA",
+			"from": [
+				12.95,
+				5.96,
+				5.58
+			],
+			"to": [
+				14.1,
+				6.04,
+				11.78
+			],
+			"rotationOrigin": [
+				12.95,
+				6.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagMiddleB",
+			"from": [
+				1.9,
+				6.46,
+				5.64
+			],
+			"to": [
+				3.05,
+				6.54,
+				11.72
+			],
+			"rotationOrigin": [
+				1.9,
+				6.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagMiddleB",
+			"from": [
+				12.95,
+				6.46,
+				5.64
+			],
+			"to": [
+				14.1,
+				6.54,
+				11.72
+			],
+			"rotationOrigin": [
+				14.1,
+				6.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagUpperA",
+			"from": [
+				1.9,
+				6.96,
+				5.7
+			],
+			"to": [
+				3.05,
+				7.04,
+				11.66
+			],
+			"rotationOrigin": [
+				3.05,
+				7.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagUpperA",
+			"from": [
+				12.95,
+				6.96,
+				5.7
+			],
+			"to": [
+				14.1,
+				7.04,
+				11.66
+			],
+			"rotationOrigin": [
+				12.95,
+				7.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagUpperB",
+			"from": [
+				1.9,
+				7.46,
+				5.74
+			],
+			"to": [
+				3.05,
+				7.54,
+				11.62
+			],
+			"rotationOrigin": [
+				1.9,
+				7.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagUpperB",
+			"from": [
+				12.95,
+				7.46,
+				5.74
+			],
+			"to": [
+				14.1,
+				7.54,
+				11.62
+			],
+			"rotationOrigin": [
+				14.1,
+				7.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagTopA",
+			"from": [
+				1.9,
+				7.96,
+				5.78
+			],
+			"to": [
+				3.05,
+				8.04,
+				11.58
+			],
+			"rotationOrigin": [
+				3.05,
+				8.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagTopA",
+			"from": [
+				12.95,
+				7.96,
+				5.78
+			],
+			"to": [
+				14.1,
+				8.04,
+				11.58
+			],
+			"rotationOrigin": [
+				12.95,
+				8.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldDiagTopB",
+			"from": [
+				1.9,
+				8.46,
+				5.82
+			],
+			"to": [
+				3.05,
+				8.54,
+				11.54
+			],
+			"rotationOrigin": [
+				1.9,
+				8.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldDiagTopB",
+			"from": [
+				12.95,
+				8.46,
+				5.82
+			],
+			"to": [
+				14.1,
+				8.54,
+				11.54
+			],
+			"rotationOrigin": [
+				14.1,
+				8.5,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						7.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldLowerA",
+			"from": [
+				3.05,
+				4.96,
+				5.05
+			],
+			"to": [
+				12.95,
+				5.04,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				5.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerLowerA",
+			"from": [
+				2.65,
+				4.96,
+				5.05
+			],
+			"to": [
+				3.25,
+				5.04,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				5.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerLowerA",
+			"from": [
+				12.75,
+				4.96,
+				5.05
+			],
+			"to": [
+				13.35,
+				5.04,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				5.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldLowerB",
+			"from": [
+				3.05,
+				5.46,
+				5.05
+			],
+			"to": [
+				12.95,
+				5.54,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				5.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerLowerB",
+			"from": [
+				2.65,
+				5.46,
+				5.05
+			],
+			"to": [
+				3.25,
+				5.54,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				5.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerLowerB",
+			"from": [
+				12.75,
+				5.46,
+				5.05
+			],
+			"to": [
+				13.35,
+				5.54,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				5.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldMiddleA",
+			"from": [
+				3.05,
+				5.96,
+				5.05
+			],
+			"to": [
+				12.95,
+				6.04,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				6.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerMiddleA",
+			"from": [
+				2.65,
+				5.96,
+				5.05
+			],
+			"to": [
+				3.25,
+				6.04,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				6.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerMiddleA",
+			"from": [
+				12.75,
+				5.96,
+				5.05
+			],
+			"to": [
+				13.35,
+				6.04,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				6.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldMiddleB",
+			"from": [
+				3.05,
+				6.46,
+				5.05
+			],
+			"to": [
+				12.95,
+				6.54,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				6.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerMiddleB",
+			"from": [
+				2.65,
+				6.46,
+				5.05
+			],
+			"to": [
+				3.25,
+				6.54,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				6.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerMiddleB",
+			"from": [
+				12.75,
+				6.46,
+				5.05
+			],
+			"to": [
+				13.35,
+				6.54,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				6.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldUpperA",
+			"from": [
+				3.05,
+				6.96,
+				5.05
+			],
+			"to": [
+				12.95,
+				7.04,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				7.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerUpperA",
+			"from": [
+				2.65,
+				6.96,
+				5.05
+			],
+			"to": [
+				3.25,
+				7.04,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				7.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerUpperA",
+			"from": [
+				12.75,
+				6.96,
+				5.05
+			],
+			"to": [
+				13.35,
+				7.04,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				7.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldUpperB",
+			"from": [
+				3.05,
+				7.46,
+				5.05
+			],
+			"to": [
+				12.95,
+				7.54,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				7.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerUpperB",
+			"from": [
+				2.65,
+				7.46,
+				5.05
+			],
+			"to": [
+				3.25,
+				7.54,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				7.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerUpperB",
+			"from": [
+				12.75,
+				7.46,
+				5.05
+			],
+			"to": [
+				13.35,
+				7.54,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				7.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldTopA",
+			"from": [
+				3.05,
+				7.96,
+				5.05
+			],
+			"to": [
+				12.95,
+				8.04,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				8.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerTopA",
+			"from": [
+				2.65,
+				7.96,
+				5.05
+			],
+			"to": [
+				3.25,
+				8.04,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				8.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerTopA",
+			"from": [
+				12.75,
+				7.96,
+				5.05
+			],
+			"to": [
+				13.35,
+				8.04,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				8.0,
+				5.95
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "FrontFoldTopB",
+			"from": [
+				3.05,
+				8.46,
+				5.05
+			],
+			"to": [
+				12.95,
+				8.54,
+				5.95
+			],
+			"rotationOrigin": [
+				8.0,
+				8.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						9.9,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerTopB",
+			"from": [
+				2.65,
+				8.46,
+				5.05
+			],
+			"to": [
+				3.25,
+				8.54,
+				5.95
+			],
+			"rotationOrigin": [
+				2.95,
+				8.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerTopB",
+			"from": [
+				12.75,
+				8.46,
+				5.05
+			],
+			"to": [
+				13.35,
+				8.54,
+				5.95
+			],
+			"rotationOrigin": [
+				13.05,
+				8.5,
+				5.05
+			],
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						0.6,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerCapLower",
+			"from": [
+				2.72,
+				4.92,
+				5.72
+			],
+			"to": [
+				3.72,
+				5.92,
+				6.72
+			],
+			"rotationOrigin": [
+				3.22,
+				5.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": -38.0,
+			"rotationZ": 43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerCapLower",
+			"from": [
+				12.32,
+				4.92,
+				5.72
+			],
+			"to": [
+				13.32,
+				5.92,
+				6.72
+			],
+			"rotationOrigin": [
+				12.82,
+				5.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": 38.0,
+			"rotationZ": -43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerCapMiddleLower",
+			"from": [
+				2.72,
+				5.92,
+				5.72
+			],
+			"to": [
+				3.72,
+				6.92,
+				6.72
+			],
+			"rotationOrigin": [
+				3.22,
+				6.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": -38.0,
+			"rotationZ": 43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerCapMiddleLower",
+			"from": [
+				12.32,
+				5.92,
+				5.72
+			],
+			"to": [
+				13.32,
+				6.92,
+				6.72
+			],
+			"rotationOrigin": [
+				12.82,
+				6.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": 38.0,
+			"rotationZ": -43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerCapMiddleUpper",
+			"from": [
+				2.72,
+				6.92,
+				5.72
+			],
+			"to": [
+				3.72,
+				7.92,
+				6.72
+			],
+			"rotationOrigin": [
+				3.22,
+				7.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": -38.0,
+			"rotationZ": 43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerCapMiddleUpper",
+			"from": [
+				12.32,
+				6.92,
+				5.72
+			],
+			"to": [
+				13.32,
+				7.92,
+				6.72
+			],
+			"rotationOrigin": [
+				12.82,
+				7.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": 38.0,
+			"rotationZ": -43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "LeftFoldCornerCapUpper",
+			"from": [
+				2.72,
+				7.92,
+				5.72
+			],
+			"to": [
+				3.72,
+				8.92,
+				6.72
+			],
+			"rotationOrigin": [
+				3.22,
+				8.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": -38.0,
+			"rotationZ": 43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "RightFoldCornerCapUpper",
+			"from": [
+				12.32,
+				7.92,
+				5.72
+			],
+			"to": [
+				13.32,
+				8.92,
+				6.72
+			],
+			"rotationOrigin": [
+				12.82,
+				8.42,
+				6.22
+			],
+			"rotationX": 0.0,
+			"rotationY": 38.0,
+			"rotationZ": -43.0,
+			"faces": {
+				"north": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"south": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"east": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"west": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						6.25
+					]
+				},
+				"up": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				},
+				"down": {
+					"texture": "#leather",
+					"uv": [
+						0.0,
+						6.0,
+						1.0,
+						7.0
+					]
+				}
+			}
+		},
+		{
+			"name": "TopBoard",
+			"from": [
+				2.0,
+				10.0,
+				4.0
+			],
+			"to": [
+				14.0,
+				12.0,
+				13.0
+			],
+			"rotationOrigin": [
+				8.0,
+				10.0,
+				8.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#wood",
+					"uv": [
+						2.0,
+						4.0,
+						14.0,
+						6.0
+					]
+				},
+				"east": {
+					"texture": "#wood",
+					"uv": [
+						4.0,
+						4.0,
+						13.0,
+						6.0
+					]
+				},
+				"south": {
+					"texture": "#wood",
+					"uv": [
+						2.0,
+						4.0,
+						14.0,
+						6.0
+					]
+				},
+				"west": {
+					"texture": "#wood",
+					"uv": [
+						4.0,
+						4.0,
+						13.0,
+						6.0
+					]
+				},
+				"up": {
+					"texture": "#wood",
+					"uv": [
+						2.0,
+						4.0,
+						14.0,
+						13.0
+					]
+				},
+				"down": {
+					"texture": "#wood",
+					"uv": [
+						2.0,
+						4.0,
+						14.0,
+						13.0
+					]
+				}
+			}
+		},
+		{
+			"name": "Handle",
+			"from": [
+				6.0,
+				12.0,
+				8.0
+			],
+			"to": [
+				10.0,
+				14.0,
+				13.0
+			],
+			"rotationOrigin": [
+				8.0,
+				12.0,
+				10.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#wood",
+					"uv": [
+						6.0,
+						2.0,
+						10.0,
+						4.0
+					]
+				},
+				"east": {
+					"texture": "#wood",
+					"uv": [
+						8.0,
+						2.0,
+						13.0,
+						4.0
+					]
+				},
+				"south": {
+					"texture": "#wood",
+					"uv": [
+						6.0,
+						2.0,
+						10.0,
+						4.0
+					]
+				},
+				"west": {
+					"texture": "#wood",
+					"uv": [
+						8.0,
+						2.0,
+						13.0,
+						4.0
+					]
+				},
+				"up": {
+					"texture": "#wood",
+					"uv": [
+						6.0,
+						8.0,
+						10.0,
+						13.0
+					]
+				},
+				"down": {
+					"texture": "#wood",
+					"uv": [
+						6.0,
+						8.0,
+						10.0,
+						13.0
+					]
+				}
+			}
+		},
+		{
+			"name": "Nozzle",
+			"from": [
+				6.0,
+				5.0,
+				0.0
+			],
+			"to": [
+				10.0,
+				9.0,
+				5.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#metal",
+					"uv": [
+						6.0,
+						5.0,
+						10.0,
+						9.0
+					]
+				},
+				"east": {
+					"texture": "#metal",
+					"uv": [
+						0.0,
+						5.0,
+						5.0,
+						9.0
+					]
+				},
+				"south": {
+					"texture": "#metal",
+					"uv": [
+						6.0,
+						5.0,
+						10.0,
+						9.0
+					]
+				},
+				"west": {
+					"texture": "#metal",
+					"uv": [
+						0.0,
+						5.0,
+						5.0,
+						9.0
+					]
+				},
+				"up": {
+					"texture": "#metal",
+					"uv": [
+						0.0,
+						6.0,
+						5.0,
+						10.0
+					]
+				},
+				"down": {
+					"texture": "#metal",
+					"uv": [
+						0.0,
+						6.0,
+						5.0,
+						10.0
+					]
+				}
+			}
+		},
+		{
+			"name": "NozzleLip",
+			"from": [
+				5.0,
+				4.0,
+				0.0
+			],
+			"to": [
+				11.0,
+				10.0,
+				1.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						4.0,
+						11.0,
+						10.0
+					]
+				},
+				"east": {
+					"texture": "#metal",
+					"uv": [
+						0.0,
+						4.0,
+						1.0,
+						10.0
+					]
+				},
+				"south": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						4.0,
+						11.0,
+						10.0
+					]
+				},
+				"west": {
+					"texture": "#metal",
+					"uv": [
+						0.0,
+						4.0,
+						1.0,
+						10.0
+					]
+				},
+				"up": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						0.0,
+						11.0,
+						1.0
+					]
+				},
+				"down": {
+					"texture": "#metal",
+					"uv": [
+						5.0,
+						0.0,
+						11.0,
+						1.0
+					]
+				}
+			}
+		}
+	]
 }

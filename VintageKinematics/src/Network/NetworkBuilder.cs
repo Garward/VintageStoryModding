@@ -105,7 +105,7 @@ namespace VintageKinematics.Network
             int anchorDir = 0;
             foreach (var kvp in network.Nodes)
             {
-                if (kvp.Value.StressImpact >= 0f) continue;
+                if (kvp.Value.StressImpact >= 0f || kvp.Value.RatedRPM <= 0f) continue;
                 if (anchorPos == null)
                 {
                     anchorPos = kvp.Key;

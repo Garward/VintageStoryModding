@@ -12,6 +12,7 @@ Build a network of shafts, cogwheels, and gearboxes; power it with hand cranks o
 
 ### Power
 - **Hand crank** for short bursts of small-network power.
+- **Flywheel** to smooth hand-cranked or treadwheel-powered bursts.
 - **Coal motor** as a sustained mid-tier source. Open the firedoor to fuel it.
 - **Creative motor** that spins forever, for testing and creative builds.
 - **Vanilla bridge**: place a VK shaft against a vanilla wind- or water-driven axle and the rotation flows into the network.
@@ -54,7 +55,7 @@ Vintage Kinematics exposes a small public API in the `VintageKinematics.Api` nam
 
 A walkthrough of building a "Kinetic Pulper" (block JSON, recipe JSON, ~50 lines of C#) lives at [`docs/api-tutorial.md`](docs/api-tutorial.md). It covers:
 
-- Block-entity behaviors: `Kinetic`, `KineticWorker`, `KineticAnimator`, `KineticSound`, `KineticPiston`, `KineticAnimationDriver`.
+- Block-entity behaviors: `Kinetic`, `KineticWorker`, `KineticAnimator`, `KineticSound`, `KineticPiston`, `KineticStretch`, `KineticLinkedPleat`, `KineticAnimationDriver`.
 - Mesh splitting via `KineticMeshSplitter` so animated and static parts coexist in one block.
 - Multiblock machines (`MultiblockHelper`) so adjacency probes resolve filler cells back to their controller.
 - What the API handles for you (network membership, stress, tooltips, work cycles, animation, sound dedup, auto-pause on overstress) versus what you still write yourself (recipe matching, inventory wiring, model, textures).

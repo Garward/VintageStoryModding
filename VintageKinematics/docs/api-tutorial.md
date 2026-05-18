@@ -21,7 +21,7 @@ Total: 1 block JSON, 1+ recipe JSONs, ~50 lines of C#.
   "entityClass": "KineticPulper",
   "shape": { "base": "block/mymod/kineticpulper" },
   "behaviors": [
-    { "name": "Kinetic",         "properties": { "role": "Custom", "stressImpact": 8, "tier": "iron" }},
+    { "name": "Kinetic",         "properties": { "role": "Custom", "stressImpact": 8 }},
     { "name": "KineticWorker",   "properties": { "workPerCycle": 200, "minRPM": 16 }},
     { "name": "KineticAnimator", "properties": { "rotators": [{ "element": "blade", "axis": "Y", "ratio": 1.0 }] }},
     { "name": "KineticSound",    "properties": { "sound": "mymod:pulper-loop", "minRPM": 16, "pitchScalesWithRPM": true }}
@@ -31,9 +31,8 @@ Total: 1 block JSON, 1+ recipe JSONs, ~50 lines of C#.
 
 What each behavior does:
 
-- **Kinetic**: joins the kinetic network, accounts for stress, drives the
-  per-block tooltip. `tier: iron` means this block contributes 256 to the
-  network's MaxRPM average.
+- **Kinetic**: joins the kinetic network, accounts for stress, and drives the
+  per-block tooltip.
 - **KineticWorker**: accumulates progress while the network is running,
   fires `OnWorkCompleted` when it hits 200 RPM·seconds.
 - **KineticAnimator**: rotates the `blade` shape element on the client.
@@ -152,8 +151,10 @@ playback speed to network RPM:
 
 This behavior coexists with `KineticAnimator`. Partition by element: a shape
 element jointed to a keyframe animation is owned by the animation system; a
-non-jointed element can be procedurally rotated by `KineticAnimator` or
-translated by `KineticPiston`. Don't drive the same element from both.
+non-jointed element can be procedurally rotated by `KineticAnimator`,
+translated by `KineticPiston`, stretched by `KineticStretch`, or solved as a
+pleat strip by `KineticLinkedPleat`. Don't drive the same element from more
+than one movement behavior.
 
 ## 5. Pistons (linear oscillating or extending elements)
 
@@ -190,8 +191,9 @@ Vec3f offset = piston?.GetOffsetFor("hammer") ?? new Vec3f();
 
 ## 5b. Wire it all up: the OnTesselation override
 
-`KineticAnimator` and `KineticPiston` render their managed elements through
-their own client-side `IRenderer`. To prevent the block's default
+`KineticAnimator`, `KineticPiston`, `KineticStretch`, and
+`KineticLinkedPleat` render their managed elements through their own
+client-side `IRenderer`. To prevent the block's default
 tesselation from drawing those same elements *again* (which would cause
 visible overlap and z-fighting), override `OnTesselation` on your BE and
 ask the splitter to tesselate the body minus the managed elements:
@@ -207,15 +209,91 @@ public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tess)
 ```
 
 That's the entire glue. The splitter walks your behaviors, collects the
-union of element names from `KineticAnimator` and `KineticPiston`, and
-returns a static-body mesh with those elements removed. The renderers
-handle the moving parts.
+union of element names from all VK movement behaviors, and returns a
+static-body mesh with those elements removed. The renderers handle the
+moving parts.
 
 If you also need to render custom static decorations (item-on-pedestal
 style), tesselate them and call `mesher.AddMeshData` on each before
 returning.
 
-## 5c. Multiblocks (footprint larger than 1×1×1)
+## 5c. Linked pleats (accordion / bellows folds)
+
+For accordion-like geometry where a row of flat strips should stay snapped
+between a fixed bottom edge and a moving top edge, use `KineticLinkedPleat`.
+This is a client-side renderer for shape elements; it does not affect the
+kinetic graph or server logic.
+
+Each chain solves shared joints between `bottom` and `top`. The top anchor
+is offset by `topTravelY * progress`, where `progress` follows the selected
+`waveform`, `ratio`, `phaseOffset`, and `invert` settings. Every listed
+element is rendered as one strip between two adjacent joints.
+
+```json
+{ "name": "KineticLinkedPleat", "properties": { "chains": [
+  {
+    "elements": [
+      "LeftFoldLowerA", "LeftFoldLowerB",
+      "LeftFoldMiddleA", "LeftFoldMiddleB"
+    ],
+    "plane": "xy",
+    "waveform": "sine",
+    "ratio": 1,
+    "bottom": { "x": 1.9, "y": 5.0, "z": 8.5 },
+    "top":    { "x": 3.05, "y": 9.0, "z": 8.5 },
+    "topTravelY": -2.45,
+    "xA": 1.9,
+    "xB": 3.05,
+    "startAtA": false
+  },
+  {
+    "elements": [
+      "LeftCornerCapLower", "LeftCornerCapMiddle",
+      "LeftCornerCapUpper"
+    ],
+    "translateOnly": true,
+    "translateTOffset": 0.125,
+    "translateTStep": 0.25,
+    "plane": "zy",
+    "waveform": "sine",
+    "ratio": 1,
+    "bottom": { "x": 2.95, "y": 5.0, "z": 5.95 },
+    "top":    { "x": 2.95, "y": 9.0, "z": 5.05 },
+    "topTravelY": -2.45,
+    "zA": 5.95,
+    "zB": 5.05,
+    "startAtA": true
+  }
+]}}
+```
+
+Chain fields:
+
+- `elements`: shape element names in bottom-to-top order.
+- `plane`: `xy` alternates joints along X and rotates strips around Z;
+  `zy` / `yz` alternates joints along Z and rotates strips around X.
+- `bottom`, `top`: anchor positions in shape JSON units, not block units.
+  For bellows-like parts, read these from the model dimensions if possible
+  so model edits do not leave folds floating.
+- `topTravelY`: top-anchor travel in shape JSON units. Negative values move
+  the top anchor downward during compression.
+- `xA`, `xB` or `zA`, `zB`: the alternating joint coordinates for the chain.
+- `startAtA`: controls whether joint 0 starts at A or B.
+- `waveform`: `sine` or `triangle`.
+- `ratio`, `phaseOffset`, `invert`: same timing semantics as
+  `KineticPiston`.
+
+Normally, each element rotates and scales along its fold axis so its far
+edge reaches the next solved joint. Use `translateOnly: true` for small
+filler pieces such as bellows corner caps: the element keeps its baked JSON
+rotation and only follows the chain's Y motion. With translate-only chains,
+`translateTOffset` and `translateTStep` let a shorter element list ride
+specific positions on a longer conceptual chain. For example, four corner
+caps centered on an eight-fold chain use `translateTOffset: 0.125` and
+`translateTStep: 0.25`, placing them at `1/8`, `3/8`, `5/8`, and `7/8` of
+the moving height.
+
+## 5d. Multiblocks (footprint larger than 1×1×1)
 
 If your machine occupies more than one block (the Kinetic Sieve is a 1×1×3
 drum, for example), use vanilla's `Multiblock` block behavior to declare the
@@ -321,7 +399,7 @@ Rules that came out of the Treadwheel and Counterweight Drive pass:
   `KineticPiston` for moving parts like a falling weight, and
   `KineticStretch` for length-changing parts like a rope.
 
-## 5d. Restricting kinetic input to specific cells (`KineticMultiblock`)
+## 5e. Restricting kinetic input to specific cells (`KineticMultiblock`)
 
 By default, every filler cell of a multiblock is treated as a coaxial
 shaft passthrough: a shaft against any face of any cell will join the
@@ -396,6 +474,8 @@ When to use it:
   from the shape's `RotationOrigin` and block-rotation handling.
 - Per-frame element translation on the client (oscillating or directional
   pistons), with directional positions persisted across save/load.
+- Per-frame linked-pleat solving for bellows / accordion-style folds,
+  including translate-only filler pieces for corner caps.
 - Static body tesselation that excludes the managed elements
   automatically; call `KineticMeshSplitter` from your `OnTesselation`.
 - RPM-scaled keyframe animation speed via `KineticAnimationDriver`.
@@ -405,7 +485,7 @@ When to use it:
   on recovery.
 - Multiblock kinetic-input restriction via the `KineticMultiblock`
   behavior: declare shaft cells in JSON, get variant-rotation and
-  cposition math for free (see 5d).
+  cposition math for free (see 5e).
 
 ## 7. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
 

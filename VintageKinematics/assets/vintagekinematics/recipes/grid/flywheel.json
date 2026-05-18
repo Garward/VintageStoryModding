@@ -1,0 +1,11 @@
+{
+	"ingredientPattern": "RPR,PCP,RPR",
+	"ingredients": {
+		"R": { "type": "item", "code": "game:resin" },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"C": { "type": "block", "code": "largecogwheel-y" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "flywheel-e", "quantity": 1 }
+}

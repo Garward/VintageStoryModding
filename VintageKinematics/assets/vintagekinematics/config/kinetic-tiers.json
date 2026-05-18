@@ -1,6 +1,0 @@
-{
-  "tiers": [
-    { "code": "wood", "maxRPM": 32 },
-    { "code": "iron", "maxRPM": 256 }
-  ]
-}
