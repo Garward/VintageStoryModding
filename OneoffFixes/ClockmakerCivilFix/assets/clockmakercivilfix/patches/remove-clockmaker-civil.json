@@ -1,0 +1,10 @@
+[
+  {
+    "op": "remove",
+    "file": "gloomeclasses:config/characterclasses/gloomeclasses.json",
+    "path": "/10/traits/6",
+    "dependsOn": [
+      { "modid": "gloomeclasses" }
+    ]
+  }
+]

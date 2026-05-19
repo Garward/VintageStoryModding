@@ -12,6 +12,9 @@ namespace VintageKinematics.Network
         public int Direction;
         public float PhaseOffset;
         public float StressImpact;
+        // Consumer nodes with fractional stress can opt into whole-SU demand. Belts use this so
+        // 0.1 SU/RPM at 256 RPM costs 26 SU, not 25.6.
+        public bool RoundConsumerStressUp;
         // Source nodes (StressImpact < 0): rated RPM the source is designed to spin at.
         // Used for fixed source-capacity calc so displayed Su doesn't fluctuate with the
         // network's effective sourceRPM. Zero/unused for consumers and passive nodes.

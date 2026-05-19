@@ -61,7 +61,12 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("CounterweightDrive", typeof(BlockEntities.BECounterweightDrive));
             api.RegisterBlockEntityClass("Treadwheel", typeof(BlockEntities.BETreadwheel));
             api.RegisterBlockEntityClass("Flywheel", typeof(BlockEntities.BEFlywheel));
+            api.RegisterBlockEntityClass("ReinforcedChest", typeof(BlockEntities.BEReinforcedChest));
+            api.RegisterBlockEntityClass("DoubleReinforcedChest", typeof(BlockEntities.BEDoubleReinforcedChest));
+            api.RegisterBlockEntityClass("BulkCrate", typeof(BlockEntities.BEBulkCrate));
             api.RegisterMountable("vktreadwheel", BlockEntities.BETreadwheel.GetMountable);
+            api.RegisterBlockEntityClass("Trebuchet", typeof(BlockEntities.BETrebuchet));
+            api.RegisterMountable("vktrebuchet", BlockEntities.BETrebuchet.GetMountable);
             api.RegisterBlockEntityClass("KineticSieve", typeof(BlockEntities.BEKineticSieve));
             api.RegisterBlockEntityClass("PrimitiveSieve", typeof(BlockEntities.BEPrimitiveSieve));
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
@@ -85,6 +90,8 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockCoalMotor", typeof(Blocks.BlockCoalMotor));
             api.RegisterBlockClass("BlockTreadwheel", typeof(Blocks.BlockTreadwheel));
             api.RegisterBlockClass("BlockFlywheel", typeof(Blocks.BlockFlywheel));
+            api.RegisterBlockClass("BlockVKStorage", typeof(Blocks.BlockVKStorage));
+            api.RegisterBlockClass("BlockTrebuchet", typeof(Blocks.BlockTrebuchet));
             api.RegisterBlockClass("BlockCounterweightDrive", typeof(Blocks.BlockCounterweightDrive));
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
             api.RegisterBlockClass("BlockPrimitiveSieve", typeof(Blocks.BlockPrimitiveSieve));

@@ -1,0 +1,12 @@
+{
+    "ingredientPattern": "BKB,CRC,BKB",
+    "ingredients": {
+        "B": { "type": "item", "code": "pressedband-iron" },
+        "K": { "type": "item", "code": "kineticalloyplate" },
+        "C": { "type": "item", "code": "pressedcasing-iron" },
+        "R": { "type": "block", "code": "game:crate" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "bulkcrate-s", "quantity": 1 }
+}

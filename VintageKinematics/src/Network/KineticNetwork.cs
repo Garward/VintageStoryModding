@@ -83,7 +83,8 @@ namespace VintageKinematics.Network
                     float nodeRPM = ApplyRPMCap(sourceRPM * n.Ratio * n.Direction);
                     float absRPM = MathF.Abs(nodeRPM);
                     if (absRPM < 0.0001f) continue;
-                    StressTotal += n.StressImpact * absRPM;
+                    float stress = n.StressImpact * absRPM;
+                    StressTotal += n.RoundConsumerStressUp ? MathF.Ceiling(stress) : stress;
                 }
                 else if (n.StressImpact < 0f && anySourceActive)
                 {

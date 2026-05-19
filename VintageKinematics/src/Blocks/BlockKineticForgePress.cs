@@ -26,6 +26,7 @@ namespace VintageKinematics.Blocks
             if (blockSel == null) return false;
             BEKineticForgePress be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BEKineticForgePress;
             if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
+            if (byPlayer?.Entity?.Controls?.Sneak == true && be.TryUpgradeRefractoryLining(byPlayer)) return true;
             return be.OnPlayerRightClick(byPlayer, blockSel);
         }
     }

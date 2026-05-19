@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:nugget-ilmenite", "quantity": 20 },
+	"operationCode": "smelt-titanium",
+	"operationName": "Smelt Titanium",
+	"outputs": [
+		{ "type": "item", "code": "game:ingot-titanium", "quantity": 1 }
+	],
+	"requiredTemperature": 1580,
+	"pressTicks": 48
+}

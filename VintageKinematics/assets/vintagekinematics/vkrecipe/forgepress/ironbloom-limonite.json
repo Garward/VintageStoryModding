@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:nugget-limonite", "quantity": 20 },
+	"operationCode": "smelt-bloom",
+	"operationName": "Smelt Bloom",
+	"outputs": [
+		{ "type": "item", "code": "game:ironbloom", "quantity": 1 }
+	],
+	"requiredTemperature": 1425,
+	"pressTicks": 36
+}

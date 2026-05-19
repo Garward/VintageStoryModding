@@ -8,6 +8,7 @@
             "dischargeStress": 64,
             "maxOutputRPM": 16,
             "maxStoredSeconds": 180,
+            "maxBurstMultiplier": 8,
             "chargeEfficiency": 0.75,
             "leakFullToEmptySeconds": 1800
         }

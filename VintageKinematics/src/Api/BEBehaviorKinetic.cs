@@ -260,9 +260,16 @@ namespace VintageKinematics.Api
                 Direction = Direction,
                 PhaseOffset = PhaseOffset,
                 StressImpact = StressImpact,
+                RoundConsumerStressUp = ShouldRoundConsumerStressUp(),
                 RatedRPM = ratedRPM,
                 NetworkId = NetworkId
             };
+        }
+
+        private bool ShouldRoundConsumerStressUp()
+        {
+            string path = Block?.Code?.Path;
+            return StressImpact > 0f && path != null && path.StartsWith("belt-", StringComparison.Ordinal);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
@@ -276,6 +283,7 @@ namespace VintageKinematics.Api
             if (StressImpact > 0f)
             {
                 float contribution = StressImpact * absRPM;
+                if (ShouldRoundConsumerStressUp()) contribution = MathF.Ceiling(contribution);
                 dsc.AppendLine($"This block: +{contribution:F0} Su consumer (@ {absRPM:F0} RPM)");
             }
             else if (StressImpact < 0f)

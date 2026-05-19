@@ -7,7 +7,7 @@
             "name": "Kinetic",
             "properties": {
                 "role": "Custom",
-                "stressImpact": 1
+                "stressImpact": 0.1
             }
         }
     ],

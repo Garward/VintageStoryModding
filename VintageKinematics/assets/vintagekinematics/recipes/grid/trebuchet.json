@@ -1,0 +1,12 @@
+{
+    "ingredientPattern": "RCR,PSP,PPP",
+    "ingredients": {
+        "R": { "type": "item", "code": "game:rope" },
+        "C": { "type": "block", "code": "largecogwheel-y" },
+        "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
+        "S": { "type": "block", "code": "shaft-x" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "trebuchet-n", "quantity": 1 }
+}

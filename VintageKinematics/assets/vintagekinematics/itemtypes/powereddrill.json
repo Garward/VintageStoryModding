@@ -5,7 +5,7 @@
 	"tags": ["tool", "tool-pickaxe", "tool-shovel"],
 	"storageFlags": 5,
 	"variantgroups": [
-		{ "code": "metal", "states": ["iron", "meteoriciron", "steel"] }
+		{ "code": "metal", "states": ["iron", "meteoriciron", "steel", "titanium"] }
 	],
 	"shape": { "base": "item/tool/powereddrill" },
 	"textures": {
@@ -39,7 +39,8 @@
 	"tooltierbytype": {
 		"*-iron": 4,
 		"*-meteoriciron": 4,
-		"*-steel": 5
+		"*-steel": 5,
+		"*-titanium": 6
 	},
 	"miningspeedbytype": {
 		"powereddrill-iron": {
@@ -68,6 +69,15 @@
 			"soil": 8.75,
 			"sand": 8.75,
 			"ice": 5.3125
+		},
+		"powereddrill-titanium": {
+			"ceramic": 24,
+			"stone": 64,
+			"ore": 64,
+			"metal": 64,
+			"soil": 10,
+			"sand": 10,
+			"ice": 24
 		}
 	},
 	"guiTransform": {

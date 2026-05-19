@@ -1,0 +1,232 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": {
+        "wood": "game:block/wood/trunk/sides",
+        "darkwood": "game:block/wood/trunk/lid",
+        "metal": "game:block/metal/plate/iron"
+    },
+    "elements": [
+        {
+            "name": "lowerBox",
+            "from": [2, 0, 2],
+            "to": [14, 9.5, 14],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [1, 5.25, 15, 16] },
+                "east": { "texture": "#wood", "uv": [1, 5.25, 15, 16] },
+                "south": { "texture": "#wood", "uv": [1, 5.25, 15, 16] },
+                "west": { "texture": "#wood", "uv": [1, 5.25, 15, 16] },
+                "up": { "texture": "#darkwood", "uv": [1, 1, 15, 15] },
+                "down": { "texture": "#darkwood", "uv": [1, 1, 15, 15] }
+            }
+        },
+        {
+            "name": "lid",
+            "from": [1.75, 9.5, 1.75],
+            "to": [14.25, 12.5, 14.25],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [0.75, 1.5, 15.25, 5.25] },
+                "east": { "texture": "#wood", "uv": [0.75, 1.5, 15.25, 5.25] },
+                "south": { "texture": "#wood", "uv": [0.75, 1.5, 15.25, 5.25] },
+                "west": { "texture": "#wood", "uv": [0.75, 1.5, 15.25, 5.25] },
+                "up": { "texture": "#wood", "uv": [0.75, 0.75, 15.25, 15.25] },
+                "down": { "texture": "#darkwood", "uv": [0.75, 0.75, 15.25, 15.25] }
+            }
+        },
+        {
+            "name": "leftPocket",
+            "from": [0.45, 1.15, 3.25],
+            "to": [2.05, 8.55, 12.75],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 9.05] },
+                "east": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 14.85] },
+                "south": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 9.05] },
+                "west": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 14.85] },
+                "up": { "texture": "#darkwood", "uv": [3.25, 0.45, 12.75, 2.05] },
+                "down": { "texture": "#darkwood", "uv": [3.25, 0.45, 12.75, 2.05] }
+            }
+        },
+        {
+            "name": "rightPocket",
+            "from": [13.95, 1.15, 3.25],
+            "to": [15.55, 8.55, 12.75],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 9.05] },
+                "east": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 14.85] },
+                "south": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 9.05] },
+                "west": { "texture": "#wood", "uv": [3.25, 7.45, 12.75, 14.85] },
+                "up": { "texture": "#darkwood", "uv": [3.25, 13.95, 12.75, 15.55] },
+                "down": { "texture": "#darkwood", "uv": [3.25, 13.95, 12.75, 15.55] }
+            }
+        },
+        {
+            "name": "leftPocketTopRail",
+            "from": [0.25, 8.35, 3],
+            "to": [2.15, 9.15, 13],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [3, 6.85, 13, 7.65] },
+                "east": { "texture": "#metal", "uv": [0.25, 6.85, 2.15, 7.65] },
+                "south": { "texture": "#metal", "uv": [3, 6.85, 13, 7.65] },
+                "west": { "texture": "#metal", "uv": [3, 6.85, 13, 7.65] },
+                "up": { "texture": "#metal", "uv": [3, 0.25, 13, 2.15] },
+                "down": { "texture": "#metal", "uv": [3, 0.25, 13, 2.15] }
+            }
+        },
+        {
+            "name": "rightPocketTopRail",
+            "from": [13.85, 8.35, 3],
+            "to": [15.75, 9.15, 13],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [3, 6.85, 13, 7.65] },
+                "east": { "texture": "#metal", "uv": [3, 6.85, 13, 7.65] },
+                "south": { "texture": "#metal", "uv": [3, 6.85, 13, 7.65] },
+                "west": { "texture": "#metal", "uv": [13.85, 6.85, 15.75, 7.65] },
+                "up": { "texture": "#metal", "uv": [3, 13.85, 13, 15.75] },
+                "down": { "texture": "#metal", "uv": [3, 13.85, 13, 15.75] }
+            }
+        },
+        {
+            "name": "leftPocketFrontCap",
+            "from": [0.2, 1.25, 2.75],
+            "to": [2.15, 8.35, 3.45],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [0.2, 7.65, 2.15, 14.75] },
+                "east": { "texture": "#metal", "uv": [2.75, 7.65, 3.45, 14.75] },
+                "south": { "texture": "#metal", "uv": [0.2, 7.65, 2.15, 14.75] },
+                "west": { "texture": "#metal", "uv": [2.75, 7.65, 3.45, 14.75] },
+                "up": { "texture": "#metal", "uv": [0.2, 2.75, 2.15, 3.45] },
+                "down": { "texture": "#metal", "uv": [0.2, 2.75, 2.15, 3.45] }
+            }
+        },
+        {
+            "name": "leftPocketBackCap",
+            "from": [0.2, 1.25, 12.55],
+            "to": [2.15, 8.35, 13.25],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [0.2, 7.65, 2.15, 14.75] },
+                "east": { "texture": "#metal", "uv": [12.55, 7.65, 13.25, 14.75] },
+                "south": { "texture": "#metal", "uv": [0.2, 7.65, 2.15, 14.75] },
+                "west": { "texture": "#metal", "uv": [12.55, 7.65, 13.25, 14.75] },
+                "up": { "texture": "#metal", "uv": [0.2, 12.55, 2.15, 13.25] },
+                "down": { "texture": "#metal", "uv": [0.2, 12.55, 2.15, 13.25] }
+            }
+        },
+        {
+            "name": "rightPocketFrontCap",
+            "from": [13.85, 1.25, 2.75],
+            "to": [15.8, 8.35, 3.45],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [13.85, 7.65, 15.8, 14.75] },
+                "east": { "texture": "#metal", "uv": [2.75, 7.65, 3.45, 14.75] },
+                "south": { "texture": "#metal", "uv": [13.85, 7.65, 15.8, 14.75] },
+                "west": { "texture": "#metal", "uv": [2.75, 7.65, 3.45, 14.75] },
+                "up": { "texture": "#metal", "uv": [13.85, 2.75, 15.8, 3.45] },
+                "down": { "texture": "#metal", "uv": [13.85, 2.75, 15.8, 3.45] }
+            }
+        },
+        {
+            "name": "rightPocketBackCap",
+            "from": [13.85, 1.25, 12.55],
+            "to": [15.8, 8.35, 13.25],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [13.85, 7.65, 15.8, 14.75] },
+                "east": { "texture": "#metal", "uv": [12.55, 7.65, 13.25, 14.75] },
+                "south": { "texture": "#metal", "uv": [13.85, 7.65, 15.8, 14.75] },
+                "west": { "texture": "#metal", "uv": [12.55, 7.65, 13.25, 14.75] },
+                "up": { "texture": "#metal", "uv": [13.85, 12.55, 15.8, 13.25] },
+                "down": { "texture": "#metal", "uv": [13.85, 12.55, 15.8, 13.25] }
+            }
+        },
+        {
+            "name": "frontBandLower",
+            "from": [2, 2.6, 14.05],
+            "to": [14, 3.65, 14.55],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [1, 11.75, 15, 13] },
+                "east": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "south": { "texture": "#metal", "uv": [1, 11.75, 15, 13] },
+                "west": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "up": { "texture": "#metal", "uv": [1, 15.05, 15, 15.55] },
+                "down": { "texture": "#metal", "uv": [1, 15.05, 15, 15.55] }
+            }
+        },
+        {
+            "name": "frontBandUpper",
+            "from": [2, 7.75, 14.05],
+            "to": [14, 8.8, 14.55],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [1, 5.75, 15, 7] },
+                "east": { "texture": "#metal", "uv": [0, 5.75, 0.5, 7] },
+                "south": { "texture": "#metal", "uv": [1, 5.75, 15, 7] },
+                "west": { "texture": "#metal", "uv": [0, 5.75, 0.5, 7] },
+                "up": { "texture": "#metal", "uv": [1, 15.05, 15, 15.55] },
+                "down": { "texture": "#metal", "uv": [1, 15.05, 15, 15.55] }
+            }
+        },
+        {
+            "name": "backBand",
+            "from": [2, 2.6, 1.45],
+            "to": [14, 3.65, 1.95],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [1, 11.75, 15, 13] },
+                "east": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "south": { "texture": "#metal", "uv": [1, 11.75, 15, 13] },
+                "west": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "up": { "texture": "#metal", "uv": [1, 0.45, 15, 0.95] },
+                "down": { "texture": "#metal", "uv": [1, 0.45, 15, 0.95] }
+            }
+        },
+        {
+            "name": "leftPocketBand",
+            "from": [0.15, 3.0, 3],
+            "to": [0.75, 4.2, 13],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "east": { "texture": "#metal", "uv": [3, 11.75, 13, 13] },
+                "south": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "west": { "texture": "#metal", "uv": [3, 11.75, 13, 13] },
+                "up": { "texture": "#metal", "uv": [0.15, 3, 0.75, 13] },
+                "down": { "texture": "#metal", "uv": [0.15, 3, 0.75, 13] }
+            }
+        },
+        {
+            "name": "rightPocketBand",
+            "from": [15.25, 3.0, 3],
+            "to": [15.85, 4.2, 13],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "east": { "texture": "#metal", "uv": [3, 11.75, 13, 13] },
+                "south": { "texture": "#metal", "uv": [0, 11.75, 0.5, 13] },
+                "west": { "texture": "#metal", "uv": [3, 11.75, 13, 13] },
+                "up": { "texture": "#metal", "uv": [15.25, 3, 15.85, 13] },
+                "down": { "texture": "#metal", "uv": [15.25, 3, 15.85, 13] }
+            }
+        },
+        {
+            "name": "lidStrap",
+            "from": [7.35, 9.35, 1.5],
+            "to": [8.65, 13.25, 14.5],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [7.25, 1, 8.75, 5.5] },
+                "east": { "texture": "#metal", "uv": [0.5, 1, 15.5, 5.5] },
+                "south": { "texture": "#metal", "uv": [7.25, 1, 8.75, 5.5] },
+                "west": { "texture": "#metal", "uv": [0.5, 1, 15.5, 5.5] },
+                "up": { "texture": "#metal", "uv": [7.25, 0.5, 8.75, 15.5] },
+                "down": { "texture": "#metal", "uv": [7.25, 0.5, 8.75, 15.5] }
+            }
+        },
+        {
+            "name": "latch",
+            "from": [6.5, 5.2, 14.55],
+            "to": [9.5, 7.65, 15],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [6.25, 7.25, 9.75, 10] },
+                "east": { "texture": "#metal", "uv": [0, 7.25, 0.45, 10] },
+                "south": { "texture": "#metal", "uv": [6.25, 7.25, 9.75, 10] },
+                "west": { "texture": "#metal", "uv": [0, 7.25, 0.45, 10] },
+                "up": { "texture": "#metal", "uv": [6.25, 15.55, 9.75, 16] },
+                "down": { "texture": "#metal", "uv": [6.25, 15.55, 9.75, 16] }
+            }
+        }
+    ]
+}

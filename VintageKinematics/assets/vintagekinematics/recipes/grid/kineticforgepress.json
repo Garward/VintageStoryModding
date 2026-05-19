@@ -1,8 +1,8 @@
 {
-	"ingredientPattern": "IPI,SCS,NFN",
+	"ingredientPattern": "IBI,SCS,NFN",
 	"ingredients": {
 		"I": { "type": "item", "code": "game:metalplate-iron" },
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"B": { "type": "item", "code": "game:refractorybrick-fired-tier1", "quantity": 4 },
 		"S": { "type": "block", "code": "shaft-y" },
 		"C": { "type": "block", "code": "cogwheel-y" },
 		"N": { "type": "item", "code": "game:metalnailsandstrips-iron", "quantity": 2 },

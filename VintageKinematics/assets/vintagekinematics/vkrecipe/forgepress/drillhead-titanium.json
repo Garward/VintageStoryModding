@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-titanium", "quantity": 2 },
+	"operationCode": "drill-head-titanium",
+	"operationName": "Titanium Drill Head",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:drillhead-titanium", "quantity": 1 }
+	],
+	"requiredTemperature": 1580,
+	"pressTicks": 16
+}

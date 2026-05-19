@@ -5,7 +5,7 @@
     "name": "Interesting Mining Fix",
     "authors": ["garward"],
     "description": "Restores the mined ore block when interestingme's muck spawning fails silently, preventing ore voiding. Optional config flags add right-click muck pickup, drop recovery, and a stone-muck bypass that restores vanilla chunk drops.",
-    "version": "1.1.5",
+    "version": "1.1.22",
     "dependencies": {
         "game": "",
         "interestingme": ""

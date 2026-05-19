@@ -22,16 +22,17 @@ namespace VintageKinematics.Api
         private static readonly FieldInfo MbSizeZ = typeof(BlockBehaviorMultiblock).GetField("SizeZ", MbFlags);
         private static readonly FieldInfo MbCPos  = typeof(BlockBehaviorMultiblock).GetField("ControllerPositionRel", MbFlags);
 
-        // Returns the BE at pos, redirecting through a vanilla BlockMultiblock filler to its
+        // Returns the BE at pos, redirecting through a vanilla/multiblock filler to its
         // controller cell when applicable. Null if pos has neither a BE nor a multiblock filler.
         public static BlockEntity GetMultiblockAwareBE(IWorldAccessor world, BlockPos pos)
         {
             if (world == null || pos == null) return null;
 
-            if (world.BlockAccessor.GetBlock(pos) is BlockMultiblock mb)
+            Block block = world.BlockAccessor.GetBlock(pos);
+            if (block is IMultiblockOffset mb)
             {
-                BlockPos ctrl = new BlockPos(pos.X + mb.OffsetInv.X, pos.Y + mb.OffsetInv.Y, pos.Z + mb.OffsetInv.Z, pos.dimension);
-                return world.BlockAccessor.GetBlockEntity(ctrl);
+                BlockPos ctrl = mb.GetControlBlockPos(pos.Copy());
+                return ctrl == null ? null : world.BlockAccessor.GetBlockEntity(ctrl);
             }
 
             return world.BlockAccessor.GetBlockEntity(pos);

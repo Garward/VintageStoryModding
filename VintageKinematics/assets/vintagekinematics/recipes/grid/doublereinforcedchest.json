@@ -1,0 +1,9 @@
+{
+    "ingredientPattern": "CC",
+    "ingredients": {
+        "C": { "type": "block", "code": "reinforcedchest-*", "quantity": 1 }
+    },
+    "width": 2,
+    "height": 1,
+    "output": { "type": "block", "code": "doublereinforcedchest-s", "quantity": 1 }
+}

@@ -1,16 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
 using VintageKinematics.Api;
+using VintageKinematics.Gui;
 using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
 {
     public class BEFlywheel : BEKineticAnimated, IKineticConnector
     {
+        public const int PacketIdOpenDialog = 5900;
+        public const int PacketIdSetBurst = 5901;
+
         private const int TickMs = 200;
         private const float DefaultMaxStoredSeconds = 180f;
         private const float DefaultChargeStress = 64f;
@@ -19,6 +27,8 @@ namespace VintageKinematics.BlockEntities
         private const float DefaultLeakFullToEmptySeconds = 1800f;
         private const float DefaultMinReleaseSeconds = 0.25f;
         private const float DefaultMaxOutputRPM = 16f;
+        private const float DefaultMaxBurstMultiplier = 8f;
+        private static readonly float[] BurstSteps = { 1f, 2f, 4f, 8f, 16f };
 
         private float maxStoredSeconds = DefaultMaxStoredSeconds;
         private float chargeStress = DefaultChargeStress;
@@ -27,11 +37,15 @@ namespace VintageKinematics.BlockEntities
         private float leakSecondsPerSecond = DefaultMaxStoredSeconds / DefaultLeakFullToEmptySeconds;
         private float minReleaseSeconds = DefaultMinReleaseSeconds;
         private float maxOutputRPM = DefaultMaxOutputRPM;
+        private float maxBurstMultiplier = DefaultMaxBurstMultiplier;
 
         private float storedSeconds;
         private float spinRPM;
         private int spinDirection = 1;
         private bool releaseMode;
+        private float burstMultiplier = 1f;
+
+        private GuiDialogFlywheel clientDialog;
 
         public float StoredEnergy01 => GameMath.Clamp(storedSeconds / maxStoredSeconds, 0f, 1f);
 
@@ -57,6 +71,8 @@ namespace VintageKinematics.BlockEntities
             chargeEfficiency = GameMath.Clamp(stats["chargeEfficiency"].AsFloat(DefaultChargeEfficiency), 0f, 1f);
             minReleaseSeconds = MathF.Max(0f, stats["minReleaseSeconds"].AsFloat(DefaultMinReleaseSeconds));
             maxOutputRPM = MathF.Max(KineticNetwork.MinAbsRPM, stats["maxOutputRPM"].AsFloat(DefaultMaxOutputRPM));
+            maxBurstMultiplier = NormalizeBurstMultiplier(stats["maxBurstMultiplier"].AsFloat(DefaultMaxBurstMultiplier), 16f);
+            burstMultiplier = NormalizeBurstMultiplier(burstMultiplier, maxBurstMultiplier);
 
             float leakFullToEmptySeconds = stats["leakFullToEmptySeconds"].AsFloat(DefaultLeakFullToEmptySeconds);
             leakSecondsPerSecond = leakFullToEmptySeconds > 0f ? maxStoredSeconds / leakFullToEmptySeconds : 0f;
@@ -69,6 +85,122 @@ namespace VintageKinematics.BlockEntities
             }
         }
 
+        public bool OnPlayerRightClick(IPlayer byPlayer, bool configure)
+        {
+            if (configure)
+            {
+                SendDialogState(byPlayer);
+                return true;
+            }
+
+            ToggleBankRelease();
+            return true;
+        }
+
+        private void SendDialogState(IPlayer byPlayer)
+        {
+            if (Api.Side != EnumAppSide.Server || byPlayer is not IServerPlayer serverPlayer) return;
+
+            GetBankDialogStats(out int bankCount, out float bankMaxBurst, out float bankBurstOutput, out float bankRemainingSeconds);
+            string title = Lang.Get("vintagekinematics:flywheel-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:flywheel-title") title = "Flywheel";
+
+            using var ms = new MemoryStream();
+            using var bw = new BinaryWriter(ms);
+            bw.Write(title);
+            bw.Write(storedSeconds);
+            bw.Write(maxStoredSeconds);
+            bw.Write(releaseMode);
+            bw.Write(burstMultiplier);
+            bw.Write(bankMaxBurst);
+            bw.Write(bankBurstOutput);
+            bw.Write(bankRemainingSeconds);
+            bw.Write(bankCount);
+            ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(serverPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
+        }
+
+        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        {
+            if (!CheckClaim(player)) return;
+
+            if (packetid == PacketIdSetBurst)
+            {
+                using var ms = new MemoryStream(data ?? Array.Empty<byte>());
+                using var br = new BinaryReader(ms);
+                SetBankBurstMultiplier(br.ReadSingle());
+                SendDialogState(player);
+            }
+        }
+
+        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        {
+            if (packetid != PacketIdOpenDialog) return;
+
+            ICoreClientAPI capi = Api as ICoreClientAPI;
+            if (capi == null) return;
+
+            using var ms = new MemoryStream(data);
+            using var br = new BinaryReader(ms);
+            string title = br.ReadString();
+            float dialogStoredSeconds = br.ReadSingle();
+            float dialogMaxStoredSeconds = br.ReadSingle();
+            bool dialogReleaseMode = br.ReadBoolean();
+            float dialogBurstMultiplier = br.ReadSingle();
+            float dialogMaxBurstMultiplier = br.ReadSingle();
+            float dialogBurstOutput = br.ReadSingle();
+            float dialogRemainingSeconds = br.ReadSingle();
+            int dialogBankCount = br.ReadInt32();
+
+            storedSeconds = dialogStoredSeconds;
+            maxStoredSeconds = dialogMaxStoredSeconds;
+            releaseMode = dialogReleaseMode;
+            burstMultiplier = dialogBurstMultiplier;
+            maxBurstMultiplier = dialogMaxBurstMultiplier;
+
+            if (clientDialog == null)
+            {
+                clientDialog = new GuiDialogFlywheel(
+                    title,
+                    Pos,
+                    storedSeconds,
+                    maxStoredSeconds,
+                    releaseMode,
+                    burstMultiplier,
+                    maxBurstMultiplier,
+                    dialogBurstOutput,
+                    dialogRemainingSeconds,
+                    dialogBankCount,
+                    SendBurstPacket,
+                    capi);
+                clientDialog.OnClosed += OnDialogClosed;
+                clientDialog.TryOpen();
+            }
+            else
+            {
+                clientDialog.UpdateState(storedSeconds, maxStoredSeconds, releaseMode, burstMultiplier, maxBurstMultiplier, dialogBurstOutput, dialogRemainingSeconds, dialogBankCount);
+            }
+        }
+
+        private void SendBurstPacket(float newBurstMultiplier)
+        {
+            using var ms = new MemoryStream();
+            using var bw = new BinaryWriter(ms);
+            bw.Write(newBurstMultiplier);
+            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSetBurst, ms.ToArray());
+        }
+
+        private void OnDialogClosed()
+        {
+            clientDialog = null;
+        }
+
+        private bool CheckClaim(IPlayer player)
+        {
+            if (Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) return true;
+            Api.World.Logger.Audit("Player {0} sent flywheel packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
+            return false;
+        }
+
         public void ToggleBankRelease()
         {
             List<BEFlywheel> bank = CollectBank();
@@ -78,6 +210,32 @@ namespace VintageKinematics.BlockEntities
             {
                 flywheel.SetReleaseMode(targetRelease, true);
             }
+        }
+
+        private void SetBankBurstMultiplier(float targetMultiplier)
+        {
+            List<BEFlywheel> bank = CollectBank();
+            float bankMaxBurst = GetBankMaxBurstMultiplier(bank);
+            float normalized = NormalizeBurstMultiplier(targetMultiplier, bankMaxBurst);
+
+            foreach (BEFlywheel flywheel in bank)
+            {
+                flywheel.SetBurstMultiplier(normalized, true);
+            }
+        }
+
+        private void SetBurstMultiplier(float targetMultiplier, bool rebuildNetwork)
+        {
+            float normalized = NormalizeBurstMultiplier(targetMultiplier, maxBurstMultiplier);
+            if (MathF.Abs(burstMultiplier - normalized) < 0.001f) return;
+
+            burstMultiplier = normalized;
+            ApplyModeToKinetic(rebuildNetwork);
+            if (Api?.Side == EnumAppSide.Server && rebuildNetwork && !releaseMode)
+            {
+                RebuildNetwork();
+            }
+            MarkDirty(true);
         }
 
         public void ToggleRelease()
@@ -156,10 +314,10 @@ namespace VintageKinematics.BlockEntities
             ApplyModeToKinetic(false);
 
             KineticNetwork net = kinetic.Network as KineticNetwork;
+            bool validNetwork = IsValidStorageNetwork(net);
             bool externalDrive = net?.SourcePos != null
                 && !net.SourcePos.Equals(Pos)
-                && !net.IsConflicted
-                && !net.IsOverstressed
+                && validNetwork
                 && MathF.Abs(kinetic.ActualRPM) >= KineticNetwork.MinAbsRPM;
 
             if (!releaseMode && externalDrive)
@@ -183,7 +341,10 @@ namespace VintageKinematics.BlockEntities
                 releaseMode = false;
                 ApplyModeToKinetic(true);
             }
-            ApplyIdleLeak(dt);
+            if (!validNetwork)
+            {
+                ApplyIdleLeak(dt);
+            }
         }
 
         private void ChargeFromExternalDrive(BEBehaviorKinetic kinetic, BEBehaviorKineticSource source, float dt)
@@ -202,7 +363,6 @@ namespace VintageKinematics.BlockEntities
             float ratedOutputPower = dischargeStress * maxOutputRPM;
             float secondsGained = ratedOutputPower > 0f ? inputPower / ratedOutputPower * chargeEfficiency * dt : 0f;
             storedSeconds = MathF.Min(maxStoredSeconds, storedSeconds + secondsGained);
-            ApplyIdleLeak(dt * 0.25f);
             MarkDirty(true);
         }
 
@@ -212,7 +372,7 @@ namespace VintageKinematics.BlockEntities
             source.TargetRPM = outputRPM;
             source.Wind(1.25f, spinDirection);
 
-            storedSeconds -= outputRPM / maxOutputRPM * dt;
+            storedSeconds -= outputRPM / maxOutputRPM * dt * burstMultiplier;
             spinRPM = outputRPM;
 
             if (storedSeconds <= minReleaseSeconds || spinRPM < KineticNetwork.MinAbsRPM)
@@ -233,6 +393,14 @@ namespace VintageKinematics.BlockEntities
             spinRPM *= MathF.Pow(0.985f, dt);
         }
 
+        private static bool IsValidStorageNetwork(KineticNetwork net)
+        {
+            return net != null
+                && net.NodeCount > 1
+                && !net.IsConflicted
+                && !net.IsOverstressed;
+        }
+
         private void StopDischarge(BEBehaviorKineticSource source)
         {
             source.DecaySeconds = 0f;
@@ -245,17 +413,68 @@ namespace VintageKinematics.BlockEntities
             BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
             if (kinetic == null) return;
 
-            float desired = releaseMode ? -dischargeStress : chargeStress;
+            float desired = releaseMode ? -dischargeStress * burstMultiplier : chargeStress;
             if (MathF.Abs(kinetic.StressImpact - desired) < 0.001f) return;
 
             kinetic.StressImpact = desired;
 
             if (Api?.Side == EnumAppSide.Server && rebuildNetwork)
             {
-                KineticNetworkManager mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
-                mgr?.OnRemoved(Pos);
-                mgr?.OnPlaced(Pos);
+                RebuildNetwork();
             }
+        }
+
+        private void RebuildNetwork()
+        {
+            KineticNetworkManager mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
+            mgr?.OnRemoved(Pos);
+            mgr?.OnPlaced(Pos);
+        }
+
+        private void GetBankDialogStats(out int bankCount, out float bankMaxBurst, out float bankBurstOutput, out float bankRemainingSeconds)
+        {
+            List<BEFlywheel> bank = CollectBank();
+            bankCount = bank.Count;
+            bankMaxBurst = GetBankMaxBurstMultiplier(bank);
+            bankBurstOutput = 0f;
+            bankRemainingSeconds = float.MaxValue;
+
+            foreach (BEFlywheel flywheel in bank)
+            {
+                bankBurstOutput += flywheel.dischargeStress * flywheel.maxOutputRPM * flywheel.burstMultiplier;
+                bankRemainingSeconds = MathF.Min(bankRemainingSeconds, flywheel.EstimatedRemainingSeconds());
+            }
+
+            if (bankRemainingSeconds == float.MaxValue) bankRemainingSeconds = 0f;
+        }
+
+        private static float GetBankMaxBurstMultiplier(List<BEFlywheel> bank)
+        {
+            float max = 16f;
+            foreach (BEFlywheel flywheel in bank)
+            {
+                max = MathF.Min(max, flywheel.maxBurstMultiplier);
+            }
+            return NormalizeBurstMultiplier(max, 16f);
+        }
+
+        private float EstimatedRemainingSeconds()
+        {
+            return burstMultiplier > 0f ? storedSeconds / burstMultiplier : 0f;
+        }
+
+        private static float NormalizeBurstMultiplier(float requested, float maxAllowed)
+        {
+            float max = MathF.Max(1f, maxAllowed);
+            float selected = 1f;
+            foreach (float step in BurstSteps)
+            {
+                if (step <= requested + 0.001f && step <= max + 0.001f)
+                {
+                    selected = step;
+                }
+            }
+            return selected;
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)
@@ -263,18 +482,18 @@ namespace VintageKinematics.BlockEntities
             base.GetBlockInfo(forPlayer, sb);
 
             float percent = StoredEnergy01 * 100f;
-            float rpm = GameMath.Clamp(spinRPM, KineticNetwork.MinAbsRPM, maxOutputRPM);
-            float remaining = rpm > 0f ? storedSeconds * maxOutputRPM / rpm : 0f;
             float ratedSu = dischargeStress * maxOutputRPM;
+            float burstSu = ratedSu * burstMultiplier;
             BlockFacing output = OutputFacing();
 
             sb.AppendLine($"Flywheel charge: {storedSeconds:F0}/{maxStoredSeconds:F0}s ({percent:F0}%)");
             sb.AppendLine(releaseMode ? "Mode: releasing stored rotation" : "Mode: charging buffer");
             sb.AppendLine($"Input side: {output.Opposite.Code}; output side: {output.Code}");
-            sb.AppendLine($"Rated output: {ratedSu:F0} SU @ {maxOutputRPM:F0} RPM");
+            sb.AppendLine($"Burst setting: {burstMultiplier:F0}x");
+            sb.AppendLine($"Burst output: {burstSu:F0} SU @ {maxOutputRPM:F0} RPM");
             if (storedSeconds > minReleaseSeconds)
             {
-                sb.AppendLine($"Buffered run time: ~{remaining:F0}s");
+                sb.AppendLine($"Estimated run time: ~{EstimatedRemainingSeconds():F0}s");
             }
         }
 
@@ -285,6 +504,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetFloat("spinRPM", spinRPM);
             tree.SetInt("spinDirection", spinDirection);
             tree.SetBool("releaseMode", releaseMode);
+            tree.SetFloat("burstMultiplier", burstMultiplier);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -299,8 +519,21 @@ namespace VintageKinematics.BlockEntities
             spinRPM = tree.GetFloat("spinRPM", 0f);
             spinDirection = tree.GetInt("spinDirection", 1);
             releaseMode = tree.GetBool("releaseMode", false);
+            burstMultiplier = NormalizeBurstMultiplier(tree.GetFloat("burstMultiplier", 1f), 16f);
             if (spinDirection != -1) spinDirection = 1;
             ApplyModeToKinetic(false);
+        }
+
+        public override void OnBlockUnloaded()
+        {
+            base.OnBlockUnloaded();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
+        }
+
+        public override void OnBlockRemoved()
+        {
+            base.OnBlockRemoved();
+            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         public KineticConnectionResult? TryConnect(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos)

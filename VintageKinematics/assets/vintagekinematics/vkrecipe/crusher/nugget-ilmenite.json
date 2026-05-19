@@ -1,0 +1,15 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "game:nugget-ilmenite",
+        "quantity": 3
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:crushed-ilmenite",
+            "quantity": 1
+        }
+    ],
+    "crushTicks": 4
+}

@@ -26,13 +26,15 @@ namespace VintageKinematics.Gui
         public ForgePressRecipeListItem(KineticForgePressRecipe recipe)
         {
             this.recipe = recipe;
-            ItemStack iconStack = FirstResolvedStack(recipe?.Outputs) ?? recipe?.Ingredient?.ResolvedItemstack;
+            JsonItemStack firstOutput = FirstOutput(recipe?.Outputs);
+            ItemStack iconStack = StackWithRecipeQuantity(firstOutput) ?? recipe?.Ingredient?.ResolvedItemstack;
             if (iconStack != null) iconSlot = new DummySlot(iconStack.Clone());
 
-            string outputLabel = StackLabel(FirstResolvedStack(recipe?.Outputs), FirstCode(recipe?.Outputs));
+            string outputLabel = OutputLabel(firstOutput);
             if (IsWildcardOutput(recipe) && !string.IsNullOrEmpty(recipe?.DisplayName))
             {
-                outputLabel = recipe.DisplayName;
+                int quantity = Math.Max(1, firstOutput?.StackSize ?? 1);
+                outputLabel = quantity == 1 ? recipe.DisplayName : quantity + "x " + recipe.DisplayName;
             }
 
             string variantLabel = VariantLabel(recipe);
@@ -51,7 +53,7 @@ namespace VintageKinematics.Gui
                 detailList.Add("Metals: " + variantLabel);
             }
             details = detailList.ToArray();
-            searchText = (title + "\n" + string.Join("\n", details) + "\n" + recipe?.OperationCode + "\n" + recipe?.Ingredient?.Code + "\n" + recipe?.Die?.Code + "\n" + FirstCode(recipe?.Outputs) + "\n" + variantLabel).ToLowerInvariant();
+            searchText = (title + "\n" + string.Join("\n", details) + "\n" + recipe?.OperationCode + "\n" + recipe?.Ingredient?.Code + "\n" + recipe?.Die?.Code + "\n" + firstOutput?.Code + "\n" + variantLabel).ToLowerInvariant();
         }
 
         public bool Matches(string text)
@@ -106,24 +108,30 @@ namespace VintageKinematics.Gui
             scissorBounds.ParentBounds = capi.Gui.WindowBounds;
         }
 
-        private static ItemStack FirstResolvedStack(JsonItemStack[] stacks)
+        private static JsonItemStack FirstOutput(JsonItemStack[] stacks)
         {
             if (stacks == null) return null;
             for (int i = 0; i < stacks.Length; i++)
             {
-                if (stacks[i]?.ResolvedItemstack != null) return stacks[i].ResolvedItemstack;
+                if (stacks[i] != null) return stacks[i];
             }
             return null;
         }
 
-        private static string FirstCode(JsonItemStack[] stacks)
+        private static ItemStack StackWithRecipeQuantity(JsonItemStack stack)
         {
-            if (stacks == null) return null;
-            for (int i = 0; i < stacks.Length; i++)
-            {
-                if (stacks[i]?.Code != null) return stacks[i].Code.ToString();
-            }
-            return null;
+            if (stack?.ResolvedItemstack == null) return null;
+
+            ItemStack clone = stack.ResolvedItemstack.Clone();
+            clone.StackSize = Math.Max(1, stack.StackSize);
+            return clone;
+        }
+
+        private static string OutputLabel(JsonItemStack output)
+        {
+            string label = StackLabel(output?.ResolvedItemstack, output?.Code?.ToString());
+            int quantity = Math.Max(1, output?.StackSize ?? 1);
+            return quantity == 1 ? label : quantity + "x " + label;
         }
 
         private static string StackLabel(ItemStack stack, string fallback)

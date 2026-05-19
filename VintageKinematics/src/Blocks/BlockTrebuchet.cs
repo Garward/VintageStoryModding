@@ -6,20 +6,9 @@ using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
-    public class BlockFlywheel : Block, IPlacementPreviewProvider
+    public class BlockTrebuchet : Block, IPlacementPreviewProvider
     {
         private WorldInteraction[] interactions;
-
-        private static string OutputSideFacingPlayer(IPlayer byPlayer)
-        {
-            if (byPlayer?.Entity == null) return "e";
-            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
-            if (facing == BlockFacing.NORTH) return "n";
-            if (facing == BlockFacing.EAST)  return "e";
-            if (facing == BlockFacing.SOUTH) return "s";
-            if (facing == BlockFacing.WEST)  return "w";
-            return "e";
-        }
 
         public bool TryResolvePlacementPreview(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, out BlockPos targetPos, out Block variant)
         {
@@ -28,7 +17,7 @@ namespace VintageKinematics.Blocks
             if (blockSel?.Face == null) return false;
 
             targetPos = PlacementPreview.DefaultTargetPos(world, blockSel, this);
-            string desired = OutputSideFacingPlayer(byPlayer);
+            string desired = SideFacingPlayer(byPlayer);
             variant = world.GetBlock(CodeWithVariant("side", desired)) ?? this;
             return true;
         }
@@ -46,16 +35,17 @@ namespace VintageKinematics.Blocks
         {
             base.OnLoaded(api);
             if (api.Side != EnumAppSide.Client) return;
+
             interactions = new[]
             {
                 new WorldInteraction
                 {
-                    ActionLangCode = "vintagekinematics:blockhelp-flywheel-toggle",
+                    ActionLangCode = "vintagekinematics:blockhelp-trebuchet-mount",
                     MouseButton = EnumMouseButton.Right
                 },
                 new WorldInteraction
                 {
-                    ActionLangCode = "vintagekinematics:blockhelp-flywheel-burst",
+                    ActionLangCode = "vintagekinematics:blockhelp-trebuchet-settings",
                     MouseButton = EnumMouseButton.Right,
                     HotKeyCode = "sneak"
                 }
@@ -71,12 +61,26 @@ namespace VintageKinematics.Blocks
         {
             if (byPlayer?.Entity == null || blockSel == null) return false;
 
-            BEFlywheel be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BEFlywheel;
+            BETrebuchet be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BETrebuchet;
             if (be == null) return false;
 
-            bool configure = byPlayer.Entity.Controls?.Sneak == true;
-            if (world.Side == EnumAppSide.Server) be.OnPlayerRightClick(byPlayer, configure);
-            return true;
+            if (byPlayer.Entity.Controls?.Sneak == true)
+            {
+                return be.OnPlayerRightClick(byPlayer);
+            }
+
+            return be.TryMount(byPlayer.Entity);
+        }
+
+        private static string SideFacingPlayer(IPlayer byPlayer)
+        {
+            if (byPlayer?.Entity == null) return "n";
+            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
+            if (facing == BlockFacing.NORTH) return "n";
+            if (facing == BlockFacing.EAST) return "e";
+            if (facing == BlockFacing.SOUTH) return "s";
+            if (facing == BlockFacing.WEST) return "w";
+            return "n";
         }
     }
 }

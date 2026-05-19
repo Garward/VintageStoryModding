@@ -1,7 +1,7 @@
 {
 	"code": "drillhead",
 	"variantgroups": [
-		{ "code": "metal", "states": ["iron", "meteoriciron", "steel"] }
+		{ "code": "metal", "states": ["iron", "meteoriciron", "steel", "titanium"] }
 	],
 	"shape": { "base": "item/tool/drillhead" },
 	"textures": {

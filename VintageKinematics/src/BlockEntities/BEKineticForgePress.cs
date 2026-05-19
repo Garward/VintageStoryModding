@@ -31,6 +31,7 @@ namespace VintageKinematics.BlockEntities
         public const int InventorySize = 12;
         public const int PacketIdOpenDialog = 5510;
         public const int PacketIdSelectOperation = 5511;
+        public const int RefractoryLiningBrickCost = 24;
 
         private const float AmbientTemperature = 20f;
         private const float OutputPushIntervalMs = 250f;
@@ -42,6 +43,7 @@ namespace VintageKinematics.BlockEntities
         private const float InputCoolTransferMultiplier = 0.25f;
         private const int MaxBellowsAssistCount = 2;
         private const float BellowsTemperatureBonusPerUnit = 75f;
+        private const float RefractoryLiningTemperatureBonus = 250f;
         private const float BellowsHeatRateBonusPerUnit = 0.5f;
         private const float BellowsStackPenaltyReliefPerUnit = 0.5f;
         private const float MaxBellowsStackPenaltyRelief = 0.9f;
@@ -66,10 +68,12 @@ namespace VintageKinematics.BlockEntities
         private string pressingItemCode;
         private string pressingOperationCode;
         private string pressingDieCode;
+        private bool hasTier3RefractoryLining;
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticforgepress";
         public IOFaceMap IOFaces => ioFaces;
+        public bool HasTier3RefractoryLining => hasTier3RefractoryLining;
 
         public BEKineticForgePress()
         {
@@ -225,7 +229,7 @@ namespace VintageKinematics.BlockEntities
             if (burnSecondsRemaining > 0f)
             {
                 int bellowsCount = PoweredBellowsCount();
-                float targetTemperature = activeBurnTemperature + BellowsTemperatureBonusPerUnit * bellowsCount;
+                float targetTemperature = activeBurnTemperature + BellowsTemperatureBonusPerUnit * bellowsCount + RefractoryLiningHeatBonus();
                 float heatRate = HeatRatePerSecond * (1f + BellowsHeatRateBonusPerUnit * bellowsCount);
                 float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveForgePressFuelUsageSpeed() ?? 1f;
                 burnSecondsRemaining = Math.Max(0f, burnSecondsRemaining - seconds * fuelUsageSpeed);
@@ -297,6 +301,66 @@ namespace VintageKinematics.BlockEntities
             fuelSlot.MarkDirty();
             burnSecondsRemaining = props.BurnDuration;
             activeBurnTemperature = props.BurnTemperature;
+        }
+
+        private float RefractoryLiningHeatBonus()
+        {
+            return hasTier3RefractoryLining ? RefractoryLiningTemperatureBonus : 0f;
+        }
+
+        public bool TryUpgradeRefractoryLining(IPlayer byPlayer)
+        {
+            if (byPlayer == null) return false;
+
+            ItemSlot slot = byPlayer.InventoryManager?.ActiveHotbarSlot;
+            ItemStack stack = slot?.Itemstack;
+            if (!IsTier3RefractoryBrick(stack)) return false;
+
+            if (hasTier3RefractoryLining)
+            {
+                if (Api.Side == EnumAppSide.Server && byPlayer is IServerPlayer serverPlayer)
+                {
+                    serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.Get("vintagekinematics:kineticforgepress-lining-already"), EnumChatType.Notification);
+                }
+                return true;
+            }
+
+            bool isCreative = byPlayer.WorldData.CurrentGameMode == EnumGameMode.Creative;
+            if (!isCreative && stack.StackSize < RefractoryLiningBrickCost)
+            {
+                if (Api.Side == EnumAppSide.Server && byPlayer is IServerPlayer serverPlayer)
+                {
+                    serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.Get("vintagekinematics:kineticforgepress-lining-needs", RefractoryLiningBrickCost), EnumChatType.Notification);
+                }
+                return true;
+            }
+
+            if (Api.Side != EnumAppSide.Server) return true;
+
+            if (!Api.World.Claims.TryAccess(byPlayer, Pos, EnumBlockAccessFlags.Use)) return true;
+
+            if (!isCreative)
+            {
+                slot.TakeOut(RefractoryLiningBrickCost);
+                slot.MarkDirty();
+            }
+
+            hasTier3RefractoryLining = true;
+            MarkDirty(true);
+
+            Api.World.PlaySoundAt(new AssetLocation("sounds/block/ceramicplace"), Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, byPlayer, true, 16f, 0.9f);
+            if (byPlayer is IServerPlayer sp)
+            {
+                sp.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.Get("vintagekinematics:kineticforgepress-lining-upgraded"), EnumChatType.Notification);
+            }
+
+            return true;
+        }
+
+        private static bool IsTier3RefractoryBrick(ItemStack stack)
+        {
+            AssetLocation code = stack?.Collectible?.Code;
+            return code != null && code.Domain == "game" && code.Path == "refractorybrick-fired-tier3";
         }
 
         private void HeatInputStack(float seconds)
@@ -679,6 +743,9 @@ namespace VintageKinematics.BlockEntities
             sb.AppendLine(Lang.Get("vintagekinematics:kineticforgepress-heat-info", chamberTemperature));
             int bellowsCount = PoweredBellowsCount();
             sb.AppendLine($"Bellows heat boost: {bellowsCount}/{MaxBellowsAssistCount}");
+            sb.AppendLine(hasTier3RefractoryLining
+                ? Lang.Get("vintagekinematics:kineticforgepress-lining-active")
+                : Lang.Get("vintagekinematics:kineticforgepress-lining-missing", RefractoryLiningBrickCost));
         }
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
@@ -701,6 +768,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetString("pressingItemCode", pressingItemCode ?? "");
             tree.SetString("pressingOperationCode", pressingOperationCode ?? "");
             tree.SetString("pressingDieCode", pressingDieCode ?? "");
+            tree.SetBool("tier3RefractoryLining", hasTier3RefractoryLining);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -718,6 +786,7 @@ namespace VintageKinematics.BlockEntities
             if (string.IsNullOrEmpty(pressingOperationCode)) pressingOperationCode = null;
             pressingDieCode = tree.GetString("pressingDieCode", "");
             if (string.IsNullOrEmpty(pressingDieCode)) pressingDieCode = null;
+            hasTier3RefractoryLining = tree.GetBool("tier3RefractoryLining", false);
             if (Api != null)
             {
                 inventory?.ResolveBlocksOrItems();

@@ -1,0 +1,11 @@
+{
+	"ingredientPattern": "IA,_D",
+	"ingredients": {
+		"I": { "type": "item", "code": "industrialplate-steel" },
+		"A": { "type": "item", "code": "poweredtoolassembly" },
+		"D": { "type": "item", "code": "drillhead-titanium" }
+	},
+	"width": 2,
+	"height": 2,
+	"output": { "type": "item", "code": "powereddrill-titanium", "quantity": 1 }
+}
