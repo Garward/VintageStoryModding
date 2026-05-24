@@ -1,0 +1,14 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"iron": "game:block/metal/ingot/iron",
+		"carbon": "game:block/coal/charcoal"
+	},
+	"elements": [
+		{ "name": "billet", "from": [2, 4, 3], "to": [14, 10, 13], "faces": { "north": { "texture": "#iron", "uv": [2, 4, 14, 10] }, "south": { "texture": "#iron", "uv": [2, 4, 14, 10] }, "east": { "texture": "#iron", "uv": [3, 4, 13, 10] }, "west": { "texture": "#iron", "uv": [3, 4, 13, 10] }, "up": { "texture": "#iron", "uv": [2, 3, 14, 13] }, "down": { "texture": "#iron", "uv": [2, 3, 14, 13] } } },
+		{ "name": "carbon-layer", "from": [1.5, 6.65, 4], "to": [14.5, 7.55, 12], "faces": { "north": { "texture": "#carbon", "uv": [2, 7, 15, 8] }, "south": { "texture": "#carbon", "uv": [2, 7, 15, 8] }, "east": { "texture": "#carbon", "uv": [4, 7, 12, 8] }, "west": { "texture": "#carbon", "uv": [4, 7, 12, 8] }, "up": { "texture": "#carbon", "uv": [2, 4, 15, 12] }, "down": { "texture": "#carbon", "uv": [2, 4, 15, 12] } } },
+		{ "name": "carbon-cap-a", "from": [4, 10, 5], "to": [12, 11.4, 11], "faces": { "north": { "texture": "#carbon", "uv": [4, 10, 12, 11] }, "south": { "texture": "#carbon", "uv": [4, 10, 12, 11] }, "east": { "texture": "#carbon", "uv": [5, 10, 11, 11] }, "west": { "texture": "#carbon", "uv": [5, 10, 11, 11] }, "up": { "texture": "#carbon", "uv": [4, 5, 12, 11] }, "down": { "texture": "#carbon", "uv": [4, 5, 12, 11] } } },
+		{ "name": "carbon-cap-b", "from": [4, 2.6, 5], "to": [12, 4, 11], "faces": { "north": { "texture": "#carbon", "uv": [4, 3, 12, 4] }, "south": { "texture": "#carbon", "uv": [4, 3, 12, 4] }, "east": { "texture": "#carbon", "uv": [5, 3, 11, 4] }, "west": { "texture": "#carbon", "uv": [5, 3, 11, 4] }, "up": { "texture": "#carbon", "uv": [4, 5, 12, 11] }, "down": { "texture": "#carbon", "uv": [4, 5, 12, 11] } } }
+	]
+}

@@ -39,6 +39,7 @@ namespace VintageKinematics.BlockEntities
         private ItemStack liquidStack;
         private float liquidLitres;
         private int mixTicksAccumulated;
+        private int mixTicksRequired = 1;
         private string mixingRecipeKey;
         private GuiDialogKineticMixer clientDialog;
 
@@ -146,9 +147,9 @@ namespace VintageKinematics.BlockEntities
                 mixTicksAccumulated = 0;
             }
 
+            mixTicksRequired = Math.Max(1, recipe.MixTicks);
             mixTicksAccumulated++;
-            int effectiveTicks = Math.Max(1, recipe.MixTicks);
-            if (mixTicksAccumulated < effectiveTicks)
+            if (mixTicksAccumulated < mixTicksRequired)
             {
                 Api.World.PlaySoundAt(MixSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 12, volume: 0.25f);
                 MarkDirty(true);
@@ -166,7 +167,11 @@ namespace VintageKinematics.BlockEntities
 
             Api.World.PlaySoundAt(MixSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 16, volume: 0.45f);
             mixTicksAccumulated = 0;
-            if (recipe.TryMapIngredients(InputStacks(), null) == false) mixingRecipeKey = null;
+            if (recipe.TryMapIngredients(InputStacks(), null) == false)
+            {
+                mixingRecipeKey = null;
+                mixTicksRequired = 1;
+            }
 
             if (recipe.Outputs != null)
             {
@@ -214,6 +219,7 @@ namespace VintageKinematics.BlockEntities
         {
             if (mixTicksAccumulated == 0 && mixingRecipeKey == null) return;
             mixTicksAccumulated = 0;
+            mixTicksRequired = 1;
             mixingRecipeKey = null;
             MarkDirty(true);
         }
@@ -347,6 +353,7 @@ namespace VintageKinematics.BlockEntities
             bw.Write(title);
             var tree = new TreeAttribute();
             inventory.ToTreeAttributes(tree);
+            WriteMixingState(tree);
             tree.ToBytes(bw);
 
             ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
@@ -462,13 +469,41 @@ namespace VintageKinematics.BlockEntities
             tree.FromBytes(br);
             inventory.FromTreeAttributes(tree);
             inventory.ResolveBlocksOrItems();
+            ReadMixingState(tree);
 
             if (clientDialog == null)
             {
-                clientDialog = new GuiDialogKineticMixer(title, inventory, Pos, capi);
+                clientDialog = new GuiDialogKineticMixer(title, inventory, Pos, CurrentMixProgress, CurrentMixProgressMax, CanMixCurrentRecipe, capi);
                 clientDialog.OnClosed += () => clientDialog = null;
                 clientDialog.TryOpen();
             }
+        }
+
+        private float CurrentMixProgress()
+        {
+            return Math.Max(0, mixTicksAccumulated);
+        }
+
+        private float CurrentMixProgressMax()
+        {
+            return Math.Max(1, mixTicksRequired);
+        }
+
+        private bool CanMixCurrentRecipe()
+        {
+            if (mixTicksAccumulated > 0 || !string.IsNullOrEmpty(mixingRecipeKey)) return true;
+
+            var registry = Api?.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
+            KineticMixerRecipe recipe = registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres) ?? FindRecipeUsingAdjacentLiquid(registry);
+            if (recipe == null) return false;
+
+            BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
+            if (kinetic == null) return false;
+            if (kinetic.IsConflicted || (kinetic.EffectiveNetwork?.IsOverstressed ?? false)) return false;
+
+            BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
+            float minRpm = Math.Max(0.01f, worker?.MinRPM ?? 0.01f);
+            return Math.Abs(kinetic.CurrentRPM) >= minRpm;
         }
 
         private ItemSlot FindMergeInputSlot(ItemStack stack)
@@ -518,33 +553,8 @@ namespace VintageKinematics.BlockEntities
 
         private void DepositOutput(ItemStack stack)
         {
-            if (stack == null || stack.StackSize <= 0) return;
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot slot = inventory[i];
-                if (slot.Empty) continue;
-                if (!slot.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
-                int max = slot.Itemstack.Collectible.MaxStackSize;
-                int free = max - slot.Itemstack.StackSize;
-                if (free <= 0) continue;
-                int take = Math.Min(free, stack.StackSize);
-                slot.Itemstack.StackSize += take;
-                stack.StackSize -= take;
-                slot.MarkDirty();
-                if (stack.StackSize <= 0) return;
-            }
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot slot = inventory[i];
-                if (!slot.Empty) continue;
-                slot.Itemstack = stack.Clone();
-                slot.MarkDirty();
-                return;
-            }
-
-            Api.World.SpawnItemEntity(stack, new Vec3d(Pos.X + 0.5, Pos.Y + 0.8, Pos.Z + 0.5));
+            Vec3d at = new Vec3d(Pos.X + 0.5, Pos.Y + 0.8, Pos.Z + 0.5);
+            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
         }
 
         private static int ItemsForLitres(float litres, float itemsPerLitre)
@@ -579,8 +589,7 @@ namespace VintageKinematics.BlockEntities
             base.ToTreeAttributes(tree);
             inventory.ToTreeAttributes(tree);
             tree.SetFloat("liquidLitres", liquidLitres);
-            tree.SetInt("mixTicks", mixTicksAccumulated);
-            tree.SetString("mixingRecipeKey", mixingRecipeKey ?? "");
+            WriteMixingState(tree);
             if (liquidStack != null)
             {
                 tree.SetItemstack("liquidStack", liquidStack);
@@ -597,9 +606,7 @@ namespace VintageKinematics.BlockEntities
             inventory.FromTreeAttributes(tree);
             liquidLitres = tree.GetFloat("liquidLitres", 0f);
             liquidStack = tree.GetItemstack("liquidStack");
-            mixTicksAccumulated = tree.GetInt("mixTicks", 0);
-            mixingRecipeKey = tree.GetString("mixingRecipeKey", "");
-            if (string.IsNullOrEmpty(mixingRecipeKey)) mixingRecipeKey = null;
+            ReadMixingState(tree);
 
             if (Api != null)
             {
@@ -607,6 +614,21 @@ namespace VintageKinematics.BlockEntities
                 liquidStack?.ResolveBlockOrItem(Api.World);
                 BuildIOFaceMap();
             }
+        }
+
+        private void WriteMixingState(ITreeAttribute tree)
+        {
+            tree.SetInt("mixTicks", mixTicksAccumulated);
+            tree.SetInt("mixTicksRequired", mixTicksRequired);
+            tree.SetString("mixingRecipeKey", mixingRecipeKey ?? "");
+        }
+
+        private void ReadMixingState(ITreeAttribute tree)
+        {
+            mixTicksAccumulated = tree.GetInt("mixTicks", 0);
+            mixTicksRequired = Math.Max(1, tree.GetInt("mixTicksRequired", 1));
+            mixingRecipeKey = tree.GetString("mixingRecipeKey", "");
+            if (string.IsNullOrEmpty(mixingRecipeKey)) mixingRecipeKey = null;
         }
 
         public override void OnBlockUnloaded()

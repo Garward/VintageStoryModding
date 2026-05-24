@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-meteoriciron", "quantity": 2 },
+	"operationCode": "drill-head-meteoriciron",
+	"operationName": "Meteoric Iron Drill Head",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:drillhead-meteoriciron", "quantity": 1 }
+	],
+	"requiredTemperature": 1100,
+	"pressTicks": 16
+}

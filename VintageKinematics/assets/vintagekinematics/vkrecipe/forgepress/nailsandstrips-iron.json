@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 1 },
+	"operationCode": "nails-and-strips",
+	"operationName": "Nails and Strips",
+	"allowedVariants": [ "iron", "meteoriciron" ],
+	"outputs": [
+		{ "type": "item", "code": "game:metalnailsandstrips-*", "quantity": 9 }
+	],
+	"requiredTemperature": 1100,
+	"pressTicks": 4
+}

@@ -1,0 +1,10 @@
+{
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": {
+        "wood": "game:block/wood/trunk/sides",
+        "darkwood": "game:block/wood/trunk/lid",
+        "metal": "game:block/metal/plate/iron"
+    },
+    "elements": []
+}

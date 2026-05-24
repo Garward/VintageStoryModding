@@ -1,0 +1,12 @@
+{
+  "ingredientPattern": "RCR,PGP,RCR",
+  "ingredients": {
+    "R": { "type": "item", "code": "game:resin" },
+    "C": { "type": "item", "code": "game:metalplate-copper" },
+    "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+    "G": { "type": "block", "code": "gearbox-y" }
+  },
+  "width": 3,
+  "height": 3,
+  "output": { "type": "block", "code": "kineticreverser-n", "quantity": 1 }
+}

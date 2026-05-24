@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Vintagestory.API.Client;
@@ -229,7 +230,7 @@ namespace VintageKinematics.BlockEntities
             if (burnSecondsRemaining > 0f)
             {
                 int bellowsCount = PoweredBellowsCount();
-                float targetTemperature = activeBurnTemperature + BellowsTemperatureBonusPerUnit * bellowsCount + RefractoryLiningHeatBonus();
+                float targetTemperature = FuelTargetTemperature(activeBurnTemperature, bellowsCount);
                 float heatRate = HeatRatePerSecond * (1f + BellowsHeatRateBonusPerUnit * bellowsCount);
                 float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveForgePressFuelUsageSpeed() ?? 1f;
                 burnSecondsRemaining = Math.Max(0f, burnSecondsRemaining - seconds * fuelUsageSpeed);
@@ -295,12 +296,20 @@ namespace VintageKinematics.BlockEntities
             ItemStack fuel = fuelSlot.Itemstack;
             CombustibleProperties props = fuel.Collectible.GetCombustibleProperties(Api.World, fuel, Pos);
             if (props == null || props.BurnDuration <= 0f || props.BurnTemperature <= 0) return;
-            if (chamberTemperature >= props.BurnTemperature - 1f) return;
+
+            int bellowsCount = PoweredBellowsCount();
+            float targetTemperature = FuelTargetTemperature(props.BurnTemperature, bellowsCount);
+            if (chamberTemperature >= targetTemperature - 1f) return;
 
             fuelSlot.TakeOut(1);
             fuelSlot.MarkDirty();
             burnSecondsRemaining = props.BurnDuration;
             activeBurnTemperature = props.BurnTemperature;
+        }
+
+        private float FuelTargetTemperature(float burnTemperature, int bellowsCount)
+        {
+            return burnTemperature + BellowsTemperatureBonusPerUnit * bellowsCount + RefractoryLiningHeatBonus();
         }
 
         private float RefractoryLiningHeatBonus()
@@ -378,7 +387,7 @@ namespace VintageKinematics.BlockEntities
             float newTemperature = ChangeItemTemperature(current, target, transferSeconds);
             if (current < target)
             {
-                float effectiveStackSize = EffectiveHeatMass(inputSlot.Itemstack.StackSize, PoweredBellowsCount());
+                float effectiveStackSize = EffectiveHeatMass(inputSlot.Itemstack, PoweredBellowsCount());
                 newTemperature = (newTemperature + (effectiveStackSize - 1f) * current) / effectiveStackSize;
             }
 
@@ -427,12 +436,26 @@ namespace VintageKinematics.BlockEntities
             return count;
         }
 
-        private static float EffectiveHeatMass(int stackSize, int bellowsCount)
+        private float EffectiveHeatMass(ItemStack stack, int bellowsCount)
         {
-            float mass = Math.Max(1f, stackSize);
+            float mass = StackHeatUnits(stack);
             float relief = MathF.Min(MaxBellowsStackPenaltyRelief, GameMath.Clamp(bellowsCount, 0, MaxBellowsAssistCount) * BellowsStackPenaltyReliefPerUnit);
             float reducedMass = MathF.Sqrt(mass);
             return mass + (reducedMass - mass) * relief;
+        }
+
+        private float StackHeatUnits(ItemStack stack)
+        {
+            if (stack == null) return 1f;
+
+            float units = Math.Max(1f, stack.StackSize);
+            CombustibleProperties props = stack.Collectible.GetCombustibleProperties(Api.World, stack, Pos);
+            if (props?.SmeltedStack?.ResolvedItemstack != null && props.SmeltedRatio > 1)
+            {
+                units = stack.StackSize / (float)props.SmeltedRatio;
+            }
+
+            return Math.Max(1f, units);
         }
 
         private bool IsPoweredBellowsAt(BlockPos pos)
@@ -457,10 +480,18 @@ namespace VintageKinematics.BlockEntities
             if (recipe == null) return;
 
             float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
-            if (inputTemperature < recipe.RequiredTemperature) return;
+            if (inputTemperature < recipe.RequiredTemperature)
+            {
+                ResetPressProgress();
+                return;
+            }
 
             int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
-            if (inputSlot.StackSize < requiredQty) return;
+            if (inputSlot.StackSize < requiredQty)
+            {
+                ResetPressProgress();
+                return;
+            }
 
             string inputCode = inputSlot.Itemstack.Collectible.Code.ToString();
             string dieCode = inventory[SlotDie].Itemstack?.Collectible?.Code?.ToString() ?? "";
@@ -487,25 +518,37 @@ namespace VintageKinematics.BlockEntities
                 captured = WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, inputSlot.Itemstack.Collectible.Code);
             }
 
+            List<ItemStack> outputs = ResolveOutputStacks(recipe, captured, inputTemperature);
+            if (recipe.Outputs != null && recipe.Outputs.Length > 0 && outputs.Count == 0)
+            {
+                Api.World.Logger.Warning("[VintageKinematics] Forge press recipe '{0}' matched input '{1}' but produced no resolvable outputs. Input was not consumed.",
+                    recipe.OperationCode, inputSlot.Itemstack.Collectible.Code);
+                ResetPressProgress();
+                return;
+            }
+
             inputSlot.TakeOut(requiredQty);
             inputSlot.MarkDirty();
 
-            if (recipe.Outputs != null)
+            foreach (ItemStack outStack in outputs)
             {
-                foreach (var output in recipe.Outputs)
-                {
-                    if (output == null) continue;
-                    ItemStack outStack = ResolveOutputStack(output, captured);
-                    if (outStack == null) continue;
-                    outStack.StackSize = output.StackSize;
-                    outStack.Collectible.SetTemperature(Api.World, outStack, inputTemperature);
-                    DepositOutput(outStack);
-                }
+                DepositOutput(outStack);
             }
 
             Api.World.PlaySoundAt(PressCompleteSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, true, 16, 0.6f);
             pressTicksAccumulated = 0;
             if (inputSlot.Empty) pressingItemCode = null;
+            MarkDirty(true);
+        }
+
+        private void ResetPressProgress()
+        {
+            if (pressTicksAccumulated == 0 && pressingItemCode == null && pressingOperationCode == null && pressingDieCode == null) return;
+
+            pressTicksAccumulated = 0;
+            pressingItemCode = null;
+            pressingOperationCode = null;
+            pressingDieCode = null;
             MarkDirty(true);
         }
 
@@ -542,35 +585,34 @@ namespace VintageKinematics.BlockEntities
             return output.ResolvedItemstack?.Clone();
         }
 
+        private List<ItemStack> ResolveOutputStacks(KineticForgePressRecipe recipe, string captured, float inputTemperature)
+        {
+            List<ItemStack> outputs = new List<ItemStack>();
+            if (recipe?.Outputs == null) return outputs;
+
+            foreach (JsonItemStack output in recipe.Outputs)
+            {
+                if (output == null) continue;
+                ItemStack outStack = ResolveOutputStack(output, captured);
+                if (outStack == null)
+                {
+                    Api.World.Logger.Warning("[VintageKinematics] Forge press recipe '{0}' output '{1}' could not be resolved.",
+                        recipe.OperationCode, output.Code);
+                    continue;
+                }
+
+                outStack.StackSize = Math.Max(1, output.StackSize);
+                outStack.Collectible.SetTemperature(Api.World, outStack, inputTemperature);
+                outputs.Add(outStack);
+            }
+
+            return outputs;
+        }
+
         private void DepositOutput(ItemStack stack)
         {
-            if (stack == null || stack.StackSize <= 0) return;
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot slot = inventory[i];
-                if (slot.Empty) continue;
-                if (!slot.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
-                int max = slot.Itemstack.Collectible.MaxStackSize;
-                int free = max - slot.Itemstack.StackSize;
-                if (free <= 0) continue;
-                int take = Math.Min(free, stack.StackSize);
-                slot.Itemstack.StackSize += take;
-                stack.StackSize -= take;
-                slot.MarkDirty();
-                if (stack.StackSize <= 0) return;
-            }
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot slot = inventory[i];
-                if (!slot.Empty) continue;
-                slot.Itemstack = stack.Clone();
-                slot.MarkDirty();
-                return;
-            }
-
-            Api.World.SpawnItemEntity(stack, new Vec3d(Pos.X + 0.5, Pos.Y + 0.1, Pos.Z + 0.5));
+            Vec3d at = new Vec3d(Pos.X + 0.5, Pos.Y + 0.1, Pos.Z + 0.5);
+            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
         }
 
         private static float Approach(float current, float target, float delta)

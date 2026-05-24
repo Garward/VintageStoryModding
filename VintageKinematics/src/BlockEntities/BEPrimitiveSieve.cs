@@ -297,34 +297,8 @@ namespace VintageKinematics.BlockEntities
 
         private void DepositOutput(ItemStack stack)
         {
-            if (stack == null || stack.StackSize <= 0) return;
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot s = inventory[i];
-                if (s.Empty) continue;
-                if (!s.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
-                int max = s.Itemstack.Collectible.MaxStackSize;
-                int free = max - s.Itemstack.StackSize;
-                if (free <= 0) continue;
-                int take = System.Math.Min(free, stack.StackSize);
-                s.Itemstack.StackSize += take;
-                stack.StackSize -= take;
-                s.MarkDirty();
-                if (stack.StackSize <= 0) return;
-            }
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot s = inventory[i];
-                if (!s.Empty) continue;
-                s.Itemstack = stack.Clone();
-                s.MarkDirty();
-                return;
-            }
-
             Vec3d at = new Vec3d(Pos.X + 0.5, Pos.Y + 0.1, Pos.Z + 0.5);
-            Api.World.SpawnItemEntity(stack, at);
+            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)

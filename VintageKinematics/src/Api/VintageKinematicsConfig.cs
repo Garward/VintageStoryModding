@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
@@ -61,6 +62,38 @@ namespace VintageKinematics.Api
         /// rewrites panning and a pack wants to keep that rewrite out of kinetic automation.
         /// </summary>
         public bool UseVanillaPanningDrops { get; set; } = true;
+
+        /// <summary>
+        /// Targets the Kinetic Activator must not trigger. Entries support wildcards and match
+        /// block codes, block class names, block entity class names, and JSON entityClass names.
+        /// Examples: <c>"game:commandblock-*"</c>, <c>"Ticker"</c>, <c>"BlockEntityTicker"</c>,
+        /// <c>"Vintagestory.GameContent.BlockEntityCommands"</c>.
+        /// </summary>
+        public List<string> KineticActivatorTargetBlacklist { get; set; } = new List<string>
+        {
+            "game:commandblock-*",
+            "game:initcommandblock-*",
+            "game:tickerblock-*",
+            "game:conditionalblock-*",
+            "commandblock",
+            "initcommandblock",
+            "tickerblock",
+            "conditionalblock",
+            "GuiConfigurableCommands",
+            "Commands",
+            "Ticker",
+            "Conditional",
+            "BlockCommand",
+            "BlockTicker",
+            "BlockEntityGuiConfigurableCommands",
+            "BlockEntityCommands",
+            "BlockEntityTicker",
+            "BlockEntityConditional",
+            "Vintagestory.GameContent.BlockEntityGuiConfigurableCommands",
+            "Vintagestory.GameContent.BlockEntityCommands",
+            "Vintagestory.GameContent.BlockEntityTicker",
+            "Vintagestory.GameContent.BlockEntityConditional"
+        };
 
         /// <summary>
         /// Extra multiplier applied only to primitive-sieve drops produced from vanilla panning
@@ -170,6 +203,53 @@ namespace VintageKinematics.Api
         public float ResolveCoalMotorFuelUsageSpeed()
         {
             return ClampFuelUsageSpeed(CoalMotorFuelUsageSpeed);
+        }
+
+        public bool IsKineticActivatorTargetBlacklisted(Block block, BlockEntity blockEntity)
+        {
+            if (KineticActivatorTargetBlacklist == null || KineticActivatorTargetBlacklist.Count == 0) return false;
+
+            HashSet<string> candidates = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (block != null)
+            {
+                AddCandidate(candidates, block.Code?.ToString());
+                AddCandidate(candidates, block.Code?.Path);
+                AddCandidate(candidates, block.Code?.FirstCodePart());
+                AddCandidate(candidates, block.EntityClass);
+                AddTypeCandidates(candidates, block.GetType());
+            }
+            if (blockEntity != null)
+            {
+                AddTypeCandidates(candidates, blockEntity.GetType());
+            }
+
+            foreach (string rawPattern in KineticActivatorTargetBlacklist)
+            {
+                if (string.IsNullOrWhiteSpace(rawPattern)) continue;
+                string pattern = rawPattern.Trim();
+                foreach (string candidate in candidates)
+                {
+                    if (WildcardUtil.Match(pattern, candidate)) return true;
+                    if (WildcardUtil.Match(pattern.ToLowerInvariant(), candidate.ToLowerInvariant())) return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void AddTypeCandidates(HashSet<string> candidates, Type type)
+        {
+            while (type != null && type != typeof(object))
+            {
+                AddCandidate(candidates, type.Name);
+                AddCandidate(candidates, type.FullName);
+                type = type.BaseType;
+            }
+        }
+
+        private static void AddCandidate(HashSet<string> candidates, string value)
+        {
+            if (!string.IsNullOrWhiteSpace(value)) candidates.Add(value);
         }
 
         private static float ClampFuelUsageSpeed(float value)

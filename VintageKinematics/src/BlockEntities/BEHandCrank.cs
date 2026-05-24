@@ -1,12 +1,14 @@
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEHandCrank : BlockEntity
+    public class BEHandCrank : BlockEntity, IKineticActivatable
     {
+        private const float WindPulseSeconds = 0.5f;
         private KineticRotationRenderer renderer;
 
         public override void Initialize(ICoreAPI api)
@@ -37,6 +39,18 @@ namespace VintageKinematics.BlockEntities
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
         {
+            return true;
+        }
+
+        public bool OnKineticActivate(IWorldAccessor world, BlockPos targetPos, BlockFacing activatedFace, BlockPos activatorPos, float signedRPM)
+        {
+            if (world.Side != EnumAppSide.Server) return false;
+
+            BEBehaviorKineticSource src = GetBehavior<BEBehaviorKineticSource>();
+            if (src == null) return false;
+
+            int direction = signedRPM < 0f ? -1 : 1;
+            src.Wind(seconds: WindPulseSeconds, direction: direction);
             return true;
         }
     }

@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 1 },
+	"operationCode": "metal-rod",
+	"operationName": "Metal Rod",
+	"allowedVariants": [ "copper", "cupronickel", "tinbronze", "bismuthbronze", "blackbronze", "gold", "silver", "electrum" ],
+	"outputs": [
+		{ "type": "item", "code": "game:rod-*", "quantity": 2 }
+	],
+	"requiredTemperature": 900,
+	"pressTicks": 4
+}

@@ -208,8 +208,9 @@ namespace VintageKinematics.Rendering
         {
             MeshData mesh = new MeshData(128, 192);
 
-            float yTop = 11f / 16f;
-            float yBot = 5f / 16f;
+            const float animatedSurfaceLift = 0.001f;
+            float yTop = 11f / 16f + animatedSurfaceLift;
+            float yBot = 5f / 16f - animatedSurfaceLift;
             float zStart = 0f;
             float zEnd = 1f;
 

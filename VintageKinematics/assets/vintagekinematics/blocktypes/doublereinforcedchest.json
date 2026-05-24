@@ -14,7 +14,10 @@
     "textures": {
         "wood": { "base": "game:block/wood/trunk/sides" },
         "darkwood": { "base": "game:block/wood/trunk/lid" },
-        "metal": { "base": "game:block/metal/plate/iron" }
+        "metal": { "base": "game:block/metal/plate/iron" },
+        "normal-generic-wood": { "base": "game:block/wood/trunk/sides" },
+        "normal-generic-darkwood": { "base": "game:block/wood/trunk/lid" },
+        "normal-generic-metal": { "base": "game:block/metal/plate/iron" }
     },
     "behaviors": [
         {
@@ -31,13 +34,51 @@
     "attributes": {
         "handbook": { "groupBy": [ "doublereinforcedchest-*" ] },
         "inventoryClassName": "vkdoublechest",
-        "quantitySlots": 70
+        "defaultType": "normal-generic",
+        "types": [ "normal-generic" ],
+        "rotatatableInterval": {
+            "normal-generic": "22.5degnot45deg"
+        },
+        "drop": {
+            "normal-generic": true
+        },
+        "quantitySlots": {
+            "normal-generic": 70
+        },
+        "quantityColumns": {
+            "normal-generic": 10
+        },
+        "dialogTitleLangCode": {
+            "normal-generic": "vintagekinematics:doublechest-title"
+        },
+        "storageType": {
+            "normal-generic": 189
+        },
+        "retrieveOnly": {
+            "normal-generic": false
+        },
+        "shape": {
+            "normal-generic": "block/doublereinforcedchest"
+        },
+        "typedOpenSound": {
+            "normal-generic": "game:sounds/block/largechestopen"
+        },
+        "typedCloseSound": {
+            "normal-generic": "game:sounds/block/largechestclose"
+        },
+        "variantByGroup": "side",
+        "variantByGroupInventory": null
     },
     "blockmaterial": "Wood",
     "resistance": 4,
     "creativeinventory": {
         "general": [ "*-s" ],
         "vintagekinematics": [ "*-s" ]
+    },
+    "guiTransform": {
+        "translation": { "x": 13, "y": 0, "z": 0 },
+        "rotation": { "x": -22.6, "y": -153, "z": 0 },
+        "scale": 1.05
     },
     "lightAbsorption": 0,
     "sideopaque": { "all": "false" },

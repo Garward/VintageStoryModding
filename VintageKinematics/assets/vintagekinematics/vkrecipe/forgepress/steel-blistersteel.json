@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-blistersteel", "quantity": 1 },
+	"operationCode": "refine-steel",
+	"operationName": "Refine Steel",
+	"outputs": [
+		{ "type": "item", "code": "game:ingot-steel", "quantity": 1 }
+	],
+	"requiredTemperature": 1500,
+	"pressTicks": 64
+}

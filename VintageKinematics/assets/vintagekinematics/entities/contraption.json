@@ -1,0 +1,26 @@
+{
+    "code": "contraption",
+    "class": "EntityVKContraption",
+    "tags": [ "inanimate" ],
+    "hitboxSize": { "x": 1, "y": 1 },
+    "selectionBoxSize": { "x": 1, "y": 1 },
+    "eyeHeight": 0.5,
+    "client": {
+        "renderer": "Shape",
+        "shape": { "base": "entity/contraption" },
+        "textures": {
+            "wood": { "base": "game:block/wood/trunk/sides" },
+            "darkwood": { "base": "game:block/wood/trunk/lid" },
+            "metal": { "base": "game:block/metal/plate/iron" }
+        },
+        "behaviors": [
+            { "code": "passivephysics" },
+            { "code": "interpolateposition" }
+        ]
+    },
+    "server": {
+        "behaviors": [
+            { "code": "passivephysics", "gravityFactor": 0, "groundDragFactor": 1, "airDragFactor": 1 }
+        ]
+    }
+}

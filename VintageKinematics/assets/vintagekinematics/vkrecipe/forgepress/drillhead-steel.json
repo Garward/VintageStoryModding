@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 2 },
+	"operationCode": "drill-head-steel",
+	"operationName": "Steel Drill Head",
+	"outputs": [
+		{ "type": "item", "code": "vintagekinematics:drillhead-steel", "quantity": 1 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 16
+}

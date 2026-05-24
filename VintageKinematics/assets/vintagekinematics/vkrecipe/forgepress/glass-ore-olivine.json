@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ore-olivine", "quantity": 8 },
+	"operationCode": "melt-glass",
+	"operationName": "Melt Glass",
+	"outputs": [
+		{ "type": "block", "code": "game:glass-green", "quantity": 2 }
+	],
+	"requiredTemperature": 1400,
+	"pressTicks": 30
+}

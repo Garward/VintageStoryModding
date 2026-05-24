@@ -15,9 +15,13 @@ namespace VintageKinematics.BlockEntities
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
         {
             string[] excluded = KineticMeshSplitter.CollectManagedElements(this);
-            var body = KineticMeshSplitter.TesselateBodyExcluding(Api as ICoreClientAPI, Block, tessThreadTesselator, excluded);
+            var body = KineticMeshSplitter.TesselateBodyExcluding(Api as ICoreClientAPI, Block, tessThreadTesselator, excluded, ConfigureStaticShape);
             if (body != null) mesher.AddMeshData(body);
             return true;
+        }
+
+        protected virtual void ConfigureStaticShape(Shape shape)
+        {
         }
     }
 }

@@ -1,27 +1,12 @@
-using System.Linq;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
-using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
-    public class BlockVKStorage : Block, IPlacementPreviewProvider, IMultiBlockColSelBoxes
+    public class BlockVKStorage : BlockGenericTypedContainer, IPlacementPreviewProvider, IMultiBlockColSelBoxes
     {
-        private WorldInteraction[] bulkCrateInteractions;
-
-        public override void OnLoaded(ICoreAPI api)
-        {
-            base.OnLoaded(api);
-
-            if (Code?.Path?.StartsWith("bulkcrate-") == true)
-            {
-                PlacedPriorityInteract = true;
-            }
-        }
-
         private static string FacingPlayer(IPlayer byPlayer)
         {
             if (byPlayer?.Entity == null) return "s";
@@ -54,33 +39,14 @@ namespace VintageKinematics.Blocks
             return variant.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
         }
 
-        public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
+        public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
-            if (blockSel == null) return false;
-            if (world.BlockAccessor.GetBlockEntity(blockSel.Position) is BEBulkCrate crate)
-            {
-                return crate.OnPlayerRightClick(byPlayer, blockSel);
-            }
-
-            return base.OnBlockInteractStart(world, byPlayer, blockSel);
+            return CreateStorageStack(world, pos);
         }
 
-        public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)
+        public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
         {
-            WorldInteraction[] baseInteractions = base.GetPlacedBlockInteractionHelp(world, selection, forPlayer);
-            if (Code?.Path?.StartsWith("bulkcrate-") != true) return baseInteractions;
-
-            bulkCrateInteractions ??= new[]
-            {
-                new WorldInteraction { ActionLangCode = "blockhelp-crate-add", MouseButton = EnumMouseButton.Right, HotKeyCode = "shift" },
-                new WorldInteraction { ActionLangCode = "blockhelp-crate-addall", MouseButton = EnumMouseButton.Right, HotKeyCodes = new[] { "shift", "ctrl" } },
-                new WorldInteraction { ActionLangCode = "blockhelp-crate-remove", MouseButton = EnumMouseButton.Right },
-                new WorldInteraction { ActionLangCode = "blockhelp-crate-removeall", MouseButton = EnumMouseButton.Right, HotKeyCode = "ctrl" }
-            };
-
-            return baseInteractions == null
-                ? bulkCrateInteractions
-                : baseInteractions.Concat(bulkCrateInteractions).ToArray();
+            return new[] { CreateStorageStack(world, pos) };
         }
 
         public Cuboidf[] MBGetCollisionBoxes(IBlockAccessor blockAccessor, BlockPos pos, Vec3i offset)
@@ -102,6 +68,17 @@ namespace VintageKinematics.Blocks
                 shifted[i] = boxes[i]?.OffsetCopy(offset.X, offset.Y, offset.Z);
             }
             return shifted;
+        }
+
+        private ItemStack CreateStorageStack(IWorldAccessor world, BlockPos pos)
+        {
+            Block itemBlock = world.GetBlock(CodeWithVariant("side", "s")) ?? this;
+            ItemStack stack = new ItemStack(itemBlock);
+            string type = (world.BlockAccessor.GetBlockEntity(pos) as BlockEntityGenericTypedContainer)?.type
+                ?? Attributes?["defaultType"]?.AsString("normal-generic")
+                ?? "normal-generic";
+            stack.Attributes.SetString("type", type);
+            return stack;
         }
     }
 }

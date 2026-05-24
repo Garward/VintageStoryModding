@@ -1,6 +1,6 @@
 {
     "code": "bulkcrate",
-    "class": "BlockVKStorage",
+    "class": "BlockBulkCrate",
     "entityClass": "BulkCrate",
     "variantgroups": [
         { "code": "side", "states": [ "n", "e", "s", "w" ] }
@@ -14,12 +14,30 @@
     "textures": {
         "wood": { "base": "game:block/wood/planks/generic" },
         "darkwood": { "base": "game:block/wood/oak-dark" },
-        "metal": { "base": "game:block/metal/plate/iron" }
+        "metal": { "base": "game:block/metal/plate/iron" },
+        "normal-generic-wood": { "base": "game:block/wood/planks/generic" },
+        "normal-generic-darkwood": { "base": "game:block/wood/oak-dark" },
+        "normal-generic-metal": { "base": "game:block/metal/plate/iron" }
     },
     "attributes": {
         "handbook": { "groupBy": [ "bulkcrate-*" ] },
         "inventoryClassName": "vkbulkcrate",
-        "quantitySlots": 64
+        "defaultType": "normal-generic",
+        "types": [ "normal-generic" ],
+        "quantitySlots": {
+            "normal-generic": 64
+        },
+        "quantityColumns": {
+            "normal-generic": 8
+        },
+        "dialogTitleLangCode": {
+            "normal-generic": "vintagekinematics:bulkcrate-title"
+        },
+        "shape": {
+            "normal-generic": "block/bulkcrate"
+        },
+        "variantByGroup": "side",
+        "variantByGroupInventory": null
     },
     "blockmaterial": "Metal",
     "resistance": 5,

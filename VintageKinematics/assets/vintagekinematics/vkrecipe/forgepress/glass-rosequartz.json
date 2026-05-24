@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:rosequartz", "quantity": 4 },
+	"operationCode": "melt-glass",
+	"operationName": "Melt Glass",
+	"outputs": [
+		{ "type": "block", "code": "game:glass-pink", "quantity": 2 }
+	],
+	"requiredTemperature": 1420,
+	"pressTicks": 30
+}

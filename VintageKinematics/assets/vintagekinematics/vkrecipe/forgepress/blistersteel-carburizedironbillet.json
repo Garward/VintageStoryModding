@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "vintagekinematics:carburizedironbillet", "quantity": 1 },
+	"operationCode": "blister-steel",
+	"operationName": "Blister Steel",
+	"outputs": [
+		{ "type": "item", "code": "game:ingot-blistersteel", "quantity": 1 }
+	],
+	"requiredTemperature": 1580,
+	"pressTicks": 96
+}

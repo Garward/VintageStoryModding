@@ -1,0 +1,14 @@
+{
+	"ingredientPattern": "MBM,PCP,RGR",
+	"ingredients": {
+		"M": { "type": "item", "code": "machinebracket-iron" },
+		"B": { "type": "item", "code": "shaftcollar-iron" },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"C": { "type": "item", "code": "pressedcasing-iron" },
+		"R": { "type": "item", "code": "game:resin" },
+		"G": { "type": "block", "code": "gantryshaft-x" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "gantrycarriage-x-u", "quantity": 1 }
+}

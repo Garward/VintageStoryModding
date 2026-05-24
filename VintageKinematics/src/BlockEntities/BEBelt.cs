@@ -984,6 +984,7 @@ namespace VintageKinematics.BlockEntities
             }
             UseBlankBeltBandForStaticSideFaces(shape);
             DisableInternalBeltStripCaps(shape);
+            EnableStaticBeltRunFallback(shape);
 
             int baseRot = Direction switch
             {
@@ -1049,6 +1050,24 @@ namespace VintageKinematics.BlockEntities
             {
                 ShapeElementFace face = elem.FacesResolved[faces[i].Index];
                 if (face != null) face.Enabled = false;
+            }
+        }
+
+        private static void EnableStaticBeltRunFallback(Shape shape)
+        {
+            EnableElementFaces(shape, "TopBelt", BlockFacing.UP);
+            EnableElementFaces(shape, "BottomBelt", BlockFacing.DOWN);
+        }
+
+        private static void EnableElementFaces(Shape shape, string elementName, params BlockFacing[] faces)
+        {
+            ShapeElement elem = shape.GetElementByName(elementName);
+            if (elem?.FacesResolved == null) return;
+
+            for (int i = 0; i < faces.Length; i++)
+            {
+                ShapeElementFace face = elem.FacesResolved[faces[i].Index];
+                if (face != null) face.Enabled = true;
             }
         }
 

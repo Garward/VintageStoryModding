@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "B B,LPL,RCR",
+	"ingredients": {
+		"B": { "type": "item", "code": "pressedband-iron" },
+		"R": { "type": "item", "code": "kineticalloyrod" },
+		"L": { "type": "item", "code": "game:leather-normal-*", "name": "leather" },
+		"P": { "type": "item", "code": "pistonhead-iron" },
+		"C": { "type": "item", "code": "shaftcollar-iron" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "kineticboots", "quantity": 1 }
+}

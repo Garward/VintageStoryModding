@@ -1,0 +1,4953 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 64,
+    "textureHeight": 64,
+    "textureSizes": {},
+    "textures": {
+        "steel": "game:block/metal/plate/steel",
+        "iron": "game:block/metal/plate/iron",
+        "copper": "game:block/metal/plate/copper",
+        "dark": "game:block/coal/charcoal",
+        "ember": "game:block/coal/ember",
+        "wood": "game:block/wood/planks/generic"
+    },
+    "elements": [
+        {
+            "name": "foundationSlab",
+            "from": [
+                -15,
+                0,
+                -15
+            ],
+            "to": [
+                31,
+                2,
+                31
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        46
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        46
+                    ]
+                }
+            }
+        },
+        {
+            "name": "frontSkid",
+            "from": [
+                -14,
+                2,
+                -13
+            ],
+            "to": [
+                30,
+                4,
+                -10
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rearSkid",
+            "from": [
+                -14,
+                2,
+                26
+            ],
+            "to": [
+                30,
+                4,
+                29
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        44,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "crossBraceLeft",
+            "from": [
+                -11,
+                2.2,
+                -10
+            ],
+            "to": [
+                -8,
+                4.2,
+                26
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        36
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        36
+                    ]
+                }
+            }
+        },
+        {
+            "name": "crossBraceCenter",
+            "from": [
+                6.5,
+                2.2,
+                -10
+            ],
+            "to": [
+                9.5,
+                4.2,
+                26
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        36
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        36
+                    ]
+                }
+            }
+        },
+        {
+            "name": "crossBraceRight",
+            "from": [
+                24,
+                2.2,
+                -10
+            ],
+            "to": [
+                27,
+                4.2,
+                26
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        36
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        36
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fireboxShell",
+            "from": [
+                -12,
+                4,
+                -11
+            ],
+            "to": [
+                28,
+                12.8,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        8.8
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        22,
+                        8.8
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        8.8
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        22,
+                        8.8
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        22
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        22
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fireboxFrontDoor",
+            "from": [
+                2,
+                5.4,
+                -11.45
+            ],
+            "to": [
+                14,
+                11.2,
+                -10.95
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        5.8
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        5.8
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        5.8
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        5.8
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        0.5
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        0.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fireboxDoorFrameTop",
+            "from": [
+                1,
+                11.1,
+                -11.55
+            ],
+            "to": [
+                15,
+                12.2,
+                -10.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        1.1
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        1.1
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        1.1
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        1.1
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        0.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        0.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fireboxDoorFrameBottom",
+            "from": [
+                1,
+                4.4,
+                -11.55
+            ],
+            "to": [
+                15,
+                5.5,
+                -10.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        1.1
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        1.1
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        1.1
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        1.1
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        0.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        0.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fireboxDoorFrameLeft",
+            "from": [
+                0.8,
+                4.4,
+                -11.55
+            ],
+            "to": [
+                2,
+                12.2,
+                -10.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        7.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        7.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        7.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        7.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        0.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        0.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fireboxDoorFrameRight",
+            "from": [
+                14,
+                4.4,
+                -11.55
+            ],
+            "to": [
+                15.2,
+                12.2,
+                -10.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        7.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        7.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        7.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.8,
+                        7.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        0.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        0.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "ashTray",
+            "from": [
+                4,
+                2.3,
+                -11.8
+            ],
+            "to": [
+                12,
+                4.4,
+                -10.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        2.1
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        2.1
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        2.1
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        2.1
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "emberGrate",
+            "from": [
+                -10,
+                12.9,
+                -8
+            ],
+            "to": [
+                26,
+                13.35,
+                8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        0.45
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        0.45
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        0.45
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        0.45
+                    ]
+                },
+                "up": {
+                    "texture": "#ember",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBody",
+            "from": [
+                -11,
+                14,
+                -8
+            ],
+            "to": [
+                27,
+                25,
+                8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        11
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        11
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        11
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        11
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortTopFacet",
+            "from": [
+                -9,
+                25,
+                -6
+            ],
+            "to": [
+                25,
+                28,
+                6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        12
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        12
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBottomFacet",
+            "from": [
+                -9,
+                12.5,
+                -6
+            ],
+            "to": [
+                25,
+                14.1,
+                6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        1.6
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        1.6
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        1.6
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        1.6
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        12
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        34,
+                        12
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortFrontFacet",
+            "from": [
+                -11,
+                16,
+                -10
+            ],
+            "to": [
+                27,
+                23,
+                -8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        7
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        7
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        7
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        7
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBackFacet",
+            "from": [
+                -11,
+                16,
+                8
+            ],
+            "to": [
+                27,
+                23,
+                10
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        7
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        7
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        7
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        7
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        38,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "leftEndCap",
+            "from": [
+                -12.2,
+                14,
+                -8
+            ],
+            "to": [
+                -10.9,
+                25.5,
+                8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        11.5
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        11.5
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        11.5
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        11.5
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rightEndCap",
+            "from": [
+                26.9,
+                14,
+                -8
+            ],
+            "to": [
+                28.2,
+                25.5,
+                8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        11.5
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        11.5
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        11.5
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        11.5
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.3,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "frontLoadingHatch",
+            "from": [
+                -4,
+                15.1,
+                -10.55
+            ],
+            "to": [
+                20,
+                24.2,
+                -9.9
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        24,
+                        9.1
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.65,
+                        9.1
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        24,
+                        9.1
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.65,
+                        9.1
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        24,
+                        0.65
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        24,
+                        0.65
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchFrameTop",
+            "from": [
+                -5,
+                23.8,
+                -10.7
+            ],
+            "to": [
+                21,
+                25,
+                -9.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        1.2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        1.2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchFrameBottom",
+            "from": [
+                -5,
+                14.2,
+                -10.7
+            ],
+            "to": [
+                21,
+                15.4,
+                -9.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        1.2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        1.2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        26,
+                        1.1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchFrameLeft",
+            "from": [
+                -5.2,
+                14.2,
+                -10.7
+            ],
+            "to": [
+                -3.8,
+                25,
+                -9.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        10.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        10.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchFrameRight",
+            "from": [
+                19.8,
+                14.2,
+                -10.7
+            ],
+            "to": [
+                21.2,
+                25,
+                -9.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        10.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.1,
+                        10.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchSealBarUpper",
+            "from": [
+                -2,
+                21.2,
+                -10.85
+            ],
+            "to": [
+                18,
+                22.2,
+                -9.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1.2
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1.2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchSealBarLower",
+            "from": [
+                -2,
+                17.2,
+                -10.85
+            ],
+            "to": [
+                18,
+                18.2,
+                -9.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1.2
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        20,
+                        1.2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchHandleLeft",
+            "from": [
+                -1,
+                18.5,
+                -11.35
+            ],
+            "to": [
+                0.5,
+                20.9,
+                -10.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        2.4
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        2.4
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        2.4
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        2.4
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        0.7
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        0.7
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchHandleRight",
+            "from": [
+                15.5,
+                18.5,
+                -11.35
+            ],
+            "to": [
+                17,
+                20.9,
+                -10.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        2.4
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        2.4
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        2.4
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        2.4
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        0.7
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.5,
+                        0.7
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalInspectionSlotA",
+            "from": [
+                4,
+                19.2,
+                -11
+            ],
+            "to": [
+                6.5,
+                20.1,
+                -10.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.9
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.6,
+                        0.9
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.9
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.6,
+                        0.9
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.6
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalInspectionSlotB",
+            "from": [
+                9.5,
+                19.2,
+                -11
+            ],
+            "to": [
+                12,
+                20.1,
+                -10.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.9
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.6,
+                        0.9
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.9
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.6,
+                        0.9
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.6
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        0.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rearServiceDeck",
+            "from": [
+                -12,
+                2.1,
+                15
+            ],
+            "to": [
+                28,
+                4.1,
+                28
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        13
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        40,
+                        13
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rearFlueManifold",
+            "from": [
+                -10,
+                15,
+                14
+            ],
+            "to": [
+                26,
+                23,
+                30
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        8
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        8
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        8
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        8
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "leftDraftNozzle",
+            "from": [
+                -6,
+                7,
+                29.7
+            ],
+            "to": [
+                0,
+                13,
+                31.7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        6
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        6
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        6
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        6
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rightDraftNozzle",
+            "from": [
+                16,
+                7,
+                29.7
+            ],
+            "to": [
+                22,
+                13,
+                31.7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        6
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        6
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        6
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        6
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "exhaustStack",
+            "from": [
+                22,
+                22,
+                25
+            ],
+            "to": [
+                27,
+                31.4,
+                30
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        9.4
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        9.4
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        9.4
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        9.4
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "exhaustStackCap",
+            "from": [
+                21,
+                31.2,
+                24
+            ],
+            "to": [
+                28,
+                32,
+                31
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        0.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        0.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        0.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        0.8
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarFront",
+            "from": [
+                21,
+                21.2,
+                24.2
+            ],
+            "to": [
+                28,
+                23,
+                25.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarBack",
+            "from": [
+                21,
+                21.2,
+                29.8
+            ],
+            "to": [
+                28,
+                23,
+                30.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarLeft",
+            "from": [
+                21,
+                21.2,
+                25.2
+            ],
+            "to": [
+                22,
+                23,
+                29.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4.6,
+                        1.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4.6,
+                        1.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        4.6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        4.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarRight",
+            "from": [
+                27,
+                21.2,
+                25.2
+            ],
+            "to": [
+                28,
+                23,
+                29.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4.6,
+                        1.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4.6,
+                        1.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        4.6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        4.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "shaftCore",
+            "from": [
+                -16,
+                6.75,
+                6.75
+            ],
+            "to": [
+                32,
+                9.25,
+                9.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        48,
+                        2.5
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        2.5
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        48,
+                        2.5
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        2.5
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        48,
+                        2.5
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        48,
+                        2.5
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "stubXneg",
+            "from": [
+                -18,
+                6.5,
+                6.5
+            ],
+            "to": [
+                -12,
+                9.5,
+                9.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "stubXpos",
+            "from": [
+                28,
+                6.5,
+                6.5
+            ],
+            "to": [
+                34,
+                9.5,
+                9.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "hubXneg",
+            "from": [
+                -12.5,
+                5.4,
+                5.4
+            ],
+            "to": [
+                -8.5,
+                10.6,
+                10.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        5.2,
+                        5.2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        5.2,
+                        5.2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "hubXpos",
+            "from": [
+                24.5,
+                5.4,
+                5.4
+            ],
+            "to": [
+                28.5,
+                10.6,
+                10.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        5.2,
+                        5.2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        5.2,
+                        5.2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        5.2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "draftFanBladeVertical",
+            "from": [
+                -12.8,
+                3.2,
+                7.1
+            ],
+            "to": [
+                -11.2,
+                12.8,
+                8.9
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        9.6
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.8,
+                        9.6
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        9.6
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.8,
+                        9.6
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.8
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "draftFanBladeHorizontal",
+            "from": [
+                -12.8,
+                7.1,
+                3.2
+            ],
+            "to": [
+                -11.2,
+                8.9,
+                12.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        9.6,
+                        1.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        9.6,
+                        1.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        9.6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        9.6
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "draftFanGuardTop",
+            "from": [
+                -13.4,
+                13,
+                3.5
+            ],
+            "to": [
+                -10.6,
+                14.2,
+                12.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        9,
+                        1.2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        9,
+                        1.2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        9
+                    ]
+                }
+            }
+        },
+        {
+            "name": "draftFanGuardBottom",
+            "from": [
+                -13.4,
+                1.8,
+                3.5
+            ],
+            "to": [
+                -10.6,
+                3,
+                12.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        9,
+                        1.2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        9,
+                        1.2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        9
+                    ]
+                }
+            }
+        },
+        {
+            "name": "draftFanGuardFront",
+            "from": [
+                -13.4,
+                3,
+                2.3
+            ],
+            "to": [
+                -10.6,
+                13,
+                3.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "draftFanGuardBack",
+            "from": [
+                -13.4,
+                3,
+                12.5
+            ],
+            "to": [
+                -10.6,
+                13,
+                13.7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2.8,
+                        1.2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "leftPipeSupport",
+            "from": [
+                -5,
+                12.5,
+                11.2
+            ],
+            "to": [
+                -3,
+                16.5,
+                13.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rightPipeSupport",
+            "from": [
+                19,
+                12.5,
+                11.2
+            ],
+            "to": [
+                21,
+                16.5,
+                13.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandLeftTop",
+            "from": [
+                -8,
+                25.6,
+                -7
+            ],
+            "to": [
+                -6.8,
+                28.4,
+                7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandLeftBottom",
+            "from": [
+                -8,
+                12.2,
+                -7
+            ],
+            "to": [
+                -6.8,
+                14.2,
+                7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandLeftFront",
+            "from": [
+                -8,
+                15,
+                -10.3
+            ],
+            "to": [
+                -6.8,
+                24,
+                -7.3
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandLeftBack",
+            "from": [
+                -8,
+                15,
+                7.3
+            ],
+            "to": [
+                -6.8,
+                24,
+                10.3
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandCenterTop",
+            "from": [
+                7.4,
+                25.6,
+                -7
+            ],
+            "to": [
+                8.6,
+                28.4,
+                7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandCenterBottom",
+            "from": [
+                7.4,
+                12.2,
+                -7
+            ],
+            "to": [
+                8.6,
+                14.2,
+                7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandCenterFront",
+            "from": [
+                7.4,
+                15,
+                -10.3
+            ],
+            "to": [
+                8.6,
+                24,
+                -7.3
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandCenterBack",
+            "from": [
+                7.4,
+                15,
+                7.3
+            ],
+            "to": [
+                8.6,
+                24,
+                10.3
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandRightTop",
+            "from": [
+                22.8,
+                25.6,
+                -7
+            ],
+            "to": [
+                24,
+                28.4,
+                7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandRightBottom",
+            "from": [
+                22.8,
+                12.2,
+                -7
+            ],
+            "to": [
+                24,
+                14.2,
+                7
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        14
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandRightFront",
+            "from": [
+                22.8,
+                15,
+                -10.3
+            ],
+            "to": [
+                24,
+                24,
+                -7.3
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "retortBandRightBack",
+            "from": [
+                22.8,
+                15,
+                7.3
+            ],
+            "to": [
+                24,
+                24,
+                10.3
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.2,
+                        3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchClamp1",
+            "from": [
+                -3,
+                14.4,
+                -11.1
+            ],
+            "to": [
+                -1.6,
+                25,
+                -10.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchClamp2",
+            "from": [
+                3,
+                14.4,
+                -11.1
+            ],
+            "to": [
+                4.4,
+                25,
+                -10.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchClamp3",
+            "from": [
+                13,
+                14.4,
+                -11.1
+            ],
+            "to": [
+                14.4,
+                25,
+                -10.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hatchClamp4",
+            "from": [
+                19,
+                14.4,
+                -11.1
+            ],
+            "to": [
+                20.4,
+                25,
+                -10.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        10.6
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        10.6
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        0.45
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -28,6 +28,7 @@ namespace VintageKinematics.Api
             cfg.Consumers ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.ConsumerOverride>();
             cfg.Generators ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.GeneratorOverride>();
             cfg.SieveYieldOverrides ??= new System.Collections.Generic.Dictionary<string, float>();
+            cfg.KineticActivatorTargetBlacklist ??= new System.Collections.Generic.List<string>();
 
             EnsureConsumer(cfg, "kineticquern");
             EnsureGenerator(cfg, "handcrank");

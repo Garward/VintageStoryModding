@@ -1,0 +1,13 @@
+{
+  "ingredientPattern": "CRC,PMP,_S_",
+  "ingredients": {
+    "C": { "type": "item", "code": "game:metalplate-copper" },
+    "R": { "type": "item", "code": "game:resin" },
+    "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+    "M": { "type": "item", "code": "machinebracket-iron" },
+    "S": { "type": "block", "code": "shaft-z" }
+  },
+  "width": 3,
+  "height": 3,
+  "output": { "type": "block", "code": "kineticactivator-n", "quantity": 1 }
+}

@@ -128,11 +128,17 @@ namespace VintageKinematics.Rendering
         /// </summary>
         public static MeshData TesselateBodyExcluding(ICoreClientAPI capi, Block block, ITesselatorAPI tess, string[] excludedElements)
         {
+            return TesselateBodyExcluding(capi, block, tess, excludedElements, null);
+        }
+
+        public static MeshData TesselateBodyExcluding(ICoreClientAPI capi, Block block, ITesselatorAPI tess, string[] excludedElements, System.Action<Shape> configureShape)
+        {
             Shape orig = LoadShape(capi, block);
             if (orig == null) return null;
             // Shape.RemoveElements walks the tree, so removing a parent already drops every
             // descendant — no name expansion needed here.
             Shape stripped = CloneAndRemoveElements(orig, excludedElements);
+            configureShape?.Invoke(stripped);
             tess.TesselateShape(block, stripped, out MeshData mesh, GetBlockShapeRotationDeg(block));
             return mesh;
         }

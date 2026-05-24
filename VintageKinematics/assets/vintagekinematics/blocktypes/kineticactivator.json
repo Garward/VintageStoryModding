@@ -1,0 +1,98 @@
+{
+  "code": "kineticactivator",
+  "class": "BlockKineticActivator",
+  "entityClass": "KineticActivator",
+  "entityBehaviorsByType": {
+    "*-n": [
+      { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 1, "axis": "Z" } },
+      { "name": "KineticAnimator", "properties": { "rotators": [
+        { "element": "driveShaft", "axis": "Z", "ratio": 1 },
+        { "element": "finger", "axis": "Z", "mode": "oscillate", "waveform": "triangle", "ratio": 1, "translateAxis": "Z", "translateTravel": -1.5 }
+      ] } }
+    ],
+    "*-s": [
+      { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 1, "axis": "Z" } },
+      { "name": "KineticAnimator", "properties": { "rotators": [
+        { "element": "driveShaft", "axis": "Z", "ratio": 1 },
+        { "element": "finger", "axis": "Z", "mode": "oscillate", "waveform": "triangle", "ratio": 1, "translateAxis": "Z", "translateTravel": -1.5 }
+      ] } }
+    ],
+    "*-e": [
+      { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 1, "axis": "X" } },
+      { "name": "KineticAnimator", "properties": { "rotators": [
+        { "element": "driveShaft", "axis": "Z", "ratio": 1 },
+        { "element": "finger", "axis": "Z", "mode": "oscillate", "waveform": "triangle", "ratio": 1, "translateAxis": "Z", "translateTravel": -1.5 }
+      ] } }
+    ],
+    "*-w": [
+      { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 1, "axis": "X" } },
+      { "name": "KineticAnimator", "properties": { "rotators": [
+        { "element": "driveShaft", "axis": "Z", "ratio": 1 },
+        { "element": "finger", "axis": "Z", "mode": "oscillate", "waveform": "triangle", "ratio": 1, "translateAxis": "Z", "translateTravel": -1.5 }
+      ] } }
+    ],
+    "*-u": [
+      { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 1, "axis": "Y" } },
+      { "name": "KineticAnimator", "properties": { "rotators": [
+        { "element": "driveShaft", "axis": "Z", "ratio": 1 },
+        { "element": "finger", "axis": "Z", "mode": "oscillate", "waveform": "triangle", "ratio": 1, "translateAxis": "Z", "translateTravel": -1.5 }
+      ] } }
+    ],
+    "*-d": [
+      { "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 1, "axis": "Y" } },
+      { "name": "KineticAnimator", "properties": { "rotators": [
+        { "element": "driveShaft", "axis": "Z", "ratio": 1 },
+        { "element": "finger", "axis": "Z", "mode": "oscillate", "waveform": "triangle", "ratio": 1, "translateAxis": "Z", "translateTravel": -1.5 }
+      ] } }
+    ]
+  },
+  "variantgroups": [
+    { "code": "side", "states": [ "n", "e", "s", "w", "u", "d" ] }
+  ],
+  "shape": { "base": "block/kineticactivator" },
+  "shapeByType": {
+    "*-n": { "base": "block/kineticactivator", "rotateY": 0 },
+    "*-e": { "base": "block/kineticactivator", "rotateY": 270 },
+    "*-s": { "base": "block/kineticactivator", "rotateY": 180 },
+    "*-w": { "base": "block/kineticactivator", "rotateY": 90 },
+    "*-u": { "base": "block/kineticactivator", "rotateX": 90 },
+    "*-d": { "base": "block/kineticactivator", "rotateX": 270 }
+  },
+  "textures": {
+    "wood": { "base": "game:block/wood/planks/generic" },
+    "metal": { "base": "game:block/metal/plate/iron" },
+    "dark": { "base": "game:block/coal/charcoal" },
+    "copper": { "base": "game:block/metal/plate/copper" }
+  },
+  "blockmaterial": "Metal",
+  "resistance": 2,
+  "creativeinventory": {
+    "general": [ "*-n" ],
+    "mechanics": [ "*-n" ],
+    "vintagekinematics": [ "*-n" ]
+  },
+  "attributes": {
+    "handbook": { "groupBy": [ "kineticactivator-*" ] }
+  },
+  "lightAbsorption": 0,
+  "sideopaque": { "all": "false" },
+  "sidesolid": { "all": "false" },
+  "collisionbox": { "x1": 0.125, "y1": 0.125, "z1": 0, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+  "collisionboxByType": {
+    "*-n": { "x1": 0.125, "y1": 0.125, "z1": 0, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+    "*-s": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 1 },
+    "*-e": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 1, "y2": 0.875, "z2": 0.875 },
+    "*-w": { "x1": 0, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+    "*-u": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 1, "z2": 0.875 },
+    "*-d": { "x1": 0.125, "y1": 0, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 }
+  },
+  "selectionbox": { "x1": 0.125, "y1": 0.125, "z1": 0, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+  "selectionboxByType": {
+    "*-n": { "x1": 0.125, "y1": 0.125, "z1": 0, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+    "*-s": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 1 },
+    "*-e": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 1, "y2": 0.875, "z2": 0.875 },
+    "*-w": { "x1": 0, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 },
+    "*-u": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 1, "z2": 0.875 },
+    "*-d": { "x1": 0.125, "y1": 0, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 }
+  }
+}

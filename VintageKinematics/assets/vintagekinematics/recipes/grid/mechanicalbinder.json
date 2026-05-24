@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "TRT,CMC,_S_",
+	"ingredients": {
+		"T": { "type": "item", "code": "game:flaxtwine" },
+		"R": { "type": "item", "code": "game:resin" },
+		"C": { "type": "item", "code": "game:metalplate-copper" },
+		"M": { "type": "item", "code": "machinebracket-iron" },
+		"S": { "type": "item", "code": "game:stick" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "mechanicalbinder", "quantity": 1 }
+}

@@ -291,35 +291,9 @@ namespace VintageKinematics.BlockEntities
         // so the sieve never silently halts.
         private void DepositOutput(ItemStack stack)
         {
-            if (stack == null || stack.StackSize <= 0) return;
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot s = inventory[i];
-                if (s.Empty) continue;
-                if (!s.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
-                int max = s.Itemstack.Collectible.MaxStackSize;
-                int free = max - s.Itemstack.StackSize;
-                if (free <= 0) continue;
-                int take = System.Math.Min(free, stack.StackSize);
-                s.Itemstack.StackSize += take;
-                stack.StackSize -= take;
-                s.MarkDirty();
-                if (stack.StackSize <= 0) return;
-            }
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ItemSlot s = inventory[i];
-                if (!s.Empty) continue;
-                s.Itemstack = stack.Clone();
-                s.MarkDirty();
-                return;
-            }
-
             BlockPos mid = MiddleCellPos();
             Vec3d at = new Vec3d(mid.X + 0.5, mid.Y + 0.1, mid.Z + 0.5);
-            Api.World.SpawnItemEntity(stack, at);
+            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
         }
 
         // All three cells of the drum: controller, middle, far. Used for cell-aware IO mapping

@@ -5,6 +5,6 @@
 	"outputs": [
 		{ "type": "item", "code": "game:ingot-iron", "quantity": 1 }
 	],
-	"requiredTemperature": 1100,
+	"requiredTemperature": 700,
 	"pressTicks": 6
 }

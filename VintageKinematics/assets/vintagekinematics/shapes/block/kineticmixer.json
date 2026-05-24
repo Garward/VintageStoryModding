@@ -1,4780 +1,938 @@
 {
-    "textureWidth": 16,
-    "textureHeight": 16,
-    "textures": {
-        "wood": "game:block/wood/planks/generic",
-        "darkwood": "game:block/wood/debarked/oak",
-        "metal": "game:block/metal/sheet/tinbronze1",
-        "mortar": "game:block/wood/barrel/mortar",
-        "cog": "game:block/wood/planks/generic"
-    },
-    "elements": [
-        {
-            "name": "TubBase",
-            "from": [
-                2,
-                0,
-                2
-            ],
-            "to": [
-                14,
-                2,
-                14
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        2,
-                        0,
-                        14,
-                        2
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        2,
-                        0,
-                        14,
-                        2
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        2,
-                        0,
-                        14,
-                        2
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        2,
-                        0,
-                        14,
-                        2
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        2,
-                        2,
-                        14,
-                        14
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        2,
-                        2,
-                        14,
-                        14
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubNorthWallWest",
-            "from": [
-                1,
-                2,
-                1
-            ],
-            "to": [
-                6,
-                10,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        1,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubNorthWallEast",
-            "from": [
-                10,
-                2,
-                1
-            ],
-            "to": [
-                15,
-                10,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        10,
-                        2,
-                        15,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        10,
-                        2,
-                        15,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubSouthWallWest",
-            "from": [
-                1,
-                2,
-                13
-            ],
-            "to": [
-                6,
-                10,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        1,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubSouthWallEast",
-            "from": [
-                10,
-                2,
-                13
-            ],
-            "to": [
-                15,
-                10,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        10,
-                        2,
-                        15,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        10,
-                        2,
-                        15,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        1,
-                        0,
-                        15,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubWestWallNorth",
-            "from": [
-                1,
-                2,
-                3
-            ],
-            "to": [
-                3,
-                10,
-                6
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        3,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        3,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubWestWallSouth",
-            "from": [
-                1,
-                2,
-                10
-            ],
-            "to": [
-                3,
-                10,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        10,
-                        2,
-                        13,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        10,
-                        2,
-                        13,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubEastWallNorth",
-            "from": [
-                13,
-                2,
-                3
-            ],
-            "to": [
-                15,
-                10,
-                6
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        3,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        3,
-                        2,
-                        6,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubEastWallSouth",
-            "from": [
-                13,
-                2,
-                10
-            ],
-            "to": [
-                15,
-                10,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        10,
-                        2,
-                        13,
-                        10
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        2,
-                        2,
-                        10
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        10,
-                        2,
-                        13,
-                        10
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        3,
-                        2,
-                        13
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubBandLower",
-            "from": [
-                0.5,
-                2.25,
-                0.5
-            ],
-            "to": [
-                15.5,
-                3.25,
-                15.5
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        15,
-                        1
-                    ]
-                },
-                "east": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        15,
-                        1
-                    ]
-                },
-                "south": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        15,
-                        1
-                    ]
-                },
-                "west": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        15,
-                        1
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubNorthWallCenter",
-            "from": [
-                6,
-                2,
-                1
-            ],
-            "to": [
-                10,
-                10,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubSouthWallCenter",
-            "from": [
-                6,
-                2,
-                13
-            ],
-            "to": [
-                10,
-                10,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubWestWallCenter",
-            "from": [
-                1,
-                2,
-                6
-            ],
-            "to": [
-                3,
-                10,
-                10
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubEastWallCenter",
-            "from": [
-                13,
-                2,
-                6
-            ],
-            "to": [
-                15,
-                10,
-                10
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubInnerLipNorth",
-            "from": [
-                3,
-                9.25,
-                3
-            ],
-            "to": [
-                13,
-                10.25,
-                4
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubInnerLipSouth",
-            "from": [
-                3,
-                9.25,
-                12
-            ],
-            "to": [
-                13,
-                10.25,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubInnerLipWest",
-            "from": [
-                3,
-                9.25,
-                4
-            ],
-            "to": [
-                4,
-                10.25,
-                12
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "TubInnerLipEast",
-            "from": [
-                12,
-                9.25,
-                4
-            ],
-            "to": [
-                13,
-                10.25,
-                12
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "MortarFillPlaceholder",
-            "from": [
-                3.25,
-                2.1,
-                3.25
-            ],
-            "to": [
-                12.75,
-                2.6,
-                12.75
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#mortar",
-                    "uv": [
-                        3,
-                        0,
-                        13,
-                        1
-                    ]
-                },
-                "east": {
-                    "texture": "#mortar",
-                    "uv": [
-                        3,
-                        0,
-                        13,
-                        1
-                    ]
-                },
-                "south": {
-                    "texture": "#mortar",
-                    "uv": [
-                        3,
-                        0,
-                        13,
-                        1
-                    ]
-                },
-                "west": {
-                    "texture": "#mortar",
-                    "uv": [
-                        3,
-                        0,
-                        13,
-                        1
-                    ]
-                },
-                "up": {
-                    "texture": "#mortar",
-                    "uv": [
-                        3,
-                        3,
-                        13,
-                        13
-                    ]
-                },
-                "down": {
-                    "texture": "#mortar",
-                    "uv": [
-                        3,
-                        3,
-                        13,
-                        13
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingBaseNorth",
-            "from": [
-                1,
-                16,
-                1
-            ],
-            "to": [
-                15,
-                18,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingBaseSouth",
-            "from": [
-                1,
-                16,
-                13
-            ],
-            "to": [
-                15,
-                18,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingBaseWest",
-            "from": [
-                1,
-                16,
-                3
-            ],
-            "to": [
-                3,
-                18,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingBaseEast",
-            "from": [
-                13,
-                16,
-                3
-            ],
-            "to": [
-                15,
-                18,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingPostNW",
-            "from": [
-                1,
-                16,
-                1
-            ],
-            "to": [
-                3,
-                31,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingPostNE",
-            "from": [
-                13,
-                16,
-                1
-            ],
-            "to": [
-                15,
-                31,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingPostSW",
-            "from": [
-                1,
-                16,
-                13
-            ],
-            "to": [
-                3,
-                31,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingPostSE",
-            "from": [
-                13,
-                16,
-                13
-            ],
-            "to": [
-                15,
-                31,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingTopNorth",
-            "from": [
-                1,
-                30,
-                1
-            ],
-            "to": [
-                15,
-                32,
-                3
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingTopSouth",
-            "from": [
-                1,
-                30,
-                13
-            ],
-            "to": [
-                15,
-                32,
-                15
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingTopWest",
-            "from": [
-                1,
-                30,
-                3
-            ],
-            "to": [
-                3,
-                32,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingTopEast",
-            "from": [
-                13,
-                30,
-                3
-            ],
-            "to": [
-                15,
-                32,
-                13
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#wood",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveHousingLowerCollar",
-            "from": [
-                4.5,
-                15.5,
-                4.5
-            ],
-            "to": [
-                11.5,
-                17,
-                11.5
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "east": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "south": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "west": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "up": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#metal",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCogShaft",
-            "from": [
-                6.25,
-                10,
-                6.25
-            ],
-            "to": [
-                9.75,
-                24.4,
-                9.75
-            ],
-            "rotationOrigin": [
-                8,
-                24,
-                8
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        6,
-                        0,
-                        10,
-                        14.4
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        6,
-                        0,
-                        10,
-                        14.4
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        6,
-                        0,
-                        10,
-                        14.4
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        6,
-                        0,
-                        10,
-                        14.4
-                    ]
-                },
-                "up": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        6,
-                        6,
-                        10,
-                        10
-                    ]
-                },
-                "down": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        6,
-                        6,
-                        10,
-                        10
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hub_outer_00",
-            "from": [
-                2.0,
-                23.44,
-                4.0
-            ],
-            "to": [
-                14.0,
-                24.84,
-                12.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 0.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hub_outer_36",
-            "from": [
-                2.0,
-                23.45,
-                4.0
-            ],
-            "to": [
-                14.0,
-                24.85,
-                12.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 36.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hub_outer_72",
-            "from": [
-                2.0,
-                23.46,
-                4.0
-            ],
-            "to": [
-                14.0,
-                24.86,
-                12.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 72.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hub_outer_108",
-            "from": [
-                2.0,
-                23.47,
-                4.0
-            ],
-            "to": [
-                14.0,
-                24.869999999999997,
-                12.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 108.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hub_outer_144",
-            "from": [
-                2.0,
-                23.48,
-                4.0
-            ],
-            "to": [
-                14.0,
-                24.880000000000003,
-                12.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 144.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        14.0,
-                        7.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        16.0,
-                        7.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        14.0,
-                        12.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_00",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 0.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_36",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 36.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_72",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 72.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_108",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 108.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_144",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 144.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_180",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 180.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_216",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 216.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_252",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 252.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_288",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 288.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_tooth_324",
-            "from": [
-                7.0,
-                23.2,
-                12.0
-            ],
-            "to": [
-                9.0,
-                25.2,
-                17.0
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 324.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        10.0,
-                        6.0,
-                        15.0,
-                        8.0
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        6.0,
-                        9.0,
-                        8.0
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        0.0,
-                        6.0,
-                        5.0,
-                        8.0
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        10.0,
-                        9.0,
-                        15.0
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        7.0,
-                        0.0,
-                        9.0,
-                        5.0
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_top_00",
-            "from": [
-                4.0,
-                24.8,
-                5.25
-            ],
-            "to": [
-                12.0,
-                25.3,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 0.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_top_36",
-            "from": [
-                4.0,
-                24.810000000000002,
-                5.25
-            ],
-            "to": [
-                12.0,
-                25.310000000000002,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 36.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_top_72",
-            "from": [
-                4.0,
-                24.82,
-                5.25
-            ],
-            "to": [
-                12.0,
-                25.32,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 72.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_top_108",
-            "from": [
-                4.0,
-                24.83,
-                5.25
-            ],
-            "to": [
-                12.0,
-                25.33,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 108.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_top_144",
-            "from": [
-                4.0,
-                24.84,
-                5.25
-            ],
-            "to": [
-                12.0,
-                25.34,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 144.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        4.0,
-                        10.0,
-                        9.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_bottom_00",
-            "from": [
-                4.0,
-                23.0,
-                5.25
-            ],
-            "to": [
-                12.0,
-                23.5,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 0.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_bottom_36",
-            "from": [
-                4.0,
-                22.990000000000002,
-                5.25
-            ],
-            "to": [
-                12.0,
-                23.490000000000002,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 36.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_bottom_72",
-            "from": [
-                4.0,
-                22.98,
-                5.25
-            ],
-            "to": [
-                12.0,
-                23.48,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 72.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_bottom_108",
-            "from": [
-                4.0,
-                22.97,
-                5.25
-            ],
-            "to": [
-                12.0,
-                23.47,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 108.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "DriveCog_hubcenter_bottom_144",
-            "from": [
-                4.0,
-                22.96,
-                5.25
-            ],
-            "to": [
-                12.0,
-                23.46,
-                10.75
-            ],
-            "rotationOrigin": [
-                8.0,
-                24.0,
-                8.0
-            ],
-            "rotationY": 144.0,
-            "faces": {
-                "north": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "east": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "south": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        6.0,
-                        12.0,
-                        6.5
-                    ]
-                },
-                "west": {
-                    "texture": "#cog",
-                    "uv": [
-                        2.0,
-                        6.0,
-                        10.0,
-                        6.5
-                    ]
-                },
-                "up": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                },
-                "down": {
-                    "texture": "#cog",
-                    "uv": [
-                        4.0,
-                        2.0,
-                        12.0,
-                        7.5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "Paddle",
-            "from": [
-                7.25,
-                3,
-                7.25
-            ],
-            "to": [
-                8.75,
-                12,
-                8.75
-            ],
-            "rotationOrigin": [
-                8,
-                8,
-                8
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        1.5,
-                        9
-                    ]
-                },
-                "east": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        1.5,
-                        9
-                    ]
-                },
-                "south": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        1.5,
-                        9
-                    ]
-                },
-                "west": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        1.5,
-                        9
-                    ]
-                },
-                "up": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        1.5,
-                        1.5
-                    ]
-                },
-                "down": {
-                    "texture": "#darkwood",
-                    "uv": [
-                        0,
-                        0,
-                        1.5,
-                        1.5
-                    ]
-                }
-            },
-            "children": [
-                {
-                    "name": "PaddleBladeNorthSouth",
-                    "from": [
-                        -2.75,
-                        -4,
-                        -0.5
-                    ],
-                    "to": [
-                        2.75,
-                        -1.25,
-                        0.5
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.5,
-                                2.75
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.75
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.5,
-                                2.75
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.75
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.5,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.5,
-                                1
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleBladeEastWest",
-                    "from": [
-                        -0.5,
-                        -4,
-                        -2.75
-                    ],
-                    "to": [
-                        0.5,
-                        -1.25,
-                        2.75
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.75
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.5,
-                                2.75
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.75
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.5,
-                                2.75
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                5.5
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                5.5
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleLowerBladeNorth",
-                    "from": [
-                        -0.5,
-                        -5.2,
-                        -4.25
-                    ],
-                    "to": [
-                        0.5,
-                        -2.7,
-                        -0.75
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.5
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.5
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleLowerBladeSouth",
-                    "from": [
-                        -0.5,
-                        -5.2,
-                        0.75
-                    ],
-                    "to": [
-                        0.5,
-                        -2.7,
-                        4.25
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.5
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.5
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                4.75,
-                                1
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleLowerBladeEast",
-                    "from": [
-                        0.75,
-                        -4.7,
-                        -0.5
-                    ],
-                    "to": [
-                        4.25,
-                        -2.2,
-                        0.5
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleLowerBladeWest",
-                    "from": [
-                        -4.25,
-                        -4.7,
-                        -0.5
-                    ],
-                    "to": [
-                        -0.75,
-                        -2.2,
-                        0.5
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleUpperBladeNorthSouth",
-                    "from": [
-                        -3.5,
-                        -1.2,
-                        -0.45
-                    ],
-                    "to": [
-                        3.5,
-                        0.0,
-                        0.45
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "PaddleUpperBladeEastWest",
-                    "from": [
-                        -0.45,
-                        -1.2,
-                        -3.5
-                    ],
-                    "to": [
-                        0.45,
-                        0.0,
-                        3.5
-                    ],
-                    "faces": {
-                        "north": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "east": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "south": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "west": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                1,
-                                2.25
-                            ]
-                        },
-                        "up": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        },
-                        "down": {
-                            "texture": "#darkwood",
-                            "uv": [
-                                0,
-                                0,
-                                5.75,
-                                1
-                            ]
-                        }
-                    }
-                }
-            ]
-        }
-    ]
-}
+	"editor": {
+		"allAngles": false,
+		"entityTextureMode": false
+	},
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textureSizes": {
+	},
+	"textures": {
+		"wood-generic": "assets/survival/textures/block/wood-generic"
+	},
+	"elements": [
+		{
+			"name": "TubBase",
+			"from": [ 2.0, 0.0, 2.0 ],
+			"to": [ 14.0, 2.0, 14.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 2.0, 0.0, 14.0, 2.0 ] },
+				"east": { "texture": "#wood", "uv": [ 2.0, 0.0, 14.0, 2.0 ] },
+				"south": { "texture": "#wood", "uv": [ 2.0, 0.0, 14.0, 2.0 ] },
+				"west": { "texture": "#wood", "uv": [ 2.0, 0.0, 14.0, 2.0 ] },
+				"up": { "texture": "#wood", "uv": [ 2.0, 2.0, 14.0, 14.0 ] },
+				"down": { "texture": "#wood", "uv": [ 2.0, 2.0, 14.0, 14.0 ] }
+			}
+		},
+		{
+			"name": "TubNorthWallWest",
+			"from": [ 1.0, 2.0, 1.0 ],
+			"to": [ 6.0, 10.0, 3.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 1.0, 2.0, 6.0, 10.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 1.0, 2.0, 6.0, 10.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubNorthWallEast",
+			"from": [ 10.0, 2.0, 1.0 ],
+			"to": [ 15.0, 10.0, 3.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 10.0, 2.0, 15.0, 10.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 10.0, 2.0, 15.0, 10.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubSouthWallWest",
+			"from": [ 1.0, 2.0, 13.0 ],
+			"to": [ 6.0, 10.0, 15.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 1.0, 2.0, 6.0, 10.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"south": { "texture": "#wood", "uv": [ 1.0, 2.0, 6.0, 10.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubSouthWallEast",
+			"from": [ 10.0, 2.0, 13.0 ],
+			"to": [ 15.0, 10.0, 15.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 10.0, 2.0, 15.0, 10.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"south": { "texture": "#wood", "uv": [ 10.0, 2.0, 15.0, 10.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 1.0, 0.0, 15.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubWestWallNorth",
+			"from": [ 1.0, 2.0, 3.0 ],
+			"to": [ 3.0, 10.0, 6.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 3.0, 2.0, 6.0, 10.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"west": { "texture": "#wood", "uv": [ 3.0, 2.0, 6.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] }
+			}
+		},
+		{
+			"name": "TubWestWallSouth",
+			"from": [ 1.0, 2.0, 10.0 ],
+			"to": [ 3.0, 10.0, 13.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 10.0, 2.0, 13.0, 10.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"west": { "texture": "#wood", "uv": [ 10.0, 2.0, 13.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] }
+			}
+		},
+		{
+			"name": "TubEastWallNorth",
+			"from": [ 13.0, 2.0, 3.0 ],
+			"to": [ 15.0, 10.0, 6.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"east": { "texture": "#wood", "uv": [ 3.0, 2.0, 6.0, 10.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 3.0, 2.0, 6.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] }
+			}
+		},
+		{
+			"name": "TubEastWallSouth",
+			"from": [ 13.0, 2.0, 10.0 ],
+			"to": [ 15.0, 10.0, 13.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"east": { "texture": "#wood", "uv": [ 10.0, 2.0, 13.0, 10.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 2.0, 2.0, 10.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 10.0, 2.0, 13.0, 10.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 3.0, 2.0, 13.0 ] }
+			}
+		},
+		{
+			"name": "TubBandLower",
+			"from": [ 0.5, 2.25, 0.5 ],
+			"to": [ 15.5, 3.25, 15.5 ],
+			"faces": {
+				"north": { "texture": "#metal", "uv": [ 0.0, 0.0, 15.0, 1.0 ] },
+				"east": { "texture": "#metal", "uv": [ 0.0, 0.0, 15.0, 1.0 ] },
+				"south": { "texture": "#metal", "uv": [ 0.0, 0.0, 15.0, 1.0 ] },
+				"west": { "texture": "#metal", "uv": [ 0.0, 0.0, 15.0, 1.0 ] },
+				"up": { "texture": "#null", "uv": [ 0.0, 0.0, 15.0, 15.0 ], "enabled": false },
+				"down": { "texture": "#null", "uv": [ 0.0, 0.0, 15.0, 15.0 ], "enabled": false }
+			}
+		},
+		{
+			"name": "TubNorthWallCenter",
+			"from": [ 6.0, 2.0, 1.0 ],
+			"to": [ 10.0, 10.0, 3.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubSouthWallCenter",
+			"from": [ 6.0, 2.0, 13.0 ],
+			"to": [ 10.0, 10.0, 15.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubWestWallCenter",
+			"from": [ 1.0, 2.0, 6.0 ],
+			"to": [ 3.0, 10.0, 10.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubEastWallCenter",
+			"from": [ 13.0, 2.0, 6.0 ],
+			"to": [ 15.0, 10.0, 10.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubInnerLipNorth",
+			"from": [ 3.0, 9.25, 3.0 ],
+			"to": [ 13.0, 10.25, 4.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubInnerLipSouth",
+			"from": [ 3.0, 9.25, 12.0 ],
+			"to": [ 13.0, 10.25, 13.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubInnerLipWest",
+			"from": [ 3.0, 9.25, 4.0 ],
+			"to": [ 4.0, 10.25, 12.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "TubInnerLipEast",
+			"from": [ 12.0, 9.25, 4.0 ],
+			"to": [ 13.0, 10.25, 12.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 8.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 2.0, 8.0 ] },
+				"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] },
+				"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "MortarFillPlaceholder",
+			"from": [ 3.25, 2.1, 3.25 ],
+			"to": [ 12.75, 2.6, 12.75 ],
+			"faces": {
+				"north": { "texture": "#mortar", "uv": [ 3.0, 0.0, 13.0, 1.0 ] },
+				"east": { "texture": "#mortar", "uv": [ 3.0, 0.0, 13.0, 1.0 ] },
+				"south": { "texture": "#mortar", "uv": [ 3.0, 0.0, 13.0, 1.0 ] },
+				"west": { "texture": "#mortar", "uv": [ 3.0, 0.0, 13.0, 1.0 ] },
+				"up": { "texture": "#mortar", "uv": [ 3.0, 3.0, 13.0, 13.0 ] },
+				"down": { "texture": "#mortar", "uv": [ 3.0, 3.0, 13.0, 13.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingBaseNorth",
+			"from": [ 1.0, 16.0, 1.0 ],
+			"to": [ 15.0, 18.0, 3.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingBaseSouth",
+			"from": [ 1.0, 16.0, 13.0 ],
+			"to": [ 15.0, 18.0, 15.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingBaseWest",
+			"from": [ 1.0, 16.0, 3.0 ],
+			"to": [ 3.0, 18.0, 13.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingBaseEast",
+			"from": [ 13.0, 16.0, 3.0 ],
+			"to": [ 15.0, 18.0, 13.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingPostNW",
+			"from": [ 1.0, 18.0, 1.0 ],
+			"to": [ 3.0, 23.0, 13.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 12.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingPostNE",
+			"from": [ 3.0, 18.0, 1.0 ],
+			"to": [ 15.0, 23.0, 3.0 ],
+			"rotationOrigin": [ -10.0, 0.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingPostSW",
+			"from": [ 1.0, 18.0, 13.0 ],
+			"to": [ 13.0, 23.0, 15.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 2.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 2.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingPostSE",
+			"from": [ 13.0, 18.0, 3.0 ],
+			"to": [ 15.0, 23.0, 15.0 ],
+			"rotationOrigin": [ 0.0, 2.0, -10.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 5.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 12.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 2.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingTopNorth",
+			"from": [ 1.0, 30.0, 1.0 ],
+			"to": [ 15.0, 32.0, 3.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingTopSouth",
+			"from": [ 1.0, 30.0, 13.0 ],
+			"to": [ 15.0, 32.0, 15.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingTopWest",
+			"from": [ 1.0, 30.0, 3.0 ],
+			"to": [ 6.241, 32.0, 13.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 2.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 2.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 2.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 2.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 10.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 10.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingTopEast",
+			"from": [ 9.76, 30.0, 3.0 ],
+			"to": [ 15.0, 32.0, 13.0 ],
+			"rotationOrigin": [ -4.0, 0.0, 0.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 2.0 ] },
+				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 2.0 ] },
+				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 2.0 ] },
+				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 2.0 ] },
+				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 10.0 ] },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 10.0 ] }
+			}
+		},
+		{
+			"name": "DriveHousingLowerCollar",
+			"from": [ 4.5, 15.5, 4.5 ],
+			"to": [ 11.5, 17.0, 11.5 ],
+			"faces": {
+				"north": { "texture": "#metal", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"east": { "texture": "#metal", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"south": { "texture": "#metal", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"west": { "texture": "#metal", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"up": { "texture": "#metal", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
+				"down": { "texture": "#metal", "uv": [ 0.0, 0.0, 16.0, 16.0 ] }
+			}
+		},
+		{
+			"name": "DriveCogShaft",
+			"from": [ 6.25, 10.0, 6.25 ],
+			"to": [ 9.75, 32.0, 9.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 6.0, 0.0, 9.5, 16.0 ], "autoUv": false },
+				"east": { "texture": "#wood", "uv": [ 6.0, 0.0, 9.5, 16.0 ], "autoUv": false },
+				"south": { "texture": "#wood", "uv": [ 6.0, 0.0, 9.5, 16.0 ], "autoUv": false },
+				"west": { "texture": "#wood", "uv": [ 6.0, 0.0, 9.5, 16.0 ], "autoUv": false },
+				"up": { "texture": "#wood", "uv": [ 6.0, 6.0, 9.5, 9.5 ] },
+				"down": { "texture": "#wood", "uv": [ 6.0, 6.0, 9.5, 9.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hub_outer_00",
+			"from": [ 2.0, 23.44, 4.0 ],
+			"to": [ 14.0, 24.84, 12.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hub_outer_36",
+			"from": [ 2.0, 23.45, 4.0 ],
+			"to": [ 14.0, 24.85, 12.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 36.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hub_outer_72",
+			"from": [ 2.0, 23.46, 4.0 ],
+			"to": [ 14.0, 24.86, 12.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 72.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hub_outer_108",
+			"from": [ 2.0, 23.47, 4.0 ],
+			"to": [ 14.0, 24.87, 12.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 108.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hub_outer_144",
+			"from": [ 2.0, 23.48, 4.0 ],
+			"to": [ 14.0, 24.88, 12.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 144.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 14.0, 7.0 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 16.0, 7.0 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 14.0, 12.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_00",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_36",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 36.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_72",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 72.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_108",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 108.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_144",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 144.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_180",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 180.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_216",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 216.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_252",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 252.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_288",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 288.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_tooth_324",
+			"from": [ 7.0, 23.2, 12.0 ],
+			"to": [ 9.0, 25.2, 17.0 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 324.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"east": { "texture": "#cog", "uv": [ 10.0, 6.0, 15.0, 8.0 ] },
+				"south": { "texture": "#cog", "uv": [ 7.0, 6.0, 9.0, 8.0 ] },
+				"west": { "texture": "#cog", "uv": [ 0.0, 6.0, 5.0, 8.0 ] },
+				"up": { "texture": "#cog", "uv": [ 7.0, 10.0, 9.0, 15.0 ] },
+				"down": { "texture": "#cog", "uv": [ 7.0, 0.0, 9.0, 5.0 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_top_00",
+			"from": [ 4.0, 24.8, 5.25 ],
+			"to": [ 12.0, 25.3, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_top_36",
+			"from": [ 4.0, 24.81, 5.25 ],
+			"to": [ 12.0, 25.31, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 36.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_top_72",
+			"from": [ 4.0, 24.82, 5.25 ],
+			"to": [ 12.0, 25.32, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 72.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_top_108",
+			"from": [ 4.0, 24.83, 5.25 ],
+			"to": [ 12.0, 25.33, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 108.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_top_144",
+			"from": [ 4.0, 24.84, 5.25 ],
+			"to": [ 12.0, 25.34, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 144.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] },
+				"down": { "texture": "#cog", "uv": [ 2.0, 4.0, 10.0, 9.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_bottom_00",
+			"from": [ 4.0, 23.0, 5.25 ],
+			"to": [ 12.0, 23.5, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] },
+				"down": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_bottom_36",
+			"from": [ 4.0, 22.99, 5.25 ],
+			"to": [ 12.0, 23.49, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 36.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] },
+				"down": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_bottom_72",
+			"from": [ 4.0, 22.98, 5.25 ],
+			"to": [ 12.0, 23.48, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 72.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] },
+				"down": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_bottom_108",
+			"from": [ 4.0, 22.97, 5.25 ],
+			"to": [ 12.0, 23.47, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 108.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] },
+				"down": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] }
+			}
+		},
+		{
+			"name": "DriveCog_hubcenter_bottom_144",
+			"from": [ 4.0, 22.96, 5.25 ],
+			"to": [ 12.0, 23.46, 10.75 ],
+			"rotationOrigin": [ 8.0, 24.0, 8.0 ],
+			"rotationY": 144.0,
+			"faces": {
+				"north": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"east": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"south": { "texture": "#cog", "uv": [ 4.0, 6.0, 12.0, 6.5 ] },
+				"west": { "texture": "#cog", "uv": [ 2.0, 6.0, 10.0, 6.5 ] },
+				"up": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] },
+				"down": { "texture": "#cog", "uv": [ 4.0, 2.0, 12.0, 7.5 ] }
+			}
+		},
+		{
+			"name": "Paddle",
+			"from": [ 7.25, 3.0, 7.25 ],
+			"to": [ 8.75, 12.0, 8.75 ],
+			"rotationOrigin": [ 8.0, 8.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.5, 9.0 ] },
+				"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.5, 9.0 ] },
+				"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.5, 9.0 ] },
+				"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.5, 9.0 ] },
+				"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.5, 1.5 ] },
+				"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.5, 1.5 ] }
+			},
+			"children": [
+				{
+					"name": "PaddleBladeNorthSouth",
+					"from": [ -2.75, -4.0, -0.5 ],
+					"to": [ 2.75, -1.25, 0.5 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.5, 2.75 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.75 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.5, 2.75 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.75 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.5, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.5, 1.0 ] }
+					}
+				},
+				{
+					"name": "PaddleBladeEastWest",
+					"from": [ -0.5, -4.0, -2.75 ],
+					"to": [ 0.5, -1.25, 2.75 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.75 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.5, 2.75 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.75 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.5, 2.75 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 5.5 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 5.5 ] }
+					}
+				},
+				{
+					"name": "PaddleLowerBladeNorth",
+					"from": [ -0.5, -5.2, -4.25 ],
+					"to": [ 0.5, -2.7, -0.75 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.5 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.5 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] }
+					}
+				},
+				{
+					"name": "PaddleLowerBladeSouth",
+					"from": [ -0.5, -5.2, 0.75 ],
+					"to": [ 0.5, -2.7, 4.25 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.5 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.5 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 4.75, 1.0 ] }
+					}
+				},
+				{
+					"name": "PaddleLowerBladeEast",
+					"from": [ 0.75, -4.7, -0.5 ],
+					"to": [ 4.25, -2.2, 0.5 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] }
+					}
+				},
+				{
+					"name": "PaddleLowerBladeWest",
+					"from": [ -4.25, -4.7, -0.5 ],
+					"to": [ -0.75, -2.2, 0.5 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] }
+					}
+				},
+				{
+					"name": "PaddleUpperBladeNorthSouth",
+					"from": [ -3.5, -1.2, -0.45 ],
+					"to": [ 3.5, 0.0, 0.45 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] }
+					}
+				},
+				{
+					"name": "PaddleUpperBladeEastWest",
+					"from": [ -0.45, -1.2, -3.5 ],
+					"to": [ 0.45, 0.0, 3.5 ],
+					"faces": {
+						"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 1.0, 2.25 ] },
+						"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] },
+						"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 5.75, 1.0 ] }
+					}
+				}
+			]
+		}
+	]}

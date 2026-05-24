@@ -2,12 +2,62 @@ using System.Collections.Generic;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
 namespace VintageKinematics.BlockEntities
 {
+    public abstract class BEVKGenericStorage : BlockEntityGenericTypedContainer
+    {
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
+        {
+            ApplyLegacyInventoryDefaults(tree);
+            base.FromTreeAttributes(tree, worldForResolving);
+        }
+
+        public override void Initialize(ICoreAPI api)
+        {
+            base.Initialize(api);
+            ApplyLegacyVariantRotation();
+        }
+
+        private void ApplyLegacyInventoryDefaults(ITreeAttribute tree)
+        {
+            if (tree.HasAttribute("forBlockCode") || tree.HasAttribute("forBlockId")) return;
+
+            int savedSlots = tree.GetTreeAttribute("inventory")?.GetInt("qslots") ?? 0;
+            if (savedSlots <= 0) return;
+
+            quantitySlots = savedSlots;
+            retrieveOnly = false;
+
+            if (savedSlots == 70 || Block?.Code?.Path?.StartsWith("doublereinforcedchest-") == true)
+            {
+                quantityColumns = 10;
+                inventoryClassName = "vkdoublechest";
+                dialogTitleLangCode = "vintagekinematics:doublechest-title";
+                return;
+            }
+
+            quantityColumns = 8;
+            inventoryClassName = "vkreinforcedchest";
+            dialogTitleLangCode = "vintagekinematics:reinforcedchest-title";
+        }
+
+        private void ApplyLegacyVariantRotation()
+        {
+            if (Block?.Variant == null || System.Math.Abs(MeshAngle) > 0.0001f) return;
+
+            string side = Block.Variant["side"];
+            if (side == "w") MeshAngle = GameMath.PIHALF;
+            else if (side == "n") MeshAngle = GameMath.PI;
+            else if (side == "e") MeshAngle = GameMath.PI + GameMath.PIHALF;
+        }
+    }
+
     public abstract class BEVKStorage : BlockEntityOpenableContainer
     {
         private readonly InventoryGeneric inventory;
@@ -15,6 +65,7 @@ namespace VintageKinematics.BlockEntities
         private readonly string inventoryClassName;
         private readonly string titleLangCode;
         private readonly string fallbackTitle;
+        private string resolvedTitle;
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => inventoryClassName;
@@ -34,16 +85,15 @@ namespace VintageKinematics.BlockEntities
         {
             base.Initialize(api);
             inventory.SlotModified += OnSlotModified;
+            resolvedTitle = Lang.Get(titleLangCode);
+            if (string.IsNullOrEmpty(resolvedTitle) || resolvedTitle == titleLangCode) resolvedTitle = fallbackTitle;
         }
 
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
             if (Api.World is IServerWorldAccessor)
             {
-                string title = Lang.Get(titleLangCode);
-                if (string.IsNullOrEmpty(title) || title == titleLangCode) title = fallbackTitle;
-
-                byte[] data = BlockEntityContainerOpen.ToBytes("BlockEntityInventory", title, (byte)columns, inventory);
+                byte[] data = BlockEntityContainerOpen.ToBytes("BlockEntityInventory", resolvedTitle ?? fallbackTitle, (byte)columns, inventory);
                 ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
                     (IServerPlayer)byPlayer,
                     Pos,
@@ -62,20 +112,12 @@ namespace VintageKinematics.BlockEntities
         }
     }
 
-    public class BEReinforcedChest : BEVKStorage
+    public class BEReinforcedChest : BEVKGenericStorage
     {
-        public BEReinforcedChest()
-            : base(32, 8, "vkreinforcedchest", "vintagekinematics:reinforcedchest-title", "Reinforced Chest")
-        {
-        }
     }
 
-    public class BEDoubleReinforcedChest : BEVKStorage
+    public class BEDoubleReinforcedChest : BEVKGenericStorage
     {
-        public BEDoubleReinforcedChest()
-            : base(70, 10, "vkdoublechest", "vintagekinematics:doublechest-title", "Double Reinforced Chest")
-        {
-        }
     }
 
     public class BEBulkCrate : BEVKStorage
@@ -240,7 +282,7 @@ namespace VintageKinematics.BlockEntities
         }
     }
 
-    public class ItemSlotSingleItemBulk : ItemSlotSurvival
+    public class ItemSlotSingleItemBulk : ItemSlot
     {
         public ItemSlotSingleItemBulk(InventoryBase inventory) : base(inventory)
         {

@@ -60,6 +60,12 @@ namespace VintageKinematics.BlockEntities
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)
         {
             base.GetBlockInfo(forPlayer, sb);
+            BEBehaviorKineticSource src = GetBehavior<BEBehaviorKineticSource>();
+            float activeSeconds = src?.EstimatedRemainingSeconds() ?? 0f;
+            if (activeSeconds > 0.05f)
+            {
+                sb.AppendLine(Lang.Get("vintagekinematics:counterweightdrive-active-info", activeSeconds));
+            }
             sb.AppendLine(Lang.Get("vintagekinematics:counterweightdrive-charge-info", storedSeconds, MaxChargeSeconds));
         }
 

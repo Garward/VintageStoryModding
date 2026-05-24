@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 1 },
+	"operationCode": "nails-and-strips",
+	"operationName": "Nails and Strips",
+	"outputs": [
+		{ "type": "item", "code": "game:metalnailsandstrips-steel", "quantity": 9 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 4
+}

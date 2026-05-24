@@ -1,0 +1,10 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-steel", "quantity": 1 },
+	"operationCode": "metal-rod",
+	"operationName": "Metal Rod",
+	"outputs": [
+		{ "type": "item", "code": "game:rod-steel", "quantity": 2 }
+	],
+	"requiredTemperature": 1250,
+	"pressTicks": 4
+}

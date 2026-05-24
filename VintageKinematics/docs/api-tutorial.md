@@ -465,6 +465,210 @@ When to use it:
 - Multiblocks where the input cell isn't on a face of the controller and
   the default coaxial rule wouldn't form the edge.
 
+## 5f. Placement previews and non-standard placement
+
+When placement depends on the clicked block, the clicked face, or the
+player's yaw, implement `IPlacementPreviewProvider` on the block class.
+The client preview renderer calls `TryResolvePlacementPreview` and renders
+the exact variant and target position that `TryPlaceBlock` should use.
+
+This is the pattern used by gantry carriages, flywheels, storage blocks,
+and several multiblocks:
+
+```csharp
+public bool TryResolvePlacementPreview(
+    IWorldAccessor world,
+    IPlayer byPlayer,
+    BlockSelection blockSel,
+    out BlockPos targetPos,
+    out Block variant)
+{
+    targetPos = null;
+    variant = null;
+    if (blockSel?.Position == null) return false;
+
+    // Resolve clicked support / target position.
+    // Pick the final variant with CodeWithVariant or CodeWithVariants.
+    variant = world.GetBlock(CodeWithVariant("side", "n")) ?? this;
+    targetPos = PlacementPreview.DefaultTargetPos(world, blockSel, this);
+    return true;
+}
+```
+
+Rules:
+
+- `TryResolvePlacementPreview` and `TryPlaceBlock` must agree. If preview
+  says the block will attach to a support block, placement must use the
+  same target position and variant.
+- Return `false` when the selected support is invalid. Then set a normal
+  `failureCode` in `TryPlaceBlock`, e.g. `requiregantryshaft`, and add the
+  matching lang key `placefailure-requiregantryshaft`.
+- Use `PlacementPreview.DefaultTargetPos` for normal "place into adjacent
+  cell" behavior. Use custom logic only when the block attaches to a
+  specific support, such as a gantry carriage attaching beside or above a
+  gantry shaft.
+- For multi-variant placement, use `CodeWithVariants(new[] { ... }, new[] { ... })`
+  so the block code remains data-driven instead of hard-coded string
+  concatenation.
+
+## 5g. Kinetic Activator support (`IKineticActivatable`)
+
+The Kinetic Activator normally tries three paths:
+
+1. Target block entity implements `IKineticActivatable`.
+2. Target block implements `IKineticActivatable`.
+3. Fallback to `Block.Activate(...)` as a block caller.
+
+If your block's real interaction lives in `OnBlockInteractStart`, needs a
+player, opens a GUI, or should expose a cleaner automation behavior, add
+`IKineticActivatable` instead of relying on the fallback.
+
+```csharp
+public class BlockMyToggle : Block, IKineticActivatable
+{
+    public bool OnKineticActivate(
+        IWorldAccessor world,
+        BlockPos targetPos,
+        BlockFacing activatedFace,
+        BlockPos activatorPos,
+        float signedRPM)
+    {
+        if (world.Side != EnumAppSide.Server) return true;
+
+        BlockEntity be = MultiblockHelper.GetMultiblockAwareBE(world, targetPos);
+        if (be is not BEMyToggle target) return false;
+
+        target.Toggle();
+        return true;
+    }
+}
+```
+
+Guidelines:
+
+- Return `true` only when the activation was accepted.
+- Use `MultiblockHelper.GetMultiblockAwareBE` when the target may be a
+  multiblock, so activators work against filler cells as well as
+  controller cells.
+- `signedRPM` gives the activator's direction. Use it for directional
+  logic such as "positive closes, negative opens." Ignore it for simple
+  toggles.
+- Keep unsafe or admin-like targets on
+  `KineticActivatorTargetBlacklist` in `ModConfig/vintagekinematics.json`.
+  The default blacklist blocks command/ticker/conditional block families.
+
+## 5h. Gantry contraptions
+
+Gantry contraptions are the current constrained moving-block prototype.
+They are intentionally narrower than a full Create-style contraption:
+
+- A `gantryshaft-*` is a powered straight-line track. The whole contiguous
+  line is driven by the canonical shaft at the start of the track.
+- A `gantrycarriage-*` attaches to a shaft and owns the bound block
+  assembly.
+- The Mechanical Binder selects two corners, assigns the box to a carriage,
+  and the carriage keeps only connected blocks from that selection.
+- While moving, the selection becomes an `EntityVKContraption` with custom
+  rendering, collision, saved block codes, and saved block-entity trees.
+- When stopped, the entity restores to blocks according to the carriage's
+  placement mode.
+
+Placement modes:
+
+- `AlwaysPlaceWhenStopped`: restore to blocks after motion stops.
+- `OnlyPlaceNearInitialAngle`: future rotating-controller mode; restore
+  only near the starting angle.
+- `OnlyPlaceWhenAnchorDestroyed`: keep the entity assembled until the
+  anchor/controller is destroyed.
+
+Important implementation rules:
+
+- Do not allow floating assemblies. Recompute connected blocks from the
+  controller/anchor side of the selection and discard disconnected blocks.
+- Save block entity trees when assembling, and restore them when placing
+  blocks back into the world. Storage and machine contents otherwise vanish.
+- Use claim checks for the controller, selected blocks, and restore
+  positions.
+- Do not restore the entity to blocks on the same tick it stops. Gantry
+  shafts currently use a `250ms` auto-restore settle delay. Without that
+  delay, a player standing on the moving entity can lose their support
+  surface before physics catches up, causing collision jitter or slipping.
+- Multiplayer may need a longer settle window if latency exposes the same
+  support-surface swap. Keep the delay named and centralized.
+
+Gantry movement should remain constrained until each step survives
+singleplayer, multiplayer, save/load, claims, inventories, block entities,
+lighting, and chunk-boundary tests.
+
+### Contraption controller API
+
+New contraption controllers should implement `IContraptionController` so
+the Mechanical Binder can assign selections to them:
+
+```csharp
+public class BEMyCarriage : BlockEntity, IContraptionController
+{
+    public bool SetSelectionFromWorldBounds(BlockPos start, BlockPos end, IPlayer byPlayer)
+    {
+        // Convert world bounds into controller-relative bounds,
+        // capture a snapshot, prune disconnected blocks, then store it.
+        return true;
+    }
+}
+```
+
+Use `ContraptionApi` for the shared, easy-to-get-wrong pieces:
+
+```csharp
+Vec3i min = new Vec3i(start.X - Pos.X, start.Y - Pos.Y, start.Z - Pos.Z);
+Vec3i max = new Vec3i(end.X - Pos.X, end.Y - Pos.Y, end.Z - Pos.Z);
+
+ContraptionApi.NormalizeBounds(ref min, ref max);
+ContraptionApi.IncludeOffsetInBounds(ref min, ref max, new Vec3i(0, 0, 0)); // controller
+
+ContraptionSnapshot snapshot = ContraptionApi.CaptureSnapshot(
+    Api.World,
+    Pos,
+    min,
+    max,
+    block => block.Code?.Domain == "mymod" && block.Code.FirstCodePart() == "mytrack");
+
+int removed = ContraptionApi.PruneDisconnected(
+    snapshot,
+    new Vec3i(0, 0, 0), // controller seed
+    new Vec3i(0, 1, 0)); // optional visible anchor seed
+
+if (snapshot.Count == 0) return true;
+```
+
+To assemble:
+
+```csharp
+if (ContraptionApi.TrySpawnContraption(
+    Api,
+    Pos,
+    snapshot,
+    ContraptionPlacementMode.AlwaysPlaceWhenStopped,
+    out EntityVKContraption entity))
+{
+    ContraptionApi.RemoveSnapshotBlocksFromWorld(Api.World, Pos, snapshot);
+}
+```
+
+Controller responsibilities:
+
+- Store the `ContraptionSnapshot` or equivalent arrays in tree attributes.
+- Refresh the controller's own block entity tree in the snapshot before
+  spawning so it restores with `linkedEntityId = 0` and `assembled = false`.
+- Decide movement rules: gantry, piston, rotating bearing, cart, or another
+  controller type.
+- Decide anchor/track exclusions. For gantries, the shaft is excluded from
+  the carried snapshot; the carriage is carried.
+- Decide restore timing. For track-like controllers, keep a short settle
+  delay before calling `EntityVKContraption.TryRestoreToWorld(...)`.
+- Call `EntityVKContraption.MoveBy(dx, dy, dz)` for straight translation
+  so carried entities move with the contraption.
+
 ## 6. What the API does for free
 
 - Network membership and stress accounting on placement / removal.
@@ -486,6 +690,11 @@ When to use it:
 - Multiblock kinetic-input restriction via the `KineticMultiblock`
   behavior: declare shaft cells in JSON, get variant-rotation and
   cposition math for free (see 5e).
+- Placement previews for blocks that implement `IPlacementPreviewProvider`.
+- Kinetic Activator automation hooks via `IKineticActivatable`, with a
+  config blacklist before fallback activation.
+- Contraption snapshot capture, disconnected-block pruning, entity spawn,
+  world block removal, and binder assignment through `IContraptionController`.
 
 ## 7. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
 

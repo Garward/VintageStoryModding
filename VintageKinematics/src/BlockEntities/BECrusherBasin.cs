@@ -232,38 +232,8 @@ namespace VintageKinematics.BlockEntities
         /// </summary>
         public void DepositOutput(ItemStack stack)
         {
-            if (stack == null || stack.StackSize <= 0) return;
-
-            // First pass: stack-merge into matching slots so the buffer stays compact and
-            // funnels see one big stack per item type instead of fragmenting across cells.
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                var slot = inventory[i];
-                if (slot.Empty) continue;
-                if (!slot.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
-                int max = slot.Itemstack.Collectible.MaxStackSize;
-                int free = max - slot.Itemstack.StackSize;
-                if (free <= 0) continue;
-                int take = System.Math.Min(free, stack.StackSize);
-                slot.Itemstack.StackSize += take;
-                stack.StackSize -= take;
-                slot.MarkDirty();
-                if (stack.StackSize <= 0) return;
-            }
-
-            // Second pass: drop into the first empty slot.
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                var slot = inventory[i];
-                if (!slot.Empty) continue;
-                slot.Itemstack = stack.Clone();
-                slot.MarkDirty();
-                return;
-            }
-
-            // Buffer full; spill at the top of the basin so the player has a recoverable failure.
             Vec3d dropAt = new Vec3d(Pos.X + 0.5, Pos.Y + 0.7, Pos.Z + 0.5);
-            Api.World.SpawnItemEntity(stack, dropAt);
+            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, dropAt);
         }
 
         public override void OnBlockUnloaded()

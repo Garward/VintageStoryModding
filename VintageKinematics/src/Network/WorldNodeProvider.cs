@@ -39,6 +39,10 @@ namespace VintageKinematics.Network
                     {
                         node.Role = EnumKineticRole.Custom;
                     }
+                    else if (be is IKineticConnector)
+                    {
+                        node.Role = EnumKineticRole.Custom;
+                    }
                     return true;
                 }
 
@@ -142,17 +146,24 @@ namespace VintageKinematics.Network
                 // Custom-role neighbour: that's either a multiblock internal filler (must stay
                 // internal-only) or a self-routing block like a belt segment (handles its own
                 // connectivity through IKineticConnector).
-                if (!fromVanilla && from.Role == EnumKineticRole.Custom) return null;
-                if (!toVanilla && to.Role == EnumKineticRole.Custom) return null;
-                if (from.Axis != to.Axis) return null;
-                Vec3i offset = new Vec3i(to.Pos.X - from.Pos.X, to.Pos.Y - from.Pos.Y, to.Pos.Z - from.Pos.Z);
-                int absSum = Math.Abs(offset.X) + Math.Abs(offset.Y) + Math.Abs(offset.Z);
-                if (absSum != 1) return null;
-                Vec3i axisVec = EnumKineticAxisExtensions.UnitVector(from.Axis);
-                if (Math.Abs(offset.X) != Math.Abs(axisVec.X)) return null;
-                if (Math.Abs(offset.Y) != Math.Abs(axisVec.Y)) return null;
-                if (Math.Abs(offset.Z) != Math.Abs(axisVec.Z)) return null;
-                return new KineticConnection(1f, 1, 0f);
+                bool customConnectorCanHandleBridge =
+                    (!fromVanilla && from.Role == EnumKineticRole.Custom && HasKineticConnector(from.Pos)) ||
+                    (!toVanilla && to.Role == EnumKineticRole.Custom && HasKineticConnector(to.Pos));
+
+                if (!customConnectorCanHandleBridge)
+                {
+                    if (!fromVanilla && from.Role == EnumKineticRole.Custom) return null;
+                    if (!toVanilla && to.Role == EnumKineticRole.Custom) return null;
+                    if (from.Axis != to.Axis) return null;
+                    Vec3i offset = new Vec3i(to.Pos.X - from.Pos.X, to.Pos.Y - from.Pos.Y, to.Pos.Z - from.Pos.Z);
+                    int absSum = Math.Abs(offset.X) + Math.Abs(offset.Y) + Math.Abs(offset.Z);
+                    if (absSum != 1) return null;
+                    Vec3i axisVec = EnumKineticAxisExtensions.UnitVector(from.Axis);
+                    if (Math.Abs(offset.X) != Math.Abs(axisVec.X)) return null;
+                    if (Math.Abs(offset.Y) != Math.Abs(axisVec.Y)) return null;
+                    if (Math.Abs(offset.Z) != Math.Abs(axisVec.Z)) return null;
+                    return new KineticConnection(1f, 1, 0f);
+                }
             }
 
             Block fromBlock = world.BlockAccessor.GetBlock(from.Pos);
@@ -209,5 +220,12 @@ namespace VintageKinematics.Network
 
         private static KineticConnection Translate(KineticConnectionResult r) =>
             new KineticConnection(r.Ratio, r.Direction, r.PhaseOffset);
+
+        private bool HasKineticConnector(BlockPos pos)
+        {
+            Block block = world.BlockAccessor.GetBlock(pos);
+            if (block is IKineticConnector) return true;
+            return MultiblockHelper.GetMultiblockAwareBE(world, pos) is IKineticConnector;
+        }
     }
 }

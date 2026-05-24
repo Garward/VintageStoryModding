@@ -6,7 +6,7 @@ using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
-    public class BlockFlywheel : Block, IPlacementPreviewProvider
+    public class BlockFlywheel : Block, IPlacementPreviewProvider, IKineticActivatable
     {
         private WorldInteraction[] interactions;
 
@@ -76,6 +76,17 @@ namespace VintageKinematics.Blocks
 
             bool configure = byPlayer.Entity.Controls?.Sneak == true;
             if (world.Side == EnumAppSide.Server) be.OnPlayerRightClick(byPlayer, configure);
+            return true;
+        }
+
+        public bool OnKineticActivate(IWorldAccessor world, BlockPos targetPos, BlockFacing activatedFace, BlockPos activatorPos, float signedRPM)
+        {
+            if (world.Side != EnumAppSide.Server) return true;
+
+            BEFlywheel be = MultiblockHelper.GetMultiblockAwareBE(world, targetPos) as BEFlywheel;
+            if (be == null) return false;
+
+            be.ToggleBankRelease();
             return true;
         }
     }

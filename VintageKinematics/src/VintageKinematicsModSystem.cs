@@ -28,6 +28,7 @@ namespace VintageKinematics
         {
             api.Logger.Notification("[VintageKinematics] Starting...");
             RegisterContentClasses(api);
+            Items.ItemKineticBoots.StartSprintSystem(api);
 
             harmony = new Harmony(HarmonyId);
             harmony.PatchAll();
@@ -75,6 +76,12 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticMixer", typeof(BlockEntities.BEKineticMixer));
             api.RegisterBlockEntityClass("KineticIgniter", typeof(BlockEntities.BEKineticIgniter));
             api.RegisterBlockEntityClass("KineticBore", typeof(BlockEntities.BEKineticBore));
+            api.RegisterBlockEntityClass("GantryCarriage", typeof(BlockEntities.BEGantryCarriage));
+            api.RegisterBlockEntityClass("GantryShaft", typeof(BlockEntities.BEGantryShaft));
+            api.RegisterBlockEntityClass("KineticClutch", typeof(BlockEntities.BEKineticClutch));
+            api.RegisterBlockEntityClass("KineticReverser", typeof(BlockEntities.BEKineticReverser));
+            api.RegisterBlockEntityClass("KineticActivator", typeof(BlockEntities.BEKineticActivator));
+            api.RegisterEntity("EntityVKContraption", typeof(Entities.EntityVKContraption));
             api.RegisterBlockClass("BlockShaft", typeof(Blocks.BlockShaft));
             api.RegisterBlockClass("BlockHandCrank", typeof(Blocks.BlockHandCrank));
             api.RegisterBlockClass("BlockCogwheel", typeof(Blocks.BlockCogwheel));
@@ -91,6 +98,7 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockTreadwheel", typeof(Blocks.BlockTreadwheel));
             api.RegisterBlockClass("BlockFlywheel", typeof(Blocks.BlockFlywheel));
             api.RegisterBlockClass("BlockVKStorage", typeof(Blocks.BlockVKStorage));
+            api.RegisterBlockClass("BlockBulkCrate", typeof(Blocks.BlockBulkCrate));
             api.RegisterBlockClass("BlockTrebuchet", typeof(Blocks.BlockTrebuchet));
             api.RegisterBlockClass("BlockCounterweightDrive", typeof(Blocks.BlockCounterweightDrive));
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
@@ -98,14 +106,21 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticSawmill", typeof(Blocks.BlockKineticSawmill));
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticForgePress", typeof(Blocks.BlockKineticForgePress));
+            api.RegisterBlockClass("BlockKineticCharcoalRetort", typeof(Blocks.BlockKineticCharcoalRetort));
             api.RegisterBlockClass("BlockKineticBellows", typeof(Blocks.BlockKineticBellows));
             api.RegisterBlockClass("BlockKineticMixer", typeof(Blocks.BlockKineticMixer));
             api.RegisterBlockClass("BlockKineticIgniter", typeof(Blocks.BlockKineticIgniter));
             api.RegisterBlockClass("BlockKineticBore", typeof(Blocks.BlockKineticBore));
+            api.RegisterBlockClass("BlockGantryCarriage", typeof(Blocks.BlockGantryCarriage));
+            api.RegisterBlockClass("BlockKineticClutch", typeof(Blocks.BlockKineticClutch));
+            api.RegisterBlockClass("BlockKineticReverser", typeof(Blocks.BlockKineticReverser));
+            api.RegisterBlockClass("BlockKineticActivator", typeof(Blocks.BlockKineticActivator));
             api.RegisterItemClass("ItemBelt", typeof(Items.ItemBelt));
             api.RegisterItemClass("ItemPoweredDrill", typeof(Items.ItemPoweredDrill));
             api.RegisterItemClass("ItemKineticWrench", typeof(Items.ItemKineticWrench));
             api.RegisterItemClass("ItemPogoRod", typeof(Items.ItemPogoRod));
+            api.RegisterItemClass("ItemKineticBoots", typeof(Items.ItemKineticBoots));
+            api.RegisterItemClass("ItemMechanicalBinder", typeof(Items.ItemMechanicalBinder));
             api.ClassRegistry.GetType().GetMethod("RegisterInventoryClass")?.Invoke(
                 api.ClassRegistry,
                 new object[] { Items.InventoryPoweredDrillFuel.InventoryClassName, typeof(Items.InventoryPoweredDrillFuel) }
@@ -122,6 +137,7 @@ namespace VintageKinematics
         public override void Dispose()
         {
             harmony?.UnpatchAll(HarmonyId);
+            Items.ItemKineticBoots.StopSprintSystem();
             placementPreview?.Dispose();
             base.Dispose();
         }

@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:ingot-*", "quantity": 1 },
+	"operationCode": "nails-and-strips",
+	"operationName": "Nails and Strips",
+	"allowedVariants": [ "copper", "cupronickel", "brass", "tinbronze", "bismuth", "bismuthbronze", "blackbronze", "silver", "gold", "molybdochalkos", "electrum" ],
+	"outputs": [
+		{ "type": "item", "code": "game:metalnailsandstrips-*", "quantity": 9 }
+	],
+	"requiredTemperature": 700,
+	"pressTicks": 4
+}

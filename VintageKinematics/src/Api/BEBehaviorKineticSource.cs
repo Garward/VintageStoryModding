@@ -24,6 +24,8 @@ namespace VintageKinematics.Api
         public float LastWindSeconds { get; private set; } = 0f;
         /// <summary>World elapsed milliseconds when the current/last wind began.</summary>
         public long LastWindWorldMs { get; private set; } = 0;
+        /// <summary>How often this source decays and reports stopped state to the network.</summary>
+        public int DecayTickMs { get; private set; } = 1000;
 
         /// <summary>Signed output RPM. Keeps RatedRPM (magnitude) separate from rotation sign.</summary>
         public float SignedTargetRPM => Direction * TargetRPM;
@@ -41,6 +43,8 @@ namespace VintageKinematics.Api
             {
                 TargetRPM = properties["targetRPM"].AsFloat(8f);
                 AlwaysActive = properties["alwaysActive"].AsBool(false);
+                DecayTickMs = properties["decayTickMs"].AsInt(1000);
+                if (DecayTickMs < 50) DecayTickMs = 50;
             }
             if (api.Side == EnumAppSide.Server)
             {
@@ -52,7 +56,7 @@ namespace VintageKinematics.Api
                         mgr?.OnSourceChanged(Pos, SignedTargetRPM);
                     }, 0);
                 }
-                Blockentity.RegisterGameTickListener(OnTick, 1000);
+                Blockentity.RegisterGameTickListener(OnTick, DecayTickMs);
             }
         }
 
@@ -103,6 +107,19 @@ namespace VintageKinematics.Api
             return GameMath.Clamp(elapsed / LastWindSeconds, 0f, 1f);
         }
 
+        public float EstimatedRemainingSeconds()
+        {
+            if (AlwaysActive) return float.PositiveInfinity;
+            if (LastWindSeconds <= 0f || LastWindWorldMs <= 0) return GameMath.Max(0f, DecaySeconds);
+
+            float elapsed = (float)((Api?.World?.ElapsedMilliseconds ?? LastWindWorldMs) - LastWindWorldMs) / 1000f;
+            float visualRemaining = GameMath.Max(0f, LastWindSeconds - elapsed);
+
+            if (Api?.Side == EnumAppSide.Server) return GameMath.Max(0f, DecaySeconds);
+            if (DecaySeconds <= 0f) return 0f;
+            return GameMath.Min(GameMath.Max(0f, DecaySeconds), visualRemaining);
+        }
+
         public void ResetTimedProgress()
         {
             LastWindSeconds = 0f;
@@ -117,6 +134,7 @@ namespace VintageKinematics.Api
             tree.SetInt("direction", Direction);
             tree.SetFloat("lastWindSeconds", LastWindSeconds);
             tree.SetLong("lastWindWorldMs", LastWindWorldMs);
+            tree.SetInt("decayTickMs", DecayTickMs);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -127,6 +145,7 @@ namespace VintageKinematics.Api
             Direction = tree.GetInt("direction", 1);
             LastWindSeconds = tree.GetFloat("lastWindSeconds", 0f);
             LastWindWorldMs = tree.GetLong("lastWindWorldMs", 0);
+            DecayTickMs = tree.GetInt("decayTickMs", DecayTickMs);
             if (Direction != -1) Direction = 1;
 
             if (Api?.Side == EnumAppSide.Client && LastWindSeconds > 0f && DecaySeconds > 0f)
