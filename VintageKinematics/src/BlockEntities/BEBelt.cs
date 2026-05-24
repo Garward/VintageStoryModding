@@ -186,10 +186,10 @@ namespace VintageKinematics.BlockEntities
                             continue;
                         }
 
-                        // Side-funnels at the head/tail segment should still get a shot at parked
+                        // Side automation sinks at the head/tail segment should still get a shot at parked
                         // items — otherwise a chest that refuses input would leave the item
                         // unrecoverable even when a perfectly good funnel sits next to the belt end.
-                        if (TryTransferToAdjacentFunnel(items[i]))
+                        if (TryTransferToAdjacentAutomationSink(items[i]))
                         {
                             items.RemoveAt(i);
                             changed = true;
@@ -204,7 +204,7 @@ namespace VintageKinematics.BlockEntities
                     int stackSizeBeforeTransfer = items[i].Stack?.StackSize ?? 0;
                     if (items[i].Progress >= 0f
                      && items[i].Progress <= ChainLength
-                     && TryTransferToAdjacentFunnel(items[i]))
+                     && TryTransferToAdjacentAutomationSink(items[i]))
                     {
                         items.RemoveAt(i);
                         changed = true;
@@ -522,12 +522,15 @@ namespace VintageKinematics.BlockEntities
             Vec3i fwd = BlockBelt.HeadOffset(Direction);
             int exitOffset = atHeadEnd ? ChainLength : -1;
             BlockPos nextPos = Pos.AddCopy(fwd.X * exitOffset, 0, fwd.Z * exitOffset);
-            if (Api.World.BlockAccessor.GetBlockEntity(nextPos) is BEFunnel funnel)
+            BlockEntity nextBe = Api.World.BlockAccessor.GetBlockEntity(nextPos);
+            if (nextBe is BEFunnel funnel)
             {
                 return funnel.TryAcceptFromBelt(item.Stack);
             }
-
-            BlockEntity nextBe = Api.World.BlockAccessor.GetBlockEntity(nextPos);
+            if (nextBe is IAutomationItemSink sink)
+            {
+                return sink.TryAcceptFromBelt(item.Stack);
+            }
 
             // If the next block is another belt, hand off directly into its chain so the item never
             // round-trips through the entity layer.
@@ -614,7 +617,7 @@ namespace VintageKinematics.BlockEntities
             return false;
         }
 
-        private bool TryTransferToAdjacentFunnel(BeltItem item)
+        private bool TryTransferToAdjacentAutomationSink(BeltItem item)
         {
             if (item?.Stack == null || item.Stack.StackSize <= 0) return true;
             BlockPos beltPos = SegmentPosForProgress(item.Progress);
@@ -622,11 +625,24 @@ namespace VintageKinematics.BlockEntities
             foreach (BlockFacing face in BlockFacing.ALLFACES)
             {
                 BlockPos neighbor = beltPos.AddCopy(face);
-                if (Api.World.BlockAccessor.GetBlockEntity(neighbor) is not BEFunnel funnel) continue;
-                if (funnel.OutputFacing == face.Opposite) continue;
-
+                BlockEntity neighborBe = Api.World.BlockAccessor.GetBlockEntity(neighbor);
                 int before = item.Stack.StackSize;
-                bool fullyAccepted = funnel.TryAcceptFromBelt(item.Stack);
+                bool fullyAccepted;
+
+                if (neighborBe is BEFunnel funnel)
+                {
+                    if (funnel.OutputFacing == face.Opposite) continue;
+                    fullyAccepted = funnel.TryAcceptFromBelt(item.Stack);
+                }
+                else if (neighborBe is IAutomationItemSink sink)
+                {
+                    fullyAccepted = sink.TryAcceptFromBelt(item.Stack);
+                }
+                else
+                {
+                    continue;
+                }
+
                 if (fullyAccepted || item.Stack.StackSize <= 0) return true;
 
                 // Partial transfer succeeded; keep the remainder on the belt.

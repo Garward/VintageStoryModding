@@ -18,11 +18,15 @@ namespace VintageKinematics.Items
         private const string BurnUpdatedMsAttribute = "drillBurnUpdatedMs";
         private const string NoFuelMessageAttribute = "lastNoFuelMessageMs";
         private const string VisualSpinUntilMsAttribute = "drillVisualSpinUntilMs";
-        private const string SpinningElementName = "cog-hub";
         private const int SpinFrameCount = 32;
         private const double SpinRevolutionsPerSecond = 3.0;
 
         private MultiTextureMeshRef[] spinFrameMeshes;
+
+        protected virtual string FuelDialogTitleLangCode => "vintagekinematics:powereddrill-title";
+        protected virtual string NoFuelLangCode => "vintagekinematics:powereddrill-no-fuel";
+        protected virtual string FlywheelPowerStatusLangCode => "vintagekinematics:poweredtool-flywheel-status";
+        protected virtual string SpinningElementName => "cog-hub";
 
         public override string GetHeldTpHitAnimation(ItemSlot slot, Entity byEntity)
         {
@@ -61,7 +65,7 @@ namespace VintageKinematics.Items
 
             if (api is ICoreClientAPI capi)
             {
-                new GuiDialogPoweredDrillFuel(inv, capi).TryOpen();
+                new GuiDialogPoweredDrillFuel(inv, Lang.Get(FuelDialogTitleLangCode), capi).TryOpen();
             }
         }
 
@@ -75,6 +79,12 @@ namespace VintageKinematics.Items
                 float burnSeconds = UpdateBurnTimer(stack);
                 if (burnSeconds <= 0)
                 {
+                    if (ItemBackpackFlywheel.TryConsumeToolPower(player, dt, out _))
+                    {
+                        itemslot.MarkDirty();
+                        return base.OnBlockBreaking(player, blockSel, itemslot, remainingResistance, dt, counter);
+                    }
+
                     burnSeconds = TryConsumeStoredFuel(player, stack);
                 }
 
@@ -86,7 +96,7 @@ namespace VintageKinematics.Items
 
                 itemslot.MarkDirty();
             }
-            else if (!HasUsableFuel(stack))
+            else if (!HasUsablePower(player, stack))
             {
                 return remainingResistance;
             }
@@ -127,7 +137,7 @@ namespace VintageKinematics.Items
 
         public override float GetMiningSpeed(IItemStack itemstack, BlockSelection blockSel, Block block, IPlayer forPlayer)
         {
-            if (!HasUsableFuel(itemstack as ItemStack)) return 0;
+            if (!HasUsablePower(forPlayer, itemstack as ItemStack)) return 0;
             return base.GetMiningSpeed(itemstack, blockSel, block, forPlayer);
         }
 
@@ -141,9 +151,15 @@ namespace VintageKinematics.Items
             float burnSeconds = UpdateBurnTimer(stack);
             ItemStack storedFuel = GetStoredFuel(stack, world);
 
+            IPlayer localPlayer = (api as ICoreClientAPI)?.World?.Player;
+            float flywheelSeconds = ItemBackpackFlywheel.GetEquippedChargeSeconds(localPlayer);
             if (burnSeconds > 0)
             {
                 dsc.AppendLine(Lang.Get("vintagekinematics:powereddrill-fuel-status", burnSeconds));
+            }
+            else if (flywheelSeconds > 0f)
+            {
+                dsc.AppendLine(Lang.Get(FlywheelPowerStatusLangCode, flywheelSeconds));
             }
             else if (storedFuel != null)
             {
@@ -151,7 +167,7 @@ namespace VintageKinematics.Items
             }
             else
             {
-                dsc.AppendLine(Lang.Get("vintagekinematics:powereddrill-no-fuel"));
+                dsc.AppendLine(Lang.Get(NoFuelLangCode));
             }
         }
 
@@ -202,9 +218,12 @@ namespace VintageKinematics.Items
             return player.PlayerUID + ":" + drillId;
         }
 
-        private bool HasUsableFuel(ItemStack stack)
+        private bool HasUsablePower(IPlayer player, ItemStack stack)
         {
-            return stack != null && (UpdateBurnTimer(stack) > 0 || GetStoredFuel(stack, api?.World) != null);
+            return stack != null
+                && (UpdateBurnTimer(stack) > 0
+                    || ItemBackpackFlywheel.HasUsableCharge(player)
+                    || GetStoredFuel(stack, api?.World) != null);
         }
 
         private void MarkVisualSpinActive(ItemStack stack)
@@ -216,8 +235,6 @@ namespace VintageKinematics.Items
         private bool ShouldRenderSpinningCog(ItemStack stack, ICoreClientAPI capi)
         {
             if (stack?.Attributes == null || capi?.World == null) return false;
-
-            if (UpdateBurnTimer(stack) > 0) return true;
 
             long activeUntil = stack.Attributes.GetLong(VisualSpinUntilMsAttribute, 0);
             return activeUntil > capi.World.ElapsedMilliseconds;
@@ -316,7 +333,7 @@ namespace VintageKinematics.Items
             if (now - last < 1000) return;
 
             stack.Attributes.SetLong(NoFuelMessageAttribute, now);
-            serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.Get("vintagekinematics:powereddrill-no-fuel"), EnumChatType.Notification);
+            serverPlayer.SendMessage(GlobalConstants.InfoLogChatGroup, Lang.Get(NoFuelLangCode), EnumChatType.Notification);
         }
     }
 }

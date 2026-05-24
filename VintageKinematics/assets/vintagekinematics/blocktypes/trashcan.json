@@ -1,0 +1,40 @@
+{
+    "code": "trashcan",
+    "class": "BlockTrashcan",
+    "entityClass": "Trashcan",
+    "shape": { "base": "block/trashcan" },
+    "textures": {
+        "metal": { "base": "game:block/metal/plate/copper" },
+        "dark": { "base": "game:block/coal/charcoal" }
+    },
+    "guiTransform": {
+        "translation": { "x": -1, "y": 1, "z": 0 },
+        "rotation": { "x": -28, "y": -132, "z": 0 },
+        "scale": 1.35
+    },
+    "blockmaterial": "Metal",
+    "resistance": 1.5,
+    "creativeinventory": {
+        "general": [ "*" ],
+        "vintagekinematics": [ "*" ]
+    },
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": {
+        "x1": 0.125,
+        "y1": 0,
+        "z1": 0.125,
+        "x2": 0.875,
+        "y2": 0.875,
+        "z2": 0.875
+    },
+    "selectionbox": {
+        "x1": 0.0625,
+        "y1": 0,
+        "z1": 0.0625,
+        "x2": 0.9375,
+        "y2": 0.9375,
+        "z2": 0.9375
+    }
+}

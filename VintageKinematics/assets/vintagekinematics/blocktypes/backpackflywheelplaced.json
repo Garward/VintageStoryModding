@@ -1,0 +1,59 @@
+{
+	"code": "backpackflywheelplaced",
+	"class": "BlockBackpackFlywheelPlaced",
+	"entityClass": "BackpackFlywheelPlaced",
+	"variantgroups": [
+		{ "code": "side", "states": [ "n", "e", "s", "w" ] }
+	],
+	"shape": { "base": "block/backpackflywheelplaced" },
+	"shapeByType": {
+		"backpackflywheelplaced-s": { "base": "block/backpackflywheelplaced" },
+		"backpackflywheelplaced-w": { "base": "block/backpackflywheelplaced", "rotateY": 90 },
+		"backpackflywheelplaced-n": { "base": "block/backpackflywheelplaced", "rotateY": 180 },
+		"backpackflywheelplaced-e": { "base": "block/backpackflywheelplaced", "rotateY": 270 }
+	},
+	"entityBehaviorsByType": {
+		"*-n": [
+			{ "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "Z" } },
+			{ "name": "KineticAnimator", "properties": { "rotators": [
+				{ "element": "flywheelAssembly", "axis": "Z", "ratio": 1 }
+			] } }
+		],
+		"*-e": [
+			{ "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "X" } },
+			{ "name": "KineticAnimator", "properties": { "rotators": [
+				{ "element": "flywheelAssembly", "axis": "Z", "ratio": 1 }
+			] } }
+		],
+		"*-s": [
+			{ "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "Z" } },
+			{ "name": "KineticAnimator", "properties": { "rotators": [
+				{ "element": "flywheelAssembly", "axis": "Z", "ratio": 1 }
+			] } }
+		],
+		"*-w": [
+			{ "name": "Kinetic", "properties": { "role": "Custom", "stressImpact": 64, "axis": "X" } },
+			{ "name": "KineticAnimator", "properties": { "rotators": [
+				{ "element": "flywheelAssembly", "axis": "Z", "ratio": 1 }
+			] } }
+		]
+	},
+	"textures": {
+		"darktone": { "base": "game:block/leather/chromium", "overlays": [ "game:block/overlay/gradient1" ] },
+		"midtone": { "base": "game:block/metal/sheet/brass2", "overlays": [ "game:block/overlay/gradient1" ] },
+		"leather": { "base": "game:block/leather/chromium" },
+		"flaps": { "base": "game:block/leather/chromium" },
+		"bucklemetal": { "base": "game:block/metal/sheet/iron2" },
+		"metal": { "base": "game:block/metal/sheet/brass2" },
+		"wood": { "base": "game:block/wood/planks/generic" },
+		"darkwood": { "base": "game:block/wood/oak-dark" }
+	},
+	"blockmaterial": "Wood",
+	"resistance": 0.05,
+	"lightAbsorption": 0,
+	"sideopaque": { "all": "false" },
+	"sidesolid": { "all": "false" },
+	"collisionbox": { "x1": 0.25, "y1": 0, "z1": 0.25, "x2": 0.75, "y2": 0.45, "z2": 0.75 },
+	"selectionbox": { "x1": 0.2, "y1": 0, "z1": 0.2, "x2": 0.8, "y2": 0.65, "z2": 0.8 },
+	"drops": []
+}

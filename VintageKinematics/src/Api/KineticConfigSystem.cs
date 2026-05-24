@@ -29,12 +29,17 @@ namespace VintageKinematics.Api
             cfg.Generators ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.GeneratorOverride>();
             cfg.SieveYieldOverrides ??= new System.Collections.Generic.Dictionary<string, float>();
             cfg.KineticActivatorTargetBlacklist ??= new System.Collections.Generic.List<string>();
+            cfg.ForgePressModdedNuggetSmeltingMods ??= new System.Collections.Generic.Dictionary<string, bool>();
+            cfg.ForgePressModdedNuggetSmeltingAllowedPatterns ??= new System.Collections.Generic.List<string>();
 
             EnsureConsumer(cfg, "kineticquern");
             EnsureGenerator(cfg, "handcrank");
             EnsureGenerator(cfg, "creativemotor");
             EnsureSieveOverrideStub(cfg, "game:nugget-*");
             EnsureSieveOverrideStub(cfg, "game:gem-*");
+            EnsureForgePressModdedNuggetSmeltingModStub(cfg, "improvedmetallurgy");
+            EnsureForgePressModdedNuggetSmeltingModStub(cfg, "moremetals");
+            EnsureForgePressModdedNuggetSmeltingModStub(cfg, "blushandblacksmith");
 
             try
             {
@@ -74,6 +79,13 @@ namespace VintageKinematics.Api
         {
             if (cfg.SieveYieldOverrides.ContainsKey(code)) return false;
             cfg.SieveYieldOverrides[code] = 1f;
+            return true;
+        }
+
+        private static bool EnsureForgePressModdedNuggetSmeltingModStub(VintageKinematicsConfig cfg, string domain)
+        {
+            if (cfg.ForgePressModdedNuggetSmeltingMods.ContainsKey(domain)) return false;
+            cfg.ForgePressModdedNuggetSmeltingMods[domain] = false;
             return true;
         }
     }

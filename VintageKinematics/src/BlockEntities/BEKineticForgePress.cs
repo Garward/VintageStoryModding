@@ -480,13 +480,13 @@ namespace VintageKinematics.BlockEntities
             if (recipe == null) return;
 
             float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
-            if (inputTemperature < recipe.RequiredTemperature)
+            if (inputTemperature < RequiredTemperatureFor(recipe, inputSlot.Itemstack))
             {
                 ResetPressProgress();
                 return;
             }
 
-            int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
+            int requiredQty = RequiredQuantityFor(recipe, inputSlot.Itemstack);
             if (inputSlot.StackSize < requiredQty)
             {
                 ResetPressProgress();
@@ -519,7 +519,7 @@ namespace VintageKinematics.BlockEntities
             }
 
             List<ItemStack> outputs = ResolveOutputStacks(recipe, captured, inputTemperature);
-            if (recipe.Outputs != null && recipe.Outputs.Length > 0 && outputs.Count == 0)
+            if (RecipeShouldProduceOutput(recipe) && outputs.Count == 0)
             {
                 Api.World.Logger.Warning("[VintageKinematics] Forge press recipe '{0}' matched input '{1}' but produced no resolvable outputs. Input was not consumed.",
                     recipe.OperationCode, inputSlot.Itemstack.Collectible.Code);
@@ -588,6 +588,7 @@ namespace VintageKinematics.BlockEntities
         private List<ItemStack> ResolveOutputStacks(KineticForgePressRecipe recipe, string captured, float inputTemperature)
         {
             List<ItemStack> outputs = new List<ItemStack>();
+            AddInputSmeltedOutput(recipe, inputTemperature, outputs);
             if (recipe?.Outputs == null) return outputs;
 
             foreach (JsonItemStack output in recipe.Outputs)
@@ -607,6 +608,53 @@ namespace VintageKinematics.BlockEntities
             }
 
             return outputs;
+        }
+
+        private void AddInputSmeltedOutput(KineticForgePressRecipe recipe, float inputTemperature, List<ItemStack> outputs)
+        {
+            if (recipe?.UseInputSmeltedStack != true) return;
+
+            ItemStack input = inventory[SlotInput]?.Itemstack;
+            CombustibleProperties props = input?.Collectible?.GetCombustibleProperties(Api.World, input, Pos);
+            ItemStack smelted = props?.SmeltedStack?.ResolvedItemstack?.Clone();
+            if (smelted == null) return;
+
+            smelted.StackSize = Math.Max(1, smelted.StackSize);
+            smelted.Collectible.SetTemperature(Api.World, smelted, inputTemperature);
+            outputs.Add(smelted);
+        }
+
+        private bool RecipeShouldProduceOutput(KineticForgePressRecipe recipe)
+        {
+            return recipe?.UseInputSmeltedStack == true || (recipe?.Outputs != null && recipe.Outputs.Length > 0);
+        }
+
+        private int RequiredQuantityFor(KineticForgePressRecipe recipe, ItemStack input)
+        {
+            if (recipe?.UseInputSmeltedStack == true)
+            {
+                CombustibleProperties props = input?.Collectible?.GetCombustibleProperties(Api.World, input, Pos);
+                if (props?.SmeltedStack?.ResolvedItemstack != null && props.SmeltedRatio > 0)
+                {
+                    return Math.Max(1, props.SmeltedRatio);
+                }
+            }
+
+            return Math.Max(1, recipe?.Ingredient?.StackSize ?? 1);
+        }
+
+        private float RequiredTemperatureFor(KineticForgePressRecipe recipe, ItemStack input)
+        {
+            if (recipe?.UseInputSmeltedStack == true && recipe.UseInputSmeltingTemperature)
+            {
+                CombustibleProperties props = input?.Collectible?.GetCombustibleProperties(Api.World, input, Pos);
+                if (props != null && props.MeltingPoint > 0)
+                {
+                    return props.MeltingPoint;
+                }
+            }
+
+            return recipe?.RequiredTemperature ?? 0f;
         }
 
         private void DepositOutput(ItemStack stack)
@@ -763,11 +811,11 @@ namespace VintageKinematics.BlockEntities
             KineticForgePressRecipe recipe = CurrentRecipe();
             if (recipe == null) return false;
 
-            int requiredQty = Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
+            int requiredQty = RequiredQuantityFor(recipe, inputSlot.Itemstack);
             if (inputSlot.StackSize < requiredQty) return false;
 
             float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
-            if (inputTemperature < recipe.RequiredTemperature) return false;
+            if (inputTemperature < RequiredTemperatureFor(recipe, inputSlot.Itemstack)) return false;
 
             BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
             if (kinetic == null) return false;

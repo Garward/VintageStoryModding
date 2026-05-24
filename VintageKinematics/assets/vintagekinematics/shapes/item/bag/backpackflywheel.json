@@ -1,0 +1,5872 @@
+{
+	"editor": {
+		"allAngles": false,
+		"entityTextureMode": false
+	},
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textureSizes": {},
+	"textures": {
+		"midtone": "block/leather/blue",
+		"leather": "block/leather/chromium",
+		"darktone": "block/leather/chromium",
+		"flaps": "block/leather/poor",
+		"metal": "block/metal/sheet/brass2",
+		"wood": "block/wood/planks/generic",
+		"darkwood": "block/wood/oak-dark"
+	},
+	"elements": [
+		{
+			"name": "backpack",
+			"from": [
+				5.5,
+				4.5,
+				6.0
+			],
+			"to": [
+				10.5,
+				10.0,
+				10.0
+			],
+			"rotationOrigin": [
+				8.0,
+				0.0,
+				8.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#darktone",
+					"uv": [
+						8.5,
+						6.0,
+						13.5,
+						11.5
+					]
+				},
+				"east": {
+					"texture": "#darktone",
+					"uv": [
+						11.0,
+						8.5,
+						15.0,
+						14.0
+					]
+				},
+				"south": {
+					"texture": "#darktone",
+					"uv": [
+						1.5,
+						9.5,
+						6.5,
+						15.0
+					]
+				},
+				"west": {
+					"texture": "#darktone",
+					"uv": [
+						8.5,
+						7.5,
+						12.5,
+						13.0
+					]
+				},
+				"up": {
+					"texture": "#darktone",
+					"uv": [
+						10.0,
+						4.5,
+						15.0,
+						8.5
+					]
+				},
+				"down": {
+					"texture": "#darktone",
+					"uv": [
+						0.0,
+						12.0,
+						5.0,
+						16.0
+					]
+				}
+			},
+			"children": [
+				{
+					"name": "top",
+					"from": [
+						-0.1,
+						5.5,
+						1.0
+					],
+					"to": [
+						5.1,
+						5.8,
+						4.0
+					],
+					"rotationOrigin": [
+						-0.6,
+						5.5,
+						1.0
+					],
+					"faces": {
+						"north": {
+							"texture": "#leather",
+							"uv": [
+								3.0,
+								1.5,
+								8.0,
+								2.0
+							]
+						},
+						"east": {
+							"texture": "#leather",
+							"uv": [
+								2.0,
+								8.0,
+								5.0,
+								8.5
+							]
+						},
+						"south": {
+							"texture": "#leather",
+							"uv": [
+								10.0,
+								6.5,
+								15.0,
+								7.0
+							]
+						},
+						"west": {
+							"texture": "#leather",
+							"uv": [
+								7.0,
+								14.0,
+								10.0,
+								14.5
+							]
+						},
+						"up": {
+							"texture": "#leather",
+							"uv": [
+								8.5,
+								10.0,
+								13.5,
+								13.0
+							]
+						}
+					},
+					"children": [
+						{
+							"name": "topFlap",
+							"from": [
+								0.001,
+								-2.7,
+								2.7
+							],
+							"to": [
+								5.201,
+								0.3,
+								3.0
+							],
+							"rotationOrigin": [
+								1.5,
+								0.3,
+								3.0
+							],
+							"rotationX": -13.0,
+							"faces": {
+								"north": {
+									"texture": "#leather",
+									"uv": [
+										5.5,
+										7.5,
+										10.5,
+										10.5
+									],
+									"windMode": [
+										-1,
+										-1,
+										-1,
+										-1
+									]
+								},
+								"east": {
+									"texture": "#leather",
+									"uv": [
+										12.0,
+										10.0,
+										12.5,
+										13.0
+									]
+								},
+								"south": {
+									"texture": "#leather",
+									"uv": [
+										2.0,
+										10.0,
+										7.0,
+										13.0
+									]
+								},
+								"west": {
+									"texture": "#leather",
+									"uv": [
+										7.0,
+										4.0,
+										7.5,
+										7.0
+									]
+								},
+								"up": {
+									"texture": "#leather",
+									"uv": [
+										3.5,
+										13.5,
+										8.5,
+										14.0
+									]
+								},
+								"down": {
+									"texture": "#leather",
+									"uv": [
+										6.0,
+										4.5,
+										11.0,
+										5.0
+									]
+								}
+							},
+							"children": [
+								{
+									"name": "StrapTopSW1",
+									"from": [
+										1.0,
+										-1.5,
+										0.0
+									],
+									"to": [
+										1.6,
+										0.0,
+										0.2
+									],
+									"rotationOrigin": [
+										1.0,
+										0.0,
+										0.2
+									],
+									"rotationX": 16.0,
+									"faces": {
+										"east": {
+											"texture": "#midtone",
+											"uv": [
+												5.0,
+												2.5,
+												5.5,
+												4.0
+											]
+										},
+										"south": {
+											"texture": "#midtone",
+											"uv": [
+												13.0,
+												6.0,
+												13.5,
+												7.5
+											]
+										},
+										"west": {
+											"texture": "#midtone",
+											"uv": [
+												1.0,
+												11.5,
+												1.5,
+												13.0
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "StrapTopSW2",
+											"from": [
+												0.0,
+												-0.4,
+												0.0
+											],
+											"to": [
+												0.6,
+												0.0,
+												0.2
+											],
+											"rotationOrigin": [
+												0.0,
+												0.1,
+												0.0
+											],
+											"rotationX": -11.0,
+											"faces": {
+												"east": {
+													"texture": "#midtone",
+													"uv": [
+														9.5,
+														13.0,
+														10.0,
+														13.5
+													]
+												},
+												"south": {
+													"texture": "#midtone",
+													"uv": [
+														7.0,
+														2.5,
+														7.5,
+														3.0
+													]
+												},
+												"west": {
+													"texture": "#midtone",
+													"uv": [
+														5.0,
+														1.5,
+														5.5,
+														2.0
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "StrapTopSW3",
+													"from": [
+														0.0,
+														-0.2,
+														0.0
+													],
+													"to": [
+														0.6,
+														0.0,
+														1.2
+													],
+													"rotationOrigin": [
+														0.0,
+														0.0,
+														0.2
+													],
+													"rotationX": 7.0,
+													"faces": {
+														"east": {
+															"texture": "#midtone",
+															"uv": [
+																13.5,
+																5.5,
+																14.5,
+																6.0
+															]
+														},
+														"south": {
+															"texture": "#midtone",
+															"uv": [
+																2.0,
+																13.5,
+																2.5,
+																14.0
+															]
+														},
+														"west": {
+															"texture": "#midtone",
+															"uv": [
+																13.0,
+																12.5,
+																14.0,
+																13.0
+															]
+														},
+														"up": {
+															"texture": "#midtone",
+															"uv": [
+																0.0,
+																1.0,
+																0.5,
+																2.0
+															]
+														}
+													}
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "StrapTopSW4",
+									"from": [
+										3.6,
+										-1.5,
+										0.0
+									],
+									"to": [
+										4.2,
+										0.0,
+										0.2
+									],
+									"rotationOrigin": [
+										3.6,
+										0.0,
+										0.2
+									],
+									"rotationX": 16.0,
+									"faces": {
+										"east": {
+											"texture": "#midtone",
+											"uv": [
+												12.5,
+												8.0,
+												13.0,
+												9.5
+											]
+										},
+										"south": {
+											"texture": "#midtone",
+											"uv": [
+												13.5,
+												2.5,
+												14.0,
+												4.0
+											]
+										},
+										"west": {
+											"texture": "#midtone",
+											"uv": [
+												14.5,
+												10.5,
+												15.0,
+												12.0
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "StrapTopSW5",
+											"from": [
+												0.0,
+												-0.4,
+												0.0
+											],
+											"to": [
+												0.6,
+												0.0,
+												0.2
+											],
+											"rotationOrigin": [
+												0.0,
+												0.1,
+												0.0
+											],
+											"rotationX": -11.0,
+											"faces": {
+												"east": {
+													"texture": "#midtone",
+													"uv": [
+														9.0,
+														8.0,
+														9.5,
+														8.5
+													]
+												},
+												"south": {
+													"texture": "#midtone",
+													"uv": [
+														4.0,
+														3.5,
+														4.5,
+														4.0
+													]
+												},
+												"west": {
+													"texture": "#midtone",
+													"uv": [
+														5.5,
+														3.5,
+														6.0,
+														4.0
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "StrapTopSW6",
+													"from": [
+														0.0,
+														-0.2,
+														0.0
+													],
+													"to": [
+														0.6,
+														0.0,
+														1.2
+													],
+													"rotationOrigin": [
+														0.0,
+														0.0,
+														0.2
+													],
+													"rotationX": 7.0,
+													"faces": {
+														"east": {
+															"texture": "#midtone",
+															"uv": [
+																11.0,
+																14.5,
+																12.0,
+																15.0
+															]
+														},
+														"south": {
+															"texture": "#midtone",
+															"uv": [
+																2.5,
+																0.0,
+																3.0,
+																0.5
+															]
+														},
+														"west": {
+															"texture": "#midtone",
+															"uv": [
+																13.0,
+																11.5,
+																14.0,
+																12.0
+															]
+														},
+														"up": {
+															"texture": "#midtone",
+															"uv": [
+																3.5,
+																10.0,
+																4.0,
+																11.0
+															]
+														}
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "bottom",
+					"from": [
+						0.0,
+						-0.5,
+						0.5
+					],
+					"to": [
+						5.0,
+						0.0,
+						3.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#leather",
+							"uv": [
+								7.0,
+								4.5,
+								12.0,
+								5.0
+							]
+						},
+						"east": {
+							"texture": "#leather",
+							"uv": [
+								11.0,
+								15.0,
+								14.0,
+								15.5
+							]
+						},
+						"south": {
+							"texture": "#leather",
+							"uv": [
+								1.0,
+								3.0,
+								6.0,
+								3.5
+							]
+						},
+						"west": {
+							"texture": "#leather",
+							"uv": [
+								4.5,
+								8.5,
+								7.5,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#leather",
+							"uv": [
+								7.0,
+								4.0,
+								12.0,
+								7.0
+							]
+						}
+					}
+				},
+				{
+					"name": "L pocket",
+					"from": [
+						-0.7,
+						1.5,
+						0.6
+					],
+					"to": [
+						0.3,
+						4.5,
+						3.1
+					],
+					"rotationOrigin": [
+						-0.2,
+						4.5,
+						2.0
+					],
+					"rotationZ": -10.0,
+					"faces": {
+						"north": {
+							"texture": "#midtone",
+							"uv": [
+								15.0,
+								5.5,
+								16.0,
+								8.5
+							]
+						},
+						"south": {
+							"texture": "#midtone",
+							"uv": [
+								0.0,
+								5.5,
+								1.0,
+								8.5
+							]
+						},
+						"west": {
+							"texture": "#leather",
+							"uv": [
+								1.5,
+								12.5,
+								4.0,
+								15.5
+							]
+						},
+						"down": {
+							"texture": "#midtone",
+							"uv": [
+								7.5,
+								9.5,
+								10.0,
+								10.5
+							],
+							"rotation": 90
+						}
+					},
+					"children": [
+						{
+							"name": "FlapWUpperTop",
+							"from": [
+								-0.3,
+								3.0,
+								-0.1
+							],
+							"to": [
+								0.7,
+								3.3,
+								2.6
+							],
+							"rotationOrigin": [
+								-0.3,
+								3.0,
+								-0.1
+							],
+							"faces": {
+								"north": {
+									"texture": "#flaps",
+									"uv": [
+										8.5,
+										3.5,
+										9.5,
+										4.0
+									]
+								},
+								"south": {
+									"texture": "#flaps",
+									"uv": [
+										14.0,
+										11.5,
+										15.0,
+										12.0
+									]
+								},
+								"up": {
+									"texture": "#flaps",
+									"uv": [
+										1.5,
+										14.5,
+										4.0,
+										15.5
+									],
+									"rotation": 90
+								},
+								"down": {
+									"texture": "#flaps",
+									"uv": [
+										1.5,
+										3.0,
+										4.0,
+										4.0
+									],
+									"rotation": 90
+								}
+							},
+							"children": [
+								{
+									"name": "FlapWUpperTop2",
+									"from": [
+										0.0,
+										-0.7,
+										-0.001
+									],
+									"to": [
+										0.3,
+										0.3,
+										2.699
+									],
+									"rotationOrigin": [
+										0.0,
+										-0.7,
+										0.0
+									],
+									"faces": {
+										"north": {
+											"texture": "#flaps",
+											"uv": [
+												1.5,
+												7.0,
+												2.0,
+												8.0
+											]
+										},
+										"east": {
+											"texture": "#flaps",
+											"uv": [
+												8.5,
+												3.5,
+												11.0,
+												4.5
+											]
+										},
+										"south": {
+											"texture": "#flaps",
+											"uv": [
+												7.0,
+												3.0,
+												7.5,
+												4.0
+											]
+										},
+										"west": {
+											"texture": "#flaps",
+											"uv": [
+												12.5,
+												8.5,
+												15.0,
+												9.5
+											]
+										},
+										"down": {
+											"texture": "#flaps",
+											"uv": [
+												1.5,
+												7.0,
+												2.0,
+												9.5
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "Cube2",
+											"from": [
+												0.1,
+												-1.5,
+												1.1
+											],
+											"to": [
+												0.3,
+												0.0,
+												1.7
+											],
+											"rotationOrigin": [
+												0.1,
+												0.0,
+												1.1
+											],
+											"faces": {
+												"north": {
+													"texture": "#midtone",
+													"uv": [
+														10.5,
+														0.0,
+														11.0,
+														1.5
+													]
+												},
+												"south": {
+													"texture": "#midtone",
+													"uv": [
+														3.5,
+														2.0,
+														4.0,
+														3.5
+													]
+												},
+												"west": {
+													"texture": "#midtone",
+													"uv": [
+														0.5,
+														2.0,
+														1.0,
+														3.5
+													]
+												},
+												"down": {
+													"texture": "#midtone",
+													"uv": [
+														3.0,
+														0.0,
+														3.5,
+														0.5
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "Cube3",
+													"from": [
+														-0.1,
+														0.1,
+														0.1
+													],
+													"to": [
+														0.0,
+														0.5,
+														0.5
+													],
+													"rotationOrigin": [
+														-0.1,
+														0.1,
+														0.1
+													],
+													"faces": {
+														"north": {
+															"texture": "#metal",
+															"uv": [
+																7.0,
+																5.0,
+																7.5,
+																5.5
+															]
+														},
+														"south": {
+															"texture": "#metal",
+															"uv": [
+																1.0,
+																15.0,
+																1.5,
+																15.5
+															]
+														},
+														"west": {
+															"texture": "#metal",
+															"uv": [
+																9.0,
+																14.5,
+																9.5,
+																15.0
+															]
+														},
+														"up": {
+															"texture": "#metal",
+															"uv": [
+																7.5,
+																8.0,
+																8.0,
+																8.5
+															]
+														},
+														"down": {
+															"texture": "#metal",
+															"uv": [
+																15.0,
+																10.5,
+																15.5,
+																11.0
+															]
+														}
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "R pocket",
+					"from": [
+						4.7,
+						1.5,
+						1.0
+					],
+					"to": [
+						5.7,
+						4.5,
+						3.5
+					],
+					"rotationOrigin": [
+						5.2,
+						4.5,
+						2.0
+					],
+					"rotationZ": 10.0,
+					"faces": {
+						"north": {
+							"texture": "#midtone",
+							"uv": [
+								6.5,
+								12.5,
+								9.5,
+								13.5
+							],
+							"rotation": 90
+						},
+						"east": {
+							"texture": "#leather",
+							"uv": [
+								11.5,
+								4.5,
+								14.0,
+								7.5
+							]
+						},
+						"south": {
+							"texture": "#midtone",
+							"uv": [
+								10.0,
+								8.0,
+								13.0,
+								9.0
+							],
+							"rotation": 90
+						},
+						"down": {
+							"texture": "#midtone",
+							"uv": [
+								1.0,
+								0.0,
+								3.5,
+								1.0
+							],
+							"rotation": 90
+						}
+					},
+					"children": [
+						{
+							"name": "FlapEUpperTop",
+							"from": [
+								0.3,
+								3.0,
+								-0.1
+							],
+							"to": [
+								1.3,
+								3.3,
+								2.6
+							],
+							"rotationOrigin": [
+								0.3,
+								3.0,
+								-0.1
+							],
+							"faces": {
+								"north": {
+									"texture": "#flaps",
+									"uv": [
+										5.5,
+										1.0,
+										6.5,
+										1.5
+									]
+								},
+								"south": {
+									"texture": "#flaps",
+									"uv": [
+										10.0,
+										3.0,
+										11.0,
+										3.5
+									]
+								},
+								"up": {
+									"texture": "#flaps",
+									"uv": [
+										12.5,
+										13.0,
+										13.5,
+										15.5
+									]
+								},
+								"down": {
+									"texture": "#flaps",
+									"uv": [
+										7.0,
+										5.0,
+										8.0,
+										7.5
+									]
+								}
+							},
+							"children": [
+								{
+									"name": "FlapEUpperTop2",
+									"from": [
+										0.7,
+										-0.7,
+										-0.001
+									],
+									"to": [
+										1.0,
+										0.3,
+										2.699
+									],
+									"rotationOrigin": [
+										0.7,
+										-0.7,
+										0.0
+									],
+									"faces": {
+										"north": {
+											"texture": "#flaps",
+											"uv": [
+												12.0,
+												3.5,
+												12.5,
+												4.5
+											]
+										},
+										"east": {
+											"texture": "#flaps",
+											"uv": [
+												9.0,
+												8.0,
+												11.5,
+												9.0
+											]
+										},
+										"south": {
+											"texture": "#flaps",
+											"uv": [
+												0.0,
+												2.0,
+												0.5,
+												3.0
+											]
+										},
+										"west": {
+											"texture": "#flaps",
+											"uv": [
+												4.5,
+												10.5,
+												7.0,
+												11.5
+											],
+											"windMode": [
+												-1,
+												-1,
+												-1,
+												-1
+											]
+										},
+										"down": {
+											"texture": "#flaps",
+											"uv": [
+												4.5,
+												5.0,
+												5.0,
+												7.5
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "StrapEUpper",
+											"from": [
+												0.0,
+												-1.5,
+												1.0
+											],
+											"to": [
+												0.2,
+												0.0,
+												1.6
+											],
+											"rotationOrigin": [
+												0.0,
+												-1.5,
+												1.0
+											],
+											"faces": {
+												"north": {
+													"texture": "#midtone",
+													"uv": [
+														4.5,
+														1.0,
+														5.0,
+														2.5
+													]
+												},
+												"east": {
+													"texture": "#midtone",
+													"uv": [
+														9.5,
+														1.5,
+														10.0,
+														3.0
+													]
+												},
+												"south": {
+													"texture": "#midtone",
+													"uv": [
+														10.5,
+														6.0,
+														11.0,
+														7.5
+													]
+												},
+												"down": {
+													"texture": "#midtone",
+													"uv": [
+														13.5,
+														2.5,
+														14.0,
+														3.0
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "ButtonEUpper",
+													"from": [
+														0.2,
+														0.2,
+														0.1
+													],
+													"to": [
+														0.3,
+														0.6,
+														0.5
+													],
+													"rotationOrigin": [
+														0.2,
+														0.2,
+														0.1
+													],
+													"faces": {
+														"north": {
+															"texture": "#metal",
+															"uv": [
+																9.0,
+																13.5,
+																9.5,
+																14.0
+															]
+														},
+														"east": {
+															"texture": "#metal",
+															"uv": [
+																8.0,
+																5.0,
+																8.5,
+																5.5
+															]
+														},
+														"south": {
+															"texture": "#metal",
+															"uv": [
+																9.0,
+																10.5,
+																9.5,
+																11.0
+															]
+														},
+														"up": {
+															"texture": "#metal",
+															"uv": [
+																14.5,
+																1.5,
+																15.0,
+																2.0
+															]
+														},
+														"down": {
+															"texture": "#metal",
+															"uv": [
+																8.5,
+																8.5,
+																9.0,
+																9.0
+															]
+														}
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "L wood",
+					"from": [
+						-0.1,
+						-3.1,
+						-0.1
+					],
+					"to": [
+						0.9,
+						5.9,
+						0.9
+					],
+					"rotationOrigin": [
+						0.4,
+						5.9,
+						0.0
+					],
+					"rotationX": 2.0,
+					"rotationZ": -3.0,
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								7.5,
+								2.0,
+								8.5,
+								11.0
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								9.0,
+								4.5,
+								10.0,
+								13.5
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								6.5,
+								1.0,
+								7.5,
+								10.0
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								4.0,
+								1.5,
+								5.0,
+								10.5
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								4.0,
+								0.5,
+								5.0,
+								1.5
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								3.5,
+								2.5,
+								4.5,
+								3.5
+							]
+						}
+					}
+				},
+				{
+					"name": "R wood",
+					"from": [
+						4.3,
+						-3.1,
+						-0.1
+					],
+					"to": [
+						5.3,
+						5.9,
+						0.9
+					],
+					"rotationOrigin": [
+						4.8,
+						5.9,
+						0.0
+					],
+					"rotationX": 2.0,
+					"rotationZ": 3.0,
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								5.5,
+								2.0,
+								6.5,
+								11.0
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								4.0,
+								6.0,
+								5.0,
+								15.0
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								3.0,
+								6.5,
+								4.0,
+								15.5
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								3.5,
+								5.0,
+								4.5,
+								14.0
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								10.0,
+								5.5,
+								11.0,
+								6.5
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								2.0,
+								4.5,
+								3.0,
+								5.5
+							]
+						}
+					}
+				},
+				{
+					"name": "base",
+					"from": [
+						-0.5,
+						-4.0,
+						0.4
+					],
+					"to": [
+						5.5,
+						3.0,
+						4.4
+					],
+					"rotationOrigin": [
+						-0.5,
+						-4.0,
+						-0.1
+					],
+					"faces": {
+						"north": {
+							"texture": "#darktone",
+							"uv": [
+								8.5,
+								9.0,
+								14.5,
+								16.0
+							]
+						},
+						"east": {
+							"texture": "#darktone",
+							"uv": [
+								8.0,
+								9.0,
+								12.0,
+								16.0
+							]
+						},
+						"south": {
+							"texture": "#darktone",
+							"uv": [
+								7.5,
+								9.0,
+								13.5,
+								16.0
+							]
+						},
+						"west": {
+							"texture": "#darktone",
+							"uv": [
+								11.5,
+								9.0,
+								15.5,
+								16.0
+							]
+						},
+						"up": {
+							"texture": "#darktone",
+							"uv": [
+								9.5,
+								0.0,
+								15.5,
+								4.0
+							]
+						},
+						"down": {
+							"texture": "#darktone",
+							"uv": [
+								5.5,
+								12.0,
+								11.5,
+								16.0
+							]
+						}
+					},
+					"children": [
+						{
+							"name": "bottom 1",
+							"from": [
+								0.5,
+								-0.5,
+								0.0
+							],
+							"to": [
+								5.5,
+								0.0,
+								3.5
+							],
+							"rotationOrigin": [
+								0.0,
+								-0.5,
+								-0.5
+							],
+							"faces": {
+								"north": {
+									"texture": "#darktone",
+									"uv": [
+										0.0,
+										15.5,
+										5.0,
+										16.0
+									]
+								},
+								"east": {
+									"texture": "#darktone",
+									"uv": [
+										5.5,
+										15.5,
+										9.0,
+										16.0
+									]
+								},
+								"south": {
+									"texture": "#darktone",
+									"uv": [
+										1.5,
+										15.5,
+										6.5,
+										16.0
+									]
+								},
+								"west": {
+									"texture": "#darktone",
+									"uv": [
+										12.0,
+										15.5,
+										15.5,
+										16.0
+									]
+								},
+								"down": {
+									"texture": "#darktone",
+									"uv": [
+										5.5,
+										12.5,
+										10.5,
+										16.0
+									]
+								}
+							}
+						},
+						{
+							"name": "FrontBottomPocket",
+							"from": [
+								1.0,
+								0.5,
+								4.0
+							],
+							"to": [
+								5.0,
+								4.5,
+								5.0
+							],
+							"rotationOrigin": [
+								1.0,
+								0.5,
+								4.0
+							],
+							"faces": {
+								"east": {
+									"texture": "#midtone",
+									"uv": [
+										10.0,
+										12.0,
+										11.0,
+										16.0
+									]
+								},
+								"south": {
+									"texture": "#leather",
+									"uv": [
+										1.5,
+										6.0,
+										5.5,
+										10.0
+									]
+								},
+								"west": {
+									"texture": "#midtone",
+									"uv": [
+										12.0,
+										12.0,
+										13.0,
+										16.0
+									]
+								},
+								"down": {
+									"texture": "#midtone",
+									"uv": [
+										5.5,
+										15.0,
+										9.5,
+										16.0
+									]
+								}
+							},
+							"children": [
+								{
+									"name": "FlapTop2",
+									"from": [
+										-0.1,
+										4.0,
+										0.0
+									],
+									"to": [
+										4.1,
+										4.3,
+										1.3
+									],
+									"rotationOrigin": [
+										-0.1,
+										4.0,
+										0.0
+									],
+									"faces": {
+										"east": {
+											"texture": "#flaps",
+											"uv": [
+												4.0,
+												7.0,
+												5.0,
+												7.5
+											]
+										},
+										"west": {
+											"texture": "#flaps",
+											"uv": [
+												10.5,
+												9.5,
+												11.5,
+												10.0
+											]
+										},
+										"up": {
+											"texture": "#flaps",
+											"uv": [
+												7.5,
+												13.5,
+												11.5,
+												14.5
+											]
+										},
+										"down": {
+											"texture": "#flaps",
+											"uv": [
+												0.0,
+												5.0,
+												4.0,
+												6.0
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "FlapTop3",
+											"from": [
+												-0.01,
+												-1.0,
+												1.0
+											],
+											"to": [
+												4.19,
+												0.3,
+												1.3
+											],
+											"rotationOrigin": [
+												0.0,
+												-1.0,
+												1.0
+											],
+											"faces": {
+												"east": {
+													"texture": "#flaps",
+													"uv": [
+														9.0,
+														12.0,
+														9.5,
+														13.0
+													]
+												},
+												"south": {
+													"texture": "#flaps",
+													"uv": [
+														8.0,
+														7.0,
+														12.0,
+														8.0
+													]
+												},
+												"west": {
+													"texture": "#flaps",
+													"uv": [
+														13.5,
+														2.5,
+														14.0,
+														3.5
+													]
+												},
+												"down": {
+													"texture": "#flaps",
+													"uv": [
+														2.5,
+														3.5,
+														6.5,
+														4.0
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "flaps1",
+													"from": [
+														1.8,
+														-2.0,
+														0.0
+													],
+													"to": [
+														2.4,
+														0.0,
+														0.2
+													],
+													"rotationOrigin": [
+														1.8,
+														0.0,
+														0.2
+													],
+													"rotationX": 3.0,
+													"faces": {
+														"north": {
+															"texture": "#flaps",
+															"uv": [
+																6.0,
+																8.5,
+																6.5,
+																10.5
+															]
+														},
+														"east": {
+															"texture": "#flaps",
+															"uv": [
+																15.0,
+																9.5,
+																15.5,
+																11.5
+															]
+														},
+														"south": {
+															"texture": "#flaps",
+															"uv": [
+																15.0,
+																11.5,
+																15.5,
+																13.5
+															]
+														},
+														"west": {
+															"texture": "#flaps",
+															"uv": [
+																14.0,
+																8.0,
+																14.5,
+																10.0
+															]
+														}
+													},
+													"children": [
+														{
+															"name": "flaps2",
+															"from": [
+																0.001,
+																-1.0,
+																0.0
+															],
+															"to": [
+																0.601,
+																0.0,
+																0.2
+															],
+															"rotationOrigin": [
+																0.0,
+																0.0,
+																0.0
+															],
+															"rotationX": -12.0,
+															"faces": {
+																"north": {
+																	"texture": "#flaps",
+																	"uv": [
+																		11.5,
+																		8.0,
+																		12.0,
+																		9.0
+																	]
+																},
+																"east": {
+																	"texture": "#flaps",
+																	"uv": [
+																		10.0,
+																		6.0,
+																		10.5,
+																		7.0
+																	]
+																},
+																"south": {
+																	"texture": "#flaps",
+																	"uv": [
+																		12.5,
+																		11.0,
+																		13.0,
+																		12.0
+																	]
+																},
+																"west": {
+																	"texture": "#flaps",
+																	"uv": [
+																		12.0,
+																		2.5,
+																		12.5,
+																		3.5
+																	]
+																},
+																"down": {
+																	"texture": "#flaps",
+																	"uv": [
+																		9.0,
+																		1.5,
+																		9.5,
+																		2.0
+																	]
+																}
+															}
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "BuckleS1",
+									"from": [
+										1.5,
+										1.0,
+										0.8
+									],
+									"to": [
+										2.5,
+										1.3,
+										1.3
+									],
+									"rotationOrigin": [
+										1.5,
+										1.0,
+										0.8
+									],
+									"faces": {
+										"east": {
+											"texture": "#metal",
+											"uv": [
+												7.5,
+												14.0,
+												8.0,
+												14.5
+											]
+										},
+										"south": {
+											"texture": "#metal",
+											"uv": [
+												8.0,
+												3.0,
+												9.0,
+												3.5
+											]
+										},
+										"west": {
+											"texture": "#metal",
+											"uv": [
+												13.5,
+												6.0,
+												14.0,
+												6.5
+											]
+										},
+										"up": {
+											"texture": "#metal",
+											"uv": [
+												0.5,
+												6.0,
+												1.5,
+												6.5
+											]
+										},
+										"down": {
+											"texture": "#metal",
+											"uv": [
+												0.0,
+												8.0,
+												1.0,
+												8.5
+											]
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "BuckleTopSW1",
+							"from": [
+								1.2,
+								5.4,
+								4.0
+							],
+							"to": [
+								2.2,
+								5.7,
+								4.2
+							],
+							"rotationOrigin": [
+								1.2,
+								5.4,
+								4.0
+							],
+							"faces": {
+								"east": {
+									"texture": "#metal",
+									"uv": [
+										11.0,
+										1.0,
+										11.5,
+										1.5
+									]
+								},
+								"south": {
+									"texture": "#metal",
+									"uv": [
+										8.5,
+										2.5,
+										9.5,
+										3.0
+									]
+								},
+								"west": {
+									"texture": "#metal",
+									"uv": [
+										7.0,
+										15.0,
+										7.5,
+										15.5
+									]
+								},
+								"up": {
+									"texture": "#metal",
+									"uv": [
+										6.0,
+										4.5,
+										7.0,
+										5.0
+									]
+								},
+								"down": {
+									"texture": "#metal",
+									"uv": [
+										10.0,
+										6.0,
+										11.0,
+										6.5
+									]
+								}
+							}
+						},
+						{
+							"name": "BuckleTopSW2",
+							"from": [
+								3.8,
+								5.4,
+								4.0
+							],
+							"to": [
+								4.8,
+								5.7,
+								4.2
+							],
+							"rotationOrigin": [
+								3.8,
+								5.4,
+								4.0
+							],
+							"faces": {
+								"east": {
+									"texture": "#metal",
+									"uv": [
+										7.0,
+										4.0,
+										7.5,
+										4.5
+									]
+								},
+								"south": {
+									"texture": "#metal",
+									"uv": [
+										5.0,
+										5.5,
+										6.0,
+										6.0
+									]
+								},
+								"west": {
+									"texture": "#metal",
+									"uv": [
+										13.0,
+										0.5,
+										13.5,
+										1.0
+									]
+								},
+								"up": {
+									"texture": "#metal",
+									"uv": [
+										1.0,
+										6.0,
+										2.0,
+										6.5
+									]
+								},
+								"down": {
+									"texture": "#metal",
+									"uv": [
+										8.0,
+										6.0,
+										9.0,
+										6.5
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "SideBottomPockets",
+					"from": [
+						-1.5,
+						-3.5,
+						0.9
+					],
+					"to": [
+						6.5,
+						0.5,
+						3.9
+					],
+					"rotationOrigin": [
+						-1.5,
+						0.5,
+						2.4
+					],
+					"faces": {
+						"north": {
+							"texture": "#midtone",
+							"uv": [
+								0.5,
+								10.0,
+								8.5,
+								14.0
+							]
+						},
+						"east": {
+							"texture": "#leather",
+							"uv": [
+								4.5,
+								6.0,
+								7.5,
+								10.0
+							]
+						},
+						"south": {
+							"texture": "#midtone",
+							"uv": [
+								8.0,
+								10.5,
+								16.0,
+								14.5
+							],
+							"rotation": 180
+						},
+						"west": {
+							"texture": "#leather",
+							"uv": [
+								13.0,
+								4.5,
+								16.0,
+								8.5
+							]
+						},
+						"down": {
+							"texture": "#midtone",
+							"uv": [
+								4.5,
+								13.0,
+								12.5,
+								16.0
+							]
+						}
+					},
+					"children": [
+						{
+							"name": "FlapTop",
+							"from": [
+								-0.3,
+								4.0,
+								-0.1
+							],
+							"to": [
+								8.3,
+								4.3,
+								3.1
+							],
+							"rotationOrigin": [
+								-0.3,
+								4.0,
+								-0.1
+							],
+							"faces": {
+								"north": {
+									"texture": "#flaps",
+									"uv": [
+										3.5,
+										8.0,
+										12.0,
+										8.5
+									]
+								},
+								"south": {
+									"texture": "#flaps",
+									"uv": [
+										4.5,
+										13.5,
+										13.0,
+										14.0
+									]
+								},
+								"up": {
+									"texture": "#flaps",
+									"uv": [
+										1.5,
+										8.5,
+										10.0,
+										11.5
+									]
+								},
+								"down": {
+									"texture": "#flaps",
+									"uv": [
+										6.0,
+										0.5,
+										14.5,
+										3.5
+									]
+								}
+							},
+							"children": [
+								{
+									"name": "FlapTopW",
+									"from": [
+										0.0,
+										-0.7,
+										-0.01
+									],
+									"to": [
+										0.3,
+										0.3,
+										3.19
+									],
+									"rotationOrigin": [
+										0.0,
+										-0.7,
+										0.0
+									],
+									"faces": {
+										"north": {
+											"texture": "#flaps",
+											"uv": [
+												10.5,
+												0.5,
+												11.0,
+												1.5
+											]
+										},
+										"east": {
+											"texture": "#flaps",
+											"uv": [
+												5.5,
+												7.0,
+												8.5,
+												8.0
+											]
+										},
+										"south": {
+											"texture": "#flaps",
+											"uv": [
+												13.0,
+												4.0,
+												13.5,
+												5.0
+											]
+										},
+										"west": {
+											"texture": "#flaps",
+											"uv": [
+												3.0,
+												9.5,
+												6.0,
+												10.5
+											]
+										},
+										"down": {
+											"texture": "#flaps",
+											"uv": [
+												12.0,
+												7.0,
+												12.5,
+												10.0
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "StrapE3",
+											"from": [
+												0.1,
+												-2.0,
+												1.3
+											],
+											"to": [
+												0.3,
+												0.0,
+												1.9
+											],
+											"rotationOrigin": [
+												0.1,
+												0.0,
+												1.3
+											],
+											"rotationZ": 3.0,
+											"faces": {
+												"north": {
+													"texture": "#midtone",
+													"uv": [
+														11.5,
+														7.0,
+														12.0,
+														9.0
+													]
+												},
+												"south": {
+													"texture": "#midtone",
+													"uv": [
+														3.0,
+														4.0,
+														3.5,
+														6.0
+													]
+												},
+												"west": {
+													"texture": "#midtone",
+													"uv": [
+														4.0,
+														10.5,
+														4.5,
+														12.5
+													],
+													"windMode": [
+														-1,
+														-1,
+														-1,
+														-1
+													]
+												},
+												"up": {
+													"texture": "#midtone",
+													"uv": [
+														8.5,
+														13.0,
+														9.0,
+														13.5
+													]
+												},
+												"down": {
+													"texture": "#midtone",
+													"uv": [
+														7.0,
+														13.5,
+														7.5,
+														14.0
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "StrapE4",
+													"from": [
+														0.0,
+														-1.0,
+														0.01
+													],
+													"to": [
+														0.2,
+														0.0,
+														0.61
+													],
+													"rotationOrigin": [
+														0.2,
+														0.0,
+														0.0
+													],
+													"rotationZ": -12.0,
+													"faces": {
+														"north": {
+															"texture": "#midtone",
+															"uv": [
+																9.0,
+																10.0,
+																9.5,
+																11.0
+															]
+														},
+														"south": {
+															"texture": "#midtone",
+															"uv": [
+																14.0,
+																10.0,
+																14.5,
+																11.0
+															]
+														},
+														"west": {
+															"texture": "#midtone",
+															"uv": [
+																10.0,
+																3.5,
+																10.5,
+																4.5
+															],
+															"windMode": [
+																-1,
+																-1,
+																-1,
+																-1
+															]
+														},
+														"up": {
+															"texture": "#midtone",
+															"uv": [
+																6.0,
+																5.0,
+																6.5,
+																5.5
+															]
+														},
+														"down": {
+															"texture": "#midtone",
+															"uv": [
+																3.0,
+																9.0,
+																3.5,
+																9.5
+															]
+														}
+													}
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "FlapTopE",
+									"from": [
+										8.3,
+										-0.7,
+										-0.01
+									],
+									"to": [
+										8.6,
+										0.3,
+										3.19
+									],
+									"rotationOrigin": [
+										8.3,
+										-0.7,
+										0.0
+									],
+									"faces": {
+										"north": {
+											"texture": "#flaps",
+											"uv": [
+												11.0,
+												8.0,
+												11.5,
+												9.0
+											]
+										},
+										"east": {
+											"texture": "#flaps",
+											"uv": [
+												1.5,
+												14.0,
+												4.5,
+												15.0
+											]
+										},
+										"south": {
+											"texture": "#flaps",
+											"uv": [
+												7.5,
+												9.0,
+												8.0,
+												10.0
+											]
+										},
+										"west": {
+											"texture": "#flaps",
+											"uv": [
+												3.0,
+												11.0,
+												6.0,
+												12.0
+											]
+										},
+										"down": {
+											"texture": "#flaps",
+											"uv": [
+												2.0,
+												5.0,
+												2.5,
+												8.0
+											]
+										}
+									},
+									"children": [
+										{
+											"name": "StrapE1",
+											"from": [
+												0.0,
+												-2.0,
+												1.3
+											],
+											"to": [
+												0.2,
+												0.0,
+												1.9
+											],
+											"rotationOrigin": [
+												0.2,
+												0.0,
+												1.3
+											],
+											"rotationZ": -3.0,
+											"faces": {
+												"north": {
+													"texture": "#midtone",
+													"uv": [
+														7.0,
+														3.5,
+														7.5,
+														5.5
+													]
+												},
+												"east": {
+													"texture": "#midtone",
+													"uv": [
+														13.0,
+														5.5,
+														13.5,
+														7.5
+													]
+												},
+												"south": {
+													"texture": "#midtone",
+													"uv": [
+														3.5,
+														1.0,
+														4.0,
+														3.0
+													]
+												},
+												"up": {
+													"texture": "#midtone",
+													"uv": [
+														10.0,
+														9.5,
+														10.5,
+														10.0
+													]
+												},
+												"down": {
+													"texture": "#midtone",
+													"uv": [
+														4.5,
+														14.0,
+														5.0,
+														14.5
+													]
+												}
+											},
+											"children": [
+												{
+													"name": "StrapE2",
+													"from": [
+														0.0,
+														-1.0,
+														0.01
+													],
+													"to": [
+														0.2,
+														0.0,
+														0.61
+													],
+													"rotationOrigin": [
+														0.0,
+														0.0,
+														0.0
+													],
+													"rotationZ": 12.0,
+													"faces": {
+														"north": {
+															"texture": "#midtone",
+															"uv": [
+																5.5,
+																5.0,
+																6.0,
+																6.0
+															]
+														},
+														"east": {
+															"texture": "#midtone",
+															"uv": [
+																0.5,
+																3.0,
+																1.0,
+																4.0
+															]
+														},
+														"south": {
+															"texture": "#midtone",
+															"uv": [
+																6.5,
+																10.0,
+																7.0,
+																11.0
+															]
+														},
+														"up": {
+															"texture": "#midtone",
+															"uv": [
+																1.0,
+																2.0,
+																1.5,
+																2.5
+															]
+														},
+														"down": {
+															"texture": "#midtone",
+															"uv": [
+																9.0,
+																8.5,
+																9.5,
+																9.0
+															]
+														}
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "buckle sides",
+							"from": [
+								-0.2,
+								1.2,
+								1.0
+							],
+							"to": [
+								8.2,
+								1.5,
+								2.0
+							],
+							"rotationOrigin": [
+								-0.2,
+								1.2,
+								1.0
+							],
+							"faces": {
+								"north": {
+									"texture": "#metal",
+									"uv": [
+										1.5,
+										6.0,
+										9.5,
+										6.5
+									]
+								},
+								"east": {
+									"texture": "#metal",
+									"uv": [
+										0.0,
+										6.5,
+										1.0,
+										7.0
+									]
+								},
+								"south": {
+									"texture": "#metal",
+									"uv": [
+										2.0,
+										7.0,
+										10.0,
+										7.5
+									]
+								},
+								"west": {
+									"texture": "#metal",
+									"uv": [
+										1.5,
+										9.0,
+										2.5,
+										9.5
+									]
+								},
+								"up": {
+									"texture": "#metal",
+									"uv": [
+										3.5,
+										11.5,
+										11.5,
+										12.5
+									]
+								},
+								"down": {
+									"texture": "#metal",
+									"uv": [
+										2.0,
+										7.0,
+										10.0,
+										8.0
+									]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "flywheelAssembly",
+			"from": [
+				8.0,
+				7.25,
+				10.72
+			],
+			"to": [
+				8.0,
+				7.25,
+				10.72
+			],
+			"rotationOrigin": [
+				8.0,
+				7.25,
+				10.72
+			],
+			"faces": {
+				"north": {
+					"texture": "#null",
+					"uv": [
+						0,
+						0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"east": {
+					"texture": "#null",
+					"uv": [
+						0,
+						0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"south": {
+					"texture": "#null",
+					"uv": [
+						0,
+						0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"west": {
+					"texture": "#null",
+					"uv": [
+						0,
+						0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"up": {
+					"texture": "#null",
+					"uv": [
+						0,
+						0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"down": {
+					"texture": "#null",
+					"uv": [
+						0,
+						0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				}
+			},
+			"children": [
+				{
+					"name": "backpackFlywheel_hub",
+					"from": [
+						-0.57,
+						-0.57,
+						-0.57
+					],
+					"to": [
+						0.57,
+						0.57,
+						0.57
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					}
+				},
+				{
+					"name": "backpackFlywheel_spoke00",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 0
+				},
+				{
+					"name": "backpackFlywheel_spoke01",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 45
+				},
+				{
+					"name": "backpackFlywheel_spoke02",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 90
+				},
+				{
+					"name": "backpackFlywheel_spoke03",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 135
+				},
+				{
+					"name": "backpackFlywheel_spoke04",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 180
+				},
+				{
+					"name": "backpackFlywheel_spoke05",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 225
+				},
+				{
+					"name": "backpackFlywheel_spoke06",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 270
+				},
+				{
+					"name": "backpackFlywheel_spoke07",
+					"from": [
+						-0.161,
+						0.576,
+						-0.236
+					],
+					"to": [
+						0.161,
+						1.301,
+						0.236
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 315
+				},
+				{
+					"name": "backpackFlywheel_rimSegment00",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 0.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment00",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 0.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment01",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 22.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment01",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 22.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment02",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 45.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment02",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 45.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment03",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 67.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment03",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 67.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment04",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 90.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment04",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 90.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment05",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 112.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment05",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 112.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment06",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 135.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment06",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 135.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment07",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 157.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment07",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 157.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment08",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 180.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment08",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 180.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment09",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 202.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment09",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 202.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment10",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 225.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment10",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 225.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment11",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 247.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment11",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 247.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment12",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 270.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment12",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 270.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment13",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 292.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment13",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 292.5
+				},
+				{
+					"name": "backpackFlywheel_rimSegment14",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 315.0
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment14",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 315.0
+				},
+				{
+					"name": "backpackFlywheel_rimSegment15",
+					"from": [
+						-0.351,
+						1.568,
+						-0.331
+					],
+					"to": [
+						0.351,
+						2.08,
+						0.331
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 337.5
+				},
+				{
+					"name": "backpackFlywheel_innerWoodSegment15",
+					"from": [
+						-0.256,
+						1.245,
+						-0.237
+					],
+					"to": [
+						0.256,
+						1.605,
+						0.237
+					],
+					"faces": {
+						"north": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"south": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"east": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"west": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"up": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						},
+						"down": {
+							"texture": "#wood",
+							"uv": [
+								0,
+								0,
+								16,
+								16
+							]
+						}
+					},
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"rotationZ": 337.5
+				},
+				{
+					"name": "flywheelShaft",
+					"from": [
+						-0.26,
+						-0.26,
+						-0.87
+					],
+					"to": [
+						0.26,
+						0.26,
+						1.1
+					],
+					"rotationOrigin": [
+						0.0,
+						0.0,
+						0.0
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								7.0,
+								7.0,
+								8.0,
+								8.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								4.0,
+								5.0,
+								10.0,
+								6.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								7.0,
+								7.0,
+								8.0,
+								8.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								4.0,
+								5.0,
+								10.0,
+								6.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								4.0,
+								5.0,
+								10.0,
+								6.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								4.0,
+								5.0,
+								10.0,
+								6.0
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

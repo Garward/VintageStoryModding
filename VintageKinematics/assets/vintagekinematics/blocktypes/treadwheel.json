@@ -97,6 +97,7 @@
         "*-w": { "base": "block/treadwheel", "rotateY": 0 }
     },
     "textures": {
+        "plank": { "base": "game:block/wood/planks/oak3" },
         "wood": { "base": "game:block/wood/planks/generic" },
         "darkwood": { "base": "game:block/wood/debarked/oak" },
         "metal": { "base": "game:block/metal/sheet/iron1" }

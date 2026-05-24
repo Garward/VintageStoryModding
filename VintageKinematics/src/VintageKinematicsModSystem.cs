@@ -58,10 +58,12 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("CrusherBasin", typeof(BlockEntities.BECrusherBasin));
             api.RegisterBlockEntityClass("Belt", typeof(BlockEntities.BEBelt));
             api.RegisterBlockEntityClass("Funnel", typeof(BlockEntities.BEFunnel));
+            api.RegisterBlockEntityClass("Trashcan", typeof(BlockEntities.BETrashcan));
             api.RegisterBlockEntityClass("CoalMotor", typeof(BlockEntities.BECoalMotor));
             api.RegisterBlockEntityClass("CounterweightDrive", typeof(BlockEntities.BECounterweightDrive));
             api.RegisterBlockEntityClass("Treadwheel", typeof(BlockEntities.BETreadwheel));
             api.RegisterBlockEntityClass("Flywheel", typeof(BlockEntities.BEFlywheel));
+            api.RegisterBlockEntityClass("BackpackFlywheelPlaced", typeof(BlockEntities.BEBackpackFlywheelPlaced));
             api.RegisterBlockEntityClass("ReinforcedChest", typeof(BlockEntities.BEReinforcedChest));
             api.RegisterBlockEntityClass("DoubleReinforcedChest", typeof(BlockEntities.BEDoubleReinforcedChest));
             api.RegisterBlockEntityClass("BulkCrate", typeof(BlockEntities.BEBulkCrate));
@@ -94,9 +96,11 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockPlatePiston", typeof(Blocks.BlockPlatePiston));
             api.RegisterBlockClass("BlockBelt", typeof(Blocks.BlockBelt));
             api.RegisterBlockClass("BlockFunnel", typeof(Blocks.BlockFunnel));
+            api.RegisterBlockClass("BlockTrashcan", typeof(Blocks.BlockTrashcan));
             api.RegisterBlockClass("BlockCoalMotor", typeof(Blocks.BlockCoalMotor));
             api.RegisterBlockClass("BlockTreadwheel", typeof(Blocks.BlockTreadwheel));
             api.RegisterBlockClass("BlockFlywheel", typeof(Blocks.BlockFlywheel));
+            api.RegisterBlockClass("BlockBackpackFlywheelPlaced", typeof(Blocks.BlockBackpackFlywheelPlaced));
             api.RegisterBlockClass("BlockVKStorage", typeof(Blocks.BlockVKStorage));
             api.RegisterBlockClass("BlockBulkCrate", typeof(Blocks.BlockBulkCrate));
             api.RegisterBlockClass("BlockTrebuchet", typeof(Blocks.BlockTrebuchet));
@@ -117,6 +121,8 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticActivator", typeof(Blocks.BlockKineticActivator));
             api.RegisterItemClass("ItemBelt", typeof(Items.ItemBelt));
             api.RegisterItemClass("ItemPoweredDrill", typeof(Items.ItemPoweredDrill));
+            api.RegisterItemClass("ItemPoweredSaw", typeof(Items.ItemPoweredSaw));
+            api.RegisterItemClass("ItemBackpackFlywheel", typeof(Items.ItemBackpackFlywheel));
             api.RegisterItemClass("ItemKineticWrench", typeof(Items.ItemKineticWrench));
             api.RegisterItemClass("ItemPogoRod", typeof(Items.ItemPogoRod));
             api.RegisterItemClass("ItemKineticBoots", typeof(Items.ItemKineticBoots));

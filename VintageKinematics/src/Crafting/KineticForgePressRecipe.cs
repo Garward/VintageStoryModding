@@ -1,5 +1,6 @@
 using Vintagestory.API.Common;
 using Vintagestory.API.Util;
+using VintageKinematics.Api;
 
 namespace VintageKinematics.Crafting
 {
@@ -13,17 +14,25 @@ namespace VintageKinematics.Crafting
         public JsonItemStack Die;
         public JsonItemStack[] Outputs;
         public string[] AllowedVariants;
+        public bool UseInputSmeltedStack;
+        public bool UseInputSmeltingTemperature;
+        public bool RequiresModdedNuggetSmeltingConfig;
+        public bool RequireNonGameDomain;
+        public bool MatchAnyDomain;
         public string OperationCode = "press";
         public string OperationName;
         public int PressTicks = 6;
         public float RequiredTemperature = 900f;
 
-        public bool Matches(ItemStack stack, string operationCode, ItemStack dieStack)
+        public bool Matches(IWorldAccessor world, VintageKinematicsConfig config, ItemStack stack, string operationCode, ItemStack dieStack)
         {
             if (!string.IsNullOrEmpty(operationCode) && OperationCode != operationCode) return false;
             if (stack == null || Ingredient?.Code == null) return false;
-            if (!WildcardUtil.Match(Ingredient.Code, stack.Collectible.Code)) return false;
+            if (!MatchesIngredientCode(stack.Collectible.Code)) return false;
             if (!MatchesDie(dieStack)) return false;
+            if (RequireNonGameDomain && stack.Collectible.Code?.Domain == "game") return false;
+            if (RequiresModdedNuggetSmeltingConfig && config?.IsForgePressModdedNuggetSmeltingAllowed(stack.Collectible.Code) != true) return false;
+            if (UseInputSmeltedStack && !HasInputSmeltedStack(world, stack)) return false;
             if (AllowedVariants == null || AllowedVariants.Length == 0) return true;
 
             string captured = WildcardUtil.GetWildcardValue(Ingredient.Code, stack.Collectible.Code);
@@ -33,6 +42,20 @@ namespace VintageKinematics.Crafting
                 if (captured == variant) return true;
             }
             return false;
+        }
+
+        private bool MatchesIngredientCode(AssetLocation inputCode)
+        {
+            if (inputCode == null) return false;
+            if (WildcardUtil.Match(Ingredient.Code, inputCode)) return true;
+            return MatchAnyDomain && WildcardUtil.Match(Ingredient.Code.Path, inputCode.Path);
+        }
+
+        private static bool HasInputSmeltedStack(IWorldAccessor world, ItemStack stack)
+        {
+            if (world == null || stack?.Collectible == null) return false;
+            CombustibleProperties props = stack.Collectible.GetCombustibleProperties(world, stack, null);
+            return props?.SmeltedStack?.ResolvedItemstack != null && props.SmeltedRatio > 0;
         }
 
         private bool MatchesDie(ItemStack dieStack)

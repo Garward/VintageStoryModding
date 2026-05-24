@@ -1,0 +1,11 @@
+{
+	"ingredient": { "type": "item", "code": "game:nugget-*", "quantity": 20 },
+	"operationCode": "smelt-modded-ingot",
+	"operationName": "Smelt Modded Ingot",
+	"matchAnyDomain": true,
+	"useInputSmeltedStack": true,
+	"useInputSmeltingTemperature": true,
+	"requiresModdedNuggetSmeltingConfig": true,
+	"requireNonGameDomain": true,
+	"pressTicks": 18
+}

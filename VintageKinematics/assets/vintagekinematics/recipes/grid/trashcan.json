@@ -1,0 +1,11 @@
+{
+    "ingredientPattern": "BNB,BFB,BBB",
+    "ingredients": {
+        "B": { "type": "item", "code": "game:plank-*", "name": "wood" },
+        "N": { "type": "item", "code": "game:metalnailsandstrips-*", "name": "metal" },
+        "F": { "type": "block", "code": "funnel-copper-*", "name": "facing" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "trashcan", "quantity": 1 }
+}

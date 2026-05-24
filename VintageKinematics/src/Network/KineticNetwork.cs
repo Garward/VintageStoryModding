@@ -26,6 +26,7 @@ namespace VintageKinematics.Network
         public bool IsOverstressed;            // total consumed stress > available capacity
         public float StressTotal;              // sum of consumer stress (RPM-scaled)
         public float StressCapacity;           // sum of source capacity (RPM-scaled)
+        public Dictionary<string, TransientStressLoad> TransientStressLoads = new Dictionary<string, TransientStressLoad>();
 
         public int NodeCount { get { return Nodes.Count; } }
 
@@ -103,7 +104,17 @@ namespace VintageKinematics.Network
             {
                 foreach (var cap in bestBridgeCap.Values) StressCapacity += cap;
             }
+            foreach (var load in TransientStressLoads.Values)
+            {
+                StressTotal += load.StressUnits;
+            }
             IsOverstressed = StressTotal > StressCapacity + 0.0001f;
         }
+    }
+
+    public class TransientStressLoad
+    {
+        public float StressUnits;
+        public long ExpiresMs;
     }
 }

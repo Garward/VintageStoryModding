@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "RFR,PBP,RCR",
+	"ingredients": {
+		"B": { "type": "item", "code": "reinforcedbackpack" },
+		"C": { "type": "item", "code": "shaftcollar-iron" },
+		"F": { "type": "block", "code": "flywheel-e" },
+		"P": { "type": "item", "code": "kineticalloyplate" },
+		"R": { "type": "item", "code": "kineticalloyrod" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "item", "code": "backpackflywheel", "quantity": 1 }
+}

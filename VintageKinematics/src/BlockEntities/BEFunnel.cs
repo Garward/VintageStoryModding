@@ -7,7 +7,6 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
-using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Gui;
@@ -103,50 +102,8 @@ namespace VintageKinematics.BlockEntities
         }
 
         // All-empty filter: whitelist blocks everything, blacklist allows everything.
-        // Otherwise the stack matches if any active filter slot matches it (exact or
-        // wildcard-by-base); whitelist allows matches, blacklist blocks them.
-        public bool MatchesFilter(ItemStack stack)
-        {
-            if (stack?.Collectible == null) return false;
-
-            int active = ActiveFilterSlotCount;
-            bool anyFilled = false;
-            bool anyMatch = false;
-
-            for (int i = 0; i < active; i++)
-            {
-                ItemSlot fs = filterInv[i];
-                if (fs.Empty) continue;
-                anyFilled = true;
-
-                bool match;
-                if (fuzzy)
-                {
-                    AssetLocation pattern = ToFuzzyPattern(fs.Itemstack.Collectible.Code);
-                    match = WildcardUtil.Match(pattern, stack.Collectible.Code);
-                }
-                else
-                {
-                    match = fs.Itemstack.Collectible == stack.Collectible;
-                }
-
-                if (match) { anyMatch = true; break; }
-            }
-
-            if (!anyFilled) return !whitelist;
-            return whitelist ? anyMatch : !anyMatch;
-        }
-
-        // Fuzzy pattern: keep everything up to the last '-' segment and replace it with '*'.
-        // game:nugget-copper → game:nugget-*  ;  game:sand-red → game:sand-*
-        // Code with no dash falls back to exact match (no useful pattern to derive).
-        private static AssetLocation ToFuzzyPattern(AssetLocation code)
-        {
-            string path = code.Path;
-            int lastDash = path.LastIndexOf('-');
-            if (lastDash < 0) return code;
-            return new AssetLocation(code.Domain, path.Substring(0, lastDash + 1) + "*");
-        }
+        // Otherwise the stack matches if any active filter slot matches it.
+        public bool MatchesFilter(ItemStack stack) => ItemFilterMatcher.Matches(stack, filterInv, ActiveFilterSlotCount, whitelist, fuzzy);
 
         private void OnServerTick(float dt)
         {
@@ -243,6 +200,11 @@ namespace VintageKinematics.BlockEntities
             if (targetBe is BEBelt belt)
             {
                 return TryOutputToBelt(stack, belt);
+            }
+
+            if (targetBe is IAutomationItemSink sink)
+            {
+                return sink.TryAcceptFromFunnel(stack);
             }
 
             if (targetBe is not IBlockEntityContainer) return false;

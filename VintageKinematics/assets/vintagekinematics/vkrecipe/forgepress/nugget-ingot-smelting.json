@@ -1,0 +1,21 @@
+{
+	"ingredient": { "type": "item", "code": "game:nugget-*", "quantity": 20 },
+	"operationCode": "smelt-ingot",
+	"operationName": "Smelt Ingot",
+	"allowedVariants": [
+		"nativecopper",
+		"malachite",
+		"cassiterite",
+		"sphalerite",
+		"galena",
+		"bismuthinite",
+		"pentlandite",
+		"nativegold",
+		"nativesilver",
+		"chromite",
+		"platinum"
+	],
+	"useInputSmeltedStack": true,
+	"useInputSmeltingTemperature": true,
+	"pressTicks": 18
+}

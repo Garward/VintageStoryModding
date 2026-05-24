@@ -116,6 +116,29 @@ namespace VintageKinematics.Api
         public float ForgePressFuelUsageSpeed { get; set; } = 1f;
 
         /// <summary>
+        /// If true, the forge press may use an opt-in compatibility recipe that smelts
+        /// non-vanilla <c>nugget-*</c> items from enabled mod domains by reading their vanilla
+        /// combustible smelting data. Defaults false because some metallurgy mods intentionally
+        /// route nuggets through custom processing chains.
+        /// </summary>
+        public bool ForgePressEnableModdedNuggetSmelting { get; set; } = false;
+
+        /// <summary>
+        /// Per-mod-domain gates for the modded nugget smelting compatibility recipe. The generated
+        /// config seeds common metallurgy mod ids as false examples; set a domain to true after
+        /// confirming that mod's nuggets have ordinary combustible smelting data and no special
+        /// processing requirement.
+        /// </summary>
+        public Dictionary<string, bool> ForgePressModdedNuggetSmeltingMods { get; set; } = new Dictionary<string, bool>();
+
+        /// <summary>
+        /// Optional fine-grained allow-list for modded nugget smelting. Entries support wildcards
+        /// against full item codes, e.g. <c>"improvedmetallurgy:nugget-*"</c>. This still requires
+        /// <see cref="ForgePressEnableModdedNuggetSmelting"/> to be true.
+        /// </summary>
+        public List<string> ForgePressModdedNuggetSmeltingAllowedPatterns { get; set; } = new List<string>();
+
+        /// <summary>
         /// Fuel burn-rate multiplier for the coal motor. 1.0 = normal fuel duration,
         /// 2.0 = fuel burns twice as fast, 0.5 = fuel lasts twice as long.
         /// </summary>
@@ -198,6 +221,45 @@ namespace VintageKinematics.Api
         public float ResolveForgePressFuelUsageSpeed()
         {
             return ClampFuelUsageSpeed(ForgePressFuelUsageSpeed);
+        }
+
+        public bool HasForgePressModdedNuggetSmeltingEnabled()
+        {
+            if (!ForgePressEnableModdedNuggetSmelting) return false;
+
+            if (ForgePressModdedNuggetSmeltingMods != null)
+            {
+                foreach (var kvp in ForgePressModdedNuggetSmeltingMods)
+                {
+                    if (kvp.Value) return true;
+                }
+            }
+
+            return ForgePressModdedNuggetSmeltingAllowedPatterns != null && ForgePressModdedNuggetSmeltingAllowedPatterns.Count > 0;
+        }
+
+        public bool IsForgePressModdedNuggetSmeltingAllowed(AssetLocation itemCode)
+        {
+            if (!ForgePressEnableModdedNuggetSmelting || itemCode == null || itemCode.Domain == "game") return false;
+
+            if (ForgePressModdedNuggetSmeltingMods != null
+                && ForgePressModdedNuggetSmeltingMods.TryGetValue(itemCode.Domain, out bool domainEnabled)
+                && domainEnabled)
+            {
+                return true;
+            }
+
+            if (ForgePressModdedNuggetSmeltingAllowedPatterns != null)
+            {
+                string code = itemCode.ToString();
+                foreach (string rawPattern in ForgePressModdedNuggetSmeltingAllowedPatterns)
+                {
+                    if (string.IsNullOrWhiteSpace(rawPattern)) continue;
+                    if (WildcardUtil.Match(rawPattern.Trim(), code)) return true;
+                }
+            }
+
+            return false;
         }
 
         public float ResolveCoalMotorFuelUsageSpeed()

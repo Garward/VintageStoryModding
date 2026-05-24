@@ -16,6 +16,8 @@ namespace VintageKinematics.Gui
         private readonly string title;
         private readonly string[] details;
         private readonly string searchText;
+        private readonly string nameSearchText;
+        private readonly string ingredientSearchText;
         private LoadedTexture titleTexture;
         private LoadedTexture[] detailTextures = new LoadedTexture[0];
         private ElementBounds scissorBounds;
@@ -36,13 +38,17 @@ namespace VintageKinematics.Gui
                 int quantity = Math.Max(1, firstOutput?.StackSize ?? 1);
                 outputLabel = quantity == 1 ? recipe.DisplayName : quantity + "x " + recipe.DisplayName;
             }
+            else if (recipe?.UseInputSmeltedStack == true)
+            {
+                outputLabel = recipe.DisplayName;
+            }
 
             string variantLabel = VariantLabel(recipe);
             title = string.IsNullOrEmpty(outputLabel) ? recipe?.DisplayName ?? "Recipe" : outputLabel;
 
             var detailList = new List<string>
             {
-                string.Format("{0}  |  Input: {1}  |  {2:0} C", recipe?.DisplayName ?? "", IngredientLabel(recipe?.Ingredient), recipe?.RequiredTemperature ?? 0f)
+                string.Format("{0}  |  Input: {1}  |  {2}", recipe?.DisplayName ?? "", IngredientLabel(recipe?.Ingredient), TemperatureLabel(recipe))
             };
             if (recipe?.Die?.Code != null)
             {
@@ -53,14 +59,32 @@ namespace VintageKinematics.Gui
                 detailList.Add("Metals: " + variantLabel);
             }
             details = detailList.ToArray();
-            searchText = (title + "\n" + string.Join("\n", details) + "\n" + recipe?.OperationCode + "\n" + recipe?.Ingredient?.Code + "\n" + recipe?.Die?.Code + "\n" + firstOutput?.Code + "\n" + variantLabel).ToLowerInvariant();
+            nameSearchText = (title + "\n" + recipe?.DisplayName + "\n" + recipe?.OperationCode + "\n" + firstOutput?.Code).ToLowerInvariant();
+            ingredientSearchText = (string.Join("\n", details) + "\n" + recipe?.Ingredient?.Code + "\n" + recipe?.Die?.Code + "\n" + variantLabel).ToLowerInvariant();
+            searchText = (nameSearchText + "\n" + ingredientSearchText).ToLowerInvariant();
         }
 
         public bool Matches(string text)
         {
-            if (string.IsNullOrWhiteSpace(text)) return true;
-            return searchText.IndexOf(text.Trim().ToLowerInvariant(), StringComparison.Ordinal) >= 0;
+            return SearchScore(text) < int.MaxValue;
         }
+
+        public int SearchScore(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return 0;
+
+            string needle = text.Trim().ToLowerInvariant();
+            if (string.IsNullOrEmpty(needle)) return 0;
+
+            if (string.Equals(title, text.Trim(), StringComparison.OrdinalIgnoreCase)) return 1;
+            if (title?.StartsWith(text.Trim(), StringComparison.OrdinalIgnoreCase) == true) return 5;
+            if (nameSearchText.IndexOf(needle, StringComparison.Ordinal) >= 0) return 10;
+            if (ingredientSearchText.IndexOf(needle, StringComparison.Ordinal) >= 0) return 50;
+            if (searchText.IndexOf(needle, StringComparison.Ordinal) >= 0) return 100;
+            return int.MaxValue;
+        }
+
+        public string SortTitle => title ?? "";
 
         public void RenderListEntryTo(ICoreClientAPI capi, float dt, double x, double y, double cellWidth, double cellHeight)
         {
@@ -145,6 +169,12 @@ namespace VintageKinematics.Gui
             string label = StackLabel(ingredient?.ResolvedItemstack, ingredient?.Code?.ToString());
             int quantity = Math.Max(1, ingredient?.StackSize ?? 1);
             return quantity == 1 ? label : quantity + "x " + label;
+        }
+
+        private static string TemperatureLabel(KineticForgePressRecipe recipe)
+        {
+            if (recipe?.UseInputSmeltedStack == true && recipe.UseInputSmeltingTemperature) return "melt temp";
+            return string.Format("{0:0} C", recipe?.RequiredTemperature ?? 0f);
         }
 
         private static bool IsWildcardOutput(KineticForgePressRecipe recipe)

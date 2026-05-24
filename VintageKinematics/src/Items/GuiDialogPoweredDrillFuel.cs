@@ -9,7 +9,11 @@ namespace VintageKinematics.Items
 
         public override double DrawOrder => 0.2;
 
-        public GuiDialogPoweredDrillFuel(InventoryPoweredDrillFuel inventory, ICoreClientAPI capi) : base(Lang.Get("vintagekinematics:powereddrill-title"), capi)
+        public GuiDialogPoweredDrillFuel(InventoryPoweredDrillFuel inventory, ICoreClientAPI capi) : this(inventory, Lang.Get("vintagekinematics:powereddrill-title"), capi)
+        {
+        }
+
+        public GuiDialogPoweredDrillFuel(InventoryPoweredDrillFuel inventory, string title, ICoreClientAPI capi) : base(title, capi)
         {
             this.inventory = inventory;
             Compose();

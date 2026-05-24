@@ -1,0 +1,1948 @@
+{
+	"editor": {
+		"allAngles": false,
+		"entityTextureMode": false
+	},
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textureSizes": {},
+	"textures": {
+		"body": "game:block/metal/plate/brass",
+		"metal": "game:block/metal/ingot/iron",
+		"wood": "game:block/metal/ingot/iron",
+		"linen": "game:block/metal/ingot/iron"
+	},
+	"elements": [
+		{
+			"name": "handleAssembly",
+			"from": [
+				2.0,
+				7.5,
+				9.0
+			],
+			"to": [
+				13.5,
+				7.7,
+				10.0
+			],
+			"rotationOrigin": [
+				0.0,
+				0.0,
+				8.0
+			],
+			"faces": {
+				"north": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"east": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"south": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"west": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"up": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"down": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				}
+			},
+			"children": [
+				{
+					"name": "handle",
+					"from": [
+						-1.0,
+						-0.5,
+						-6.0
+					],
+					"to": [
+						0.0,
+						0.5,
+						1.0
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								10.5,
+								13.0,
+								11.5,
+								14.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								0.5,
+								12.0,
+								7.5,
+								13.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								6.5,
+								11.5,
+								7.5,
+								12.5
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								6.0,
+								0.0,
+								13.0,
+								1.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								1.0,
+								3.5,
+								8.0,
+								4.5
+							],
+							"rotation": 90
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								7.0,
+								4.0,
+								14.0,
+								5.0
+							],
+							"rotation": 90
+						}
+					}
+				},
+				{
+					"name": "handle15",
+					"from": [
+						11.5,
+						-0.5,
+						-6.0
+					],
+					"to": [
+						12.5,
+						0.5,
+						1.0
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								13.0,
+								9.0,
+								14.0,
+								10.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								7.5,
+								2.5,
+								14.5,
+								3.5
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								9.5,
+								9.5,
+								10.5,
+								10.5
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								8.5,
+								11.5,
+								15.5,
+								12.5
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								7.0,
+								11.5,
+								14.0,
+								12.5
+							],
+							"rotation": 90
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								6.5,
+								9.0,
+								13.5,
+								10.0
+							],
+							"rotation": 90
+						}
+					}
+				},
+				{
+					"name": "handle16",
+					"from": [
+						0.0,
+						-0.5,
+						-3.0
+					],
+					"to": [
+						11.5,
+						0.5,
+						-2.0
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.5,
+								7.0,
+								12.0,
+								8.0
+							]
+						},
+						"east": {
+							"texture": "#null",
+							"uv": [
+								0.0,
+								0.0,
+								1.0,
+								1.0
+							],
+							"enabled": false
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								2.0,
+								1.5,
+								13.5,
+								2.5
+							]
+						},
+						"west": {
+							"texture": "#null",
+							"uv": [
+								0.0,
+								0.0,
+								1.0,
+								1.0
+							],
+							"enabled": false
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								4.0,
+								11.5,
+								5.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								3.5,
+								5.0,
+								15.0,
+								6.0
+							]
+						}
+					}
+				},
+				{
+					"name": "handle17",
+					"from": [
+						5.5,
+						-0.5,
+						-6.0
+					],
+					"to": [
+						6.5,
+						0.5,
+						-3.0
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								4.5,
+								5.5,
+								5.5,
+								6.5
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								5.5,
+								9.5,
+								8.5,
+								10.5
+							]
+						},
+						"south": {
+							"texture": "#null",
+							"uv": [
+								0.0,
+								0.0,
+								1.0,
+								1.0
+							],
+							"enabled": false
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								2.0,
+								8.0,
+								5.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								6.0,
+								0.0,
+								9.0,
+								1.0
+							],
+							"rotation": 90
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								10.5,
+								3.0,
+								13.5,
+								4.0
+							],
+							"rotation": 90
+						}
+					}
+				},
+				{
+					"name": "linen",
+					"from": [
+						0.0,
+						-0.4,
+						-5.0
+					],
+					"to": [
+						11.5,
+						0.1,
+						-4.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								2.0,
+								5.0,
+								13.5,
+								5.5
+							]
+						},
+						"east": {
+							"texture": "#null",
+							"uv": [
+								0.0,
+								0.0,
+								0.5,
+								0.5
+							],
+							"enabled": false
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								1.0,
+								4.5,
+								12.5,
+								5.0
+							]
+						},
+						"west": {
+							"texture": "#null",
+							"uv": [
+								0.0,
+								0.0,
+								0.5,
+								0.5
+							],
+							"enabled": false
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								12.5,
+								11.5,
+								13.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								9.5,
+								14.5,
+								10.0
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "motorBody",
+			"from": [
+				8.4,
+				5.5,
+				5.7
+			],
+			"to": [
+				13.4,
+				10.5,
+				11.3
+			],
+			"faces": {
+				"north": {
+					"texture": "#body",
+					"uv": [
+						8.0,
+						5.0,
+						13.0,
+						10.0
+					]
+				},
+				"east": {
+					"texture": "#body",
+					"uv": [
+						5.0,
+						5.0,
+						11.0,
+						10.0
+					]
+				},
+				"south": {
+					"texture": "#body",
+					"uv": [
+						8.0,
+						5.0,
+						13.0,
+						10.0
+					]
+				},
+				"west": {
+					"texture": "#body",
+					"uv": [
+						5.0,
+						5.0,
+						11.0,
+						10.0
+					]
+				},
+				"up": {
+					"texture": "#body",
+					"uv": [
+						8.0,
+						5.0,
+						13.0,
+						11.0
+					]
+				},
+				"down": {
+					"texture": "#body",
+					"uv": [
+						8.0,
+						5.0,
+						13.0,
+						11.0
+					]
+				}
+			}
+		},
+		{
+			"name": "bladeShaft",
+			"from": [
+				13.2,
+				7.25,
+				7.25
+			],
+			"to": [
+				16.0,
+				8.75,
+				9.75
+			],
+			"faces": {
+				"north": {
+					"texture": "#metal",
+					"uv": [
+						13.0,
+						7.0,
+						16.0,
+						9.0
+					]
+				},
+				"east": {
+					"texture": "#metal",
+					"uv": [
+						7.0,
+						7.0,
+						10.0,
+						9.0
+					]
+				},
+				"south": {
+					"texture": "#metal",
+					"uv": [
+						13.0,
+						7.0,
+						16.0,
+						9.0
+					]
+				},
+				"west": {
+					"texture": "#metal",
+					"uv": [
+						7.0,
+						7.0,
+						10.0,
+						9.0
+					]
+				},
+				"up": {
+					"texture": "#metal",
+					"uv": [
+						13.0,
+						7.0,
+						16.0,
+						10.0
+					]
+				},
+				"down": {
+					"texture": "#metal",
+					"uv": [
+						13.0,
+						7.0,
+						16.0,
+						10.0
+					]
+				}
+			}
+		},
+		{
+			"name": "blade",
+			"from": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"to": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"rotationOrigin": [
+				15.7,
+				8.0,
+				8.5
+			],
+			"faces": {
+				"north": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"east": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"south": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"west": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"up": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				},
+				"down": {
+					"texture": "#null",
+					"uv": [
+						0.0,
+						0.0,
+						0.5,
+						0.5
+					],
+					"enabled": false
+				}
+			},
+			"children": [
+				{
+					"name": "bladeStrip00",
+					"from": [
+						15.615,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.675,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					}
+				},
+				{
+					"name": "bladeStrip01",
+					"from": [
+						15.625,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.685,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 11.25
+				},
+				{
+					"name": "bladeStrip02",
+					"from": [
+						15.635,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.695,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 22.5
+				},
+				{
+					"name": "bladeStrip03",
+					"from": [
+						15.645,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.705,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 33.75
+				},
+				{
+					"name": "bladeStrip04",
+					"from": [
+						15.655,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.715,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 45.0
+				},
+				{
+					"name": "bladeStrip05",
+					"from": [
+						15.665,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.725,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 56.25
+				},
+				{
+					"name": "bladeStrip06",
+					"from": [
+						15.675,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.735,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 67.5
+				},
+				{
+					"name": "bladeStrip07",
+					"from": [
+						15.685,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.745,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 78.75
+				},
+				{
+					"name": "bladeStrip08",
+					"from": [
+						15.695,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.755,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 90.0
+				},
+				{
+					"name": "bladeStrip09",
+					"from": [
+						15.705,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.765,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 101.25
+				},
+				{
+					"name": "bladeStrip10",
+					"from": [
+						15.715,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.775,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 112.5
+				},
+				{
+					"name": "bladeStrip11",
+					"from": [
+						15.725,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.785,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 123.75
+				},
+				{
+					"name": "bladeStrip12",
+					"from": [
+						15.735,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.795,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 135.0
+				},
+				{
+					"name": "bladeStrip13",
+					"from": [
+						15.745,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.805,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 146.25
+				},
+				{
+					"name": "bladeStrip14",
+					"from": [
+						15.755,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.815,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 157.5
+				},
+				{
+					"name": "bladeStrip15",
+					"from": [
+						15.765,
+						2.85,
+						7.925
+					],
+					"to": [
+						15.825,
+						13.15,
+						9.075
+					],
+					"rotationOrigin": [
+						15.72,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"east": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"south": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"west": {
+							"texture": "#metal",
+							"uv": [
+								3.0,
+								7.0,
+								13.0,
+								9.0
+							]
+						},
+						"up": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						},
+						"down": {
+							"texture": "#metal",
+							"uv": [
+								0.0,
+								7.0,
+								1.0,
+								9.0
+							]
+						}
+					},
+					"rotationX": 168.75
+				},
+				{
+					"name": "bladeHub",
+					"from": [
+						15.1,
+						6.8,
+						7.3
+					],
+					"to": [
+						16.4,
+						9.2,
+						9.7
+					],
+					"rotationOrigin": [
+						15.7,
+						8.0,
+						8.5
+					],
+					"faces": {
+						"north": {
+							"texture": "#body",
+							"uv": [
+								7.0,
+								7.0,
+								10.0,
+								10.0
+							]
+						},
+						"east": {
+							"texture": "#body",
+							"uv": [
+								7.0,
+								7.0,
+								10.0,
+								10.0
+							]
+						},
+						"south": {
+							"texture": "#body",
+							"uv": [
+								7.0,
+								7.0,
+								10.0,
+								10.0
+							]
+						},
+						"west": {
+							"texture": "#body",
+							"uv": [
+								7.0,
+								7.0,
+								10.0,
+								10.0
+							]
+						},
+						"up": {
+							"texture": "#body",
+							"uv": [
+								7.0,
+								7.0,
+								10.0,
+								10.0
+							]
+						},
+						"down": {
+							"texture": "#body",
+							"uv": [
+								7.0,
+								7.0,
+								10.0,
+								10.0
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

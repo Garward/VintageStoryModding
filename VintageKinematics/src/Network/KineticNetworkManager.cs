@@ -16,6 +16,7 @@ namespace VintageKinematics.Network
         private readonly Dictionary<long, KineticNetwork> networks = new Dictionary<long, KineticNetwork>();
         private readonly Dictionary<BlockPos, long> posToNetwork = new Dictionary<BlockPos, long>();
         private readonly object lockObj = new object();
+        private const long TransientStressTtlMs = 500;
 
         public event Action<KineticNetwork> NetworkBuilt;
         public event Action<KineticNetwork> NetworkRemoved;
@@ -43,6 +44,7 @@ namespace VintageKinematics.Network
             // (windmill catching wind, water wheel under load) and we have no event hook into
             // them, so we sample and push updates into VK only when the change is meaningful.
             sapi.Event.RegisterGameTickListener(_ => PollVanillaBridgeSources(), 250);
+            sapi.Event.RegisterGameTickListener(_ => PurgeTransientStressLoads(), 250);
             sapi.ChatCommands
                 .Create("vk")
                 .WithDescription("Vintage Kinematics debug commands")
@@ -103,6 +105,33 @@ namespace VintageKinematics.Network
                 networks.TryGetValue(id, out KineticNetwork net);
                 return net;
             }
+        }
+
+        public bool TryApplyTransientStress(BlockPos pos, string key, float stressImpact, out float localRpm)
+        {
+            localRpm = 0f;
+            if (api?.Side != EnumAppSide.Server || pos == null || string.IsNullOrEmpty(key)) return false;
+
+            KineticNetwork net = GetNetworkAt(pos);
+            if (net == null || net.IsConflicted || MathF.Abs(net.SourceRPM) < KineticNetwork.MinAbsRPM) return false;
+            if (!net.Nodes.TryGetValue(pos, out KineticNode node)) return false;
+
+            float rawLocalRpm = net.ApplyRPMCap(net.SourceRPM * node.Ratio * node.Direction);
+            if (MathF.Abs(rawLocalRpm) < KineticNetwork.MinAbsRPM) return false;
+
+            net.TransientStressLoads[key] = new TransientStressLoad
+            {
+                StressUnits = MathF.Max(0f, stressImpact) * MathF.Abs(rawLocalRpm),
+                ExpiresMs = api.World.ElapsedMilliseconds + TransientStressTtlMs
+            };
+
+            net.RecomputeStressForRPM(net.SourceRPM);
+            PropagateNetworkState(net);
+
+            if (net.IsOverstressed) return false;
+
+            localRpm = MathF.Abs(rawLocalRpm);
+            return true;
         }
 
         public long AllocateNetworkId()
@@ -385,6 +414,33 @@ namespace VintageKinematics.Network
                     net.RecomputeStressForRPM(net.SourceRPM);
                     PropagateNetworkState(net);
                 }
+            }
+        }
+
+        private void PurgeTransientStressLoads()
+        {
+            if (api.Side != EnumAppSide.Server) return;
+
+            long now = api.World.ElapsedMilliseconds;
+            System.Collections.Generic.List<KineticNetwork> changed = null;
+            lock (lockObj) { changed = new System.Collections.Generic.List<KineticNetwork>(networks.Values); }
+
+            foreach (var net in changed)
+            {
+                if (net.TransientStressLoads.Count == 0) continue;
+
+                bool removed = false;
+                var keys = new System.Collections.Generic.List<string>(net.TransientStressLoads.Keys);
+                foreach (string key in keys)
+                {
+                    if (net.TransientStressLoads[key].ExpiresMs > now) continue;
+                    net.TransientStressLoads.Remove(key);
+                    removed = true;
+                }
+
+                if (!removed) continue;
+                net.RecomputeStressForRPM(net.SourceRPM);
+                PropagateNetworkState(net);
             }
         }
 

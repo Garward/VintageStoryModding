@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Vintagestory.API.Common;
+using VintageKinematics.Api;
 
 namespace VintageKinematics.Crafting
 {
@@ -11,6 +12,8 @@ namespace VintageKinematics.Crafting
         private readonly List<KineticForgePressRecipe> recipes = new List<KineticForgePressRecipe>();
         private readonly List<string> operationCodes = new List<string>();
         private readonly List<string> operationNames = new List<string>();
+        private VintageKinematicsConfig config;
+        private ICoreAPI api;
 
         public IReadOnlyList<KineticForgePressRecipe> Recipes => recipes;
         public IReadOnlyList<string> OperationCodes => operationCodes;
@@ -21,14 +24,17 @@ namespace VintageKinematics.Crafting
         public override void AssetsFinalize(ICoreAPI api)
         {
             base.AssetsFinalize(api);
+            this.api = api;
             recipes.Clear();
             operationCodes.Clear();
             operationNames.Clear();
+            config = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config ?? new VintageKinematicsConfig();
             var assets = api.Assets.GetMany<KineticForgePressRecipe>(api.Logger, "vkrecipe/forgepress/");
             foreach (var entry in assets)
             {
                 var recipe = entry.Value;
                 if (recipe == null) continue;
+                if (recipe.RequiresModdedNuggetSmeltingConfig && config.HasForgePressModdedNuggetSmeltingEnabled() != true) continue;
                 if (recipe.Resolve(api.World, entry.Key.ToString()))
                 {
                     if (string.IsNullOrEmpty(recipe.OperationCode)) recipe.OperationCode = "press";
@@ -54,7 +60,7 @@ namespace VintageKinematics.Crafting
             if (stack == null) return null;
             foreach (var recipe in recipes)
             {
-                if (recipe.Matches(stack, operationCode, dieStack)) return recipe;
+                if (recipe.Matches(api?.World, config, stack, operationCode, dieStack)) return recipe;
             }
             return null;
         }

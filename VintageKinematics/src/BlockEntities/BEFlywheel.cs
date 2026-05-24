@@ -49,6 +49,8 @@ namespace VintageKinematics.BlockEntities
 
         public float StoredEnergy01 => GameMath.Clamp(storedSeconds / maxStoredSeconds, 0f, 1f);
 
+        public float StoredSeconds => storedSeconds;
+
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
@@ -475,6 +477,17 @@ namespace VintageKinematics.BlockEntities
                 }
             }
             return selected;
+        }
+
+        public void SetStoredSecondsFromItem(float seconds)
+        {
+            storedSeconds = GameMath.Clamp(seconds, 0f, maxStoredSeconds);
+            spinRPM = storedSeconds > minReleaseSeconds ? maxOutputRPM : 0f;
+            spinDirection = 1;
+            releaseMode = false;
+            burstMultiplier = NormalizeBurstMultiplier(burstMultiplier, maxBurstMultiplier);
+            ApplyModeToKinetic(false);
+            MarkDirty(true);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)

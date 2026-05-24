@@ -308,7 +308,7 @@ namespace VintageKinematics.Gui
             foreach (KineticForgePressRecipe recipe in registry.Recipes)
             {
                 var item = new ForgePressRecipeListItem(recipe);
-                if (item.Matches(recipeSearchText))
+                if (item.SearchScore(recipeSearchText) < int.MaxValue)
                 {
                     items.Add(item);
                 }
@@ -317,6 +317,13 @@ namespace VintageKinematics.Gui
                     item.Dispose();
                 }
             }
+
+            items.Sort((left, right) =>
+            {
+                int scoreCompare = left.SearchScore(recipeSearchText).CompareTo(right.SearchScore(recipeSearchText));
+                if (scoreCompare != 0) return scoreCompare;
+                return string.Compare(left.SortTitle, right.SortTitle, StringComparison.OrdinalIgnoreCase);
+            });
 
             return items;
         }
