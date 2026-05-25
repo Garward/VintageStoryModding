@@ -12,13 +12,13 @@ namespace VintageKinematics.Rendering
         private readonly ICoreClientAPI capi;
         private readonly BlockPos pos;
         private readonly BEBehaviorKinetic kinetic;
-        private MeshRef meshRef;
+        private MultiTextureMeshRef meshRef;
         private readonly Matrixf modelMat = new Matrixf();
 
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
 
-        public KineticRotationRenderer(ICoreClientAPI capi, BlockPos pos, BEBehaviorKinetic kinetic, MeshRef meshRef)
+        public KineticRotationRenderer(ICoreClientAPI capi, BlockPos pos, BEBehaviorKinetic kinetic, MultiTextureMeshRef meshRef)
         {
             this.capi = capi;
             this.pos = pos;
@@ -44,7 +44,8 @@ namespace VintageKinematics.Rendering
             rpi.GlToggleBlend(true);
 
             IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
+            prog.ViewMatrix = rpi.CameraMatrixOriginf;
+            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
             modelMat.Identity()
                 .Translate((float)(pos.X - camPos.X), (float)(pos.Y - camPos.Y), (float)(pos.Z - camPos.Z))
@@ -60,10 +61,8 @@ namespace VintageKinematics.Rendering
             modelMat.Translate(-0.5f, -0.5f, -0.5f);
 
             prog.ModelMatrix = modelMat.Values;
-            prog.ViewMatrix = rpi.CameraMatrixOriginf;
-            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
-            rpi.RenderMesh(meshRef);
+            rpi.RenderMultiTextureMesh(meshRef, "tex");
             prog.Stop();
         }
 

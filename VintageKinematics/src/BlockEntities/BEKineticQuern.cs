@@ -251,7 +251,7 @@ namespace VintageKinematics.BlockEntities
             private readonly ICoreClientAPI capi;
             private readonly BlockPos pos;
             private readonly BEKineticQuern quern;
-            private readonly MeshRef meshRef;
+            private readonly MultiTextureMeshRef meshRef;
             private readonly Matrixf modelMat = new Matrixf();
 
             public double RenderOrder => 0.5;
@@ -263,7 +263,7 @@ namespace VintageKinematics.BlockEntities
                 this.capi = capi;
                 this.pos = pos;
                 this.quern = quern;
-                meshRef = capi.Render.UploadMesh(mesh);
+                meshRef = capi.Render.UploadMultiTextureMesh(mesh);
             }
 
             public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
@@ -277,7 +277,6 @@ namespace VintageKinematics.BlockEntities
                 rpi.GlToggleBlend(true);
 
                 IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-                prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
                 prog.ModelMatrix = modelMat
                     .Identity()
                     .Translate((float)(pos.X - camPos.X), (float)(pos.Y - camPos.Y), (float)(pos.Z - camPos.Z))
@@ -287,7 +286,7 @@ namespace VintageKinematics.BlockEntities
                     .Values;
                 prog.ViewMatrix = rpi.CameraMatrixOriginf;
                 prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
-                rpi.RenderMesh(meshRef);
+                rpi.RenderMultiTextureMesh(meshRef, "tex");
                 prog.Stop();
 
                 BEBehaviorKinetic beh = quern.GetBehavior<BEBehaviorKinetic>();

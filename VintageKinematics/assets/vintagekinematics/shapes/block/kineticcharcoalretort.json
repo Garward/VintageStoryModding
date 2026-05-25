@@ -28,6 +28,15 @@
                 31
             ],
             "faces": {
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        46,
+                        2
+                    ]
+                },
                 "north": {
                     "texture": "#steel",
                     "uv": [
@@ -47,15 +56,6 @@
                     ]
                 },
                 "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        46,
-                        2
-                    ]
-                },
-                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -85,19 +85,19 @@
             }
         },
         {
-            "name": "frontSkid",
+            "name": "westSkid",
             "from": [
-                -14,
+                -13,
                 2,
-                -13
+                -14
             ],
             "to": [
-                30,
+                -10,
                 4,
-                -10
+                30
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -106,7 +106,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -115,7 +115,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -124,7 +124,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -154,19 +154,19 @@
             }
         },
         {
-            "name": "rearSkid",
+            "name": "eastSkid",
             "from": [
-                -14,
+                26,
                 2,
-                26
+                -14
             ],
             "to": [
-                30,
+                29,
                 4,
-                29
+                30
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -175,7 +175,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -184,7 +184,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -193,7 +193,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -223,19 +223,19 @@
             }
         },
         {
-            "name": "crossBraceLeft",
+            "name": "crossBraceSouth",
             "from": [
-                -11,
+                -10,
                 2.2,
-                -10
+                24
             ],
             "to": [
-                -8,
+                26,
                 4.2,
-                26
+                27
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -244,7 +244,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -253,7 +253,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -262,7 +262,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -294,17 +294,17 @@
         {
             "name": "crossBraceCenter",
             "from": [
-                6.5,
+                -10,
                 2.2,
-                -10
+                6.5
             ],
             "to": [
-                9.5,
+                26,
                 4.2,
-                26
+                9.5
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -313,7 +313,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -322,7 +322,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -331,7 +331,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -361,19 +361,19 @@
             }
         },
         {
-            "name": "crossBraceRight",
+            "name": "crossBraceNorth",
             "from": [
-                24,
+                -10,
                 2.2,
-                -10
+                -11
             ],
             "to": [
-                27,
+                26,
                 4.2,
-                26
+                -8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -382,7 +382,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -391,7 +391,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -400,7 +400,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -432,17 +432,17 @@
         {
             "name": "fireboxShell",
             "from": [
-                -12,
+                -11,
                 4,
-                -11
+                -12
             ],
             "to": [
-                28,
+                11,
                 12.8,
-                11
+                28
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -451,7 +451,7 @@
                         8.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -460,7 +460,7 @@
                         8.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -469,7 +469,7 @@
                         8.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -499,19 +499,19 @@
             }
         },
         {
-            "name": "fireboxFrontDoor",
+            "name": "fireboxWestDoor",
             "from": [
-                2,
+                -11.45,
                 5.4,
-                -11.45
+                2
             ],
             "to": [
-                14,
+                -10.95,
                 11.2,
-                -10.95
+                14
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -520,7 +520,7 @@
                         5.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -529,7 +529,7 @@
                         5.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -538,7 +538,7 @@
                         5.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -570,17 +570,17 @@
         {
             "name": "fireboxDoorFrameTop",
             "from": [
-                1,
+                -11.55,
                 11.1,
-                -11.55
+                1
             ],
             "to": [
-                15,
+                -10.75,
                 12.2,
-                -10.75
+                15
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -589,7 +589,7 @@
                         1.1
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -598,7 +598,7 @@
                         1.1
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -607,7 +607,7 @@
                         1.1
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -639,17 +639,17 @@
         {
             "name": "fireboxDoorFrameBottom",
             "from": [
-                1,
+                -11.55,
                 4.4,
-                -11.55
+                1
             ],
             "to": [
-                15,
+                -10.75,
                 5.5,
-                -10.75
+                15
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -658,7 +658,7 @@
                         1.1
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -667,7 +667,7 @@
                         1.1
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -676,7 +676,7 @@
                         1.1
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -706,19 +706,19 @@
             }
         },
         {
-            "name": "fireboxDoorFrameLeft",
+            "name": "fireboxDoorFrameSouth",
             "from": [
-                0.8,
+                -11.55,
                 4.4,
-                -11.55
+                14
             ],
             "to": [
-                2,
+                -10.75,
                 12.2,
-                -10.75
+                15.2
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -727,7 +727,7 @@
                         7.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -736,7 +736,7 @@
                         7.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -745,7 +745,7 @@
                         7.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -775,19 +775,19 @@
             }
         },
         {
-            "name": "fireboxDoorFrameRight",
+            "name": "fireboxDoorFrameNorth",
             "from": [
-                14,
+                -11.55,
                 4.4,
-                -11.55
+                0.8
             ],
             "to": [
-                15.2,
+                -10.75,
                 12.2,
-                -10.75
+                2
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -796,7 +796,7 @@
                         7.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -805,7 +805,7 @@
                         7.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -814,7 +814,7 @@
                         7.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -846,17 +846,17 @@
         {
             "name": "ashTray",
             "from": [
-                4,
+                -11.8,
                 2.3,
-                -11.8
+                4
             ],
             "to": [
-                12,
+                -10.8,
                 4.4,
-                -10.8
+                12
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -865,7 +865,7 @@
                         2.1
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -874,7 +874,7 @@
                         2.1
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -883,7 +883,7 @@
                         2.1
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -915,17 +915,17 @@
         {
             "name": "emberGrate",
             "from": [
-                -10,
+                -8,
                 12.9,
-                -8
+                -10
             ],
             "to": [
-                26,
+                8,
                 13.35,
-                8
+                26
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -934,7 +934,7 @@
                         0.45
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -943,7 +943,7 @@
                         0.45
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -952,7 +952,7 @@
                         0.45
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -984,17 +984,17 @@
         {
             "name": "retortBody",
             "from": [
-                -11,
+                -8,
                 14,
-                -8
+                -11
             ],
             "to": [
-                27,
+                8,
                 25,
-                8
+                27
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1003,7 +1003,7 @@
                         11
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1012,7 +1012,7 @@
                         11
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1021,7 +1021,7 @@
                         11
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1053,17 +1053,17 @@
         {
             "name": "retortTopFacet",
             "from": [
-                -9,
+                -6,
                 25,
-                -6
+                -9
             ],
             "to": [
-                25,
+                6,
                 28,
-                6
+                25
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1072,7 +1072,7 @@
                         3
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1081,7 +1081,7 @@
                         3
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1090,7 +1090,7 @@
                         3
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1122,17 +1122,17 @@
         {
             "name": "retortBottomFacet",
             "from": [
-                -9,
+                -6,
                 12.5,
-                -6
+                -9
             ],
             "to": [
-                25,
+                6,
                 14.1,
-                6
+                25
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1141,7 +1141,7 @@
                         1.6
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1150,7 +1150,7 @@
                         1.6
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1159,7 +1159,7 @@
                         1.6
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1189,19 +1189,19 @@
             }
         },
         {
-            "name": "retortFrontFacet",
+            "name": "retortWestFacet",
             "from": [
-                -11,
+                -10,
                 16,
-                -10
+                -11
             ],
             "to": [
-                27,
+                -8,
                 23,
-                -8
+                27
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1210,7 +1210,7 @@
                         7
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1219,7 +1219,7 @@
                         7
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1228,7 +1228,7 @@
                         7
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1258,19 +1258,19 @@
             }
         },
         {
-            "name": "retortBackFacet",
+            "name": "retortEastFacet",
             "from": [
-                -11,
+                8,
                 16,
-                8
+                -11
             ],
             "to": [
-                27,
+                10,
                 23,
-                10
+                27
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1279,7 +1279,7 @@
                         7
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1288,7 +1288,7 @@
                         7
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1297,7 +1297,7 @@
                         7
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1327,19 +1327,19 @@
             }
         },
         {
-            "name": "leftEndCap",
+            "name": "southEndCap",
             "from": [
-                -12.2,
+                -8,
                 14,
-                -8
+                26.9
             ],
             "to": [
-                -10.9,
+                8,
                 25.5,
-                8
+                28.2
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1348,7 +1348,7 @@
                         11.5
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1357,7 +1357,7 @@
                         11.5
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1366,7 +1366,7 @@
                         11.5
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1396,19 +1396,19 @@
             }
         },
         {
-            "name": "rightEndCap",
+            "name": "northEndCap",
             "from": [
-                26.9,
+                -8,
                 14,
-                -8
+                -12.2
             ],
             "to": [
-                28.2,
+                8,
                 25.5,
-                8
+                -10.9
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1417,7 +1417,7 @@
                         11.5
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1426,7 +1426,7 @@
                         11.5
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1435,7 +1435,7 @@
                         11.5
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1465,19 +1465,19 @@
             }
         },
         {
-            "name": "frontLoadingHatch",
+            "name": "westLoadingHatch",
             "from": [
-                -4,
+                -10.55,
                 15.1,
-                -10.55
+                -4
             ],
             "to": [
-                20,
+                -9.9,
                 24.2,
-                -9.9
+                20
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -1486,7 +1486,7 @@
                         9.1
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -1495,7 +1495,7 @@
                         9.1
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -1504,7 +1504,7 @@
                         9.1
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -1536,17 +1536,17 @@
         {
             "name": "hatchFrameTop",
             "from": [
-                -5,
+                -10.7,
                 23.8,
-                -10.7
+                -5
             ],
             "to": [
-                21,
+                -9.6,
                 25,
-                -9.6
+                21
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1555,7 +1555,7 @@
                         1.2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1564,7 +1564,7 @@
                         1.2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1573,7 +1573,7 @@
                         1.2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1605,17 +1605,17 @@
         {
             "name": "hatchFrameBottom",
             "from": [
-                -5,
+                -10.7,
                 14.2,
-                -10.7
+                -5
             ],
             "to": [
-                21,
+                -9.6,
                 15.4,
-                -9.6
+                21
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1624,7 +1624,7 @@
                         1.2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1633,7 +1633,7 @@
                         1.2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1642,7 +1642,7 @@
                         1.2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1672,19 +1672,19 @@
             }
         },
         {
-            "name": "hatchFrameLeft",
+            "name": "hatchFrameSouth",
             "from": [
-                -5.2,
+                -10.7,
                 14.2,
-                -10.7
+                19.8
             ],
             "to": [
-                -3.8,
+                -9.6,
                 25,
-                -9.6
+                21.2
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1693,7 +1693,7 @@
                         10.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1702,7 +1702,7 @@
                         10.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1711,7 +1711,7 @@
                         10.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1741,19 +1741,19 @@
             }
         },
         {
-            "name": "hatchFrameRight",
+            "name": "hatchFrameNorth",
             "from": [
-                19.8,
+                -10.7,
                 14.2,
-                -10.7
+                -5.2
             ],
             "to": [
-                21.2,
+                -9.6,
                 25,
-                -9.6
+                -3.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1762,7 +1762,7 @@
                         10.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1771,7 +1771,7 @@
                         10.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1780,7 +1780,7 @@
                         10.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -1812,17 +1812,17 @@
         {
             "name": "hatchSealBarUpper",
             "from": [
-                -2,
+                -10.85,
                 21.2,
-                -10.85
+                -2
             ],
             "to": [
-                18,
+                -9.65,
                 22.2,
-                -9.65
+                18
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1831,7 +1831,7 @@
                         1
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1840,7 +1840,7 @@
                         1
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1849,7 +1849,7 @@
                         1
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1881,17 +1881,17 @@
         {
             "name": "hatchSealBarLower",
             "from": [
-                -2,
+                -10.85,
                 17.2,
-                -10.85
+                -2
             ],
             "to": [
-                18,
+                -9.65,
                 18.2,
-                -9.65
+                18
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1900,7 +1900,7 @@
                         1
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1909,7 +1909,7 @@
                         1
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1918,7 +1918,7 @@
                         1
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#copper",
                     "uv": [
                         0,
@@ -1948,19 +1948,19 @@
             }
         },
         {
-            "name": "hatchHandleLeft",
+            "name": "hatchHandleSouth",
             "from": [
-                -1,
+                -11.35,
                 18.5,
-                -11.35
+                15.5
             ],
             "to": [
-                0.5,
+                -10.65,
                 20.9,
-                -10.65
+                17
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1969,7 +1969,7 @@
                         2.4
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1978,7 +1978,7 @@
                         2.4
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -1987,7 +1987,7 @@
                         2.4
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2017,19 +2017,19 @@
             }
         },
         {
-            "name": "hatchHandleRight",
+            "name": "hatchHandleNorth",
             "from": [
-                15.5,
+                -11.35,
                 18.5,
-                -11.35
+                -1
             ],
             "to": [
-                17,
+                -10.65,
                 20.9,
-                -10.65
+                0.5
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2038,7 +2038,7 @@
                         2.4
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2047,7 +2047,7 @@
                         2.4
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2056,7 +2056,7 @@
                         2.4
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2088,17 +2088,17 @@
         {
             "name": "charcoalInspectionSlotA",
             "from": [
-                4,
+                -11,
                 19.2,
-                -11
+                9.5
             ],
             "to": [
-                6.5,
+                -10.4,
                 20.1,
-                -10.4
+                12
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2107,7 +2107,7 @@
                         0.9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2116,7 +2116,7 @@
                         0.9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2125,7 +2125,7 @@
                         0.9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2157,17 +2157,17 @@
         {
             "name": "charcoalInspectionSlotB",
             "from": [
-                9.5,
+                -11,
                 19.2,
-                -11
+                4
             ],
             "to": [
-                12,
+                -10.4,
                 20.1,
-                -10.4
+                6.5
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2176,7 +2176,7 @@
                         0.9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2185,7 +2185,7 @@
                         0.9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2194,7 +2194,7 @@
                         0.9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#dark",
                     "uv": [
                         0,
@@ -2224,11 +2224,11 @@
             }
         },
         {
-            "name": "rearServiceDeck",
+            "name": "eastServiceDeck",
             "from": [
-                -12,
+                15,
                 2.1,
-                15
+                -12
             ],
             "to": [
                 28,
@@ -2236,7 +2236,7 @@
                 28
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2245,7 +2245,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2254,7 +2254,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2263,7 +2263,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -2288,627 +2288,6 @@
                         0,
                         40,
                         13
-                    ]
-                }
-            }
-        },
-        {
-            "name": "rearFlueManifold",
-            "from": [
-                -10,
-                15,
-                14
-            ],
-            "to": [
-                26,
-                23,
-                30
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        36,
-                        8
-                    ]
-                },
-                "east": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        8
-                    ]
-                },
-                "south": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        36,
-                        8
-                    ]
-                },
-                "west": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        16,
-                        8
-                    ]
-                },
-                "up": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        36,
-                        16
-                    ]
-                },
-                "down": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        36,
-                        16
-                    ]
-                }
-            }
-        },
-        {
-            "name": "leftDraftNozzle",
-            "from": [
-                -6,
-                7,
-                29.7
-            ],
-            "to": [
-                0,
-                13,
-                31.7
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        6
-                    ]
-                },
-                "east": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        6
-                    ]
-                },
-                "south": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        6
-                    ]
-                },
-                "west": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        6
-                    ]
-                },
-                "up": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "rightDraftNozzle",
-            "from": [
-                16,
-                7,
-                29.7
-            ],
-            "to": [
-                22,
-                13,
-                31.7
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        6
-                    ]
-                },
-                "east": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        6
-                    ]
-                },
-                "south": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        6
-                    ]
-                },
-                "west": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        6
-                    ]
-                },
-                "up": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#copper",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "exhaustStack",
-            "from": [
-                22,
-                22,
-                25
-            ],
-            "to": [
-                27,
-                31.4,
-                30
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        5,
-                        9.4
-                    ]
-                },
-                "east": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        5,
-                        9.4
-                    ]
-                },
-                "south": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        5,
-                        9.4
-                    ]
-                },
-                "west": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        5,
-                        9.4
-                    ]
-                },
-                "up": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        5,
-                        5
-                    ]
-                },
-                "down": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        5,
-                        5
-                    ]
-                }
-            }
-        },
-        {
-            "name": "exhaustStackCap",
-            "from": [
-                21,
-                31.2,
-                24
-            ],
-            "to": [
-                28,
-                32,
-                31
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        0.8
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        0.8
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        0.8
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        0.8
-                    ]
-                },
-                "up": {
-                    "texture": "#dark",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        7
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        7
-                    ]
-                }
-            }
-        },
-        {
-            "name": "stackCollarFront",
-            "from": [
-                21,
-                21.2,
-                24.2
-            ],
-            "to": [
-                28,
-                23,
-                25.2
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1.8
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1.8
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1
-                    ]
-                }
-            }
-        },
-        {
-            "name": "stackCollarBack",
-            "from": [
-                21,
-                21.2,
-                29.8
-            ],
-            "to": [
-                28,
-                23,
-                30.8
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1.8
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1.8
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        7,
-                        1
-                    ]
-                }
-            }
-        },
-        {
-            "name": "stackCollarLeft",
-            "from": [
-                21,
-                21.2,
-                25.2
-            ],
-            "to": [
-                22,
-                23,
-                29.8
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        4.6,
-                        1.8
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        4.6,
-                        1.8
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        4.6
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        4.6
-                    ]
-                }
-            }
-        },
-        {
-            "name": "stackCollarRight",
-            "from": [
-                27,
-                21.2,
-                25.2
-            ],
-            "to": [
-                28,
-                23,
-                29.8
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        4.6,
-                        1.8
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        1.8
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        4.6,
-                        1.8
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        4.6
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        1,
-                        4.6
                     ]
                 }
             }
@@ -2916,17 +2295,17 @@
         {
             "name": "shaftCore",
             "from": [
-                -16,
                 6.75,
-                6.75
+                6.75,
+                -16
             ],
             "to": [
-                32,
                 9.25,
-                9.25
+                9.25,
+                32
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -2935,7 +2314,7 @@
                         2.5
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -2944,7 +2323,7 @@
                         2.5
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -2953,7 +2332,7 @@
                         2.5
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -2988,102 +2367,28 @@
             ]
         },
         {
-            "name": "stubXneg",
+            "name": "stubZpos",
             "from": [
-                -18,
                 6.5,
-                6.5
-            ],
-            "to": [
-                -12,
-                9.5,
-                9.5
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        3
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        3,
-                        3
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        3
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        3,
-                        3
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        3
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        6,
-                        3
-                    ]
-                }
-            },
-            "rotationOrigin": [
-                8,
-                8,
-                8
-            ]
-        },
-        {
-            "name": "stubXpos",
-            "from": [
-                28,
                 6.5,
-                6.5
+                28
             ],
             "to": [
-                34,
                 9.5,
-                9.5
+                9.5,
+                32
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
                         0,
-                        6,
+                        4,
                         3
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3092,16 +2397,16 @@
                         3
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
                         0,
-                        6,
+                        4,
                         3
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3115,7 +2420,7 @@
                     "uv": [
                         0,
                         0,
-                        6,
+                        4,
                         3
                     ]
                 },
@@ -3124,7 +2429,7 @@
                     "uv": [
                         0,
                         0,
-                        6,
+                        4,
                         3
                     ]
                 }
@@ -3136,144 +2441,70 @@
             ]
         },
         {
-            "name": "hubXneg",
+            "name": "stubZneg",
             "from": [
-                -12.5,
-                5.4,
-                5.4
+                6.5,
+                6.5,
+                -16
             ],
             "to": [
-                -8.5,
-                10.6,
-                10.6
+                9.5,
+                9.5,
+                -12
             ],
             "faces": {
-                "north": {
-                    "texture": "#iron",
+                "west": {
+                    "texture": "#steel",
                     "uv": [
                         0,
                         0,
                         4,
-                        5.2
+                        3
+                    ]
+                },
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        3
                     ]
                 },
                 "east": {
-                    "texture": "#iron",
+                    "texture": "#steel",
                     "uv": [
                         0,
                         0,
-                        5.2,
-                        5.2
+                        4,
+                        3
                     ]
                 },
                 "south": {
-                    "texture": "#iron",
+                    "texture": "#steel",
                     "uv": [
                         0,
                         0,
-                        4,
-                        5.2
-                    ]
-                },
-                "west": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        5.2,
-                        5.2
+                        3,
+                        3
                     ]
                 },
                 "up": {
-                    "texture": "#iron",
+                    "texture": "#steel",
                     "uv": [
                         0,
                         0,
                         4,
-                        5.2
+                        3
                     ]
                 },
                 "down": {
-                    "texture": "#iron",
+                    "texture": "#steel",
                     "uv": [
                         0,
                         0,
                         4,
-                        5.2
-                    ]
-                }
-            },
-            "rotationOrigin": [
-                8,
-                8,
-                8
-            ]
-        },
-        {
-            "name": "hubXpos",
-            "from": [
-                24.5,
-                5.4,
-                5.4
-            ],
-            "to": [
-                28.5,
-                10.6,
-                10.6
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        5.2
-                    ]
-                },
-                "east": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        5.2,
-                        5.2
-                    ]
-                },
-                "south": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        5.2
-                    ]
-                },
-                "west": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        5.2,
-                        5.2
-                    ]
-                },
-                "up": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        5.2
-                    ]
-                },
-                "down": {
-                    "texture": "#iron",
-                    "uv": [
-                        0,
-                        0,
-                        4,
-                        5.2
+                        3
                     ]
                 }
             },
@@ -3286,17 +2517,17 @@
         {
             "name": "draftFanBladeVertical",
             "from": [
-                -12.8,
+                7.1,
                 3.2,
-                7.1
+                27.2
             ],
             "to": [
-                -11.2,
+                8.9,
                 12.8,
-                8.9
+                28.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3305,7 +2536,7 @@
                         9.6
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3314,7 +2545,7 @@
                         9.6
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3323,7 +2554,7 @@
                         9.6
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3360,17 +2591,17 @@
         {
             "name": "draftFanBladeHorizontal",
             "from": [
-                -12.8,
+                3.2,
                 7.1,
-                3.2
+                27.2
             ],
             "to": [
-                -11.2,
+                12.8,
                 8.9,
-                12.8
+                28.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3379,7 +2610,7 @@
                         1.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3388,7 +2619,7 @@
                         1.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3397,7 +2628,7 @@
                         1.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3434,17 +2665,17 @@
         {
             "name": "draftFanGuardTop",
             "from": [
-                -13.4,
+                3.5,
                 13,
-                3.5
+                26.6
             ],
             "to": [
-                -10.6,
+                12.5,
                 14.2,
-                12.5
+                29.4
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3453,7 +2684,7 @@
                         1.2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3462,7 +2693,7 @@
                         1.2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3471,7 +2702,7 @@
                         1.2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3503,17 +2734,17 @@
         {
             "name": "draftFanGuardBottom",
             "from": [
-                -13.4,
+                3.5,
                 1.8,
-                3.5
+                26.6
             ],
             "to": [
-                -10.6,
+                12.5,
                 3,
-                12.5
+                29.4
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3522,7 +2753,7 @@
                         1.2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3531,7 +2762,7 @@
                         1.2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3540,7 +2771,7 @@
                         1.2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3570,19 +2801,19 @@
             }
         },
         {
-            "name": "draftFanGuardFront",
+            "name": "draftFanGuardWest",
             "from": [
-                -13.4,
+                2.3,
                 3,
-                2.3
+                26.6
             ],
             "to": [
-                -10.6,
+                3.5,
                 13,
-                3.5
+                29.4
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3591,7 +2822,7 @@
                         10
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3600,7 +2831,7 @@
                         10
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3609,7 +2840,7 @@
                         10
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3639,19 +2870,19 @@
             }
         },
         {
-            "name": "draftFanGuardBack",
+            "name": "draftFanGuardEast",
             "from": [
-                -13.4,
+                12.5,
                 3,
-                12.5
+                26.6
             ],
             "to": [
-                -10.6,
+                13.7,
                 13,
-                13.7
+                29.4
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3660,7 +2891,7 @@
                         10
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3669,7 +2900,7 @@
                         10
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3678,7 +2909,7 @@
                         10
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#iron",
                     "uv": [
                         0,
@@ -3708,157 +2939,19 @@
             }
         },
         {
-            "name": "leftPipeSupport",
+            "name": "retortBandSouthTop",
             "from": [
-                -5,
-                12.5,
-                11.2
-            ],
-            "to": [
-                -3,
-                16.5,
-                13.2
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "rightPipeSupport",
-            "from": [
-                19,
-                12.5,
-                11.2
-            ],
-            "to": [
-                21,
-                16.5,
-                13.2
-            ],
-            "faces": {
-                "north": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "east": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "south": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "west": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        4
-                    ]
-                },
-                "up": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        2
-                    ]
-                },
-                "down": {
-                    "texture": "#steel",
-                    "uv": [
-                        0,
-                        0,
-                        2,
-                        2
-                    ]
-                }
-            }
-        },
-        {
-            "name": "retortBandLeftTop",
-            "from": [
-                -8,
+                -7,
                 25.6,
-                -7
+                22.8
             ],
             "to": [
-                -6.8,
+                7,
                 28.4,
-                7
+                24
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3867,7 +2960,7 @@
                         2.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3876,7 +2969,7 @@
                         2.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3885,7 +2978,7 @@
                         2.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3915,19 +3008,19 @@
             }
         },
         {
-            "name": "retortBandLeftBottom",
+            "name": "retortBandSouthBottom",
             "from": [
-                -8,
+                -7,
                 12.2,
-                -7
+                22.8
             ],
             "to": [
-                -6.8,
+                7,
                 14.2,
-                7
+                24
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3936,7 +3029,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3945,7 +3038,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3954,7 +3047,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -3984,19 +3077,19 @@
             }
         },
         {
-            "name": "retortBandLeftFront",
+            "name": "retortBandSouthWest",
             "from": [
-                -8,
+                -10.3,
                 15,
-                -10.3
+                22.8
             ],
             "to": [
-                -6.8,
+                -7.3,
                 24,
-                -7.3
+                24
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4005,7 +3098,7 @@
                         9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4014,7 +3107,7 @@
                         9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4023,7 +3116,7 @@
                         9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4053,19 +3146,19 @@
             }
         },
         {
-            "name": "retortBandLeftBack",
+            "name": "retortBandSouthEast",
             "from": [
-                -8,
+                7.3,
                 15,
-                7.3
+                22.8
             ],
             "to": [
-                -6.8,
+                10.3,
                 24,
-                10.3
+                24
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4074,7 +3167,7 @@
                         9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4083,7 +3176,7 @@
                         9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4092,7 +3185,7 @@
                         9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4124,17 +3217,17 @@
         {
             "name": "retortBandCenterTop",
             "from": [
-                7.4,
+                -7,
                 25.6,
-                -7
+                7.4
             ],
             "to": [
-                8.6,
+                7,
                 28.4,
-                7
+                8.6
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4143,7 +3236,7 @@
                         2.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4152,7 +3245,7 @@
                         2.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4161,7 +3254,7 @@
                         2.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4193,17 +3286,17 @@
         {
             "name": "retortBandCenterBottom",
             "from": [
-                7.4,
+                -7,
                 12.2,
-                -7
+                7.4
             ],
             "to": [
-                8.6,
+                7,
                 14.2,
-                7
+                8.6
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4212,7 +3305,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4221,7 +3314,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4230,7 +3323,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4260,19 +3353,19 @@
             }
         },
         {
-            "name": "retortBandCenterFront",
+            "name": "retortBandCenterWest",
             "from": [
-                7.4,
+                -10.3,
                 15,
-                -10.3
+                7.4
             ],
             "to": [
-                8.6,
+                -7.3,
                 24,
-                -7.3
+                8.6
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4281,7 +3374,7 @@
                         9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4290,7 +3383,7 @@
                         9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4299,7 +3392,7 @@
                         9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4329,19 +3422,19 @@
             }
         },
         {
-            "name": "retortBandCenterBack",
+            "name": "retortBandCenterEast",
             "from": [
-                7.4,
+                7.3,
                 15,
-                7.3
+                7.4
             ],
             "to": [
-                8.6,
+                10.3,
                 24,
-                10.3
+                8.6
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4350,7 +3443,7 @@
                         9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4359,7 +3452,7 @@
                         9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4368,7 +3461,7 @@
                         9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4398,19 +3491,19 @@
             }
         },
         {
-            "name": "retortBandRightTop",
+            "name": "retortBandNorthTop",
             "from": [
-                22.8,
+                -7,
                 25.6,
-                -7
+                -8
             ],
             "to": [
-                24,
+                7,
                 28.4,
-                7
+                -6.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4419,7 +3512,7 @@
                         2.8
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4428,7 +3521,7 @@
                         2.8
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4437,7 +3530,7 @@
                         2.8
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4467,19 +3560,19 @@
             }
         },
         {
-            "name": "retortBandRightBottom",
+            "name": "retortBandNorthBottom",
             "from": [
-                22.8,
+                -7,
                 12.2,
-                -7
+                -8
             ],
             "to": [
-                24,
+                7,
                 14.2,
-                7
+                -6.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4488,7 +3581,7 @@
                         2
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4497,7 +3590,7 @@
                         2
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4506,7 +3599,7 @@
                         2
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4536,19 +3629,19 @@
             }
         },
         {
-            "name": "retortBandRightFront",
+            "name": "retortBandNorthWest",
             "from": [
-                22.8,
+                -10.3,
                 15,
-                -10.3
+                -8
             ],
             "to": [
+                -7.3,
                 24,
-                24,
-                -7.3
+                -6.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4557,7 +3650,7 @@
                         9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4566,7 +3659,7 @@
                         9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4575,7 +3668,7 @@
                         9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4605,19 +3698,19 @@
             }
         },
         {
-            "name": "retortBandRightBack",
+            "name": "retortBandNorthEast",
             "from": [
-                22.8,
+                7.3,
                 15,
-                7.3
+                -8
             ],
             "to": [
+                10.3,
                 24,
-                24,
-                10.3
+                -6.8
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4626,7 +3719,7 @@
                         9
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4635,7 +3728,7 @@
                         9
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4644,7 +3737,7 @@
                         9
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4676,17 +3769,17 @@
         {
             "name": "hatchClamp1",
             "from": [
-                -3,
+                -11.1,
                 14.4,
-                -11.1
+                17.6
             ],
             "to": [
-                -1.6,
+                -10.65,
                 25,
-                -10.65
+                19
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4695,7 +3788,7 @@
                         10.6
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4704,7 +3797,7 @@
                         10.6
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4713,7 +3806,7 @@
                         10.6
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4745,17 +3838,17 @@
         {
             "name": "hatchClamp2",
             "from": [
-                3,
+                -11.1,
                 14.4,
-                -11.1
+                11.6
             ],
             "to": [
-                4.4,
+                -10.65,
                 25,
-                -10.65
+                13
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4764,7 +3857,7 @@
                         10.6
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4773,7 +3866,7 @@
                         10.6
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4782,7 +3875,7 @@
                         10.6
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4814,17 +3907,17 @@
         {
             "name": "hatchClamp3",
             "from": [
-                13,
+                -11.1,
                 14.4,
-                -11.1
+                1.6
             ],
             "to": [
-                14.4,
+                -10.65,
                 25,
-                -10.65
+                3
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4833,7 +3926,7 @@
                         10.6
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4842,7 +3935,7 @@
                         10.6
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4851,7 +3944,7 @@
                         10.6
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4883,17 +3976,17 @@
         {
             "name": "hatchClamp4",
             "from": [
-                19,
+                -11.1,
                 14.4,
-                -11.1
+                -4.4
             ],
             "to": [
-                20.4,
+                -10.65,
                 25,
-                -10.65
+                -3
             ],
             "faces": {
-                "north": {
+                "west": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4902,7 +3995,7 @@
                         10.6
                     ]
                 },
-                "east": {
+                "north": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4911,7 +4004,7 @@
                         10.6
                     ]
                 },
-                "south": {
+                "east": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4920,7 +4013,7 @@
                         10.6
                     ]
                 },
-                "west": {
+                "south": {
                     "texture": "#steel",
                     "uv": [
                         0,
@@ -4945,6 +4038,2877 @@
                         0,
                         1.4,
                         0.45
+                    ]
+                }
+            }
+        },
+        {
+            "name": "hubZpos",
+            "from": [
+                0,
+                0,
+                0
+            ],
+            "to": [
+                0,
+                0,
+                0
+            ],
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "faces": {},
+            "children": [
+                {
+                    "name": "hubZposTop",
+                    "from": [
+                        5.4,
+                        9.55,
+                        24.5
+                    ],
+                    "to": [
+                        10.6,
+                        10.6,
+                        27.95
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hubZposBottom",
+                    "from": [
+                        5.4,
+                        5.4,
+                        24.5
+                    ],
+                    "to": [
+                        10.6,
+                        6.45,
+                        27.95
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hubZposWest",
+                    "from": [
+                        5.4,
+                        6.45,
+                        24.5
+                    ],
+                    "to": [
+                        6.45,
+                        9.55,
+                        27.95
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hubZposEast",
+                    "from": [
+                        9.55,
+                        6.45,
+                        24.5
+                    ],
+                    "to": [
+                        10.6,
+                        9.55,
+                        27.95
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "hubZneg",
+            "from": [
+                0,
+                0,
+                0
+            ],
+            "to": [
+                0,
+                0,
+                0
+            ],
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "faces": {},
+            "children": [
+                {
+                    "name": "hubZnegTop",
+                    "from": [
+                        5.4,
+                        9.55,
+                        -11.95
+                    ],
+                    "to": [
+                        10.6,
+                        10.6,
+                        -8.5
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hubZnegBottom",
+                    "from": [
+                        5.4,
+                        5.4,
+                        -11.95
+                    ],
+                    "to": [
+                        10.6,
+                        6.45,
+                        -8.5
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                1.05
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                1.05
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                5.2,
+                                3.45
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hubZnegWest",
+                    "from": [
+                        5.4,
+                        6.45,
+                        -11.95
+                    ],
+                    "to": [
+                        6.45,
+                        9.55,
+                        -8.5
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "hubZnegEast",
+                    "from": [
+                        9.55,
+                        6.45,
+                        -11.95
+                    ],
+                    "to": [
+                        10.6,
+                        9.55,
+                        -8.5
+                    ],
+                    "faces": {
+                        "north": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "east": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "south": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.1
+                            ]
+                        },
+                        "west": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                3.45,
+                                3.1
+                            ]
+                        },
+                        "up": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        },
+                        "down": {
+                            "texture": "#iron",
+                            "uv": [
+                                0,
+                                0,
+                                1.05,
+                                3.45
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "northBellowsSlot",
+            "from": [
+                -12.05,
+                4.6,
+                -11.4
+            ],
+            "to": [
+                -11.35,
+                11.4,
+                -4.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6.8,
+                        6.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6.8,
+                        6.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "northBellowsCollarTop",
+            "from": [
+                -12.15,
+                10.9,
+                -11.9
+            ],
+            "to": [
+                -11.25,
+                11.9,
+                -4.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "northBellowsCollarBottom",
+            "from": [
+                -12.15,
+                4.1,
+                -11.9
+            ],
+            "to": [
+                -11.25,
+                5.1,
+                -4.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "northBellowsCollarNorth",
+            "from": [
+                -12.15,
+                4.1,
+                -11.9
+            ],
+            "to": [
+                -11.25,
+                11.9,
+                -10.9
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "northBellowsCollarSouth",
+            "from": [
+                -12.15,
+                4.1,
+                -5.1
+            ],
+            "to": [
+                -11.25,
+                11.9,
+                -4.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "southBellowsSlot",
+            "from": [
+                -12.05,
+                4.6,
+                20.6
+            ],
+            "to": [
+                -11.35,
+                11.4,
+                27.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6.8,
+                        6.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6.8,
+                        6.8
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.7,
+                        6.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "southBellowsCollarTop",
+            "from": [
+                -12.15,
+                10.9,
+                20.1
+            ],
+            "to": [
+                -11.25,
+                11.9,
+                27.9
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "southBellowsCollarBottom",
+            "from": [
+                -12.15,
+                4.1,
+                20.1
+            ],
+            "to": [
+                -11.25,
+                5.1,
+                27.9
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.8,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "southBellowsCollarNorth",
+            "from": [
+                -12.15,
+                4.1,
+                20.1
+            ],
+            "to": [
+                -11.25,
+                11.9,
+                21.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "southBellowsCollarSouth",
+            "from": [
+                -12.15,
+                4.1,
+                26.9
+            ],
+            "to": [
+                -11.25,
+                11.9,
+                27.9
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.8
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        7.8
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalDischargeHood",
+            "from": [
+                9.8,
+                13.2,
+                -10.0
+            ],
+            "to": [
+                16.75,
+                22.8,
+                26.0
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.95,
+                        9.6
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        9.6
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.95,
+                        9.6
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        36,
+                        9.6
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.95,
+                        36
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.95,
+                        36
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalDischargeLip",
+            "from": [
+                9.4,
+                12.2,
+                -8.75
+            ],
+            "to": [
+                16.75,
+                14.2,
+                24.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.35,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        33.5,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.35,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        33.5,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.35,
+                        33.5
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.35,
+                        33.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "exhaustStack",
+            "from": [
+                12.2,
+                23.2,
+                -8.2
+            ],
+            "to": [
+                16.2,
+                32.2,
+                -4.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "exhaustStackCap",
+            "from": [
+                11.2,
+                31.9,
+                -9.2
+            ],
+            "to": [
+                17.2,
+                32.7,
+                -3.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.8
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.8
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.8
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.8
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarWest",
+            "from": [
+                11.2,
+                21.8,
+                -9.2
+            ],
+            "to": [
+                12.2,
+                23.2,
+                -3.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        1.4
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        1.4
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarEast",
+            "from": [
+                16.2,
+                21.8,
+                -9.2
+            ],
+            "to": [
+                17.2,
+                23.2,
+                -3.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        1.4
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        1.4
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarNorth",
+            "from": [
+                12.2,
+                21.8,
+                -9.2
+            ],
+            "to": [
+                16.2,
+                23.2,
+                -8.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1.4
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1.4
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "stackCollarSouth",
+            "from": [
+                12.2,
+                21.8,
+                -4.2
+            ],
+            "to": [
+                16.2,
+                23.2,
+                -3.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1.4
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1.4
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.4
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalChuteNorthWall",
+            "from": [
+                15.8,
+                6.7,
+                -10.8
+            ],
+            "to": [
+                17.8,
+                15.0,
+                -8.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalChuteSouthWall",
+            "from": [
+                15.8,
+                6.7,
+                24.8
+            ],
+            "to": [
+                17.8,
+                15.0,
+                26.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalChuteBackWall",
+            "from": [
+                16.8,
+                6.7,
+                -8.8
+            ],
+            "to": [
+                18.8,
+                15.0,
+                24.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        33.6,
+                        8.3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        8.3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        33.6,
+                        8.3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        33.6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        33.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalHoodNorthLeg",
+            "from": [
+                16.8,
+                4.1,
+                -9.8
+            ],
+            "to": [
+                18.2,
+                14.0,
+                -8.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.4
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalHoodSouthLeg",
+            "from": [
+                16.8,
+                4.1,
+                24.4
+            ],
+            "to": [
+                18.2,
+                14.0,
+                25.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        9.9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.4
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalOutfeedDeck",
+            "from": [
+                15.7,
+                4.2,
+                -10.8
+            ],
+            "to": [
+                32.0,
+                5.0,
+                26.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.3,
+                        0.8
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        37.6,
+                        0.8
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.3,
+                        0.8
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        37.6,
+                        0.8
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16.3,
+                        37.6
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.3,
+                        37.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalOutfeedRailNorth",
+            "from": [
+                15.2,
+                5.0,
+                -12.2
+            ],
+            "to": [
+                32.0,
+                7.1,
+                -10.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        2.1
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        2.1
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        2.1
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        2.1
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        1.4
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        1.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalOutfeedRailSouth",
+            "from": [
+                15.2,
+                5.0,
+                26.8
+            ],
+            "to": [
+                32.0,
+                7.1,
+                28.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        2.1
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        2.1
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        2.1
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        2.1
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        1.4
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16.8,
+                        1.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalOutfeedApron",
+            "from": [
+                28.2,
+                3.2,
+                -9.4
+            ],
+            "to": [
+                32.0,
+                4.15,
+                25.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        0.95
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        34.8,
+                        0.95
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        0.95
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        34.8,
+                        0.95
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        34.8
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        34.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalPileMain",
+            "from": [
+                16.4,
+                4.55,
+                -7.6
+            ],
+            "to": [
+                25.8,
+                6.1,
+                23.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        9.4,
+                        1.55
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        31,
+                        1.55
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        9.4,
+                        1.55
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        31,
+                        1.55
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        9.4,
+                        31
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        9.4,
+                        31
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalPileNorth",
+            "from": [
+                17.8,
+                6.1,
+                -5.2
+            ],
+            "to": [
+                23.8,
+                7.2,
+                2.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        1.1
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        1.1
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        1.1
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        1.1
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        8
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalPileSouth",
+            "from": [
+                18.6,
+                6.1,
+                12.8
+            ],
+            "to": [
+                26.2,
+                7.0,
+                21.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        0.9
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        9,
+                        0.9
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        0.9
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        9,
+                        0.9
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        9
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalChunkA",
+            "from": [
+                16.1,
+                6.05,
+                3.8
+            ],
+            "to": [
+                19.8,
+                7.5,
+                7.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.7,
+                        1.45
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.4,
+                        1.45
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.7,
+                        1.45
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.4,
+                        1.45
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.7,
+                        3.4
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.7,
+                        3.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalChunkB",
+            "from": [
+                22.6,
+                6.0,
+                5.4
+            ],
+            "to": [
+                26.4,
+                7.4,
+                10.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        1.4
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4.8,
+                        1.4
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        1.4
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4.8,
+                        1.4
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        4.8
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        4.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "charcoalChunkC",
+            "from": [
+                18.2,
+                6.0,
+                22.0
+            ],
+            "to": [
+                22.0,
+                7.2,
+                25.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        1.2
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.5,
+                        1.2
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        1.2
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.5,
+                        1.2
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        3.5
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        3.8,
+                        3.5
                     ]
                 }
             }

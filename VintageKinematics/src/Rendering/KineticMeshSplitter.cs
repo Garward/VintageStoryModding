@@ -145,11 +145,11 @@ namespace VintageKinematics.Rendering
 
         /// <summary>
         /// Tesselates a single named element of the block's shape and uploads it as a
-        /// <see cref="MeshRef"/>. The element mesh is left in canonical (unrotated) frame —
+        /// <see cref="MultiTextureMeshRef"/>. The element mesh is left in canonical (unrotated) frame —
         /// renderers must apply the block's shape rotation as part of their model matrix to
         /// keep elements aligned with the body. Returns (null, block-center) if missing.
         /// </summary>
-        public static (MeshRef mesh, Vec3f pivot) TesselateElement(ICoreClientAPI capi, Block block, string elementName)
+        public static (MultiTextureMeshRef mesh, Vec3f pivot) TesselateElement(ICoreClientAPI capi, Block block, string elementName)
         {
             Shape orig = LoadShape(capi, block);
             if (orig == null) return (null, new Vec3f(0.5f, 0.5f, 0.5f));
@@ -165,7 +165,7 @@ namespace VintageKinematics.Rendering
             capi.Tesselator.TesselateShape(block, orig, out MeshData mesh,
                 new Vec3f(), null, selectiveElements);
             if (mesh == null) return (null, pivot);
-            return (capi.Render.UploadMesh(mesh), pivot);
+            return (capi.Render.UploadMultiTextureMesh(mesh), pivot);
         }
 
         public static float GetCanonicalElementLength(ICoreClientAPI capi, Block block, string elementName, string axis)

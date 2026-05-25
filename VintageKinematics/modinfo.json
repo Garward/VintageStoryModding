@@ -2,7 +2,7 @@
     "type": "code",
     "modid": "vintagekinematics",
     "name": "Vintage Kinematics",
-    "version": "1.2.10",
+    "version": "1.2.11",
     "description": "Create-style kinetic power, belts, and machines for Vintage Story.",
     "authors": ["garward"],
     "side": "Universal",

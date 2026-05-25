@@ -9,5 +9,5 @@
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "block", "code": "kineticsawmill-x", "quantity": 1 }
+	"output": { "type": "block", "code": "kineticsawmill-n", "quantity": 1 }
 }

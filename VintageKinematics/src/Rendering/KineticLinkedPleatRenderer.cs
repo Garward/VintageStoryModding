@@ -20,7 +20,7 @@ namespace VintageKinematics.Rendering
         public class Pleat
         {
             public string ElementName;
-            public MeshRef Mesh;
+            public MultiTextureMeshRef Mesh;
             public Vec3f Pivot;
             public float BaseLength = 1f;
         }
@@ -73,7 +73,8 @@ namespace VintageKinematics.Rendering
             rpi.GlDisableCullFace();
             rpi.GlToggleBlend(true);
             IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
+            prog.ViewMatrix = rpi.CameraMatrixOriginf;
+            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
             foreach (var chain in chains)
             {
@@ -137,9 +138,7 @@ namespace VintageKinematics.Rendering
                 if (chain.TranslateOnly)
                 {
                     prog.ModelMatrix = modelMat.Values;
-                    prog.ViewMatrix = rpi.CameraMatrixOriginf;
-                    prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
-                    rpi.RenderMesh(pleat.Mesh);
+                    rpi.RenderMultiTextureMesh(pleat.Mesh, "tex");
                     continue;
                 }
 
@@ -169,9 +168,7 @@ namespace VintageKinematics.Rendering
                 modelMat.Translate(-pleat.Pivot.X, -pleat.Pivot.Y, -pleat.Pivot.Z);
 
                 prog.ModelMatrix = modelMat.Values;
-                prog.ViewMatrix = rpi.CameraMatrixOriginf;
-                prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
-                rpi.RenderMesh(pleat.Mesh);
+                rpi.RenderMultiTextureMesh(pleat.Mesh, "tex");
             }
         }
 

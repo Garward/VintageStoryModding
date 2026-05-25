@@ -66,6 +66,7 @@ namespace VintageKinematics.Api
         private KineticWorkAccumulator acc;
         private BEBehaviorKinetic parent;
         private float tickInterval = 0.25f;
+        private float fixedWorkRPM = 0f;
 
         /// <summary>Progress accumulated toward the current work cycle.</summary>
         public float CurrentProgress => acc?.CurrentProgress ?? 0f;
@@ -90,6 +91,7 @@ namespace VintageKinematics.Api
             float minRPM       = properties?["minRPM"].AsFloat(8f) ?? 8f;
             bool autoReset     = properties?["autoReset"].AsBool(true) ?? true;
             tickInterval       = properties?["tickInterval"].AsFloat(0.25f) ?? 0.25f;
+            fixedWorkRPM       = properties?["fixedWorkRPM"].AsFloat(0f) ?? 0f;
 
             var cfg = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
             if (cfg != null)
@@ -122,7 +124,16 @@ namespace VintageKinematics.Api
         {
             if (acc == null || parent == null) return;
             bool gated = parent.IsConflicted || (parent.Network?.IsOverstressed ?? false);
-            try { acc.Tick(parent.CurrentRPM, dt, gated); }
+            float rpm = parent.CurrentRPM;
+            if (fixedWorkRPM > 0f && MathF.Abs(rpm) >= acc.MinRPM)
+            {
+                rpm = MathF.CopySign(fixedWorkRPM, rpm);
+            }
+            if (Blockentity is IKineticWorkRateModifier rateModifier)
+            {
+                rpm = rateModifier.ModifyKineticWorkRPM(rpm, acc.MinRPM);
+            }
+            try { acc.Tick(rpm, dt, gated); }
             catch (Exception ex)
             {
                 Api.Logger.Error($"[VintageKinematics] Worker handler threw at {Pos}: {ex}");

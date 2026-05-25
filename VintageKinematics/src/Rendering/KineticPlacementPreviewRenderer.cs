@@ -14,7 +14,7 @@ namespace VintageKinematics.Rendering
     public class KineticPlacementPreviewRenderer : IRenderer
     {
         private readonly ICoreClientAPI capi;
-        private readonly Dictionary<AssetLocation, MeshRef> meshCache = new Dictionary<AssetLocation, MeshRef>();
+        private readonly Dictionary<AssetLocation, MultiTextureMeshRef> meshCache = new Dictionary<AssetLocation, MultiTextureMeshRef>();
         private readonly Matrixf modelMat = new Matrixf();
 
         public double RenderOrder => 0.5;
@@ -44,7 +44,7 @@ namespace VintageKinematics.Rendering
             Block existingAtTarget = capi.World.BlockAccessor.GetBlock(targetPos);
             if (existingAtTarget != null && !existingAtTarget.IsReplacableBy(held)) return;
 
-            MeshRef meshRef = GetOrCreateMesh(variant);
+            MultiTextureMeshRef meshRef = GetOrCreateMesh(variant);
             if (meshRef == null) return;
 
             IRenderAPI rpi = capi.Render;
@@ -54,7 +54,6 @@ namespace VintageKinematics.Rendering
             rpi.GlToggleBlend(true);
 
             IStandardShaderProgram prog = rpi.PreparedStandardShader(targetPos.X, targetPos.Y, targetPos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
             prog.RgbaTint = new Vec4f(1f, 1f, 1f, 0.4f);
             prog.NormalShaded = 0;
             prog.ExtraGlow = 32;
@@ -66,21 +65,21 @@ namespace VintageKinematics.Rendering
             prog.ViewMatrix = rpi.CameraMatrixOriginf;
             prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
-            rpi.RenderMesh(meshRef);
+            rpi.RenderMultiTextureMesh(meshRef, "tex");
             prog.Stop();
 
             rpi.GlToggleBlend(false);
             rpi.GlEnableCullFace();
         }
 
-        private MeshRef GetOrCreateMesh(Block block)
+        private MultiTextureMeshRef GetOrCreateMesh(Block block)
         {
             if (block == null) return null;
-            if (meshCache.TryGetValue(block.Code, out MeshRef cached)) return cached;
+            if (meshCache.TryGetValue(block.Code, out MultiTextureMeshRef cached)) return cached;
 
             capi.Tesselator.TesselateBlock(block, out MeshData mesh);
             if (mesh == null) return null;
-            MeshRef meshRef = capi.Render.UploadMesh(mesh);
+            MultiTextureMeshRef meshRef = capi.Render.UploadMultiTextureMesh(mesh);
             meshCache[block.Code] = meshRef;
             return meshRef;
         }

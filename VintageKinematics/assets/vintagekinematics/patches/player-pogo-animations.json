@@ -107,7 +107,7 @@
             "LowerArmR": {
               "rotationX": -53.0,
               "rotationY": -14.0,
-              "rotationZ": 3.0
+              "rotationZ": -6.0
             },
             "UpperArmL": {
               "rotationX": -17.0,
@@ -117,7 +117,7 @@
             "LowerArmL": {
               "rotationX": 53.0,
               "rotationY": -14.0,
-              "rotationZ": 3.0
+              "rotationZ": -6.0
             },
             "ItemAnchor": {
               "offsetX": -0.5,
@@ -188,7 +188,7 @@
             "LowerArmR": {
               "rotationX": -53.0,
               "rotationY": -14.0,
-              "rotationZ": 3.0
+              "rotationZ": -6.0
             },
             "UpperArmL": {
               "rotationX": -17.0,
@@ -198,7 +198,7 @@
             "LowerArmL": {
               "rotationX": 53.0,
               "rotationY": -14.0,
-              "rotationZ": 3.0
+              "rotationZ": -6.0
             },
             "ItemAnchor": {
               "offsetX": -0.5,

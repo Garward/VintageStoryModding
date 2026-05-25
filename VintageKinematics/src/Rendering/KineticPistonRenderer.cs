@@ -31,7 +31,7 @@ namespace VintageKinematics.Rendering
             public float PhaseOffset;
             public bool Invert;
             public float CurrentPos;
-            public MeshRef Mesh;
+            public MultiTextureMeshRef Mesh;
         }
 
         private readonly ICoreClientAPI capi;
@@ -63,7 +63,8 @@ namespace VintageKinematics.Rendering
             rpi.GlDisableCullFace();
             rpi.GlToggleBlend(true);
             IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
+            prog.ViewMatrix = rpi.CameraMatrixOriginf;
+            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
             foreach (var p in Pistons)
             {
@@ -79,9 +80,7 @@ namespace VintageKinematics.Rendering
                     .Translate(offset.X / 16f, offset.Y / 16f, offset.Z / 16f);
 
                 prog.ModelMatrix = modelMat.Values;
-                prog.ViewMatrix = rpi.CameraMatrixOriginf;
-                prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
-                rpi.RenderMesh(p.Mesh);
+                rpi.RenderMultiTextureMesh(p.Mesh, "tex");
             }
 
             prog.Stop();

@@ -15,7 +15,7 @@ namespace VintageKinematics.BlockEntities
 {
     /// <summary>
     /// Single-block sawmill: top face inputs logs, bottom face outputs the result. Each completed
-    /// kinetic-work cycle consumes 1 log and produces the recipe outputs (planks or shafts depending
+    /// kinetic-work cycle consumes 1 log and produces the recipe outputs (planks, shafts, or other sawmill cuts depending
     /// on the toggled mode), pushing them downward to any adjacent funnel/storage.
     /// </summary>
     public class BEKineticSawmill : BlockEntityOpenableContainer, IFaceMappedContainer
@@ -35,7 +35,6 @@ namespace VintageKinematics.BlockEntities
         private IOFaceMap ioFaces;
         private SawmillMode mode = SawmillMode.Plank;
         private GuiDialogKineticSawmill clientDialog;
-        private string automationInputFaceCode;
 
         public SawmillMode Mode => mode;
         public override InventoryBase Inventory => inventory;
@@ -72,22 +71,21 @@ namespace VintageKinematics.BlockEntities
 
         private BlockFacing AutomationInputFace()
         {
-            BlockFacing saved = FaceFromCode(automationInputFaceCode);
-            if (saved != null) return saved;
-
-            // Shaft runs along the variant axis (axis-x → shaft on east/west, axis-z → shaft on
-            // north/south). Automation input belongs on a perpendicular face so the log feed
-            // doesn't fight the shaft connection.
-            string axis = Block?.Variant?["axis"] ?? "x";
-            return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
+            return InputLipFace(Block?.Variant?["side"]);
         }
 
-        public void SetAutomationInputFace(BlockFacing face)
+        // The model's input marker is named InputLipWest in the base shape. Keep automation IO
+        // tied to where that marker lands after the blocktype's shapeByType rotateY values.
+        private static BlockFacing InputLipFace(string side)
         {
-            if (face == null) return;
-            automationInputFaceCode = face.Code;
-            ConfigureIOFaceMap();
-            MarkDirty(true);
+            switch (side)
+            {
+                case "n": return BlockFacing.WEST;
+                case "e": return BlockFacing.SOUTH;
+                case "s": return BlockFacing.EAST;
+                case "w":
+                default: return BlockFacing.NORTH;
+            }
         }
 
         private void ConfigureIOFaceMap()
@@ -104,22 +102,6 @@ namespace VintageKinematics.BlockEntities
                 ioFaces.MapOutput(BlockFacing.DOWN, i);
             }
             ioFaces.Apply(inventory);
-        }
-
-        private static BlockFacing FaceFromCode(string code)
-        {
-            switch (code)
-            {
-                case "north":
-                case "n": return BlockFacing.NORTH;
-                case "east":
-                case "e": return BlockFacing.EAST;
-                case "south":
-                case "s": return BlockFacing.SOUTH;
-                case "west":
-                case "w": return BlockFacing.WEST;
-                default: return null;
-            }
         }
 
         private void OnServerPushTick(float dt)
@@ -261,6 +243,7 @@ namespace VintageKinematics.BlockEntities
             SawmillMode.Plank => SawmillMode.Shaft,
             SawmillMode.Shaft => SawmillMode.Stick,
             SawmillMode.Stick => SawmillMode.CogwheelSection,
+            SawmillMode.CogwheelSection => SawmillMode.Firewood,
             _ => SawmillMode.Plank
         };
 
@@ -282,10 +265,6 @@ namespace VintageKinematics.BlockEntities
             base.ToTreeAttributes(tree);
             inventory?.ToTreeAttributes(tree);
             tree.SetInt("sawmillMode", (int)mode);
-            if (!string.IsNullOrEmpty(automationInputFaceCode))
-            {
-                tree.SetString("automationInputFace", automationInputFaceCode);
-            }
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -293,7 +272,6 @@ namespace VintageKinematics.BlockEntities
             base.FromTreeAttributes(tree, worldForResolving);
             inventory?.FromTreeAttributes(tree);
             mode = (SawmillMode)tree.GetInt("sawmillMode", 0);
-            automationInputFaceCode = tree.GetString("automationInputFace", automationInputFaceCode);
             if (Api != null)
             {
                 inventory?.ResolveBlocksOrItems();

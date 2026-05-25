@@ -2,7 +2,7 @@
 	"textureWidth": 16,
 	"textureHeight": 16,
 	"textures": {
-		"surface": "game:block/coal/charcoal",
+		"surface": "vintagekinematics:block/belt",
 		"side": "game:block/metal/plate/iron"
 	},
 	"elements": [

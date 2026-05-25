@@ -1,26 +1,49 @@
-using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using VintageKinematics.Api;
 
 namespace VintageKinematics.Blocks
 {
     /// <summary>
-    /// Crusher head with two opposing horizontal stubs. Variant <c>axis=x</c> places stubs on ±X faces;
-    /// <c>axis=z</c> on ±Z faces. Player picks based on look direction at placement.
+    /// Crusher head with two opposing horizontal stubs. Side variants use the standard horizontal
+    /// machine orientation: n/s connect on Z, e/w connect on X.
     /// </summary>
-    public class BlockCrusher : BlockAxisOriented
+    public class BlockCrusher : Block, IPlacementPreviewProvider
     {
-        public override string GetPlacementVariantAxis(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel)
+        public bool TryResolvePlacementPreview(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, out BlockPos targetPos, out Block variant)
         {
-            if (byPlayer?.Entity != null)
+            targetPos = null;
+            variant = null;
+            if (blockSel?.Face == null) return false;
+
+            targetPos = PlacementPreview.DefaultTargetPos(world, blockSel, this);
+            string desired = SideFacingPlayer(byPlayer);
+            if (desired == null)
             {
-                double rad = byPlayer.Entity.Pos.Yaw % (Math.PI * 2);
-                if (rad < 0) rad += Math.PI * 2;
-                bool eastWestLook = (rad > Math.PI / 4 && rad < 3 * Math.PI / 4)
-                                    || (rad > 5 * Math.PI / 4 && rad < 7 * Math.PI / 4);
-                return eastWestLook ? "x" : "z";
+                variant = this;
+                return true;
             }
-            return base.GetPlacementVariantAxis(world, byPlayer, itemStack, blockSel);
+
+            variant = world.GetBlock(CodeWithVariant("side", desired)) ?? this;
+            return true;
+        }
+
+        public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel, ref string failureCode)
+        {
+            if (!TryResolvePlacementPreview(world, byPlayer, blockSel, out _, out Block variant) || variant == this)
+                return base.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
+            return variant.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
+        }
+
+        private static string SideFacingPlayer(IPlayer byPlayer)
+        {
+            if (byPlayer?.Entity == null) return null;
+            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
+            if (facing == BlockFacing.NORTH) return "n";
+            if (facing == BlockFacing.EAST) return "e";
+            if (facing == BlockFacing.SOUTH) return "s";
+            if (facing == BlockFacing.WEST) return "w";
+            return null;
         }
     }
 }

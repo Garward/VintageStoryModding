@@ -130,8 +130,17 @@ namespace VintageKinematics.BlockEntities
 
         private BlockFacing AutomationInputFace()
         {
-            string axis = Block?.Variant?["axis"] ?? "x";
-            return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
+            string side = Block?.Variant?["side"];
+            switch (side)
+            {
+                case "n": return BlockFacing.WEST;
+                case "e": return BlockFacing.NORTH;
+                case "s": return BlockFacing.EAST;
+                case "w": return BlockFacing.SOUTH;
+            }
+
+            string axis = Block?.Variant?["axis"] ?? "z";
+            return axis == "z" ? BlockFacing.WEST : BlockFacing.SOUTH;
         }
 
         private void BuildIOFaceMap()

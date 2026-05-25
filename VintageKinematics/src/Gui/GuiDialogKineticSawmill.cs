@@ -8,7 +8,7 @@ using VintageKinematics.Crafting;
 namespace VintageKinematics.Gui
 {
     /// <summary>
-    /// Sawmill dialog: 1 input slot + 4 output slots in a row, plus a Plank/Shaft mode toggle.
+    /// Sawmill dialog: 1 input slot + output slots, plus a sawmill mode toggle.
     /// Mirrors the funnel filter dialog pattern — toggle flips locally for instant feedback,
     /// then forwards to the BE via a custom packet.
     /// </summary>
@@ -78,6 +78,7 @@ namespace VintageKinematics.Gui
                 SawmillMode.Shaft => Lang.Get("vintagekinematics:kineticsawmill-mode-shaft"),
                 SawmillMode.Stick => Lang.Get("vintagekinematics:kineticsawmill-mode-stick"),
                 SawmillMode.CogwheelSection => Lang.Get("vintagekinematics:kineticsawmill-mode-cogsection"),
+                SawmillMode.Firewood => Lang.Get("vintagekinematics:kineticsawmill-mode-firewood"),
                 _ => Lang.Get("vintagekinematics:kineticsawmill-mode-plank")
             };
         }

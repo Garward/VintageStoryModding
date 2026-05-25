@@ -1,0 +1,9 @@
+{
+    "ingredient": { "type": "block", "code": "game:log-placed-walnut-*", "quantity": 1 },
+    "outputs": [
+        { "type": "item", "code": "game:firewood", "quantity": 5 },
+        { "type": "item", "code": "sawdust", "quantity": 2 }
+    ],
+    "sawTicks": 4,
+    "mode": "Firewood"
+}

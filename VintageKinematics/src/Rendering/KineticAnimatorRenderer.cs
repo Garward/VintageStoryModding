@@ -42,7 +42,7 @@ namespace VintageKinematics.Rendering
             public float TranslateTravel;
             public float TranslatePhaseOffset;
             public bool TranslateInvert;
-            public MeshRef Mesh;
+            public MultiTextureMeshRef Mesh;
             public Vec3f Pivot;
         }
 
@@ -80,7 +80,8 @@ namespace VintageKinematics.Rendering
             rpi.GlDisableCullFace();
             rpi.GlToggleBlend(true);
             IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
+            prog.ViewMatrix = rpi.CameraMatrixOriginf;
+            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
             foreach (var r in rotators)
             {
@@ -113,9 +114,7 @@ namespace VintageKinematics.Rendering
                 modelMat.Translate(-r.Pivot.X, -r.Pivot.Y, -r.Pivot.Z);
 
                 prog.ModelMatrix = modelMat.Values;
-                prog.ViewMatrix = rpi.CameraMatrixOriginf;
-                prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
-                rpi.RenderMesh(r.Mesh);
+                rpi.RenderMultiTextureMesh(r.Mesh, "tex");
             }
 
             prog.Stop();

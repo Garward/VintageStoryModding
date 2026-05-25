@@ -1,409 +1,2333 @@
 {
-	"editor": {
-		"allAngles": false,
-		"entityTextureMode": false
-	},
-	"textureWidth": 16,
-	"textureHeight": 16,
-	"textureSizes": {
-	},
-	"textures": {
-	},
-	"elements": [
-		{
-			"name": "closedSideWall",
-			"from": [ 1.99, 0.0, -15.0 ],
-			"to": [ 4.99, 48.0, 31.0 ],
-			"rotationOrigin": [ 1.0, 0.0, 0.0 ],
-			"faces": {
-				"north": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 3.0, 16.0 ] },
-				"east": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
-				"south": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 3.0, 16.0 ] },
-				"west": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 16.0, 16.0 ] },
-				"up": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 3.0, 16.0 ] },
-				"down": { "texture": "#darkwood", "uv": [ 0.0, 0.0, 3.0, 16.0 ] }
-			}
-		},
-		{
-			"name": "frontFloorRail",
-			"from": [ 5.0, 0.0, -15.0 ],
-			"to": [ 32.0, 3.0, -11.0 ],
-			"faces": {
-				"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-				"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 4.0, 3.0 ] },
-				"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-				"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 4.0, 3.0 ] },
-				"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 4.0 ] },
-				"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 4.0 ] }
-			}
-		},
-		{
-			"name": "backFloorRail",
-			"from": [ 5.0, 0.0, 27.0 ],
-			"to": [ 32.0, 3.0, 31.0 ],
-			"rotationOrigin": [ 5.0, 0.0, 0.0 ],
-			"faces": {
-				"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-				"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 4.0, 3.0 ] },
-				"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-				"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 4.0, 3.0 ] },
-				"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 4.0 ] },
-				"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 4.0 ] }
-			}
-		},
-		{
-			"name": "openSideThreshold",
-			"from": [ 27.0, 0.0, -11.0 ],
-			"to": [ 32.0, 4.0, 27.0 ],
-			"faces": {
-				"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 5.0, 4.0 ] },
-				"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 4.0 ] },
-				"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 5.0, 4.0 ] },
-				"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 4.0 ] },
-				"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 5.0, 16.0 ] },
-				"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 5.0, 16.0 ] }
-			}
-		},
-		{
-			"name": "wheelAssembly",
-			"from": [ 0.0, 0.0, 0.0 ],
-			"to": [ 0.0, 0.0, 0.0 ],
-			"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-			"faces": {
-				"north": { "texture": "#null", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
-				"east": { "texture": "#null", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
-				"south": { "texture": "#null", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
-				"west": { "texture": "#null", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
-				"up": { "texture": "#null", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false },
-				"down": { "texture": "#null", "uv": [ 0.0, 0.0, 0.5, 0.5 ], "enabled": false }
-			},
-			"children": [
-				{
-					"name": "treadSlat00",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat01",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 18.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat02",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 36.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat03",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 54.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat04",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 72.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat05",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 90.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat06",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 108.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat07",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 126.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat08",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 144.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat09",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 162.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat10",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 180.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat11",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 198.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat12",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 216.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat13",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 234.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat14",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 252.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat15",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 270.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat16",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 288.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat17",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 306.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat18",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 324.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "treadSlat19",
-					"from": [ 5.0, 42.0, 5.0 ],
-					"to": [ 30.0, 45.0, 11.0 ],
-					"rotationOrigin": [ 16.0, 24.0, 8.0 ],
-					"rotationX": 342.0,
-					"faces": {
-						"north": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"east": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"south": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 3.0 ] },
-						"west": { "texture": "#plank", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-						"up": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] },
-						"down": { "texture": "#plank", "uv": [ 0.0, 0.0, 16.0, 6.0 ] }
-					}
-				},
-				{
-					"name": "closedSideHub",
-					"from": [ 1.0, 20.0, 3.0 ],
-					"to": [ 7.0, 28.0, 13.0 ],
-					"faces": {
-						"north": { "texture": "#metal", "uv": [ 0.0, 0.0, 6.0, 8.0 ] },
-						"east": { "texture": "#metal", "uv": [ 0.0, 0.0, 10.0, 8.0 ] },
-						"south": { "texture": "#metal", "uv": [ 0.0, 0.0, 6.0, 8.0 ] },
-						"west": { "texture": "#metal", "uv": [ 0.0, 0.0, 10.0, 8.0 ] },
-						"up": { "texture": "#metal", "uv": [ 0.0, 0.0, 6.0, 10.0 ] },
-						"down": { "texture": "#metal", "uv": [ 0.0, 0.0, 6.0, 10.0 ] }
-					}
-				},
-				{
-					"name": "shaftStub",
-					"from": [ 0.0, 22.01, 6.0 ],
-					"to": [ 1.0, 26.01, 10.0 ],
-					"rotationOrigin": [ 8.0, 0.0, 0.0 ],
-					"faces": {
-						"north": { "texture": "#metal", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
-						"east": { "texture": "#metal", "uv": [ 0.0, 0.0, 4.0, 4.0 ] },
-						"south": { "texture": "#metal", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
-						"west": { "texture": "#metal", "uv": [ 0.0, 0.0, 4.0, 4.0 ] },
-						"up": { "texture": "#metal", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
-						"down": { "texture": "#metal", "uv": [ 0.0, 0.0, 1.0, 4.0 ] }
-					}
-				}
-			]
-		}
-	]}
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "plank": "game:block/wood/planks/oak3",
+    "darkwood": "game:block/wood/debarked/oak",
+    "metal": "game:block/metal/sheet/iron1"
+  },
+  "elements": [
+    {
+      "name": "closedSideWall",
+      "from": [
+        1.99,
+        0.0,
+        -15.0
+      ],
+      "to": [
+        4.99,
+        48.0,
+        31.0
+      ],
+      "rotationOrigin": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#darkwood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            16.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#darkwood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#darkwood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            16.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#darkwood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#darkwood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            16.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#darkwood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            16.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "frontFloorRail",
+      "from": [
+        5.0,
+        0.0,
+        -15.0
+      ],
+      "to": [
+        32.0,
+        3.0,
+        -11.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            4.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            4.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            4.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            4.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "backFloorRail",
+      "from": [
+        5.0,
+        0.0,
+        27.0
+      ],
+      "to": [
+        32.0,
+        3.0,
+        31.0
+      ],
+      "rotationOrigin": [
+        5.0,
+        0.0,
+        0.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            4.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            4.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            4.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            4.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "openSideThreshold",
+      "from": [
+        27.0,
+        0.0,
+        -11.0
+      ],
+      "to": [
+        32.0,
+        4.0,
+        27.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            5.0,
+            4.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            4.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            5.0,
+            4.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            4.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            5.0,
+            16.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#plank",
+          "uv": [
+            0.0,
+            0.0,
+            5.0,
+            16.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "wheelAssembly",
+      "from": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "to": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotationOrigin": [
+        16.0,
+        24.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": false,
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": false,
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": false,
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": false,
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": false,
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": false,
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            0.5
+          ],
+          "autoUv": false
+        }
+      },
+      "children": [
+        {
+          "name": "treadSlat00",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat01",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 18.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat02",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 36.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat03",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 54.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat04",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 72.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat05",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 90.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat06",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 108.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat07",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 126.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat08",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 144.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat09",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 162.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat10",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 180.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat11",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 198.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat12",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 216.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat13",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 234.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat14",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 252.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat15",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 270.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat16",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 288.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat17",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 306.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat18",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 324.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "treadSlat19",
+          "from": [
+            5.0,
+            42.0,
+            5.0
+          ],
+          "to": [
+            30.0,
+            45.0,
+            11.0
+          ],
+          "rotationOrigin": [
+            16.0,
+            24.0,
+            8.0
+          ],
+          "rotationX": 342.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                3.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#plank",
+              "uv": [
+                0.0,
+                0.0,
+                16.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "closedSideHub",
+          "from": [
+            1.0,
+            20.0,
+            3.0
+          ],
+          "to": [
+            7.0,
+            28.0,
+            13.0
+          ],
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                8.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                10.0,
+                8.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                8.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                10.0,
+                8.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                10.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                6.0,
+                10.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "shaftStub",
+          "from": [
+            0.0,
+            22.01,
+            6.0
+          ],
+          "to": [
+            1.0,
+            26.01,
+            10.0
+          ],
+          "rotationOrigin": [
+            8.0,
+            0.0,
+            0.0
+          ],
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                1.0,
+                4.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                1.0,
+                4.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                1.0,
+                4.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#metal",
+              "uv": [
+                0.0,
+                0.0,
+                1.0,
+                4.0
+              ],
+              "autoUv": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

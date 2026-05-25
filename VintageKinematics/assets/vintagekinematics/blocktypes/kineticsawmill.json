@@ -8,7 +8,7 @@
             "properties": {
                 "role": "Shaft",
                 "stressImpact": 28,
-                "axis": "X"
+                "axis": "Z"
             }
         },
         {
@@ -26,17 +26,17 @@
                 "rotators": [
                     {
                         "element": "Blade",
-                        "axis": "X",
+                        "axis": "Z",
                         "ratio": 1
                     },
                     {
-                        "element": "StubXpos",
-                        "axis": "X",
+                        "element": "StubZpos",
+                        "axis": "Z",
                         "ratio": 1
                     },
                     {
-                        "element": "StubXneg",
-                        "axis": "X",
+                        "element": "StubZneg",
+                        "axis": "Z",
                         "ratio": 1
                     }
                 ]
@@ -44,48 +44,7 @@
         }
     ],
     "entityBehaviorsByType": {
-        "*-x": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 28,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "Blade",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubXneg",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-z": [
+        "*-n": [
             {
                 "name": "Kinetic",
                 "properties": {
@@ -109,17 +68,140 @@
                     "rotators": [
                         {
                             "element": "Blade",
-                            "axis": "X",
+                            "axis": "Z",
                             "ratio": 1
                         },
                         {
-                            "element": "StubXpos",
-                            "axis": "X",
+                            "element": "StubZpos",
+                            "axis": "Z",
                             "ratio": 1
                         },
                         {
-                            "element": "StubXneg",
-                            "axis": "X",
+                            "element": "StubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
+        ],
+        "*-e": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 28,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 200,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Blade",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "StubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "StubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
+        ],
+        "*-s": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 28,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 200,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Blade",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "StubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "StubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
+        ],
+        "*-w": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 28,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 200,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Blade",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "StubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "StubZneg",
+                            "axis": "Z",
                             "ratio": 1
                         }
                     ]
@@ -129,21 +211,42 @@
     },
     "variantgroups": [
         {
-            "code": "axis",
+            "code": "side",
             "states": [
-                "x",
-                "z"
+                "n",
+                "e",
+                "s",
+                "w"
             ]
         }
     ],
     "shape": {
         "base": "block/kineticsawmill"
     },
+    "textures": {
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "iron": {
+            "base": "game:block/metal/sheet/iron1"
+        },
+        "dark": {
+            "base": "game:block/coal/charcoal"
+        }
+    },
     "shapeByType": {
-        "*-x": {
+        "*-n": {
             "base": "block/kineticsawmill"
         },
-        "*-z": {
+        "*-e": {
+            "base": "block/kineticsawmill",
+            "rotateY": 270
+        },
+        "*-s": {
+            "base": "block/kineticsawmill",
+            "rotateY": 180
+        },
+        "*-w": {
             "base": "block/kineticsawmill",
             "rotateY": 90
         }
@@ -152,10 +255,10 @@
     "resistance": 2,
     "creativeinventory": {
         "general": [
-            "*-x"
+            "*-n"
         ],
         "vintagekinematics": [
-            "*-x"
+            "*-n"
         ]
     },
     "lightAbsorption": 0,

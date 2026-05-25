@@ -1,0 +1,14 @@
+{
+	"ingredientPattern": "RFR,BCB,MSM",
+	"ingredients": {
+		"R": { "type": "item", "code": "game:refractorybrick-fired-tier1", "quantity": 4 },
+		"F": { "type": "item", "code": "pipeflange-iron", "quantity": 2 },
+		"B": { "type": "item", "code": "pressedband-iron", "quantity": 2 },
+		"C": { "type": "item", "code": "pressedcasing-iron", "quantity": 1 },
+		"M": { "type": "item", "code": "machinebracket-iron", "quantity": 1 },
+		"S": { "type": "block", "code": "shaft-y" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "kineticcharcoalretort-n", "quantity": 1 }
+}

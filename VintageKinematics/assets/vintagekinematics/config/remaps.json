@@ -1,6 +1,20 @@
 {
 	"vintagekinematics:v1.2crushermetal": [
-		"/bir remapq crusher-x crusher-iron-x force",
-		"/bir remapq crusher-z crusher-iron-z force"
+		"/bir remapq crusher-x crusher-iron-n force",
+		"/bir remapq crusher-z crusher-iron-e force"
+	],
+	"vintagekinematics:v1.5crushersides": [
+		"/bir remapq crusher-bronze-x crusher-bronze-e force",
+		"/bir remapq crusher-bronze-z crusher-bronze-n force",
+		"/bir remapq crusher-iron-x crusher-iron-e force",
+		"/bir remapq crusher-iron-z crusher-iron-n force"
+	],
+	"vintagekinematics:v1.3sawmillsides": [
+		"/bir remapq kineticsawmill-x kineticsawmill-n force",
+		"/bir remapq kineticsawmill-z kineticsawmill-e force"
+	],
+	"vintagekinematics:v1.4forgepresssides": [
+		"/bir remapq kineticforgepress-x kineticforgepress-w force",
+		"/bir remapq kineticforgepress-z kineticforgepress-n force"
 	]
 }

@@ -1,64 +1,68 @@
 {
     "code": "kineticcharcoalretort",
     "class": "BlockKineticCharcoalRetort",
-    "entityClass": "Kinetic",
+    "entityClass": "KineticCharcoalRetort",
     "attributes": {
         "kineticShaftCells": [
-            { "x": 0, "y": 0, "z": 1 },
-            { "x": 2, "y": 0, "z": 1 }
+            { "x": 1, "y": 0, "z": 0 },
+            { "x": 1, "y": 0, "z": 2 }
         ]
     },
     "entityBehaviorsByType": {
         "*-n": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "X" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
             { "name": "KineticMultiblock" },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "fixedWorkRPM": 16, "autoReset": true, "tickInterval": 0.25 } },
             { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "shaftCore", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "hubXneg", "axis": "X", "ratio": 1 },
-                { "element": "hubXpos", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeVertical", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeHorizontal", "axis": "X", "ratio": 1 }
+                { "element": "shaftCore", "axis": "Z", "ratio": 1 },
+                { "element": "stubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "stubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "hubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "hubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeVertical", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeHorizontal", "axis": "Z", "ratio": 1 }
             ] } }
         ],
         "*-e": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "X" } },
             { "name": "KineticMultiblock" },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "fixedWorkRPM": 16, "autoReset": true, "tickInterval": 0.25 } },
             { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "shaftCore", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "hubXneg", "axis": "X", "ratio": 1 },
-                { "element": "hubXpos", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeVertical", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeHorizontal", "axis": "X", "ratio": 1 }
+                { "element": "shaftCore", "axis": "Z", "ratio": 1 },
+                { "element": "stubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "stubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "hubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "hubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeVertical", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeHorizontal", "axis": "Z", "ratio": 1 }
             ] } }
         ],
         "*-s": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "X" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
             { "name": "KineticMultiblock" },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "fixedWorkRPM": 16, "autoReset": true, "tickInterval": 0.25 } },
             { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "shaftCore", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "hubXneg", "axis": "X", "ratio": 1 },
-                { "element": "hubXpos", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeVertical", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeHorizontal", "axis": "X", "ratio": 1 }
+                { "element": "shaftCore", "axis": "Z", "ratio": 1 },
+                { "element": "stubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "stubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "hubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "hubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeVertical", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeHorizontal", "axis": "Z", "ratio": 1 }
             ] } }
         ],
         "*-w": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "Z" } },
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 32, "axis": "X" } },
             { "name": "KineticMultiblock" },
+            { "name": "KineticWorker", "properties": { "workPerCycle": 200, "minRPM": 4, "fixedWorkRPM": 16, "autoReset": true, "tickInterval": 0.25 } },
             { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "shaftCore", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "hubXneg", "axis": "X", "ratio": 1 },
-                { "element": "hubXpos", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeVertical", "axis": "X", "ratio": 1 },
-                { "element": "draftFanBladeHorizontal", "axis": "X", "ratio": 1 }
+                { "element": "shaftCore", "axis": "Z", "ratio": 1 },
+                { "element": "stubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "stubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "hubZpos", "axis": "Z", "ratio": 1 },
+                { "element": "hubZneg", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeVertical", "axis": "Z", "ratio": 1 },
+                { "element": "draftFanBladeHorizontal", "axis": "Z", "ratio": 1 }
             ] } }
         ]
     },
@@ -81,9 +85,9 @@
     },
     "shapeByType": {
         "kineticcharcoalretort-n": { "base": "block/kineticcharcoalretort" },
-        "kineticcharcoalretort-e": { "base": "block/kineticcharcoalretort", "rotateY": 90 },
+        "kineticcharcoalretort-e": { "base": "block/kineticcharcoalretort", "rotateY": 270 },
         "kineticcharcoalretort-s": { "base": "block/kineticcharcoalretort", "rotateY": 180 },
-        "kineticcharcoalretort-w": { "base": "block/kineticcharcoalretort", "rotateY": 270 }
+        "kineticcharcoalretort-w": { "base": "block/kineticcharcoalretort", "rotateY": 90 }
     },
     "textures": {
         "steel": { "base": "game:block/metal/plate/steel" },

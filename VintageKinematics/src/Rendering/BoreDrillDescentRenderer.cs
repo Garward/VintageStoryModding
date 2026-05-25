@@ -25,9 +25,9 @@ namespace VintageKinematics.Rendering
         private readonly BEKineticBore bore;
         private readonly BEBehaviorKinetic kinetic;
         private readonly Matrixf modelMat = new Matrixf();
-        private MeshRef drillMesh;
+        private MultiTextureMeshRef drillMesh;
         private Vec3f drillPivot;
-        private MeshRef shaftMesh;
+        private MultiTextureMeshRef shaftMesh;
         private Vec3f shaftPivot;
         // Mirrors the original DrillAssembly rotator entry from kineticbore.json (Y axis,
         // 1:1 ratio). Kept as constants so this renderer stays self-contained — the bore
@@ -75,7 +75,6 @@ namespace VintageKinematics.Rendering
             rpi.GlDisableCullFace();
             rpi.GlToggleBlend(true);
             IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
             prog.ViewMatrix = rpi.CameraMatrixOriginf;
             prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
@@ -109,7 +108,7 @@ namespace VintageKinematics.Rendering
                 .Translate(-drillPivot.X, -drillPivot.Y, -drillPivot.Z);
 
             prog.ModelMatrix = modelMat.Values;
-            rpi.RenderMesh(drillMesh);
+            rpi.RenderMultiTextureMesh(drillMesh, "tex");
         }
 
         private void DrawShaftAtCenterColumn(IStandardShaderProgram prog, IRenderAPI rpi, Vec3d camPos, float angle, float yOffset)
@@ -126,7 +125,7 @@ namespace VintageKinematics.Rendering
                 .Translate(-shaftPivot.X, -shaftPivot.Y, -shaftPivot.Z);
 
             prog.ModelMatrix = modelMat.Values;
-            rpi.RenderMesh(shaftMesh);
+            rpi.RenderMultiTextureMesh(shaftMesh, "tex");
         }
 
         public void Dispose()

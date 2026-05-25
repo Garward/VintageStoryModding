@@ -42,13 +42,13 @@
                 "properties": {
                     "rotators": [
                         {
-                            "element": "stubYpos",
-                            "axis": "Y",
+                            "element": "stubXpos",
+                            "axis": "X",
                             "ratio": 1
                         },
                         {
-                            "element": "stubYneg",
-                            "axis": "Y",
+                            "element": "stubXneg",
+                            "axis": "X",
                             "ratio": -1
                         },
                         {
@@ -138,13 +138,13 @@
                             "ratio": -1
                         },
                         {
-                            "element": "stubYpos",
-                            "axis": "Y",
+                            "element": "stubZpos",
+                            "axis": "Z",
                             "ratio": 1
                         },
                         {
-                            "element": "stubYneg",
-                            "axis": "Y",
+                            "element": "stubZneg",
+                            "axis": "Z",
                             "ratio": -1
                         }
                     ]
@@ -163,17 +163,19 @@
         }
     ],
     "shape": {
-        "base": "block/gearbox_y"
+        "base": "block/gearbox"
     },
     "shapeByType": {
         "*-x": {
-            "base": "block/gearbox_x"
+            "base": "block/gearbox",
+            "rotateZ": 90
         },
         "*-y": {
-            "base": "block/gearbox_y"
+            "base": "block/gearbox"
         },
         "*-z": {
-            "base": "block/gearbox_z"
+            "base": "block/gearbox",
+            "rotateX": 90
         }
     },
     "textures": {

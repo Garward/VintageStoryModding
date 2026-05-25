@@ -28,6 +28,8 @@ namespace VintageKinematics.Rendering
 
         private MeshRef[] surfaceFrames;
         private MeshRef shaftMesh;
+        private int surfaceTextureId;
+        private int shaftTextureId;
         private EnumBeltPart builtPart;
         private bool builtHasShaft;
         private string builtDirection;
@@ -68,11 +70,11 @@ namespace VintageKinematics.Rendering
             rpi.GlToggleBlend(false);
 
             IStandardShaderProgram prog = rpi.PreparedStandardShader(belt.Pos.X, belt.Pos.Y, belt.Pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
             prog.RgbaLightIn = capi.World.BlockAccessor.GetLightRGBs(belt.Pos.X, belt.Pos.Y, belt.Pos.Z);
 
             float rotY = BaseRotationDegrees() * MathF.PI / 180f;
             PrepareBaseMatrix(camPos, rotY);
+            prog.Tex2D = surfaceTextureId;
             prog.ModelMatrix = modelMat.Values;
             prog.ViewMatrix = rpi.CameraMatrixOriginf;
             prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
@@ -92,6 +94,7 @@ namespace VintageKinematics.Rendering
                 }
                 modelMat.RotateY(rotY);
                 modelMat.Translate(-0.5f, -0.5f, -0.5f);
+                prog.Tex2D = shaftTextureId;
                 prog.ModelMatrix = modelMat.Values;
                 rpi.RenderMesh(shaftMesh);
             }
@@ -174,19 +177,21 @@ namespace VintageKinematics.Rendering
             builtHasShaft = belt.HasShaft;
             builtDirection = belt.Direction;
 
-            TextureAtlasPosition surfaceTex = capi.BlockTextureAtlas.GetPosition(belt.Block, "surface", true)
-                ?? capi.BlockTextureAtlas.UnknownTexturePosition;
-            TextureAtlasPosition woodTex = capi.BlockTextureAtlas.GetPosition(belt.Block, "wood", true)
-                ?? capi.BlockTextureAtlas.UnknownTexturePosition;
+            TextureAtlasPosition surfaceTex = ResolveBlockTexture("surface");
+            TextureAtlasPosition woodTex = ResolveBlockTexture("wood");
 
             if (surfaceTex == null || woodTex == null)
             {
                 builtPart = default;
                 builtHasShaft = default;
                 builtDirection = null;
+                surfaceTextureId = 0;
+                shaftTextureId = 0;
                 return;
             }
 
+            surfaceTextureId = surfaceTex.atlasTextureId;
+            shaftTextureId = woodTex.atlasTextureId;
             surfaceFrames = new MeshRef[FrameCount];
             for (int i = 0; i < FrameCount; i++)
             {
@@ -202,6 +207,19 @@ namespace VintageKinematics.Rendering
                 shaft.SetTexPos(woodTex);
                 shaftMesh = capi.Render.UploadMesh(shaft);
             }
+        }
+
+        private TextureAtlasPosition ResolveBlockTexture(string textureCode)
+        {
+            ITexPositionSource texSource = capi.Tesselator.GetTextureSource(belt.Block, 0, true);
+            TextureAtlasPosition sourcePos = texSource?[textureCode];
+            TextureAtlasPosition directPos = capi.BlockTextureAtlas.GetPosition(belt.Block, textureCode, false);
+            TextureAtlasPosition wildcardPos = capi.BlockTextureAtlas.GetPosition(belt.Block, textureCode, true);
+            TextureAtlasPosition resolved = sourcePos
+                ?? directPos
+                ?? wildcardPos
+                ?? capi.BlockTextureAtlas.UnknownTexturePosition;
+            return resolved;
         }
 
         private MeshData BuildSurfaceFrame(float phase)

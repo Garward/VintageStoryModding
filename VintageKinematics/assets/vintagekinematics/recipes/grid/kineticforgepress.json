@@ -10,5 +10,5 @@
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "block", "code": "kineticforgepress-x", "quantity": 1 }
+	"output": { "type": "block", "code": "kineticforgepress-n", "quantity": 1 }
 }

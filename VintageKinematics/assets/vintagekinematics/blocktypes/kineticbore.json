@@ -2,6 +2,9 @@
     "code": "kineticbore",
     "class": "BlockKineticBore",
     "entityClass": "KineticBore",
+    "attributes": {
+        "kineticShaftElements": [ "ShaftStub" ]
+    },
     "entityBehaviors": [
         {
             "name": "Kinetic",
@@ -10,6 +13,9 @@
                 "stressImpact": 96,
                 "axis": "Z"
             }
+        },
+        {
+            "name": "KineticMultiblock"
         },
         {
             "name": "KineticWorker",
@@ -56,6 +62,9 @@
                 }
             },
             {
+                "name": "KineticMultiblock"
+            },
+            {
                 "name": "KineticWorker",
                 "properties": {
                     "workPerCycle": 400,
@@ -97,6 +106,9 @@
                     "stressImpact": 96,
                     "axis": "Z"
                 }
+            },
+            {
+                "name": "KineticMultiblock"
             },
             {
                 "name": "KineticWorker",
@@ -142,6 +154,9 @@
                 }
             },
             {
+                "name": "KineticMultiblock"
+            },
+            {
                 "name": "KineticWorker",
                 "properties": {
                     "workPerCycle": 400,
@@ -183,6 +198,9 @@
                     "stressImpact": 96,
                     "axis": "X"
                 }
+            },
+            {
+                "name": "KineticMultiblock"
             },
             {
                 "name": "KineticWorker",

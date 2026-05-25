@@ -24,7 +24,7 @@ namespace VintageKinematics.Rendering
             public float PhaseOffset;
             public bool Invert;
             public Vec3f Pivot;
-            public MeshRef Mesh;
+            public MultiTextureMeshRef Mesh;
         }
 
         private readonly ICoreClientAPI capi;
@@ -56,7 +56,8 @@ namespace VintageKinematics.Rendering
             rpi.GlDisableCullFace();
             rpi.GlToggleBlend(true);
             IStandardShaderProgram prog = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-            prog.Tex2D = capi.BlockTextureAtlas.AtlasTextures[0].TextureId;
+            prog.ViewMatrix = rpi.CameraMatrixOriginf;
+            prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
             foreach (var s in stretches)
             {
@@ -74,9 +75,7 @@ namespace VintageKinematics.Rendering
                     .Translate(-s.Pivot.X, -s.Pivot.Y, -s.Pivot.Z);
 
                 prog.ModelMatrix = modelMat.Values;
-                prog.ViewMatrix = rpi.CameraMatrixOriginf;
-                prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
-                rpi.RenderMesh(s.Mesh);
+                rpi.RenderMultiTextureMesh(s.Mesh, "tex");
             }
 
             prog.Stop();

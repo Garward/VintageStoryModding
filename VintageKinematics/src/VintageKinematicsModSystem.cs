@@ -75,6 +75,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
             api.RegisterBlockEntityClass("KineticPress", typeof(BlockEntities.BEKineticPress));
             api.RegisterBlockEntityClass("KineticForgePress", typeof(BlockEntities.BEKineticForgePress));
+            api.RegisterBlockEntityClass("KineticCharcoalRetort", typeof(BlockEntities.BEKineticCharcoalRetort));
             api.RegisterBlockEntityClass("KineticMixer", typeof(BlockEntities.BEKineticMixer));
             api.RegisterBlockEntityClass("KineticIgniter", typeof(BlockEntities.BEKineticIgniter));
             api.RegisterBlockEntityClass("KineticBore", typeof(BlockEntities.BEKineticBore));

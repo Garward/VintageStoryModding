@@ -68,18 +68,16 @@ namespace VintageKinematics.BlockEntities
             if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticsieve-title") title = "Kinetic Sieve";
             DialogTitle = title;
 
-            // The drum is 3 cells long. Expose input on the perpendicular face and on UP of every
-            // cell, and outputs on the opposite perpendicular face and DOWN of every cell, so a
-            // funnel can sit above/below/beside any segment of the drum and still find the right
-            // slot. Without per-cell coverage, funnels on non-controller / non-middle cells silently
-            // miss the map.
-            BlockFacing inputFace = AutomationInputFace();
-            BlockFacing outputSideFace = inputFace.Opposite;
+            // The drum is 3 cells long. The model's east drum rail is input and the west drum rail
+            // is output, with top input and bottom output preserved. Map every drum cell so funnels
+            // can sit beside any segment and still find the controller inventory.
+            BlockFacing inputFace = DrumEastRailFace();
+            BlockFacing outputSideFace = DrumWestRailFace();
             ioFaces = new IOFaceMap(Pos);
             foreach (BlockPos cell in AllCells())
             {
-                ioFaces.MapInput(cell, inputFace, SlotInput);
                 ioFaces.MapInput(cell, BlockFacing.UP, SlotInput);
+                ioFaces.MapInput(cell, inputFace, SlotInput);
                 for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
                 {
                     ioFaces.MapOutput(cell, outputSideFace, i);
@@ -98,19 +96,29 @@ namespace VintageKinematics.BlockEntities
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
         }
 
-        // The drum axis runs along the "side" direction — that's where the shaft plugs in and
-        // where the multiblock extends. Automation input must land on the perpendicular axis so
-        // the feed face doesn't fight the shaft connection.
-        private BlockFacing AutomationInputFace()
+        private BlockFacing DrumEastRailFace()
         {
             string side = Block?.Variant?["side"] ?? "n";
             switch (side)
             {
-                case "n":
-                case "s": return BlockFacing.EAST;
-                case "e":
-                case "w": return BlockFacing.SOUTH;
+                case "n": return BlockFacing.EAST;
+                case "e": return BlockFacing.SOUTH;
+                case "s": return BlockFacing.WEST;
+                case "w": return BlockFacing.NORTH;
                 default:  return BlockFacing.EAST;
+            }
+        }
+
+        private BlockFacing DrumWestRailFace()
+        {
+            string side = Block?.Variant?["side"] ?? "n";
+            switch (side)
+            {
+                case "n": return BlockFacing.WEST;
+                case "e": return BlockFacing.NORTH;
+                case "s": return BlockFacing.EAST;
+                case "w": return BlockFacing.SOUTH;
+                default:  return BlockFacing.WEST;
             }
         }
 

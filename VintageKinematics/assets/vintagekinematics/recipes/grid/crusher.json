@@ -8,5 +8,5 @@
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "block", "code": "crusher-iron-x", "quantity": 1 }
+	"output": { "type": "block", "code": "crusher-iron-n", "quantity": 1 }
 }

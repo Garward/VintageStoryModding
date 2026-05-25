@@ -18,7 +18,7 @@ namespace VintageKinematics.BlockEntities
                 if (beh == null) return;
 
                 capi.Tesselator.TesselateBlock(Block, out MeshData mesh);
-                MeshRef meshRef = capi.Render.UploadMesh(mesh);
+                MultiTextureMeshRef meshRef = capi.Render.UploadMultiTextureMesh(mesh);
                 renderer = new KineticRotationRenderer(capi, Pos, beh, meshRef);
                 capi.Event.RegisterRenderer(renderer, EnumRenderStage.Opaque);
             }
