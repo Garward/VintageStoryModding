@@ -14,7 +14,7 @@
                 { "type": "item", "code": "game:oilportion-flax" },
                 { "type": "item", "code": "game:oilportion-olive" }
             ],
-            "minQuantity": 0,
+            "minQuantity": 1,
             "maxQuantity": 1,
             "portionSizeLitres": 0.1,
             "typeName": "oil"
