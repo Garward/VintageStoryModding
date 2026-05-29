@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using VintageKinematics.Api;
 using VintageKinematics.Entities;
 
 namespace VintageKinematics.Rendering
@@ -15,11 +18,14 @@ namespace VintageKinematics.Rendering
         private readonly EntityVKContraption entity;
         private readonly Matrixf modelMat = new Matrixf();
         private readonly Dictionary<string, MultiTextureMeshRef> meshCache = new Dictionary<string, MultiTextureMeshRef>();
+        private readonly Dictionary<string, AnimatedBlockMesh> animatedBlockMeshCache = new Dictionary<string, AnimatedBlockMesh>();
+        private readonly List<ContraptionMovingPartDefinition> movingPartScratch = new List<ContraptionMovingPartDefinition>();
 
         private Vec3i localMin = new Vec3i(0, 1, 0);
         private Vec3i localMax = new Vec3i(0, 1, 0);
         private Vec3i[] offsets = Array.Empty<Vec3i>();
         private Block[] blocks = Array.Empty<Block>();
+        private TreeAttribute[] blockEntityTrees = Array.Empty<TreeAttribute>();
         private string snapshotId;
 
         public double RenderOrder => 0.5;
@@ -64,9 +70,7 @@ namespace VintageKinematics.Rendering
                 int sourceZ = (entity.ControllerPos?.Z ?? 0) + offset.Z;
                 int randomY = block.RandomizeAxes == EnumRandomizeAxes.XYZ ? sourceY : 0;
                 int alternateIndex = GetAlternateIndex(block, sourceX, randomY, sourceZ);
-
-                MultiTextureMeshRef meshRef = GetBlockMesh(block, alternateIndex, sourceX, sourceY, sourceZ);
-                if (meshRef == null) continue;
+                TreeAttribute blockEntityTree = i < blockEntityTrees.Length ? blockEntityTrees[i] : null;
 
                 double blockX = entity.Pos.X + offset.X - originLocalX;
                 double blockY = entity.Pos.InternalY + offset.Y - originLocalY;
@@ -84,6 +88,21 @@ namespace VintageKinematics.Rendering
                         .Translate(-0.5f, -0.5f, -0.5f);
                 }
                 prog.ModelMatrix = modelMat.Values;
+
+                if (TryGetAnimatedBlockMesh(block, offset, blockEntityTree, sourceX, sourceY, sourceZ, out AnimatedBlockMesh animated))
+                {
+                    if (animated.Body != null)
+                    {
+                        rpi.RenderMultiTextureMesh(animated.Body, "tex");
+                    }
+
+                    RenderAnimatedParts(rpi, prog, animated, block, blockX, blockY, blockZ, camPos);
+                    continue;
+                }
+
+                MultiTextureMeshRef meshRef = GetBlockMesh(block, alternateIndex, sourceX, sourceY, sourceZ);
+                if (meshRef == null) continue;
+
                 rpi.RenderMultiTextureMesh(meshRef, "tex");
             }
 
@@ -100,9 +119,12 @@ namespace VintageKinematics.Rendering
             {
                 offsets = Array.Empty<Vec3i>();
                 blocks = Array.Empty<Block>();
+                blockEntityTrees = Array.Empty<TreeAttribute>();
                 snapshotId = currentId;
                 return;
             }
+
+            entity.TryGetSnapshot(out _, out _, out _, out _, out TreeAttribute[] nextBlockEntityTrees);
 
             localMin = min;
             localMax = max;
@@ -113,6 +135,7 @@ namespace VintageKinematics.Rendering
                 if (string.IsNullOrEmpty(blockCodes[i])) continue;
                 blocks[i] = capi.World.GetBlock(new AssetLocation(blockCodes[i]));
             }
+            blockEntityTrees = nextBlockEntityTrees ?? Array.Empty<TreeAttribute>();
 
             snapshotId = currentId;
         }
@@ -131,6 +154,130 @@ namespace VintageKinematics.Rendering
             MultiTextureMeshRef meshRef = capi.Render.UploadMultiTextureMesh(mesh);
             meshCache[cacheKey] = meshRef;
             return meshRef;
+        }
+
+        private bool TryGetAnimatedBlockMesh(Block block, Vec3i offset, TreeAttribute blockEntityTree, int sourceX, int sourceY, int sourceZ, out AnimatedBlockMesh animated)
+        {
+            animated = null;
+            movingPartScratch.Clear();
+
+            ContraptionMovingPartRegistry.CollectMovingParts(
+                new ContraptionMovingPartContext(capi, entity, block, offset, blockEntityTree, sourceX, sourceY, sourceZ),
+                movingPartScratch);
+
+            RemoveEmptyMovingPartDefinitions(movingPartScratch);
+            if (movingPartScratch.Count == 0) return false;
+
+            string cacheKey = BuildAnimatedBlockMeshCacheKey(block, movingPartScratch);
+            if (animatedBlockMeshCache.TryGetValue(cacheKey, out animated)) return true;
+
+            string[] excludedElements = CollectExcludedElements(movingPartScratch);
+            MeshData bodyMesh = KineticMeshSplitter.TesselateBodyExcluding(capi, block, capi.Tesselator, excludedElements);
+            MultiTextureMeshRef bodyRef = bodyMesh == null ? null : capi.Render.UploadMultiTextureMesh(bodyMesh);
+
+            List<AnimatedPartMesh> parts = new List<AnimatedPartMesh>(movingPartScratch.Count);
+            foreach (ContraptionMovingPartDefinition definition in movingPartScratch)
+            {
+                MultiTextureMeshRef movingRef = KineticMeshSplitter.TesselateElements(capi, block, definition.ElementNames);
+                if (movingRef == null) continue;
+
+                parts.Add(new AnimatedPartMesh
+                {
+                    Mesh = movingRef,
+                    Pivot = definition.Pivot,
+                    Axis = definition.Axis,
+                    VisualRPM = definition.VisualRPM,
+                    Ratio = definition.Ratio,
+                    PhaseOffset = definition.PhaseOffset
+                });
+            }
+
+            animated = new AnimatedBlockMesh
+            {
+                Body = bodyRef,
+                Parts = parts
+            };
+            animatedBlockMeshCache[cacheKey] = animated;
+            return true;
+        }
+
+        private static void RemoveEmptyMovingPartDefinitions(List<ContraptionMovingPartDefinition> definitions)
+        {
+            for (int i = definitions.Count - 1; i >= 0; i--)
+            {
+                ContraptionMovingPartDefinition definition = definitions[i];
+                if (definition == null || definition.ElementNames == null || definition.ElementNames.Length == 0)
+                {
+                    definitions.RemoveAt(i);
+                }
+            }
+        }
+
+        private static string[] CollectExcludedElements(List<ContraptionMovingPartDefinition> definitions)
+        {
+            HashSet<string> seen = new HashSet<string>();
+            List<string> excluded = new List<string>();
+
+            foreach (ContraptionMovingPartDefinition definition in definitions)
+            {
+                foreach (string elementName in definition.ElementNames)
+                {
+                    if (string.IsNullOrEmpty(elementName) || !seen.Add(elementName)) continue;
+                    excluded.Add(elementName);
+                }
+            }
+
+            return excluded.ToArray();
+        }
+
+        private static string BuildAnimatedBlockMeshCacheKey(Block block, List<ContraptionMovingPartDefinition> definitions)
+        {
+            StringBuilder key = new StringBuilder();
+            key.Append(block.Code).Append("#contraptionMovingParts#").Append(ContraptionMovingPartRegistry.Version);
+            foreach (ContraptionMovingPartDefinition definition in definitions)
+            {
+                key.Append("|axis=").Append((int)definition.Axis)
+                    .Append(",pivot=").Append(definition.Pivot.X).Append(",").Append(definition.Pivot.Y).Append(",").Append(definition.Pivot.Z)
+                    .Append(",rpm=").Append(definition.VisualRPM)
+                    .Append(",ratio=").Append(definition.Ratio)
+                    .Append(",phase=").Append(definition.PhaseOffset)
+                    .Append(",elements=");
+                foreach (string elementName in definition.ElementNames)
+                {
+                    key.Append(elementName).Append(",");
+                }
+            }
+
+            return key.ToString();
+        }
+
+        private void RenderAnimatedParts(IRenderAPI rpi, IStandardShaderProgram prog, AnimatedBlockMesh animated, Block block, double blockX, double blockY, double blockZ, Vec3d camPos)
+        {
+            if (animated?.Parts == null || animated.Parts.Count == 0) return;
+
+            Vec3f blockRotRad = KineticMeshSplitter.GetBlockShapeRotationDeg(block) * GameMath.DEG2RAD;
+            float timeSeconds = (float)capi.World.ElapsedMilliseconds / 1000f;
+
+            foreach (AnimatedPartMesh part in animated.Parts)
+            {
+                float angle = KineticAnimatorMath.ComputeAngle(timeSeconds, part.VisualRPM, part.Ratio, part.PhaseOffset);
+
+                modelMat.Identity()
+                    .Translate((float)(blockX - camPos.X), (float)(blockY - camPos.Y), (float)(blockZ - camPos.Z))
+                    .Translate(0.5f, 0.5f, 0.5f).Rotate(blockRotRad).Translate(-0.5f, -0.5f, -0.5f)
+                    .Translate(part.Pivot.X, part.Pivot.Y, part.Pivot.Z);
+
+                switch (part.Axis)
+                {
+                    case EnumKineticAxis.X: modelMat.RotateX(angle); break;
+                    case EnumKineticAxis.Y: modelMat.RotateY(angle); break;
+                    case EnumKineticAxis.Z: modelMat.RotateZ(angle); break;
+                }
+
+                modelMat.Translate(-part.Pivot.X, -part.Pivot.Y, -part.Pivot.Z);
+                prog.ModelMatrix = modelMat.Values;
+                rpi.RenderMultiTextureMesh(part.Mesh, "tex");
+            }
         }
 
         private MeshData BuildBlockMesh(Block block, int alternateIndex, int sourceX, int sourceY, int sourceZ)
@@ -311,6 +458,44 @@ namespace VintageKinematics.Rendering
             }
 
             meshCache.Clear();
+
+            foreach (AnimatedBlockMesh mesh in animatedBlockMeshCache.Values)
+            {
+                mesh?.Dispose();
+            }
+
+            animatedBlockMeshCache.Clear();
+        }
+
+        private sealed class AnimatedBlockMesh
+        {
+            public MultiTextureMeshRef Body;
+            public List<AnimatedPartMesh> Parts;
+
+            public void Dispose()
+            {
+                Body?.Dispose();
+                if (Parts == null) return;
+                foreach (AnimatedPartMesh part in Parts)
+                {
+                    part?.Dispose();
+                }
+            }
+        }
+
+        private sealed class AnimatedPartMesh
+        {
+            public MultiTextureMeshRef Mesh;
+            public Vec3f Pivot;
+            public EnumKineticAxis Axis;
+            public float VisualRPM;
+            public float Ratio;
+            public float PhaseOffset;
+
+            public void Dispose()
+            {
+                Mesh?.Dispose();
+            }
         }
     }
 }

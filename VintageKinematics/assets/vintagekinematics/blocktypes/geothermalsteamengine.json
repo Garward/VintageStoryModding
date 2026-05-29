@@ -1,0 +1,83 @@
+{
+    "code": "geothermalsteamengine",
+    "class": "BlockGeothermalSteamEngine",
+    "entityClass": "GeothermalSteamEngine",
+    "variantgroups": [
+        { "code": "side", "states": [ "n", "e", "s", "w" ] },
+        { "code": "state", "states": [ "cool", "glow" ] }
+    ],
+    "behaviorsByType": {
+        "*-n-*": [ { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } } ],
+        "*-e-*": [ { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } } ],
+        "*-s-*": [ { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } } ],
+        "*-w-*": [ { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } } ]
+    },
+    "entityBehaviors": [
+        { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -4096, "axis": "X" } },
+        { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+        { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "driveShaft", "axis": "X", "ratio": 1 }, { "element": "turbineRotor", "axis": "X", "ratio": 2 } ] } }
+    ],
+    "entityBehaviorsByType": {
+        "*-n-*": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -4096, "axis": "X" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "driveShaft", "axis": "X", "ratio": 1 }, { "element": "turbineRotor", "axis": "X", "ratio": 2 } ] } }
+        ],
+        "*-s-*": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -4096, "axis": "X" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "driveShaft", "axis": "X", "ratio": 1 }, { "element": "turbineRotor", "axis": "X", "ratio": 2 } ] } }
+        ],
+        "*-e-*": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -4096, "axis": "Z" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "driveShaft", "axis": "X", "ratio": 1 }, { "element": "turbineRotor", "axis": "X", "ratio": 2 } ] } }
+        ],
+        "*-w-*": [
+            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -4096, "axis": "Z" } },
+            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
+            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "driveShaft", "axis": "X", "ratio": 1 }, { "element": "turbineRotor", "axis": "X", "ratio": 2 } ] } }
+        ]
+    },
+    "shape": { "base": "block/geothermalsteamengine" },
+    "shapeByType": {
+        "*-n-*": { "base": "block/geothermalsteamengine", "rotateY": 0 },
+        "*-s-*": { "base": "block/geothermalsteamengine", "rotateY": 180 },
+        "*-e-*": { "base": "block/geothermalsteamengine", "rotateY": 270 },
+        "*-w-*": { "base": "block/geothermalsteamengine", "rotateY": 90 }
+    },
+    "textures": {
+        "steel": { "base": "game:block/metal/plate/steel" },
+        "iron": { "base": "game:block/metal/plate/iron" },
+        "brass": { "base": "game:block/metal/ingot/brass" },
+        "copper": { "base": "game:block/metal/plate/copper" },
+        "dark": { "base": "game:block/coal/charcoal" },
+        "heat": { "base": "game:block/coal/charcoal" },
+        "glow": { "base": "vintagekinematics:block/kineticigniter-rod-glow" },
+        "water": { "base": "game:block/liquid/water" }
+    },
+    "texturesByType": {
+        "*-glow": {
+            "heat": { "base": "vintagekinematics:block/kineticigniter-rod-glow" }
+        }
+    },
+    "lightHsv": [ 0, 0, 0 ],
+    "lightHsvByType": {
+        "*-glow": [ 5, 7, 5 ]
+    },
+    "guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "scale": 0.58 },
+    "blockmaterial": "Metal",
+    "resistance": 3,
+    "creativeinventory": {
+        "general": [ "*-n-cool" ],
+        "vintagekinematics": [ "*-n-cool" ]
+    },
+    "drops": [
+        { "type": "block", "code": "geothermalsteamengine-n-cool", "quantity": { "avg": 1 } }
+    ],
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 }
+}

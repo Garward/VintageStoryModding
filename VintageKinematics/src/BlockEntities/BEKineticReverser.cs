@@ -7,7 +7,7 @@ using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEKineticReverser : BEKineticAnimated, IKineticConnector, IKineticActivatable
+    public class BEKineticReverser : BEKineticAnimated, IKineticConnector, IKineticActivatable, IKineticAnimatorRotatorMultiplier
     {
         private static readonly AssetLocation ToggleSound = new AssetLocation("sounds/effect/woodswitch");
 
@@ -28,6 +28,11 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
+        public float GetRotatorSpeedMultiplier(string elementName)
+        {
+            return Reversed && elementName == "shaftNeg" ? -1f : 1f;
+        }
+
         public KineticConnectionResult? TryConnect(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos)
         {
             int dir = 1;
@@ -40,26 +45,15 @@ namespace VintageKinematics.BlockEntities
 
         private bool IsOutputSide(BlockPos fromPos, BlockPos toPos)
         {
-            BlockFacing output = OutputFacing();
+            BlockFacing output = ShaftNegFacing();
             return toPos.X == fromPos.X + output.Normali.X
                 && toPos.Y == fromPos.Y + output.Normali.Y
                 && toPos.Z == fromPos.Z + output.Normali.Z;
         }
 
-        private BlockFacing OutputFacing()
+        private BlockFacing ShaftNegFacing()
         {
-            return Block?.Variant["side"] switch
-            {
-                "n" => BlockFacing.NORTH,
-                "e" => BlockFacing.EAST,
-                "s" => BlockFacing.SOUTH,
-                "w" => BlockFacing.WEST,
-                "u" => BlockFacing.UP,
-                "d" => BlockFacing.DOWN,
-                "x" => BlockFacing.EAST,
-                "z" => BlockFacing.SOUTH,
-                _ => BlockFacing.UP
-            };
+            return BEKineticClutch.ShaftNegFacingFor(Block?.Variant["side"]);
         }
 
         private void RebuildNetwork()
@@ -92,8 +86,8 @@ namespace VintageKinematics.BlockEntities
         {
             ShapeElement lever = shape?.GetElementByName("lever");
             if (lever == null) return;
-            lever.RotationOrigin = new double[] { 14, 8, 8 };
-            lever.RotationZ += degrees;
+            lever.RotationOrigin = new double[] { 8, 14, 8 };
+            lever.RotationX += degrees;
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)

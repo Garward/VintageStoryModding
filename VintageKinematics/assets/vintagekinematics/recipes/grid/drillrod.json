@@ -1,0 +1,10 @@
+{
+	"ingredientPattern": "C,S",
+	"ingredients": {
+		"C": { "type": "item", "code": "pressedband-iron" },
+		"S": { "type": "block", "code": "shaft-*", "quantity": 8 }
+	},
+	"width": 1,
+	"height": 2,
+	"output": { "type": "item", "code": "drillrod", "quantity": 8 }
+}

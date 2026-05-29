@@ -65,9 +65,19 @@ namespace VintageKinematics.Entities
         private readonly Dictionary<long, Entity> hookedEntities = new Dictionary<long, Entity>();
         private readonly Dictionary<long, Action> afterPhysicsHooks = new Dictionary<long, Action>();
         private readonly HashSet<long> entitiesSeenThisTick = new HashSet<long>();
+        private readonly Dictionary<string, long> movementPauseUntilMs = new Dictionary<string, long>();
+        private readonly Dictionary<string, float> workProgress = new Dictionary<string, float>();
+        private readonly Dictionary<string, long> workVisualPulseMs = new Dictionary<string, long>();
+        private readonly Dictionary<string, float> workVisualProgress = new Dictionary<string, float>();
+        private long lastWorkSoundMs;
+        private long lastWorkSoundTick = -1;
+        private string movementPauseReason;
         private ContraptionEntityRenderer renderer;
+        private ICoreAPI api;
         private ICoreClientAPI capi;
         private bool snapshotRestored;
+
+        public bool SnapshotRestored => snapshotRestored;
 
         public void Configure(BlockPos controllerPos, int capturedBlockCount)
         {
@@ -111,7 +121,7 @@ namespace VintageKinematics.Entities
                 WatchedAttributes.SetString(AttrSnapshotId, GameMath.MurmurHash3Mod(ControllerPos.X, ControllerPos.Y, ControllerPos.Z, int.MaxValue).ToString("x"));
             }
 
-            ApplySnapshotCollisionBounds(localMin, localMax, snapshotOffsets);
+            ApplySnapshotCollisionBounds(localMin, localMax, snapshotOffsets, snapshotBlockCodes);
         }
 
         public bool TryGetSnapshot(out Vec3i min, out Vec3i max, out Vec3i[] offsets, out string[] blockCodes)
@@ -136,6 +146,39 @@ namespace VintageKinematics.Entities
                 && offsets.Length == blockCodes.Length;
         }
 
+        private bool RetireIfWorldAlreadyRestored()
+        {
+            if (snapshotRestored || !Alive) return false;
+            if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out _)) return false;
+
+            int count = Math.Min(offsets.Length, blockCodes.Length);
+            for (int i = 0; i < count; i++)
+            {
+                if (!IsControllerSnapshotBlock(offsets[i], blockCodes[i])) continue;
+
+                BlockPos controllerPos = GetWorldBlockPositionForOffset(offsets[i]);
+                Block existing = World.BlockAccessor.GetBlock(controllerPos);
+                if (existing?.Code?.ToString() != blockCodes[i]) return false;
+
+                snapshotRestored = true;
+                Die(EnumDespawnReason.Removed);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool HasControllerAtWorldBlock(BlockPos pos)
+        {
+            if (pos == null || !Alive || snapshotRestored) return false;
+            if (!TryGetControllerWorldPosition(out Vec3d controllerWorldPos)) return false;
+
+            return pos.dimension == SidedPos.Dimension
+                && pos.X == (int)Math.Floor(controllerWorldPos.X + 0.5)
+                && pos.InternalY == (int)Math.Floor(controllerWorldPos.Y + 0.5) % BlockPos.DimensionBoundary
+                && pos.Z == (int)Math.Floor(controllerWorldPos.Z + 0.5);
+        }
+
         private static TreeAttribute[] NormalizeBlockEntityTrees(TreeAttribute[] trees, int count)
         {
             if (count <= 0) return Array.Empty<TreeAttribute>();
@@ -154,11 +197,13 @@ namespace VintageKinematics.Entities
         public override void Initialize(EntityProperties properties, ICoreAPI api, long chunkindex3d)
         {
             base.Initialize(properties, api, chunkindex3d);
+            this.api = api;
             ControllerPos = WatchedAttributes.GetBlockPos(AttrControllerPos);
             ApplySnapshotCollisionBounds(
                 WatchedAttributes.GetVec3i(AttrLocalMin, new Vec3i(0, 1, 0)),
                 WatchedAttributes.GetVec3i(AttrLocalMax, new Vec3i(0, 1, 0)),
-                WatchedAttributes.GetVec3is(AttrSnapshotOffsets, new[] { new Vec3i(0, 1, 0) }));
+                WatchedAttributes.GetVec3is(AttrSnapshotOffsets, new[] { new Vec3i(0, 1, 0) }),
+                (WatchedAttributes[AttrSnapshotBlockCodes] as StringArrayAttribute)?.value);
 
             capi = api as ICoreClientAPI;
             if (capi != null)
@@ -209,6 +254,7 @@ namespace VintageKinematics.Entities
         public override void OnGameTick(float dt)
         {
             base.OnGameTick(dt);
+            if (World?.Side == EnumAppSide.Server && RetireIfWorldAlreadyRestored()) return;
             ResolveEntityCollisions();
         }
 
@@ -347,7 +393,7 @@ namespace VintageKinematics.Entities
             return entity is EntityAgent;
         }
 
-        private void ApplySnapshotCollisionBounds(Vec3i localMin, Vec3i localMax, Vec3i[] offsets)
+        private void ApplySnapshotCollisionBounds(Vec3i localMin, Vec3i localMax, Vec3i[] offsets, string[] blockCodes = null)
         {
             NormalizeBounds(ref localMin, ref localMax);
             this.localMin = localMin.Clone();
@@ -357,8 +403,9 @@ namespace VintageKinematics.Entities
             float width = Math.Max(1, localMax.X - localMin.X + 1);
             float height = Math.Max(1, localMax.Y - localMin.Y + 1);
             float depth = Math.Max(1, localMax.Z - localMin.Z + 1);
+            Cuboidf bounds = BuildLocalCollisionBounds(localMin, localMax, snapshotOffsets, blockCodes);
 
-            CollisionBox = new Cuboidf
+            CollisionBox = bounds ?? new Cuboidf
             {
                 X1 = -width / 2f,
                 Y1 = 0,
@@ -370,6 +417,55 @@ namespace VintageKinematics.Entities
             OriginCollisionBox = CollisionBox.Clone();
             SelectionBox = CollisionBox.Clone();
             OriginSelectionBox = SelectionBox.Clone();
+        }
+
+        private Cuboidf BuildLocalCollisionBounds(Vec3i localMin, Vec3i localMax, Vec3i[] offsets, string[] blockCodes)
+        {
+            if (offsets == null || offsets.Length == 0) return null;
+
+            double width = localMax.X - localMin.X + 1;
+            double depth = localMax.Z - localMin.Z + 1;
+            double originLocalX = localMin.X + width / 2.0;
+            double originLocalY = localMin.Y;
+            double originLocalZ = localMin.Z + depth / 2.0;
+            bool found = false;
+            double minX = double.MaxValue;
+            double minY = double.MaxValue;
+            double minZ = double.MaxValue;
+            double maxX = double.MinValue;
+            double maxY = double.MinValue;
+            double maxZ = double.MinValue;
+
+            int count = Math.Min(offsets.Length, blockCodes?.Length ?? offsets.Length);
+            for (int i = 0; i < count; i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null) continue;
+
+                Block block = ResolveSnapshotBlock(blockCodes, i);
+                Cuboidf[] boxes = ResolveSnapshotCollisionBoxes(block, offset);
+                if (boxes == null || boxes.Length == 0) continue;
+
+                double baseX = offset.X - originLocalX;
+                double baseY = offset.Y - originLocalY;
+                double baseZ = offset.Z - originLocalZ;
+                for (int j = 0; j < boxes.Length; j++)
+                {
+                    Cuboidf box = boxes[j];
+                    if (box == null) continue;
+
+                    minX = Math.Min(minX, baseX + box.X1);
+                    minY = Math.Min(minY, baseY + box.Y1);
+                    minZ = Math.Min(minZ, baseZ + box.Z1);
+                    maxX = Math.Max(maxX, baseX + box.X2);
+                    maxY = Math.Max(maxY, baseY + box.Y2);
+                    maxZ = Math.Max(maxZ, baseZ + box.Z2);
+                    found = true;
+                }
+            }
+
+            if (!found) return null;
+            return new Cuboidf((float)minX, (float)minY, (float)minZ, (float)maxX, (float)maxY, (float)maxZ);
         }
 
         private static void NormalizeBounds(ref Vec3i min, ref Vec3i max)
@@ -410,7 +506,8 @@ namespace VintageKinematics.Entities
         private Cuboidd[] GetWorldSnapshotCollisionBoxes()
         {
             Vec3i[] offsets = snapshotOffsets == null || snapshotOffsets.Length == 0 ? new[] { new Vec3i(0, 1, 0) } : snapshotOffsets;
-            Cuboidd[] boxes = new Cuboidd[offsets.Length];
+            string[] blockCodes = (WatchedAttributes[AttrSnapshotBlockCodes] as StringArrayAttribute)?.value;
+            List<Cuboidd> boxes = new List<Cuboidd>();
             double width = localMax.X - localMin.X + 1;
             double depth = localMax.Z - localMin.Z + 1;
             double originLocalX = localMin.X + width / 2.0;
@@ -420,13 +517,45 @@ namespace VintageKinematics.Entities
             for (int i = 0; i < offsets.Length; i++)
             {
                 Vec3i offset = offsets[i];
-                double x1 = SidedPos.X + offset.X - originLocalX;
-                double y1 = SidedPos.InternalY + offset.Y - originLocalY;
-                double z1 = SidedPos.Z + offset.Z - originLocalZ;
-                boxes[i] = new Cuboidd(x1, y1, z1, x1 + 1, y1 + 1, z1 + 1);
+                if (offset == null) continue;
+
+                Block block = ResolveSnapshotBlock(blockCodes, i);
+                Cuboidf[] blockBoxes = ResolveSnapshotCollisionBoxes(block, offset);
+                if (blockBoxes == null || blockBoxes.Length == 0) continue;
+
+                double baseX = SidedPos.X + offset.X - originLocalX;
+                double baseY = SidedPos.InternalY + offset.Y - originLocalY;
+                double baseZ = SidedPos.Z + offset.Z - originLocalZ;
+                for (int j = 0; j < blockBoxes.Length; j++)
+                {
+                    Cuboidf box = blockBoxes[j];
+                    if (box == null) continue;
+                    boxes.Add(new Cuboidd(
+                        baseX + box.X1,
+                        baseY + box.Y1,
+                        baseZ + box.Z1,
+                        baseX + box.X2,
+                        baseY + box.Y2,
+                        baseZ + box.Z2));
+                }
             }
 
-            return boxes;
+            return boxes.ToArray();
+        }
+
+        private Block ResolveSnapshotBlock(string[] blockCodes, int index)
+        {
+            if (World == null || blockCodes == null || index < 0 || index >= blockCodes.Length || string.IsNullOrEmpty(blockCodes[index])) return null;
+            return World.GetBlock(new AssetLocation(blockCodes[index]));
+        }
+
+        private Cuboidf[] ResolveSnapshotCollisionBoxes(Block block, Vec3i offset)
+        {
+            if (block == null || block.Id == 0) return null;
+            if (World == null) return block.CollisionBoxes;
+
+            BlockPos pos = GetWorldBlockPositionForOffset(offset);
+            return block.GetCollisionBoxes(World.BlockAccessor, pos) ?? block.CollisionBoxes;
         }
 
         public BlockPos GetWorldBlockPositionForOffset(Vec3i offset)
@@ -436,6 +565,16 @@ namespace VintageKinematics.Entities
                 (int)Math.Floor(pos.X + 0.5),
                 (int)Math.Floor(pos.Y + 0.5) % BlockPos.DimensionBoundary,
                 (int)Math.Floor(pos.Z + 0.5),
+                SidedPos.Dimension);
+        }
+
+        private BlockPos GetWorldBlockPositionForOffsetAfterMove(Vec3i offset, double dx, double dy, double dz)
+        {
+            Vec3d pos = GetWorldPositionForOffset(offset);
+            return new BlockPos(
+                (int)Math.Floor(pos.X + dx + 0.5),
+                (int)Math.Floor(pos.Y + dy + 0.5) % BlockPos.DimensionBoundary,
+                (int)Math.Floor(pos.Z + dz + 0.5),
                 SidedPos.Dimension);
         }
 
@@ -485,14 +624,27 @@ namespace VintageKinematics.Entities
                 if (offsets[i].X != 0 || offsets[i].Y != 0 || offsets[i].Z != 0) continue;
                 if (blockCodes[i] == null || !blockCodes[i].StartsWith("vintagekinematics:gantrycarriage", StringComparison.Ordinal)) return false;
 
-                string code = blockCodes[i];
-                if (code.EndsWith("-y", StringComparison.Ordinal)) axis = EnumKineticAxis.Y;
-                else if (code.EndsWith("-z", StringComparison.Ordinal)) axis = EnumKineticAxis.Z;
-                else axis = EnumKineticAxis.X;
+                axis = ParseGantryCarriageAxis(blockCodes[i]);
                 return true;
             }
 
             return false;
+        }
+
+        private static EnumKineticAxis ParseGantryCarriageAxis(string blockCode)
+        {
+            string path = blockCode ?? "";
+            int domainSep = path.IndexOf(':');
+            if (domainSep >= 0) path = path.Substring(domainSep + 1);
+
+            string[] parts = path.Split('-');
+            if (parts.Length >= 2)
+            {
+                if (parts[1] == "y") return EnumKineticAxis.Y;
+                if (parts[1] == "z") return EnumKineticAxis.Z;
+            }
+
+            return EnumKineticAxis.X;
         }
 
         private static Vec3i GetAttachedShaftDelta(TreeAttribute[] blockEntityTrees, int index)
@@ -519,6 +671,423 @@ namespace VintageKinematics.Entities
             PositionBeforeFalling.Set(ServerPos.X, ServerPos.InternalY, ServerPos.Z);
 
             CarryEntitiesByMovement(carriedEntities, dx, dy, dz);
+        }
+
+        public void RunContraptionWorkTick(float rpm, float dt, double moveX, double moveY, double moveZ)
+        {
+            if (World == null || World.Side != EnumAppSide.Server) return;
+            if (MathF.Abs(rpm) < 0.001f) return;
+            if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)) return;
+
+            int count = Math.Min(offsets.Length, blockCodes.Length);
+            blockEntityTrees = NormalizeBlockEntityTrees(blockEntityTrees, count);
+            for (int i = 0; i < count; i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null || string.IsNullOrEmpty(blockCodes[i])) continue;
+
+                Block block = World.GetBlock(new AssetLocation(blockCodes[i]));
+                if (block == null || block.Id == 0) continue;
+
+                ContraptionWorkRegistry.DoContraptionWork(new ContraptionWorkContext(
+                    World,
+                    this,
+                    block,
+                    offset,
+                    blockEntityTrees[i],
+                    GetWorldBlockPositionForOffset(offset),
+                    rpm,
+                    dt,
+                    moveX,
+                    moveY,
+                    moveZ,
+                    api));
+            }
+        }
+
+        public float GetActiveContraptionWorkStressImpact(float rpm, float dt, double moveX, double moveY, double moveZ)
+        {
+            if (World == null || World.Side != EnumAppSide.Server) return 0f;
+            if (MathF.Abs(rpm) < 0.001f) return 0f;
+            if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)) return 0f;
+
+            int count = Math.Min(offsets.Length, blockCodes.Length);
+            blockEntityTrees = NormalizeBlockEntityTrees(blockEntityTrees, count);
+            float stressImpact = 0f;
+            for (int i = 0; i < count; i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null || string.IsNullOrEmpty(blockCodes[i])) continue;
+
+                Block block = World.GetBlock(new AssetLocation(blockCodes[i]));
+                if (block == null || block.Id == 0) continue;
+
+                stressImpact += ContraptionWorkRegistry.GetActiveStressImpact(new ContraptionWorkContext(
+                    World,
+                    this,
+                    block,
+                    offset,
+                    blockEntityTrees[i],
+                    GetWorldBlockPositionForOffset(offset),
+                    rpm,
+                    dt,
+                    moveX,
+                    moveY,
+                    moveZ,
+                    api));
+            }
+
+            return stressImpact;
+        }
+
+        public bool AddContraptionWorkProgress(string key, float amount, float required, out float progress)
+        {
+            progress = 0f;
+            if (string.IsNullOrEmpty(key) || required <= 0f) return false;
+
+            workProgress.TryGetValue(key, out float current);
+            current += Math.Max(0f, amount);
+            if (current >= required)
+            {
+                ClearContraptionWorkTracking(key);
+                progress = 1f;
+                return true;
+            }
+
+            workProgress[key] = current;
+            progress = current / required;
+            return false;
+        }
+
+        public void ResetContraptionWorkProgress(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            ClearContraptionWorkTracking(key);
+        }
+
+        private void ClearContraptionWorkTracking(string key)
+        {
+            workProgress.Remove(key);
+            workVisualPulseMs.Remove(key);
+            workVisualPulseMs.Remove(key + ":decal");
+            workVisualPulseMs.Remove(key + ":particles");
+            workVisualPulseMs.Remove(key + ":sound");
+            workVisualProgress.Remove(key);
+            workVisualProgress.Remove(key + ":decal");
+        }
+
+        public bool ShouldRunContraptionWorkVisual(string key, long intervalMs)
+        {
+            if (string.IsNullOrEmpty(key) || World == null) return true;
+
+            long now = World.ElapsedMilliseconds;
+            if (workVisualPulseMs.TryGetValue(key, out long lastMs) && now - lastMs < Math.Max(1, intervalMs))
+            {
+                return false;
+            }
+
+            workVisualPulseMs[key] = now;
+            return true;
+        }
+
+        public bool ShouldRunContraptionWorkSound(long intervalMs)
+        {
+            if (World == null) return true;
+
+            long tick = World.ElapsedMilliseconds / 50;
+            if (lastWorkSoundTick == tick) return false;
+
+            long now = World.ElapsedMilliseconds;
+            if (now - lastWorkSoundMs < Math.Max(1, intervalMs)) return false;
+
+            lastWorkSoundTick = tick;
+            lastWorkSoundMs = now;
+            return true;
+        }
+
+        public float AdvanceContraptionWorkVisualProgress(string key, float targetProgress)
+        {
+            if (string.IsNullOrEmpty(key)) return 0f;
+
+            targetProgress = GameMath.Clamp(targetProgress, 0f, 1f);
+            workVisualProgress.TryGetValue(key, out float previous);
+            if (targetProgress <= previous) return 0f;
+
+            workVisualProgress[key] = targetProgress;
+            return targetProgress - previous;
+        }
+
+        public bool ContainsSnapshotWorldBlockPosition(BlockPos pos)
+        {
+            if (pos == null) return false;
+            if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out _)) return false;
+            return ContainsWorldBlockPosition(offsets, blockCodes, pos);
+        }
+
+        public void DepositOutput(ItemStack stack, Vec3d fallbackAt)
+        {
+            if (World == null || stack == null || stack.StackSize <= 0) return;
+
+            TryDepositIntoCapturedStorage(stack);
+            if (stack.StackSize <= 0) return;
+
+            World.SpawnItemEntity(stack, fallbackAt ?? SidedPos.XYZ);
+        }
+
+        private void TryDepositIntoCapturedStorage(ItemStack stack)
+        {
+            if (stack == null || stack.StackSize <= 0) return;
+            if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)) return;
+            if (api == null) return;
+
+            int count = Math.Min(offsets.Length, blockCodes.Length);
+            blockEntityTrees = NormalizeBlockEntityTrees(blockEntityTrees, count);
+            bool changed = false;
+            for (int i = 0; i < count && stack.StackSize > 0; i++)
+            {
+                if (offsets[i] == null || string.IsNullOrEmpty(blockCodes[i])) continue;
+
+                Block block = World.GetBlock(new AssetLocation(blockCodes[i]));
+                if (block == null || block.Id == 0 || string.IsNullOrEmpty(block.EntityClass)) continue;
+
+                if (TryDepositIntoCapturedStorageBlock(block, GetWorldBlockPositionForOffset(offsets[i]), blockEntityTrees[i], stack, out TreeAttribute updatedTree))
+                {
+                    blockEntityTrees[i] = updatedTree;
+                    changed = true;
+                }
+            }
+
+            if (!changed) return;
+            WatchedAttributes[AttrSnapshotBlockEntityTrees] = new TreeArrayAttribute(blockEntityTrees);
+            WatchedAttributes.MarkPathDirty(AttrSnapshotBlockEntityTrees);
+        }
+
+        private bool TryDepositIntoCapturedStorageBlock(Block block, BlockPos pos, TreeAttribute savedTree, ItemStack stack, out TreeAttribute updatedTree)
+        {
+            updatedTree = savedTree;
+            if (stack == null || stack.StackSize <= 0) return false;
+
+            BlockEntity be = null;
+            try
+            {
+                be = World.ClassRegistry.CreateBlockEntity(block.EntityClass);
+                if (be == null) return false;
+
+                be.Pos = pos.Copy();
+                be.Block = block;
+                be.CreateBehaviors(block, World);
+                be.FromTreeAttributes(savedTree?.Clone() as TreeAttribute ?? new TreeAttribute(), World);
+                be.Initialize(api);
+
+                if (be is not IBlockEntityContainer container || container.Inventory == null || container.Inventory.PutLocked) return false;
+
+                int moved = TryInsertIntoInventory(container.Inventory, stack);
+                if (moved <= 0) return false;
+
+                TreeAttribute tree = new TreeAttribute();
+                be.ToTreeAttributes(tree);
+                updatedTree = tree;
+                return true;
+            }
+            finally
+            {
+                be?.OnBlockUnloaded();
+            }
+        }
+
+        private int TryInsertIntoInventory(IInventory inventory, ItemStack stack)
+        {
+            if (inventory == null || stack == null || stack.StackSize <= 0) return 0;
+
+            DummySlot source = new DummySlot(stack.Clone());
+            int startSize = source.Itemstack.StackSize;
+            List<ItemSlot> skip = new List<ItemSlot>();
+
+            while (!source.Empty && source.Itemstack.StackSize > 0 && skip.Count < inventory.Count)
+            {
+                WeightedSlot weighted = inventory.GetBestSuitedSlot(source, null, skip);
+                ItemSlot target = weighted?.slot;
+                if (target == null) break;
+
+                ItemStackMoveOperation op = new ItemStackMoveOperation(
+                    World,
+                    EnumMouseButton.Left,
+                    0,
+                    EnumMergePriority.DirectMerge,
+                    source.Itemstack.StackSize);
+                int moved = source.TryPutInto(target, ref op);
+                if (moved <= 0)
+                {
+                    skip.Add(target);
+                    continue;
+                }
+
+                target.MarkDirty();
+                skip.Clear();
+            }
+
+            int remaining = source.Empty ? 0 : source.Itemstack.StackSize;
+            int movedTotal = startSize - remaining;
+            if (movedTotal <= 0) return 0;
+
+            stack.StackSize -= movedTotal;
+            if (stack.StackSize < 0) stack.StackSize = 0;
+            return movedTotal;
+        }
+
+        public void RequestMovementPause(string key, long durationMs, string reason = null)
+        {
+            if (string.IsNullOrEmpty(key) || World == null) return;
+
+            long untilMs = World.ElapsedMilliseconds + Math.Max(1, durationMs);
+            movementPauseUntilMs[key] = untilMs;
+            if (!string.IsNullOrEmpty(reason)) movementPauseReason = reason;
+        }
+
+        public bool IsMovementPaused(out string reason)
+        {
+            reason = null;
+            if (World == null || movementPauseUntilMs.Count == 0) return false;
+
+            long now = World.ElapsedMilliseconds;
+            List<string> expired = null;
+            foreach (var kvp in movementPauseUntilMs)
+            {
+                if (kvp.Value > now) continue;
+                expired ??= new List<string>();
+                expired.Add(kvp.Key);
+            }
+
+            if (expired != null)
+            {
+                for (int i = 0; i < expired.Count; i++) movementPauseUntilMs.Remove(expired[i]);
+            }
+
+            if (movementPauseUntilMs.Count == 0)
+            {
+                movementPauseReason = null;
+                return false;
+            }
+
+            reason = movementPauseReason ?? "Movement paused";
+            return true;
+        }
+
+        public bool WouldMovementHitWorldBlock(double dx, double dy, double dz, out string reason)
+        {
+            reason = null;
+            if (World == null) return false;
+            if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out _)) return false;
+
+            Cuboidd[] currentBoxes = GetWorldSnapshotCollisionBoxes();
+            Cuboidd[] movedBoxes = OffsetBoxes(currentBoxes, dx, dy, dz);
+            if (movedBoxes.Length == 0) return false;
+
+            GetBounds(movedBoxes, out double minX, out double minY, out double minZ, out double maxX, out double maxY, out double maxZ);
+            if (minX == double.MaxValue) return false;
+
+            int bx1 = (int)Math.Floor(minX - CollisionEpsilon);
+            int by1 = (int)Math.Floor(minY - CollisionEpsilon);
+            int bz1 = (int)Math.Floor(minZ - CollisionEpsilon);
+            int bx2 = (int)Math.Floor(maxX + CollisionEpsilon);
+            int by2 = (int)Math.Floor(maxY + CollisionEpsilon);
+            int bz2 = (int)Math.Floor(maxZ + CollisionEpsilon);
+
+            for (int y = by1; y <= by2; y++)
+            {
+                for (int z = bz1; z <= bz2; z++)
+                {
+                    for (int x = bx1; x <= bx2; x++)
+                    {
+                        BlockPos targetPos = new BlockPos(x, y % BlockPos.DimensionBoundary, z, SidedPos.Dimension);
+                        if (ContainsWorldBlockPosition(offsets, blockCodes, targetPos)) continue;
+
+                        Block existing = World.BlockAccessor.GetBlock(targetPos);
+                        if (existing == null || existing.Id == 0) continue;
+                        if (IsGantryShaft(existing)) continue;
+
+                        Cuboidd[] worldBlockBoxes = GetWorldBlockCollisionBoxes(existing, targetPos);
+                        if (worldBlockBoxes.Length == 0) continue;
+
+                        if (!MovementIncreasesOverlap(currentBoxes, movedBoxes, worldBlockBoxes)) continue;
+
+                        reason = $"Blocked by {existing.Code} at {targetPos.X},{targetPos.InternalY},{targetPos.Z}";
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static Cuboidd[] OffsetBoxes(Cuboidd[] boxes, double dx, double dy, double dz)
+        {
+            if (boxes == null || boxes.Length == 0) return Array.Empty<Cuboidd>();
+
+            Cuboidd[] moved = new Cuboidd[boxes.Length];
+            for (int i = 0; i < boxes.Length; i++)
+            {
+                Cuboidd box = boxes[i];
+                if (box == null) continue;
+                moved[i] = new Cuboidd(box.X1 + dx, box.Y1 + dy, box.Z1 + dz, box.X2 + dx, box.Y2 + dy, box.Z2 + dz);
+            }
+
+            return moved;
+        }
+
+        private Cuboidd[] GetWorldBlockCollisionBoxes(Block block, BlockPos pos)
+        {
+            Cuboidf[] localBoxes = block.GetCollisionBoxes(World.BlockAccessor, pos) ?? block.CollisionBoxes;
+            if (localBoxes == null || localBoxes.Length == 0) return Array.Empty<Cuboidd>();
+
+            List<Cuboidd> boxes = new List<Cuboidd>(localBoxes.Length);
+            for (int i = 0; i < localBoxes.Length; i++)
+            {
+                Cuboidf box = localBoxes[i];
+                if (box == null) continue;
+                boxes.Add(new Cuboidd(
+                    pos.X + box.X1,
+                    pos.InternalY + box.Y1,
+                    pos.Z + box.Z1,
+                    pos.X + box.X2,
+                    pos.InternalY + box.Y2,
+                    pos.Z + box.Z2));
+            }
+
+            return boxes.ToArray();
+        }
+
+        private static bool MovementIncreasesOverlap(Cuboidd[] currentBoxes, Cuboidd[] movedBoxes, Cuboidd[] worldBlockBoxes)
+        {
+            double currentOverlap = TotalIntersectionVolume(currentBoxes, worldBlockBoxes);
+            double movedOverlap = TotalIntersectionVolume(movedBoxes, worldBlockBoxes);
+            return movedOverlap > CollisionEpsilon && movedOverlap > currentOverlap + CollisionEpsilon;
+        }
+
+        private static double TotalIntersectionVolume(Cuboidd[] aBoxes, Cuboidd[] bBoxes)
+        {
+            double total = 0;
+            if (aBoxes == null || bBoxes == null) return total;
+
+            for (int i = 0; i < aBoxes.Length; i++)
+            {
+                Cuboidd a = aBoxes[i];
+                if (a == null) continue;
+
+                for (int j = 0; j < bBoxes.Length; j++)
+                {
+                    Cuboidd b = bBoxes[j];
+                    if (b == null || !a.Intersects(b)) continue;
+
+                    double ix = Math.Min(a.X2, b.X2) - Math.Max(a.X1, b.X1);
+                    double iy = Math.Min(a.Y2, b.Y2) - Math.Max(a.Y1, b.Y1);
+                    double iz = Math.Min(a.Z2, b.Z2) - Math.Max(a.Z1, b.Z1);
+                    if (ix <= 0 || iy <= 0 || iz <= 0) continue;
+                    total += ix * iy * iz;
+                }
+            }
+
+            return total;
         }
 
         private List<Entity> FindMovementCarriedEntities()
@@ -1080,6 +1649,20 @@ namespace VintageKinematics.Entities
             return block?.Code != null
                 && block.Code.Domain == "vintagekinematics"
                 && block.Code.FirstCodePart() == "gantryshaft";
+        }
+
+        private bool ContainsWorldBlockPosition(Vec3i[] offsets, string[] blockCodes, BlockPos pos)
+        {
+            int count = Math.Min(offsets?.Length ?? 0, blockCodes?.Length ?? 0);
+            for (int i = 0; i < count; i++)
+            {
+                if (offsets[i] == null || string.IsNullOrEmpty(blockCodes[i])) continue;
+                if (IsGantryShaftCode(blockCodes[i])) continue;
+
+                if (PositionKey(GetWorldBlockPositionForOffset(offsets[i])) == PositionKey(pos)) return true;
+            }
+
+            return false;
         }
 
         private static bool IsGantryShaftCode(string blockCode)

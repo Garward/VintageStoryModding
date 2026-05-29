@@ -1,7 +1,6 @@
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 using VintageKinematics.Api;
 
 namespace VintageKinematics.Blocks
@@ -39,6 +38,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             BlockEntity be = world.BlockAccessor.GetBlockEntity(blockSel.Position);
             if (be == null) return false;
 
@@ -49,10 +49,6 @@ namespace VintageKinematics.Blocks
             {
                 int direction = byPlayer?.Entity?.Controls?.ShiftKey == true ? -1 : 1;
                 src.Wind(seconds: WindPulseSeconds, direction: direction);
-                if (byPlayer is IServerPlayer sp)
-                {
-                    world.Api.Logger.Debug($"[VintageKinematics] Hand crank wound by {sp.PlayerName} dir={direction}");
-                }
             }
             return true;
         }

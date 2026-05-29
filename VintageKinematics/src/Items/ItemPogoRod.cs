@@ -16,6 +16,7 @@ namespace VintageKinematics.Items
         private const string SustainSpeedAttribute = "vkPogoSustainSpeed";
         private const string SustainDirXAttribute = "vkPogoSustainDirX";
         private const string SustainDirZAttribute = "vkPogoSustainDirZ";
+        private const string BoostChargeSpentAttribute = "vkPogoBoostChargeSpent";
         private const string KnockbackAttribute = "dmgkb";
         private const string KnockbackXAttribute = "kbdirX";
         private const string KnockbackYAttribute = "kbdirY";
@@ -27,20 +28,21 @@ namespace VintageKinematics.Items
         private const double LaunchForwardFloor = 0.12;
         private const double ReboundForwardFloor = 0.11;
         private const double AirSustainSpeed = 0.115;
-        private const double BoostedAirSustainSpeed = 0.36;
+        private const double BoostedAirSustainSpeed = 0.18;
+        private const double MaxAirSustainSpeed = 0.14;
+        private const double MaxBoostedAirSustainSpeed = 0.24;
         private const double BoostedLaunchVerticalMotion = 0.57;
         private const double BoostedLaunchForwardMotion = 0.195;
         private const double BoostedLaunchForwardFloor = 0.3;
         private const double BoostedReboundForwardFloor = 0.27;
-        private const float BoostedLaunchChargeSeconds = 0.25f;
-        private const float BoostedReboundChargeSeconds = 0.18f;
-        private const float BoostSustainChargeMultiplier = 1f;
+        private const float BoostedLaunchChargeSeconds = 1.0f;
+        private const float BoostedReboundChargeSeconds = 1.0f;
         private const long SustainDurationMs = 1400;
         private const double MinImpactMotion = -0.16;
 
         public override string GetHeldTpUseAnimation(ItemSlot activeHotbarSlot, Entity forEntity)
         {
-            return "pogo";
+            return "pogouse";
         }
 
         public override string GetHeldTpIdleAnimation(ItemSlot activeHotbarSlot, Entity forEntity, EnumHand hand)
@@ -57,18 +59,21 @@ namespace VintageKinematics.Items
             }
 
             handling = EnumHandHandling.PreventDefault;
-            TryLaunch(entityPlayer);
+            TryLaunch(entityPlayer, slot);
         }
 
-        private static bool TryLaunch(EntityPlayer entityPlayer)
+        private static bool TryLaunch(EntityPlayer entityPlayer, ItemSlot activeSlot = null)
         {
-            IPlayer player = entityPlayer.Player;
+            IPlayer player = ResolvePlayer(entityPlayer);
             if (player?.WorldData?.CurrentGameMode == EnumGameMode.Spectator) return false;
-            if (!IsActive(entityPlayer) || !IsGrounded(entityPlayer) || entityPlayer.Swimming) return false;
+            if (!IsActive(entityPlayer, activeSlot) || !IsGrounded(entityPlayer) || entityPlayer.Swimming) return false;
 
             long now = entityPlayer.World.ElapsedMilliseconds;
             if (entityPlayer.Attributes.GetLong(NextLaunchMsAttribute, 0) > now) return false;
+            if (entityPlayer.Attributes.GetLong(NextLandingMsAttribute, 0) > now) return false;
+            ResetBoostChargeSpent(entityPlayer);
             entityPlayer.Attributes.SetLong(NextLaunchMsAttribute, now + LaunchCooldownMs);
+            entityPlayer.Attributes.SetLong(NextLandingMsAttribute, now + LandingCooldownMs);
 
             bool boosted = TryUseFlywheelBoost(entityPlayer, BoostedLaunchChargeSeconds);
             ApplyLaunch(entityPlayer, boosted);
@@ -101,31 +106,39 @@ namespace VintageKinematics.Items
 
         public static bool IsActive(EntityPlayer player)
         {
-            ItemSlot slot = player?.Player?.InventoryManager?.ActiveHotbarSlot;
-            return slot?.Itemstack?.Collectible is ItemPogoRod;
+            return IsActive(player, null);
         }
 
-        public static void AbsorbFallDamageIfActive(Entity entity, DamageSource damageSource, ref float damage)
+        private static bool IsActive(EntityPlayer player, ItemSlot activeSlot)
         {
-            if (damage <= 0 || damageSource?.Source != EnumDamageSource.Fall) return;
-            if (entity is not EntityPlayer player || !IsFallGuardActive(player)) return;
+            return activeSlot?.Itemstack?.Collectible is ItemPogoRod
+                || ResolvePlayer(player)?.InventoryManager?.ActiveHotbarSlot?.Itemstack?.Collectible is ItemPogoRod;
+        }
 
-            damage = 0;
+        public static bool ShouldSuppressFallDamage(Entity entity, DamageSource damageSource, float damage)
+        {
+            return damage > 0
+                && damageSource?.Source == EnumDamageSource.Fall
+                && entity is EntityPlayer player
+                && IsFallGuardActive(player);
         }
 
         public static void ReboundIfActive(EntityPlayer player, double motionY)
         {
             if (player?.World == null) return;
             if (motionY > MinImpactMotion || !IsFallGuardActive(player)) return;
+            if (!WantsLandingRebound(player)) return;
 
-            IPlayer byPlayer = player.Player;
+            IPlayer byPlayer = ResolvePlayer(player);
             if (byPlayer?.WorldData?.CurrentGameMode == EnumGameMode.Spectator) return;
 
             long now = player.World.ElapsedMilliseconds;
             if (player.Attributes.GetLong(NextLandingMsAttribute, 0) > now) return;
+            ResetBoostChargeSpent(player);
             player.Attributes.SetLong(NextLandingMsAttribute, now + LandingCooldownMs);
+            player.Attributes.SetLong(NextLaunchMsAttribute, now + LaunchCooldownMs);
 
-            if (player.Controls?.Sneak == true)
+            if (IsSneaking(player))
             {
                 Vec2d settled = MaintainDirectionalMomentum(player, player.Pos.Motion.X, player.Pos.Motion.Z, ReboundForwardFloor);
                 SetMotion(player, settled.X, 0.02, settled.Y);
@@ -151,24 +164,28 @@ namespace VintageKinematics.Items
             if (player?.World == null || player.Swimming || IsGrounded(player) || !IsFallGuardActive(player))
             {
                 ClearSustain(player);
+                player?.Attributes?.RemoveAttribute(BoostChargeSpentAttribute);
                 return;
             }
 
             long now = player.World.ElapsedMilliseconds;
-            if (player.Attributes.GetLong(SustainUntilMsAttribute, 0) <= now) return;
+            if (TryStartPaidBoostSustain(player))
+            {
+                StartSustain(player, true);
+            }
+
+            bool sustainActive = player.Attributes.GetLong(SustainUntilMsAttribute, 0) > now;
+            if (!sustainActive) return;
 
             double sustainSpeed = player.Attributes.GetDouble(SustainSpeedAttribute, AirSustainSpeed);
-            if (ShouldBoostSustain(player, dt)) sustainSpeed = BoostedAirSustainSpeed;
-
-            Vec2d motion = MaintainStoredDirectionMomentum(player, player.Pos.Motion.X, player.Pos.Motion.Z, sustainSpeed);
-            player.Pos.Motion.X = motion.X;
-            player.Pos.Motion.Z = motion.Y;
+            double maxSpeed = sustainSpeed > AirSustainSpeed ? MaxBoostedAirSustainSpeed : MaxAirSustainSpeed;
+            Vec2d motion = ClampHorizontalMotion(MaintainStoredDirectionMomentum(player, player.Pos.Motion.X, player.Pos.Motion.Z, sustainSpeed), maxSpeed);
+            SetHorizontalMotion(player, motion.X, motion.Y);
         }
 
         private static void TryLaunchHeld(EntityPlayer player)
         {
-            EntityControls controls = player?.Controls;
-            if (controls == null || !controls.RightMouseDown) return;
+            if (!IsRightMouseDown(player)) return;
             TryLaunch(player);
         }
 
@@ -208,12 +225,21 @@ namespace VintageKinematics.Items
             return new Vec2d(motionX + dirX * add, motionZ + dirZ * add);
         }
 
+        private static Vec2d ClampHorizontalMotion(Vec2d motion, double maxSpeed)
+        {
+            double speedSq = motion.X * motion.X + motion.Y * motion.Y;
+            if (speedSq <= maxSpeed * maxSpeed) return motion;
+
+            double scale = maxSpeed / System.Math.Sqrt(speedSq);
+            return new Vec2d(motion.X * scale, motion.Y * scale);
+        }
+
         private static bool TryGetMoveDirection(EntityPlayer player, out double dirX, out double dirZ)
         {
             dirX = 0;
             dirZ = 0;
 
-            EntityControls controls = player?.Controls;
+            EntityControls controls = GetMoveControls(player);
             if (controls == null) return false;
 
             double forward = controls.Forward ? 1 : 0;
@@ -259,47 +285,62 @@ namespace VintageKinematics.Items
 
         private static bool TryUseFlywheelBoost(EntityPlayer player, float chargeSeconds)
         {
-            if (player?.Controls?.Sprint != true || player.Player == null) return false;
+            IPlayer byPlayer = ResolvePlayer(player);
+            if (!IsSprinting(player) || byPlayer == null) return false;
             if (!TryGetMoveDirection(player, out _, out _)) return false;
 
             if (player.World?.Side == EnumAppSide.Server)
             {
-                return ItemBackpackFlywheel.TryConsumeToolPower(player.Player, chargeSeconds, out _);
+                if (!ItemBackpackFlywheel.TryConsumeToolPower(byPlayer, chargeSeconds, out _)) return false;
+
+                player.Attributes.SetInt(BoostChargeSpentAttribute, 1);
+                return true;
             }
 
-            return ItemBackpackFlywheel.HasUsableCharge(player.Player);
+            return ItemBackpackFlywheel.GetEquippedChargeSeconds(byPlayer) >= chargeSeconds;
         }
 
-        private static bool ShouldBoostSustain(EntityPlayer player, float dt)
+        private static bool TryStartPaidBoostSustain(EntityPlayer player)
         {
-            if (player?.Controls?.Sprint != true || player.Player == null) return false;
+            if (player?.World?.Side != EnumAppSide.Server) return false;
+            if (player.Attributes.GetInt(BoostChargeSpentAttribute, 0) != 0) return false;
+
+            IPlayer byPlayer = ResolvePlayer(player);
+            if (!IsSprinting(player) || byPlayer == null) return false;
             if (!TryGetMoveDirection(player, out _, out _)) return false;
+            if (!ItemBackpackFlywheel.TryConsumeToolPower(byPlayer, BoostedReboundChargeSeconds, out _)) return false;
 
-            float cost = System.MathF.Max(0.02f, dt * BoostSustainChargeMultiplier);
-            if (player.World?.Side == EnumAppSide.Server)
-            {
-                return ItemBackpackFlywheel.TryConsumeToolPower(player.Player, cost, out _);
-            }
-
-            return ItemBackpackFlywheel.HasUsableCharge(player.Player);
+            player.Attributes.SetInt(BoostChargeSpentAttribute, 1);
+            return true;
         }
 
         private static void StartSustain(EntityPlayer player, bool boosted)
         {
             if (player?.World == null) return;
-            if (!TryGetMoveDirection(player, out double dirX, out double dirZ))
-            {
-                double speedSq = player.Pos.Motion.X * player.Pos.Motion.X + player.Pos.Motion.Z * player.Pos.Motion.Z;
-                if (speedSq <= 0.0001) return;
-                double speed = System.Math.Sqrt(speedSq);
-                dirX = player.Pos.Motion.X / speed;
-                dirZ = player.Pos.Motion.Z / speed;
-            }
+            if (!TryGetSustainDirection(player, out double dirX, out double dirZ)) return;
 
             player.Attributes.SetLong(SustainUntilMsAttribute, player.World.ElapsedMilliseconds + SustainDurationMs);
             player.Attributes.SetDouble(SustainSpeedAttribute, boosted ? BoostedAirSustainSpeed : AirSustainSpeed);
             player.Attributes.SetDouble(SustainDirXAttribute, dirX);
             player.Attributes.SetDouble(SustainDirZAttribute, dirZ);
+        }
+
+        private static bool TryGetSustainDirection(EntityPlayer player, out double dirX, out double dirZ)
+        {
+            if (TryGetMoveDirection(player, out dirX, out dirZ)) return true;
+
+            double speedSq = player.Pos.Motion.X * player.Pos.Motion.X + player.Pos.Motion.Z * player.Pos.Motion.Z;
+            if (speedSq <= 0.0001)
+            {
+                dirX = 0;
+                dirZ = 0;
+                return false;
+            }
+
+            double speed = System.Math.Sqrt(speedSq);
+            dirX = player.Pos.Motion.X / speed;
+            dirZ = player.Pos.Motion.Z / speed;
+            return true;
         }
 
         private static void ClearSustain(EntityPlayer player)
@@ -308,6 +349,11 @@ namespace VintageKinematics.Items
             player?.Attributes?.RemoveAttribute(SustainSpeedAttribute);
             player?.Attributes?.RemoveAttribute(SustainDirXAttribute);
             player?.Attributes?.RemoveAttribute(SustainDirZAttribute);
+        }
+
+        private static void ResetBoostChargeSpent(EntityPlayer player)
+        {
+            player?.Attributes?.RemoveAttribute(BoostChargeSpentAttribute);
         }
 
         private static void SetMotion(EntityPlayer player, double x, double y, double z)
@@ -320,14 +366,61 @@ namespace VintageKinematics.Items
             player.OnGround = false;
         }
 
+        private static void SetHorizontalMotion(EntityPlayer player, double x, double z)
+        {
+            player.Pos.Motion.X = x;
+            player.Pos.Motion.Z = z;
+        }
+
+        private static bool WantsLandingRebound(EntityPlayer player)
+        {
+            return IsRightMouseDown(player);
+        }
+
         private static bool IsGrounded(EntityPlayer player)
         {
-            return player.OnGround || player.CollidedVertically;
+            return player.OnGround || player.CollidedVertically && player.Pos.Motion.Y <= 0;
         }
 
         private static bool IsFallGuardActive(EntityPlayer player)
         {
             return IsActive(player);
+        }
+
+        private static IPlayer ResolvePlayer(EntityPlayer player)
+        {
+            return player?.World?.PlayerByUid(player.PlayerUID) ?? player?.Player;
+        }
+
+        private static bool IsRightMouseDown(EntityPlayer player)
+        {
+            return player?.Controls?.RightMouseDown == true
+                || player?.ServerControls?.RightMouseDown == true;
+        }
+
+        private static bool IsSneaking(EntityPlayer player)
+        {
+            return player?.Controls?.Sneak == true
+                || player?.ServerControls?.Sneak == true;
+        }
+
+        private static bool IsSprinting(EntityPlayer player)
+        {
+            return player?.Controls?.Sprint == true
+                || player?.ServerControls?.Sprint == true;
+        }
+
+        private static EntityControls GetMoveControls(EntityPlayer player)
+        {
+            if (HasMoveInput(player?.ServerControls)) return player.ServerControls;
+            if (HasMoveInput(player?.Controls)) return player.Controls;
+            return player?.World?.Side == EnumAppSide.Server ? player?.ServerControls : player?.Controls;
+        }
+
+        private static bool HasMoveInput(EntityControls controls)
+        {
+            return controls != null
+                && (controls.TriesToMove || controls.Forward || controls.Backward || controls.Left || controls.Right);
         }
 
         private static void PlayBoing(EntityPlayer player, IPlayer byPlayer, float volume)
@@ -339,9 +432,9 @@ namespace VintageKinematics.Items
     [HarmonyPatch(typeof(Entity), nameof(Entity.ReceiveDamage))]
     internal static class EntityReceiveDamagePogoPatch
     {
-        public static void Prefix(Entity __instance, DamageSource damageSource, ref float damage)
+        public static bool Prefix(Entity __instance, DamageSource damageSource, ref float damage)
         {
-            ItemPogoRod.AbsorbFallDamageIfActive(__instance, damageSource, ref damage);
+            return !ItemPogoRod.ShouldSuppressFallDamage(__instance, damageSource, damage);
         }
     }
 

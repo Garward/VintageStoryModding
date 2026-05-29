@@ -12,8 +12,8 @@ namespace VintageKinematics.Network
     /// published RPM is fixed at <see cref="StableRPM"/> whenever the vanilla axle is rotating
     /// (sign matches vanilla direction): vanilla speed jitters with wind/water/load every tick,
     /// and forwarding that into VK would cause MaxRPM-bound consumers to constantly re-evaluate
-    /// the network and flicker. Stress capacity, on the other hand, tracks live vanilla
-    /// <c>TotalAvailableTorque</c> so a 4-sail windmill genuinely outpowers a 1-sail.
+    /// the network and flicker. Stress capacity, on the other hand, tracks reflected vanilla
+    /// source potential so more sails and high-elevation wind genuinely add VK capacity.
     /// </summary>
     public static class VanillaMPBridge
     {
@@ -29,9 +29,11 @@ namespace VintageKinematics.Network
 
         /// <summary>
         /// SU capacity per unit of computed "source-potential torque" — the load-independent
-        /// sum of <c>TorqueFactor × TargetSpeed</c> across rotor nodes on the upstream vanilla
-        /// network. Default 3333 puts a 4-sail max-wind windmill (potential ≈ 0.6) near 2000 SU.
-        /// Scales linearly: a 16-sail vertical mega-rotor at full wind ≈ 8000 SU. Overwritten
+        /// sum of <c>TorqueFactor × effective speed</c> across rotor nodes on the upstream vanilla
+        /// network. Effective speed follows vanilla <c>TargetSpeed</c>, but wind rotors with raw
+        /// wind above 100% scale past vanilla's target-speed cap. Default 3333 puts a 4-sail
+        /// 100%-wind windmill (potential ≈ 0.6) near 2000 SU. Scales linearly: a 16-sail
+        /// vertical mega-rotor at 100% wind ≈ 8000 SU. Overwritten
         /// at mod start from <see cref="Api.VintageKinematicsConfig.VanillaBridgeCapacityPerTorque"/>.
         /// </summary>
         public static float CapacityPerTorque = 3333f;
@@ -54,6 +56,8 @@ namespace VintageKinematics.Network
         {
             public PropertyInfo TorqueFactor;
             public PropertyInfo TargetSpeed;
+            public PropertyInfo WindSpeedProperty;
+            public FieldInfo WindSpeedField;
             public bool IsRotor;
         }
         private static readonly System.Collections.Generic.Dictionary<System.Type, RotorPropPair> rotorPropCache = new System.Collections.Generic.Dictionary<System.Type, RotorPropPair>();
@@ -115,7 +119,7 @@ namespace VintageKinematics.Network
                 signedRPM = vanillaSpeed >= 0f ? StableRPM : -StableRPM;
             }
 
-            // Prefer load-independent source potential (TorqueFactor × TargetSpeed across rotors)
+            // Prefer load-independent source potential (TorqueFactor × effective speed across rotors)
             // over Network.TotalAvailableTorque. TotalAvailableTorque decays whenever the vanilla
             // network has unused power — for a windmill driving only VK-side consumers, the
             // vanilla network sees no resistance and TotalAvailableTorque collapses, giving the
@@ -151,6 +155,8 @@ namespace VintageKinematics.Network
                 {
                     TorqueFactor = tf,
                     TargetSpeed = ts,
+                    WindSpeedProperty = FindPropertyInHierarchy(type, "WindSpeed") ?? FindPropertyInHierarchy(type, "windSpeed"),
+                    WindSpeedField = FindFieldInHierarchy(type, "windSpeed") ?? FindFieldInHierarchy(type, "WindSpeed"),
                     IsRotor = tf != null && ts != null && tf.PropertyType == typeof(float) && ts.PropertyType == typeof(float)
                 };
                 rotorPropCache[type] = pair;
@@ -160,7 +166,55 @@ namespace VintageKinematics.Network
             {
                 float tfv = (float)(pair.TorqueFactor.GetValue(node) ?? 0f);
                 float tsv = (float)(pair.TargetSpeed.GetValue(node) ?? 0f);
+                float windSpeed = ReadWindSpeed(node, pair);
+                if (windSpeed > 1f && tsv > 0f && tsv <= 0.6001f)
+                {
+                    tsv *= windSpeed;
+                }
                 return tfv * tsv;
+            }
+            catch
+            {
+                return 0f;
+            }
+        }
+
+        private static PropertyInfo FindPropertyInHierarchy(System.Type type, string name)
+        {
+            for (System.Type current = type; current != null; current = current.BaseType)
+            {
+                PropertyInfo prop = current.GetProperty(name, RotorPropFlags | BindingFlags.DeclaredOnly);
+                if (prop != null) return prop;
+            }
+            return null;
+        }
+
+        private static FieldInfo FindFieldInHierarchy(System.Type type, string name)
+        {
+            for (System.Type current = type; current != null; current = current.BaseType)
+            {
+                FieldInfo field = current.GetField(name, RotorPropFlags | BindingFlags.DeclaredOnly);
+                if (field != null) return field;
+            }
+            return null;
+        }
+
+        private static float ReadWindSpeed(object node, RotorPropPair pair)
+        {
+            object value = null;
+            if (pair.WindSpeedProperty != null)
+            {
+                value = pair.WindSpeedProperty.GetValue(node);
+            }
+            else if (pair.WindSpeedField != null)
+            {
+                value = pair.WindSpeedField.GetValue(node);
+            }
+
+            if (value == null) return 0f;
+            try
+            {
+                return (float)System.Convert.ToDouble(value);
             }
             catch
             {

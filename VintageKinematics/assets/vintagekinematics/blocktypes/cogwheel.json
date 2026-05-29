@@ -27,15 +27,14 @@
     "shapeByType": {
         "cogwheel-x": {
             "base": "block/cogwheel",
-            "rotateY": 0,
-            "rotateZ": 90
+            "rotateY": 90
         },
         "cogwheel-y": {
-            "base": "block/cogwheel"
+            "base": "block/cogwheel",
+            "rotateX": 270
         },
         "cogwheel-z": {
-            "base": "block/cogwheel",
-            "rotateX": 90
+            "base": "block/cogwheel"
         }
     },
     "textures": {
@@ -65,11 +64,11 @@
     },
     "collisionbox": {
         "x1": 0.125,
-        "y1": 0.375,
-        "z1": 0.125,
+        "y1": 0.125,
+        "z1": 0.375,
         "x2": 0.875,
-        "y2": 0.625,
-        "z2": 0.875
+        "y2": 0.875,
+        "z2": 0.625
     },
     "collisionboxByType": {
         "cogwheel-x": {
@@ -99,11 +98,11 @@
     },
     "selectionbox": {
         "x1": 0.125,
-        "y1": 0.375,
-        "z1": 0.125,
+        "y1": 0.125,
+        "z1": 0.375,
         "x2": 0.875,
-        "y2": 0.625,
-        "z2": 0.875
+        "y2": 0.875,
+        "z2": 0.625
     },
     "selectionboxByType": {
         "cogwheel-x": {

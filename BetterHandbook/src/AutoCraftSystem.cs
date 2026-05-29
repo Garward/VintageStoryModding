@@ -190,7 +190,15 @@ namespace RecipeExplorer
 
             GuiElementTextButton button = CreateFooterButton("Auto-Fill", onClick);
             PositionBetweenButtons(detailViewGui, button, backButton, overviewButton, -105, "autocraft-button");
+            ElementBounds hoverBounds = button.Bounds.FlatCopy();
             detailViewGui.AddInteractiveElement(button, "autocraft-button");
+            Vintagestory.API.Client.GuiComposerHelpers.AddHoverText(
+                detailViewGui,
+                Lang.Get("betterhandbook:autofilltip"),
+                CairoFont.WhiteSmallText(),
+                260,
+                hoverBounds,
+                "autocraft-button-hover");
         }
 
         private static void AddUsesFooterButton(GuiComposer detailViewGui, ActionConsumable onClick)
@@ -381,12 +389,14 @@ namespace RecipeExplorer
 
             if (success)
             {
+                HandbookRecipeOverlays.ClearFailedFill();
                 if (RecipeExplorerMod.Config.ShowAutoFillMessages)
                     capi.ShowChatMessage(shiftHeld ? "Crafting grid filled (max)!" : "Crafting grid filled!");
                 capi.Gui.PlaySound("menubutton_press");
             }
             else
             {
+                HandbookRecipeOverlays.ReportFailedFill(recipes);
                 if (RecipeExplorerMod.Config.ShowAutoFillMessages)
                     capi.ShowChatMessage("Missing ingredients or crafting grid is too small");
             }
@@ -394,7 +404,7 @@ namespace RecipeExplorer
             return true;
         }
 
-        private static InventoryBase FindPlayerCraftingGrid()
+        internal static InventoryBase FindPlayerCraftingGrid()
         {
             var player = capi.World.Player;
             if (player?.InventoryManager == null) return null;
@@ -421,7 +431,7 @@ namespace RecipeExplorer
             return charInv;
         }
 
-        private static bool TryFillCraftingGrid(GridRecipe recipe, InventoryBase craftingGrid, bool fillMax = false)
+        internal static bool TryFillCraftingGrid(GridRecipe recipe, InventoryBase craftingGrid, bool fillMax = false)
         {
             if (recipe == null || craftingGrid == null) return false;
 

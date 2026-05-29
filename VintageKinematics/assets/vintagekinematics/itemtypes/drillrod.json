@@ -1,0 +1,14 @@
+{
+	"code": "drillrod",
+	"shape": { "base": "item/part/drillrod" },
+	"textures": {
+		"wood": { "base": "game:block/wood/planks/generic" },
+		"metal": { "base": "game:block/metal/ingot/iron" }
+	},
+	"attributes": {
+		"handbook": { "groupBy": ["drillrod"] }
+	},
+	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.45 },
+	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
+	"maxstacksize": 64
+}

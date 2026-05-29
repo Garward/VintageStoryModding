@@ -1,0 +1,11 @@
+{
+    "ingredientPattern": "_I_,PCP,_I_",
+    "ingredients": {
+        "I": { "type": "item", "code": "game:metalplate-copper" },
+        "P": { "type": "block", "code": "copperpipe-ns" },
+        "C": { "type": "block", "code": "cogwheel-y" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "copperpump-s", "quantity": 1 }
+}

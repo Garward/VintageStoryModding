@@ -7,6 +7,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
+using VintageKinematics.Blocks;
 using VintageKinematics.BlockEntities;
 using VintageKinematics.Network;
 
@@ -37,6 +38,7 @@ namespace VintageKinematics.Items
             if (api.Side != EnumAppSide.Server) return;
 
             if (TryHandleBeltInteraction(player, blockSel)) return;
+            if (TryRemoveCasing(player, blockSel)) return;
             if (player?.Entity?.Controls?.Sneak == true && TryPickupKineticBlock(player, blockSel)) return;
 
             if (TryRotateBlock(player, blockSel))
@@ -107,12 +109,19 @@ namespace VintageKinematics.Items
             return true;
         }
 
+        private bool TryRemoveCasing(IPlayer player, BlockSelection blockSel)
+        {
+            return player?.Entity?.Controls?.Sneak == true
+                && KineticCasingHelper.TryRemoveCasing(api, player, blockSel);
+        }
+
         private BlockPos ResolveControllerPos(BlockPos pos)
         {
             Block block = api.World.BlockAccessor.GetBlock(pos);
-            if (block is BlockMultiblock mb)
+            if (block is IMultiblockOffset mb)
             {
-                return new BlockPos(pos.X + mb.OffsetInv.X, pos.Y + mb.OffsetInv.Y, pos.Z + mb.OffsetInv.Z, pos.dimension);
+                BlockPos controllerPos = mb.GetControlBlockPos(pos.Copy());
+                if (controllerPos != null) return controllerPos;
             }
             return pos;
         }
@@ -162,7 +171,16 @@ namespace VintageKinematics.Items
 
         private bool TryRotateBlock(IPlayer player, BlockSelection blockSel)
         {
-            Block block = api.World.BlockAccessor.GetBlock(blockSel.Position);
+            BlockPos pos = ResolveControllerPos(blockSel.Position);
+            if (!SamePos(pos, blockSel.Position)
+                && !api.World.Claims.TryAccess(player, pos, EnumBlockAccessFlags.BuildOrBreak))
+            {
+                api.World.BlockAccessor.MarkBlockEntityDirty(pos);
+                api.World.BlockAccessor.MarkBlockDirty(pos);
+                return true;
+            }
+
+            Block block = api.World.BlockAccessor.GetBlock(pos);
             if (block == null || block.Id == 0 || block.Code == null) return false;
 
             Block newBlock = TryGetVariantRotatedBlock(block, blockSel.Face);
@@ -178,25 +196,56 @@ namespace VintageKinematics.Items
 
             if (newBlock == null)
             {
-                IWrenchOrientable orientable = block.GetInterface<IWrenchOrientable>(api.World, blockSel.Position);
+                IWrenchOrientable orientable = block.GetInterface<IWrenchOrientable>(api.World, pos);
                 if (orientable == null) return false;
 
-                PlayRotateSound(blockSel.Position);
-                orientable.Rotate(player.Entity, blockSel, -1);
-                api.World.BlockAccessor.MarkBlockDirty(blockSel.Position);
+                PlayRotateSound(pos);
+                orientable.Rotate(player.Entity, ControllerSelection(blockSel, pos), -1);
+                api.World.BlockAccessor.MarkBlockDirty(pos);
+                RefreshPipeConnectionsAround(pos);
                 return true;
             }
 
             if (newBlock.Id == block.Id) return false;
 
             KineticNetworkManager networks = api.ModLoader.GetModSystem<KineticNetworkManager>();
-            networks?.OnRemoved(blockSel.Position);
-            ReplaceBlockForRotation(block, newBlock, blockSel.Position);
-            api.World.BlockAccessor.MarkBlockDirty(blockSel.Position);
-            networks?.OnPlaced(blockSel.Position);
+            networks?.OnRemoved(pos);
+            ReplaceBlockForRotation(block, newBlock, pos);
+            api.World.BlockAccessor.MarkBlockDirty(pos);
+            networks?.OnPlaced(pos);
+            RefreshPipeConnectionsAround(pos);
 
-            PlayRotateSound(blockSel.Position);
+            PlayRotateSound(pos);
             return true;
+        }
+
+        private void RefreshPipeConnectionsAround(BlockPos pos)
+        {
+            BlockCopperPipe.UpdatePipeAt(api.World, pos);
+            BlockCopperPipe.UpdatePipeNeighbors(api.World, pos);
+        }
+
+        private static bool SamePos(BlockPos left, BlockPos right)
+        {
+            return left != null && right != null
+                && left.X == right.X
+                && left.Y == right.Y
+                && left.Z == right.Z
+                && left.dimension == right.dimension;
+        }
+
+        private static BlockSelection ControllerSelection(BlockSelection source, BlockPos controllerPos)
+        {
+            if (SamePos(source?.Position, controllerPos)) return source;
+
+            return new BlockSelection
+            {
+                Position = controllerPos,
+                Face = source?.Face,
+                HitPosition = source?.HitPosition,
+                SelectionBoxIndex = source?.SelectionBoxIndex ?? 0,
+                DidOffset = source?.DidOffset ?? false,
+            };
         }
 
         private void ReplaceBlockForRotation(Block oldBlock, Block newBlock, BlockPos pos)
@@ -271,6 +320,9 @@ namespace VintageKinematics.Items
 
                 Block rotatedBlock = TryGetBlockWithDirectionVariant(block, key, value, rotated);
                 if (rotatedBlock != null) return rotatedBlock;
+
+                rotatedBlock = TryGetHorizontalFallbackRotatedBlock(block, key, value, direction);
+                if (rotatedBlock != null) return rotatedBlock;
             }
 
             return null;
@@ -311,6 +363,14 @@ namespace VintageKinematics.Items
             return TryGetBlockWithVariant(block, key, fallback);
         }
 
+        private Block TryGetHorizontalFallbackRotatedBlock(Block block, string key, string currentValue, Vec3i direction)
+        {
+            Vec3i horizontal = RotateHorizontalDirection(direction);
+            if (horizontal == null) return null;
+
+            return TryGetBlockWithDirectionVariant(block, key, currentValue, horizontal);
+        }
+
         private Block TryGetBlockWithVariant(Block block, string key, string value)
         {
             if (value == null) return null;
@@ -338,7 +398,9 @@ namespace VintageKinematics.Items
                 case "south": return new Vec3i(0, 0, 1);
                 case "w":
                 case "west": return new Vec3i(-1, 0, 0);
+                case "u":
                 case "up": return new Vec3i(0, 1, 0);
+                case "d":
                 case "down": return new Vec3i(0, -1, 0);
                 default: return null;
             }
@@ -350,8 +412,8 @@ namespace VintageKinematics.Items
             if (direction.X == 1 && direction.Y == 0 && direction.Z == 0) return longNames ? "east" : "e";
             if (direction.X == 0 && direction.Y == 0 && direction.Z == 1) return longNames ? "south" : "s";
             if (direction.X == -1 && direction.Y == 0 && direction.Z == 0) return longNames ? "west" : "w";
-            if (direction.X == 0 && direction.Y == 1 && direction.Z == 0) return "up";
-            if (direction.X == 0 && direction.Y == -1 && direction.Z == 0) return "down";
+            if (direction.X == 0 && direction.Y == 1 && direction.Z == 0) return longNames ? "up" : "u";
+            if (direction.X == 0 && direction.Y == -1 && direction.Z == 0) return longNames ? "down" : "d";
             return null;
         }
 
@@ -379,6 +441,15 @@ namespace VintageKinematics.Items
                 return new Vec3i(direction.Y, -direction.X, direction.Z);
             }
 
+            return null;
+        }
+
+        private static Vec3i RotateHorizontalDirection(Vec3i direction)
+        {
+            if (direction.X == 0 && direction.Y == 0 && direction.Z == -1) return new Vec3i(1, 0, 0);
+            if (direction.X == 1 && direction.Y == 0 && direction.Z == 0) return new Vec3i(0, 0, 1);
+            if (direction.X == 0 && direction.Y == 0 && direction.Z == 1) return new Vec3i(-1, 0, 0);
+            if (direction.X == -1 && direction.Y == 0 && direction.Z == 0) return new Vec3i(0, 0, -1);
             return null;
         }
 

@@ -10,7 +10,7 @@
 	"attributes": {
 		"handbook": { "groupBy": ["boilerplate-*"] }
 	},
-	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.2 },
+	"guiTransform": { "translation": { "x": 0, "y": -9, "z": 0 }, "rotation": { "x": 168, "y": -77, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.17 },
 	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
 	"maxstacksize": 8
 }

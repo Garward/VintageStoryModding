@@ -262,7 +262,8 @@ namespace VintageKinematics.Api
                 StressImpact = StressImpact,
                 RoundConsumerStressUp = ShouldRoundConsumerStressUp(),
                 RatedRPM = ratedRPM,
-                NetworkId = NetworkId
+                NetworkId = NetworkId,
+                BlockCode = Block?.Code?.Path
             };
         }
 

@@ -1,0 +1,10 @@
+{
+    "ingredientPattern": "FIF",
+    "ingredients": {
+        "F": { "type": "item", "code": "pipeflange-iron" },
+        "I": { "type": "item", "code": "game:metalplate-iron" }
+    },
+    "width": 3,
+    "height": 1,
+    "output": { "type": "block", "code": "geothermalpipe", "quantity": 8 }
+}

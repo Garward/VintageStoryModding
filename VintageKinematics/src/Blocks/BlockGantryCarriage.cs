@@ -90,6 +90,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             if (world.Side == EnumAppSide.Client) return true;
 
             return world.BlockAccessor.GetBlockEntity(blockSel.Position) is BEGantryCarriage be

@@ -1,0 +1,15 @@
+{
+    "ingredientPattern": "BVB,RFR,PGD",
+    "ingredients": {
+        "B": { "type": "item", "code": "boilerplate-steel", "quantity": 2 },
+        "V": { "type": "item", "code": "valvebody-brass", "quantity": 2 },
+        "R": { "type": "item", "code": "roughbearingblank-steel", "quantity": 2 },
+        "F": { "type": "item", "code": "pipeflange-iron", "quantity": 4 },
+        "P": { "type": "item", "code": "industrialplate-steel", "quantity": 2 },
+        "G": { "type": "block", "code": "geothermalpipe", "quantity": 8 },
+        "D": { "type": "item", "code": "drillrod", "quantity": 8 }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "geothermalbore-n-cool", "quantity": 1 }
+}

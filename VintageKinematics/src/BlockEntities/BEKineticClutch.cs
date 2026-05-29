@@ -7,7 +7,7 @@ using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEKineticClutch : BEKineticAnimated, IKineticConnector, IKineticActivatable
+    public class BEKineticClutch : BEKineticAnimated, IKineticConnector, IKineticActivatable, IKineticAnimatorRotatorMultiplier
     {
         private static readonly AssetLocation ToggleSound = new AssetLocation("sounds/effect/woodswitch");
         private static readonly string[] LeverElementNames = { "lever", "lever2", "lever3" };
@@ -29,10 +29,39 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
+        public float GetRotatorSpeedMultiplier(string elementName)
+        {
+            return !Engaged && elementName == "shaftNeg" ? 0f : 1f;
+        }
+
         public KineticConnectionResult? TryConnect(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos)
         {
-            if (!Engaged) return null;
+            if (!Engaged && !IsShaftPosSide(fromPos, toPos)) return null;
             return TryConnectInline(self, other, fromPos, toPos, 1);
+        }
+
+        private bool IsShaftPosSide(BlockPos fromPos, BlockPos toPos)
+        {
+            BlockFacing input = ShaftNegFacingFor(Block?.Variant["side"]).Opposite;
+            return toPos.X == fromPos.X + input.Normali.X
+                && toPos.Y == fromPos.Y + input.Normali.Y
+                && toPos.Z == fromPos.Z + input.Normali.Z;
+        }
+
+        internal static BlockFacing ShaftNegFacingFor(string side)
+        {
+            return side switch
+            {
+                "n" => BlockFacing.NORTH,
+                "e" => BlockFacing.EAST,
+                "s" => BlockFacing.SOUTH,
+                "w" => BlockFacing.WEST,
+                "u" => BlockFacing.UP,
+                "d" => BlockFacing.DOWN,
+                "x" => BlockFacing.EAST,
+                "z" => BlockFacing.SOUTH,
+                _ => BlockFacing.NORTH
+            };
         }
 
         internal static KineticConnectionResult? TryConnectInline(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos, int sideDirection)
@@ -98,8 +127,8 @@ namespace VintageKinematics.BlockEntities
             {
                 ShapeElement elem = shape?.GetElementByName(name);
                 if (elem == null) continue;
-                elem.RotationOrigin = new double[] { 14, 8, 8 };
-                elem.RotationZ += degrees;
+                elem.RotationOrigin = new double[] { 8, 14, 8 };
+                elem.RotationX += degrees;
             }
         }
 

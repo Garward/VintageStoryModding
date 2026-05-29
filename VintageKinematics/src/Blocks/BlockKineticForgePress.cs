@@ -46,6 +46,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             BEKineticForgePress be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BEKineticForgePress;
             if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
             if (byPlayer?.Entity?.Controls?.Sneak == true && be.TryUpgradeRefractoryLining(byPlayer)) return true;

@@ -51,6 +51,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             BEKineticSawmill be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BEKineticSawmill;
             if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
             return be.OnPlayerRightClick(byPlayer, blockSel);

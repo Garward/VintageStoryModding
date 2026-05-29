@@ -1,152 +1,799 @@
 {
-    "textureWidth": 16,
-    "textureHeight": 16,
-    "textures": { "wood": "game:block/wood/planks/generic" },
-    "elements": [
-        {
-            "name": "casing",
-            "from": [1, 1, 1],
-            "to": [15, 15, 15],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [1, 1, 15, 15] },
-                "east":  { "texture": "#wood", "uv": [1, 1, 15, 15] },
-                "south": { "texture": "#wood", "uv": [1, 1, 15, 15] },
-                "west":  { "texture": "#wood", "uv": [1, 1, 15, 15] },
-                "up":    { "texture": "#wood", "uv": [1, 1, 15, 15] },
-                "down":  { "texture": "#wood", "uv": [1, 1, 15, 15] }
-            }
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "wood": "game:block/wood/planks/generic"
+  },
+  "elements": [
+    {
+      "name": "casingCore",
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        16,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
-        {
-            "name": "rimYposNorth",
-            "from": [5, 15, 5],
-            "to": [11, 16, 6],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [5, 0, 11, 1] },
-                "east":  { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "south": { "texture": "#wood", "uv": [5, 0, 11, 1] },
-                "west":  { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "up":    { "texture": "#wood", "uv": [5, 5, 11, 6] },
-                "down":  { "texture": "#wood", "uv": [5, 5, 11, 6] }
-            }
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            14,
+            16
+          ]
         },
-        {
-            "name": "rimYposSouth",
-            "from": [5, 15, 10],
-            "to": [11, 16, 11],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [5, 0, 11, 1] },
-                "east":  { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "south": { "texture": "#wood", "uv": [5, 0, 11, 1] },
-                "west":  { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "up":    { "texture": "#wood", "uv": [5, 10, 11, 11] },
-                "down":  { "texture": "#wood", "uv": [5, 10, 11, 11] }
-            }
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
-        {
-            "name": "rimYposWest",
-            "from": [5, 15, 6],
-            "to": [6, 16, 10],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "east":  { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "south": { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "west":  { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "up":    { "texture": "#wood", "uv": [5, 6, 6, 10] },
-                "down":  { "texture": "#wood", "uv": [5, 6, 6, 10] }
-            }
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            14,
+            16
+          ]
         },
-        {
-            "name": "rimYposEast",
-            "from": [10, 15, 6],
-            "to": [11, 16, 10],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "east":  { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "south": { "texture": "#wood", "uv": [0, 0, 1, 1] },
-                "west":  { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "up":    { "texture": "#wood", "uv": [10, 6, 11, 10] },
-                "down":  { "texture": "#wood", "uv": [10, 6, 11, 10] }
-            }
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            14
+          ]
         },
-        {
-            "name": "rimYnegNorth",
-            "from": [5, 0, 5],
-            "to": [11, 1, 6],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [5, 15, 11, 16] },
-                "east":  { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "south": { "texture": "#wood", "uv": [5, 15, 11, 16] },
-                "west":  { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "up":    { "texture": "#wood", "uv": [5, 5, 11, 6] },
-                "down":  { "texture": "#wood", "uv": [5, 5, 11, 6] }
-            }
-        },
-        {
-            "name": "rimYnegSouth",
-            "from": [5, 0, 10],
-            "to": [11, 1, 11],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [5, 15, 11, 16] },
-                "east":  { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "south": { "texture": "#wood", "uv": [5, 15, 11, 16] },
-                "west":  { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "up":    { "texture": "#wood", "uv": [5, 10, 11, 11] },
-                "down":  { "texture": "#wood", "uv": [5, 10, 11, 11] }
-            }
-        },
-        {
-            "name": "rimYnegWest",
-            "from": [5, 0, 6],
-            "to": [6, 1, 10],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "east":  { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "south": { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "west":  { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "up":    { "texture": "#wood", "uv": [5, 6, 6, 10] },
-                "down":  { "texture": "#wood", "uv": [5, 6, 6, 10] }
-            }
-        },
-        {
-            "name": "rimYnegEast",
-            "from": [10, 0, 6],
-            "to": [11, 1, 10],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "east":  { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "south": { "texture": "#wood", "uv": [0, 15, 1, 16] },
-                "west":  { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "up":    { "texture": "#wood", "uv": [10, 6, 11, 10] },
-                "down":  { "texture": "#wood", "uv": [10, 6, 11, 10] }
-            }
-        },
-        {
-            "name": "stubYpos",
-            "from": [6, 15, 6],
-            "to": [10, 16, 10],
-            "rotationOrigin": [8, 8, 8],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "east":  { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "south": { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "west":  { "texture": "#wood", "uv": [6, 0, 10, 1] },
-                "up":    { "texture": "#wood", "uv": [6, 6, 10, 10] },
-                "down":  { "texture": "#wood", "uv": [6, 6, 10, 10], "enabled": false }
-            }
-        },
-        {
-            "name": "stubYneg",
-            "from": [6, 0, 6],
-            "to": [10, 1, 10],
-            "rotationOrigin": [8, 8, 8],
-            "faces": {
-                "north": { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "east":  { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "south": { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "west":  { "texture": "#wood", "uv": [6, 15, 10, 16] },
-                "up":    { "texture": "#wood", "uv": [6, 6, 10, 10], "enabled": false },
-                "down":  { "texture": "#wood", "uv": [6, 6, 10, 10] }
-            }
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            14
+          ]
         }
-    ]
+      }
+    },
+    {
+      "name": "northShaftFaceRimBottom",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "northShaftFaceRimTop",
+      "from": [
+        0,
+        15,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "northShaftFaceRimWest",
+      "from": [
+        0,
+        1,
+        0
+      ],
+      "to": [
+        1,
+        15,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "northShaftFaceRimEast",
+      "from": [
+        15,
+        1,
+        0
+      ],
+      "to": [
+        16,
+        15,
+        1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "southShaftFaceRimBottom",
+      "from": [
+        0,
+        0,
+        15
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "southShaftFaceRimTop",
+      "from": [
+        0,
+        15,
+        15
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "southShaftFaceRimWest",
+      "from": [
+        0,
+        1,
+        15
+      ],
+      "to": [
+        1,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "southShaftFaceRimEast",
+      "from": [
+        15,
+        1,
+        15
+      ],
+      "to": [
+        16,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "name": "shaft",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        0,
+        0,
+        0
+      ],
+      "rotationOrigin": [
+        8,
+        8,
+        8
+      ],
+      "faces": {},
+      "children": [
+        {
+          "name": "shaftNegStub",
+          "from": [
+            6,
+            6,
+            -0.05
+          ],
+          "to": [
+            10,
+            10,
+            1.35
+          ],
+          "faces": {
+            "north": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                4
+              ]
+            },
+            "east": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                1.4,
+                4
+              ]
+            },
+            "south": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                4
+              ]
+            },
+            "west": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                1.4,
+                4
+              ]
+            },
+            "up": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                1.4
+              ]
+            },
+            "down": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                1.4
+              ]
+            }
+          },
+          "rotationOrigin": [
+            8,
+            8,
+            8
+          ]
+        },
+        {
+          "name": "shaftPosStub",
+          "from": [
+            6,
+            6,
+            14.65
+          ],
+          "to": [
+            10,
+            10,
+            16.05
+          ],
+          "faces": {
+            "north": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                4
+              ]
+            },
+            "east": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                1.4,
+                4
+              ]
+            },
+            "south": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                4
+              ]
+            },
+            "west": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                1.4,
+                4
+              ]
+            },
+            "up": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                1.4
+              ]
+            },
+            "down": {
+              "texture": "#wood",
+              "uv": [
+                0,
+                0,
+                4,
+                1.4
+              ]
+            }
+          },
+          "rotationOrigin": [
+            8,
+            8,
+            8
+          ]
+        }
+      ]
+    }
+  ]
 }

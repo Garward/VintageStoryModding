@@ -1,4 +1,4 @@
-# Modeling source files (Blender / Model Creator originals)
+# Modeling source files (Model Creator originals)
 raw_assets/
 
 # Test project
@@ -10,3 +10,4 @@ Directory.Build.local.props
 # Local-only design docs
 docs/processing-design.md
 docs/modeling-guide.md
+

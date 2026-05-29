@@ -60,6 +60,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (byPlayer?.Entity == null || blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
 
             BETrebuchet be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BETrebuchet;
             if (be == null) return false;

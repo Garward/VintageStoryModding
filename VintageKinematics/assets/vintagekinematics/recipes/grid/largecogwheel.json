@@ -3,7 +3,7 @@
 	"ingredients": {
 		"P": { "type": "item", "code": "game:plank-*", "name": "wood" },
 		"S": { "type": "item", "code": "largecogwheelsection" },
-		"A": { "type": "block", "code": "shaft-y", "quantity": 4 }
+		"A": { "type": "block", "code": "shaft-y", "quantity": 1 }
 	},
 	"width": 3,
 	"height": 3,

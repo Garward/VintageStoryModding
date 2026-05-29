@@ -57,5 +57,56 @@ namespace VintageKinematics.Blocks
             }
             return variant.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
         }
+
+        public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
+        {
+            ItemStack[] drops = base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier);
+            if (drops == null) return drops;
+
+            for (int i = 0; i < drops.Length; i++)
+            {
+                drops[i] = NormalizeAxisDrop(world, drops[i]);
+            }
+
+            return drops;
+        }
+
+        private static ItemStack NormalizeAxisDrop(IWorldAccessor world, ItemStack drop)
+        {
+            Block block = drop?.Block;
+            if (world == null || block?.Variant?["axis"] == null) return drop;
+
+            Block canonical = block;
+
+            if (canonical.Variant?["shaft"] != null)
+            {
+                canonical = world.GetBlock(canonical.CodeWithVariant("shaft", "none")) ?? canonical;
+            }
+
+            string axis = CanonicalDropAxis(canonical);
+            canonical = world.GetBlock(canonical.CodeWithVariant("axis", axis)) ?? canonical;
+
+            if (canonical == block) return drop;
+            return new ItemStack(canonical, drop.StackSize);
+        }
+
+        private static string CanonicalDropAxis(Block block)
+        {
+            string path = block?.Code?.Path ?? "";
+
+            if (path.StartsWith("encasedshaft-")
+                || path.StartsWith("encasedcogwheel-")
+                || path.StartsWith("encasedlargecogwheel-"))
+            {
+                return "z";
+            }
+
+            if (path.StartsWith("gantryshaft-") || path.StartsWith("gearbox-"))
+            {
+                return "x";
+            }
+
+            return "y";
+        }
     }
 }

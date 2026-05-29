@@ -5,13 +5,7 @@
   },
   "textureWidth": 16,
   "textureHeight": 16,
-  "textures": {
-    "grindstoneup": "block/stone/quern/grindstoneup",
-    "baseside": "block/stone/quern/baseside",
-    "baseup": "block/stone/quern/grooves",
-    "wood": "game:block/wood/planks/generic",
-    "cog": "game:block/wood/planks/generic"
-  },
+  "textures": {},
   "elements": [
     {
       "name": "Base",

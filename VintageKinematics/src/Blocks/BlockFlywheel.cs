@@ -131,6 +131,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (byPlayer?.Entity == null || blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
 
             BEFlywheel be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BEFlywheel;
             if (be == null) return false;

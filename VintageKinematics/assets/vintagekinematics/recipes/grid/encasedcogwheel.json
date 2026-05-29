@@ -1,0 +1,21 @@
+{
+  "ingredientPattern": "C,G",
+  "ingredients": {
+    "C": {
+      "type": "item",
+      "code": "casing-*",
+      "name": "wood"
+    },
+    "G": {
+      "type": "block",
+      "code": "cogwheel-y"
+    }
+  },
+  "width": 1,
+  "height": 2,
+  "output": {
+    "type": "block",
+    "code": "encasedcogwheel-{wood}-none-z",
+    "quantity": 1
+  }
+}

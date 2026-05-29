@@ -7,5 +7,5 @@
 	"useInputSmeltingTemperature": true,
 	"requiresModdedNuggetSmeltingConfig": true,
 	"requireNonGameDomain": true,
-	"pressTicks": 18
+	"pressTicks": 9
 }

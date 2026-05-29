@@ -1,0 +1,3890 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textureSizes": {},
+    "textures": {
+        "wood": "game:block/wood/planks/generic",
+        "iron": "game:block/metal/plate/iron",
+        "dark": "game:block/coal/charcoal",
+        "steel": "game:block/metal/plate/steel"
+    },
+    "elements": [
+        {
+            "name": "rearMount",
+            "from": [
+                2,
+                2,
+                9.5
+            ],
+            "to": [
+                14,
+                14,
+                15.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "east": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "south": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "west": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "up": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "down": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "mountCap",
+            "from": [
+                1.5,
+                1.5,
+                8.5
+            ],
+            "to": [
+                14.5,
+                14.5,
+                10.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                }
+            }
+        },
+        {
+            "name": "bearingHousing",
+            "from": [
+                4.25,
+                4.25,
+                4.7
+            ],
+            "to": [
+                11.75,
+                11.75,
+                9.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        8
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        8
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        8
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        8
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        8
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "darkCollar",
+            "from": [
+                5.6,
+                5.6,
+                3.7
+            ],
+            "to": [
+                10.4,
+                10.4,
+                5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "drillCore00",
+            "from": [
+                7.675,
+                6.75,
+                -5.105
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.245
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ]
+        },
+        {
+            "name": "drillCore01",
+            "from": [
+                7.675,
+                6.75,
+                -5.095
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.255
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 15
+        },
+        {
+            "name": "drillCore02",
+            "from": [
+                7.675,
+                6.75,
+                -5.085
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.265
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 30
+        },
+        {
+            "name": "drillCore03",
+            "from": [
+                7.675,
+                6.75,
+                -5.075
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.275
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 45
+        },
+        {
+            "name": "drillCore04",
+            "from": [
+                7.675,
+                6.75,
+                -5.065
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.285
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 60
+        },
+        {
+            "name": "drillCore05",
+            "from": [
+                7.675,
+                6.75,
+                -5.055
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.295
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 75
+        },
+        {
+            "name": "drillCore06",
+            "from": [
+                7.675,
+                6.75,
+                -5.045
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.305
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 90
+        },
+        {
+            "name": "drillCore07",
+            "from": [
+                7.675,
+                6.75,
+                -5.035
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.315
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 105
+        },
+        {
+            "name": "drillCore08",
+            "from": [
+                7.675,
+                6.75,
+                -5.025
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.325
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 120
+        },
+        {
+            "name": "drillCore09",
+            "from": [
+                7.675,
+                6.75,
+                -5.015
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.335
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 135
+        },
+        {
+            "name": "drillCore10",
+            "from": [
+                7.675,
+                6.75,
+                -5.005
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.345
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 150
+        },
+        {
+            "name": "drillCore11",
+            "from": [
+                7.675,
+                6.75,
+                -4.995
+            ],
+            "to": [
+                8.325,
+                9.25,
+                5.355
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 165
+        },
+        {
+            "name": "drillFlute0_00",
+            "from": [
+                7.66,
+                8.85,
+                -5.215
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -4.115
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ]
+        },
+        {
+            "name": "drillFlute0_01",
+            "from": [
+                7.66,
+                8.85,
+                -4.425
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -3.325
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 28
+        },
+        {
+            "name": "drillFlute0_02",
+            "from": [
+                7.66,
+                8.85,
+                -3.635
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -2.535
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 56
+        },
+        {
+            "name": "drillFlute0_03",
+            "from": [
+                7.66,
+                8.85,
+                -2.845
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -1.745
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 84
+        },
+        {
+            "name": "drillFlute0_04",
+            "from": [
+                7.66,
+                8.85,
+                -2.055
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -0.955
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 112
+        },
+        {
+            "name": "drillFlute0_05",
+            "from": [
+                7.66,
+                8.85,
+                -1.265
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -0.165
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 140
+        },
+        {
+            "name": "drillFlute0_06",
+            "from": [
+                7.66,
+                8.85,
+                -0.475
+            ],
+            "to": [
+                8.34,
+                10.7,
+                0.625
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 168
+        },
+        {
+            "name": "drillFlute0_07",
+            "from": [
+                7.66,
+                8.85,
+                0.315
+            ],
+            "to": [
+                8.34,
+                10.7,
+                1.415
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 196
+        },
+        {
+            "name": "drillFlute0_08",
+            "from": [
+                7.66,
+                8.85,
+                1.105
+            ],
+            "to": [
+                8.34,
+                10.7,
+                2.205
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 224
+        },
+        {
+            "name": "drillFlute0_09",
+            "from": [
+                7.66,
+                8.85,
+                1.895
+            ],
+            "to": [
+                8.34,
+                10.7,
+                2.995
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 252
+        },
+        {
+            "name": "drillFlute0_10",
+            "from": [
+                7.66,
+                8.85,
+                2.685
+            ],
+            "to": [
+                8.34,
+                10.7,
+                3.785
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 280
+        },
+        {
+            "name": "drillFlute0_11",
+            "from": [
+                7.66,
+                8.85,
+                3.475
+            ],
+            "to": [
+                8.34,
+                10.7,
+                4.575
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 308
+        },
+        {
+            "name": "drillFlute0_12",
+            "from": [
+                7.66,
+                8.85,
+                4.265
+            ],
+            "to": [
+                8.34,
+                10.7,
+                5.365
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 336
+        },
+        {
+            "name": "drillFlute0_13",
+            "from": [
+                7.66,
+                8.85,
+                5.055
+            ],
+            "to": [
+                8.34,
+                10.7,
+                6.155
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 364
+        },
+        {
+            "name": "drillFlute1_00",
+            "from": [
+                7.66,
+                8.85,
+                -5.215
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -4.115
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 180
+        },
+        {
+            "name": "drillFlute1_01",
+            "from": [
+                7.66,
+                8.85,
+                -4.425
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -3.325
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 208
+        },
+        {
+            "name": "drillFlute1_02",
+            "from": [
+                7.66,
+                8.85,
+                -3.635
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -2.535
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 236
+        },
+        {
+            "name": "drillFlute1_03",
+            "from": [
+                7.66,
+                8.85,
+                -2.845
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -1.745
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 264
+        },
+        {
+            "name": "drillFlute1_04",
+            "from": [
+                7.66,
+                8.85,
+                -2.055
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -0.955
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 292
+        },
+        {
+            "name": "drillFlute1_05",
+            "from": [
+                7.66,
+                8.85,
+                -1.265
+            ],
+            "to": [
+                8.34,
+                10.7,
+                -0.165
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 320
+        },
+        {
+            "name": "drillFlute1_06",
+            "from": [
+                7.66,
+                8.85,
+                -0.475
+            ],
+            "to": [
+                8.34,
+                10.7,
+                0.625
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 348
+        },
+        {
+            "name": "drillFlute1_07",
+            "from": [
+                7.66,
+                8.85,
+                0.315
+            ],
+            "to": [
+                8.34,
+                10.7,
+                1.415
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 376
+        },
+        {
+            "name": "drillFlute1_08",
+            "from": [
+                7.66,
+                8.85,
+                1.105
+            ],
+            "to": [
+                8.34,
+                10.7,
+                2.205
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 404
+        },
+        {
+            "name": "drillFlute1_09",
+            "from": [
+                7.66,
+                8.85,
+                1.895
+            ],
+            "to": [
+                8.34,
+                10.7,
+                2.995
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 432
+        },
+        {
+            "name": "drillFlute1_10",
+            "from": [
+                7.66,
+                8.85,
+                2.685
+            ],
+            "to": [
+                8.34,
+                10.7,
+                3.785
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 460
+        },
+        {
+            "name": "drillFlute1_11",
+            "from": [
+                7.66,
+                8.85,
+                3.475
+            ],
+            "to": [
+                8.34,
+                10.7,
+                4.575
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 488
+        },
+        {
+            "name": "drillFlute1_12",
+            "from": [
+                7.66,
+                8.85,
+                4.265
+            ],
+            "to": [
+                8.34,
+                10.7,
+                5.365
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 516
+        },
+        {
+            "name": "drillFlute1_13",
+            "from": [
+                7.66,
+                8.85,
+                5.055
+            ],
+            "to": [
+                8.34,
+                10.7,
+                6.155
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 544
+        },
+        {
+            "name": "drillTip00",
+            "from": [
+                7.79,
+                7.28,
+                -6.185
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.985
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ]
+        },
+        {
+            "name": "drillTip01",
+            "from": [
+                7.79,
+                7.28,
+                -6.175
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.975
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 22.5
+        },
+        {
+            "name": "drillTip02",
+            "from": [
+                7.79,
+                7.28,
+                -6.165
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.965
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 45
+        },
+        {
+            "name": "drillTip03",
+            "from": [
+                7.79,
+                7.28,
+                -6.155
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.955
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 67.5
+        },
+        {
+            "name": "drillTip04",
+            "from": [
+                7.79,
+                7.28,
+                -6.145
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.945
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 90
+        },
+        {
+            "name": "drillTip05",
+            "from": [
+                7.79,
+                7.28,
+                -6.135
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.935
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 112.5
+        },
+        {
+            "name": "drillTip06",
+            "from": [
+                7.79,
+                7.28,
+                -6.125
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.925
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 135
+        },
+        {
+            "name": "drillTip07",
+            "from": [
+                7.79,
+                7.28,
+                -6.115
+            ],
+            "to": [
+                8.21,
+                8.72,
+                -4.915
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                0
+            ],
+            "rotationZ": 157.5
+        }
+    ]
+}

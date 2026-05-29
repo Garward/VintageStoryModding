@@ -50,6 +50,7 @@ namespace VintageKinematics.Blocks
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             BECrusherBasin be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BECrusherBasin;
             if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
 

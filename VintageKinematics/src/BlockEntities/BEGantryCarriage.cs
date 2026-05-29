@@ -46,6 +46,8 @@ namespace VintageKinematics.BlockEntities
             base.Initialize(api);
             if (api.Side == EnumAppSide.Server)
             {
+                NormalizePlacedAtTimestamp();
+                TryInferAttachedShaftFromBlock();
                 RegisterGameTickListener(OnSnapshotWatchTick, SnapshotWatchIntervalMs);
             }
         }
@@ -71,13 +73,45 @@ namespace VintageKinematics.BlockEntities
         public bool TryAssembleForGantry()
         {
             if (GetLinkedEntity() != null) return false;
-            if (Api?.World != null && Api.World.ElapsedMilliseconds - placedAtMs < GantryAutoAssembleDelayMs)
+            if (HasLiveContraptionAtControllerPosition()) return false;
+            NormalizePlacedAtTimestamp();
+            if (Api?.World != null && placedAtMs > 0 && Api.World.ElapsedMilliseconds - placedAtMs < GantryAutoAssembleDelayMs)
             {
                 SetGantryDebug("Waiting for newly placed carriage");
                 return false;
             }
 
             return TryAssemble(null, notify: false);
+        }
+
+        private bool HasLiveContraptionAtControllerPosition()
+        {
+            if (Api?.World == null || Pos == null) return false;
+
+            Vec3d center = new Vec3d(Pos.X + 0.5, Pos.InternalY + 0.5, Pos.Z + 0.5);
+            Entity[] entities = Api.World.GetEntitiesAround(center, 3f, 3f, entity => entity is EntityVKContraption);
+            for (int i = 0; i < entities.Length; i++)
+            {
+                if (entities[i] is EntityVKContraption contraption
+                    && contraption.Alive
+                    && !contraption.SnapshotRestored
+                    && contraption.HasControllerAtWorldBlock(Pos))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void NormalizePlacedAtTimestamp()
+        {
+            if (Api?.World == null || placedAtMs <= 0) return;
+            if (placedAtMs <= Api.World.ElapsedMilliseconds) return;
+
+            placedAtMs = 0;
+            gantryDebug = "Recovered stale gantry placement delay";
+            if (Api.Side == EnumAppSide.Server) MarkDirty(false);
         }
 
         public override void OnBlockPlaced(ItemStack byItemStack = null)
@@ -109,6 +143,11 @@ namespace VintageKinematics.BlockEntities
         public bool TryGetAttachedShaftPos(out BlockPos shaftPos)
         {
             shaftPos = null;
+            if (!hasAttachedShaft)
+            {
+                TryInferAttachedShaftFromBlock();
+            }
+
             if (!hasAttachedShaft || Pos == null) return false;
 
             shaftPos = new BlockPos(
@@ -117,6 +156,65 @@ namespace VintageKinematics.BlockEntities
                 Pos.Z + attachedShaftDz,
                 Pos.dimension);
             return true;
+        }
+
+        private bool TryInferAttachedShaftFromBlock()
+        {
+            if (hasAttachedShaft) return true;
+            if (Api?.World == null || Pos == null || Block?.Code == null) return false;
+            if (!TryGetExpectedShaftDelta(Block, out int dx, out int dy, out int dz, out string axisCode)) return false;
+
+            BlockPos shaftPos = new BlockPos(
+                Pos.X + dx,
+                (Pos.InternalY + dy) % BlockPos.DimensionBoundary,
+                Pos.Z + dz,
+                Pos.dimension);
+
+            Block shaftBlock = Api.World.BlockAccessor.GetBlock(shaftPos);
+            if (!IsGantryShaft(shaftBlock, out EnumKineticAxis shaftAxis)) return false;
+            if (!AxisMatches(axisCode, shaftAxis)) return false;
+
+            attachedShaftDx = dx;
+            attachedShaftDy = dy;
+            attachedShaftDz = dz;
+            hasAttachedShaft = true;
+            gantryDebug = "Recovered gantry shaft anchor";
+            if (Api.Side == EnumAppSide.Server) MarkDirty(false);
+            return true;
+        }
+
+        private static bool TryGetExpectedShaftDelta(Block block, out int dx, out int dy, out int dz, out string axisCode)
+        {
+            dx = 0;
+            dy = 0;
+            dz = 0;
+            axisCode = block?.Variant?["axis"];
+            string side = block?.Variant?["side"];
+            if (string.IsNullOrEmpty(axisCode) || string.IsNullOrEmpty(side)) return false;
+
+            if ((axisCode == "x" || axisCode == "z") && side == "u")
+            {
+                dy = -1;
+                return true;
+            }
+
+            if (axisCode != "y") return false;
+
+            switch (side)
+            {
+                case "n": dz = 1; return true;
+                case "e": dx = -1; return true;
+                case "s": dz = -1; return true;
+                case "w": dx = 1; return true;
+                default: return false;
+            }
+        }
+
+        private static bool AxisMatches(string axisCode, EnumKineticAxis axis)
+        {
+            return (axisCode == "x" && axis == EnumKineticAxis.X)
+                || (axisCode == "y" && axis == EnumKineticAxis.Y)
+                || (axisCode == "z" && axis == EnumKineticAxis.Z);
         }
 
         public bool TryGetGantryAnchor(EnumKineticAxis axis, out BlockPos shaftPos)
@@ -598,6 +696,8 @@ namespace VintageKinematics.BlockEntities
 
             int count = Math.Min(offsets.Length, blockCodes.Length);
             blockEntityTrees = NormalizeBlockEntityTrees(blockEntityTrees, count);
+            int skippedToolTargets = RemoveContraptionToolTargetBlocks(ref offsets, ref blockCodes, ref blockEntityTrees, count);
+            count = Math.Min(offsets.Length, blockCodes.Length);
             if (count <= 1)
             {
                 if (count != offsets.Length || count != blockCodes.Length)
@@ -606,7 +706,7 @@ namespace VintageKinematics.BlockEntities
                     Array.Resize(ref blockCodes, count);
                     Array.Resize(ref blockEntityTrees, count);
                 }
-                return 0;
+                return skippedToolTargets;
             }
 
             Dictionary<string, int> indexByOffset = new Dictionary<string, int>();
@@ -637,7 +737,82 @@ namespace VintageKinematics.BlockEntities
             offsets = keptOffsets;
             blockCodes = keptCodes;
             blockEntityTrees = keptBlockEntityTrees;
-            return count - keptCount;
+            return skippedToolTargets + count - keptCount;
+        }
+
+        private static int RemoveContraptionToolTargetBlocks(ref Vec3i[] offsets, ref string[] blockCodes, ref TreeAttribute[] blockEntityTrees, int count)
+        {
+            Dictionary<string, int> indexByOffset = new Dictionary<string, int>();
+            for (int i = 0; i < count; i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null) continue;
+                indexByOffset[OffsetKey(offset.X, offset.Y, offset.Z)] = i;
+            }
+
+            HashSet<int> remove = new HashSet<int>();
+            for (int i = 0; i < count; i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null || string.IsNullOrEmpty(blockCodes[i])) continue;
+                if (!TryGetContraptionToolFacing(blockCodes[i], out int dx, out int dy, out int dz)) continue;
+
+                string targetKey = OffsetKey(offset.X + dx, offset.Y + dy, offset.Z + dz);
+                if (indexByOffset.TryGetValue(targetKey, out int targetIndex))
+                {
+                    remove.Add(targetIndex);
+                }
+            }
+
+            if (remove.Count == 0) return 0;
+
+            int keptCount = count - remove.Count;
+            Vec3i[] keptOffsets = new Vec3i[keptCount];
+            string[] keptCodes = new string[keptCount];
+            TreeAttribute[] keptTrees = new TreeAttribute[keptCount];
+            int writeIndex = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (remove.Contains(i)) continue;
+                keptOffsets[writeIndex] = offsets[i];
+                keptCodes[writeIndex] = blockCodes[i];
+                keptTrees[writeIndex] = blockEntityTrees[i] ?? new TreeAttribute();
+                writeIndex++;
+            }
+
+            offsets = keptOffsets;
+            blockCodes = keptCodes;
+            blockEntityTrees = keptTrees;
+            return remove.Count;
+        }
+
+        private static bool TryGetContraptionToolFacing(string blockCode, out int dx, out int dy, out int dz)
+        {
+            dx = 0;
+            dy = 0;
+            dz = 0;
+
+            string path = blockCode ?? "";
+            int domainSep = path.IndexOf(':');
+            if (domainSep >= 0) path = path.Substring(domainSep + 1);
+
+            if (!path.StartsWith("contraptiondrill-", StringComparison.Ordinal)
+                && !path.StartsWith("contraptionsaw-", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            string side = path.Substring(path.LastIndexOf('-') + 1);
+            switch (side)
+            {
+                case "n": dz = -1; return true;
+                case "e": dx = 1; return true;
+                case "s": dz = 1; return true;
+                case "w": dx = -1; return true;
+                case "u": dy = 1; return true;
+                case "d": dy = -1; return true;
+                default: return false;
+            }
         }
 
         private static bool[] FindControllerConnectedComponent(Vec3i[] offsets, int count, Dictionary<string, int> indexByOffset)

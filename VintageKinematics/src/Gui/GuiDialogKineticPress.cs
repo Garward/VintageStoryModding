@@ -35,12 +35,12 @@ namespace VintageKinematics.Gui
                 .WithAlignment(EnumDialogArea.RightMiddle)
                 .WithFixedAlignmentOffset(-GuiStyle.DialogToScreenPadding, 0.0);
 
-            string inputLabel = Lang.Get("vintagekinematics:kineticpress-input");
-            string outputLabel = Lang.Get("vintagekinematics:kineticpress-outputs");
+            string inputLabel = Lang.Get("vintagekinematics:kineticextractor-input");
+            string outputLabel = Lang.Get("vintagekinematics:kineticextractor-outputs");
             int[] inputSlot = new[] { 0 };
             int[] outputSlots = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            SingleComposer = capi.Gui.CreateCompo("kineticpress-" + BlockEntityPosition, dialogBounds)
+            SingleComposer = capi.Gui.CreateCompo("kineticextractor-" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(title, CloseIconPressed)
                 .BeginChildElements(bgBounds)

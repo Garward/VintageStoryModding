@@ -3,7 +3,7 @@
 	"shape": { "base": "item/part/pressedcasing" },
 	"textures": { "metal": { "base": "game:block/metal/ingot/iron" } },
 	"attributes": { "forgePressDie": true },
-	"guiTransform": { "rotation": { "x": 145, "y": -35, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 2.3 },
+	"guiTransform": { "rotation": { "x": 151, "y": 149, "z": 0 }, "origin": { "x": 0.5, "y": 0.5, "z": 0.5 }, "scale": 1.25 },
 	"creativeinventory": { "general": ["*"], "vintagekinematics": ["*"] },
 	"maxstacksize": 1
 }

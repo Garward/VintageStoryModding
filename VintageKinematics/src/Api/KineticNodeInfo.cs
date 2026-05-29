@@ -35,6 +35,9 @@ namespace VintageKinematics.Api
         }
 
         /// <summary>True iff the node is a small or large cogwheel.</summary>
-        public bool IsCogwheel => Role == EnumKineticRole.SmallCogwheel || Role == EnumKineticRole.LargeCogwheel;
+        public bool IsCogwheel => Role == EnumKineticRole.SmallCogwheel
+            || Role == EnumKineticRole.LargeCogwheel
+            || Role == EnumKineticRole.EncasedSmallCogwheel
+            || Role == EnumKineticRole.EncasedLargeCogwheel;
     }
 }

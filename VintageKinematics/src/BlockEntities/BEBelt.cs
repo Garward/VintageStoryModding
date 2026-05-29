@@ -261,9 +261,9 @@ namespace VintageKinematics.BlockEntities
         /// <summary>Lower lerp alpha for the one-tick past-head carry — just enough nudge to clear
         /// the lip on step-down cascades, not a full take-over.</summary>
         private const float PastHeadGripFactor = 0.35f;
-        /// <summary>Riders move at this fraction of item-progress speed. Items run at 1 block/s per
-        /// 60 rpm; without scaling, a 256 rpm belt would teleport entities.</summary>
-        private const float RiderSpeedScale = 0.25f;
+        /// <summary>Entity motion uses a different integration path than belt item progress. This
+        /// scale keeps riders visually matched to carried items across normal belt speeds.</summary>
+        private const float RiderSpeedScale = 0.125f;
 
         /// <summary>
         /// In-block push entry point. Called from <see cref="BlockBelt.OnEntityInside"/> on both

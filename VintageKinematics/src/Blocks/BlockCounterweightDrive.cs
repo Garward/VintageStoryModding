@@ -63,6 +63,7 @@ namespace VintageKinematics.Blocks
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             if (world.Side == EnumAppSide.Server) Interact(world, byPlayer, blockSel, 0f, first: true);
             return true;
         }

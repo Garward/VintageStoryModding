@@ -45,6 +45,7 @@ namespace VintageKinematics.BlockEntities
         private const int MaxBellowsAssistCount = 2;
         private const float BellowsTemperatureBonusPerUnit = 75f;
         private const float RefractoryLiningTemperatureBonus = 250f;
+        private const float RefractoryLiningFuelDurationMultiplier = 2f;
         private const float BellowsHeatRateBonusPerUnit = 0.5f;
         private const float BellowsStackPenaltyReliefPerUnit = 0.5f;
         private const float MaxBellowsStackPenaltyRelief = 0.9f;
@@ -242,6 +243,7 @@ namespace VintageKinematics.BlockEntities
                 float targetTemperature = FuelTargetTemperature(activeBurnTemperature, bellowsCount);
                 float heatRate = HeatRatePerSecond * (1f + BellowsHeatRateBonusPerUnit * bellowsCount);
                 float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveForgePressFuelUsageSpeed() ?? 1f;
+                if (hasTier3RefractoryLining) fuelUsageSpeed /= RefractoryLiningFuelDurationMultiplier;
                 burnSecondsRemaining = Math.Max(0f, burnSecondsRemaining - seconds * fuelUsageSpeed);
                 chamberTemperature = Approach(chamberTemperature, targetTemperature, heatRate * seconds);
                 EmitHeatingSmoke();

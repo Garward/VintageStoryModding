@@ -1,10 +1,21 @@
 {
-	"ingredientPattern": "PSP,PSP",
-	"ingredients": {
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
-		"S": { "type": "block", "code": "shaft-y", "quantity": 2 }
-	},
-	"width": 3,
-	"height": 2,
-	"output": { "type": "block", "code": "encasedshaft-y", "quantity": 2 }
+  "ingredientPattern": "C,S",
+  "ingredients": {
+    "C": {
+      "type": "item",
+      "code": "casing-*",
+      "name": "wood"
+    },
+    "S": {
+      "type": "block",
+      "code": "shaft-y"
+    }
+  },
+  "width": 1,
+  "height": 2,
+  "output": {
+    "type": "block",
+    "code": "encasedshaft-{wood}-z",
+    "quantity": 1
+  }
 }

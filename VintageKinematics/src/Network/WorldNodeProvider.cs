@@ -96,14 +96,15 @@ namespace VintageKinematics.Network
                 IKineticMultiblockController mbc = ResolveMultiblockInterface(ctrlBe);
                 bool isShaftCell = mbc != null ? mbc.IsKineticShaftCell(pos) : true;
 
-                node = new KineticNode
-                {
-                    Pos = pos,
-                    Axis = ctrlKin.Axis,
-                    Role = isShaftCell ? ctrlKin.Role : EnumKineticRole.Custom,
-                    StressImpact = 0f,
-                    RatedRPM = 0f
-                };
+                    node = new KineticNode
+                    {
+                        Pos = pos,
+                        Axis = ctrlKin.Axis,
+                        Role = isShaftCell ? ctrlKin.Role : EnumKineticRole.Custom,
+                        StressImpact = 0f,
+                        RatedRPM = 0f,
+                        BlockCode = ctrlKin.Block?.Code?.Path
+                    };
                 return true;
             }
 
@@ -162,7 +163,7 @@ namespace VintageKinematics.Network
                     if (Math.Abs(offset.X) != Math.Abs(axisVec.X)) return null;
                     if (Math.Abs(offset.Y) != Math.Abs(axisVec.Y)) return null;
                     if (Math.Abs(offset.Z) != Math.Abs(axisVec.Z)) return null;
-                    return new KineticConnection(1f, 1, 0f);
+                    return new KineticConnection(1f, VanillaBridgeDirection(fromVanilla, offset, from.Axis), 0f);
                 }
             }
 
@@ -220,6 +221,20 @@ namespace VintageKinematics.Network
 
         private static KineticConnection Translate(KineticConnectionResult r) =>
             new KineticConnection(r.Ratio, r.Direction, r.PhaseOffset);
+
+        private static int VanillaBridgeDirection(bool fromVanilla, Vec3i offsetFromFromToTo, EnumKineticAxis axis)
+        {
+            Vec3i offsetFromVanilla = fromVanilla
+                ? offsetFromFromToTo
+                : new Vec3i(-offsetFromFromToTo.X, -offsetFromFromToTo.Y, -offsetFromFromToTo.Z);
+
+            int sign = 0;
+            if (axis == EnumKineticAxis.X) sign = Math.Sign(offsetFromVanilla.X);
+            else if (axis == EnumKineticAxis.Y) sign = Math.Sign(offsetFromVanilla.Y);
+            else if (axis == EnumKineticAxis.Z) sign = Math.Sign(offsetFromVanilla.Z);
+
+            return sign > 0 ? -1 : 1;
+        }
 
         private bool HasKineticConnector(BlockPos pos)
         {

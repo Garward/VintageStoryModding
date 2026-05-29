@@ -27,6 +27,7 @@ namespace VintageKinematics.Blocks
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             BEFunnel be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BEFunnel;
             if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
             return be.OnPlayerRightClick(byPlayer, blockSel);

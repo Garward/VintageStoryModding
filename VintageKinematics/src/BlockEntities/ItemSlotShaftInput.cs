@@ -2,7 +2,7 @@ using Vintagestory.API.Common;
 
 namespace VintageKinematics.BlockEntities
 {
-    // Accepts only shaft / encasedshaft items. Used by the bore's drill-rod input slots so a
+    // Accepts only drill rod items. Used by the bore's drill-rod input slots so a
     // player can't dump random goods into the machine and confuse the descent logic.
     public class ItemSlotShaftInput : ItemSlot
     {
@@ -11,14 +11,16 @@ namespace VintageKinematics.BlockEntities
         public override bool CanHold(ItemSlot sourceSlot)
         {
             if (sourceSlot?.Itemstack?.Collectible == null) return false;
-            return IsAcceptedCode(sourceSlot.Itemstack.Collectible.Code?.FirstCodePart());
+            return IsAcceptedCode(sourceSlot.Itemstack.Collectible.Code);
         }
 
         public override bool CanTake() => true;
 
-        public static bool IsAcceptedCode(string firstPart)
+        public static bool IsAcceptedCode(AssetLocation code)
         {
-            return firstPart == "shaft" || firstPart == "encasedshaft";
+            return code != null
+                && code.Domain == "vintagekinematics"
+                && code.FirstCodePart() == "drillrod";
         }
     }
 }

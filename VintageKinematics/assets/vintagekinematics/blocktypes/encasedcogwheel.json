@@ -1,0 +1,182 @@
+{
+  "code": "encasedcogwheel",
+  "class": "BlockCogwheel",
+  "placedPriorityInteract": true,
+  "entityClass": "KineticAnimated",
+  "entityBehaviors": [
+    {
+      "name": "Kinetic",
+      "properties": {
+        "role": "EncasedSmallCogwheel",
+        "stressImpact": 0
+      }
+    },
+    {
+      "name": "KineticAnimator",
+      "properties": {
+        "rotators": [
+          {
+            "element": "cogAssembly",
+            "axis": "Z",
+            "ratio": 1
+          }
+        ]
+      }
+    }
+  ],
+  "variantgroups": [
+    {
+      "code": "wood",
+      "states": [
+        "aged",
+        "veryaged",
+        "agedacacia",
+        "agedebony",
+        "rottenebony"
+      ],
+      "loadFromProperties": "block/wood"
+    },
+    {
+      "code": "shaft",
+      "states": [
+        "none",
+        "neg",
+        "pos"
+      ]
+    },
+    {
+      "code": "axis",
+      "states": [
+        "x",
+        "y",
+        "z"
+      ]
+    }
+  ],
+  "shape": {
+    "base": "block/encasedcogwheel"
+  },
+  "shapeByType": {
+    "*-none-x": {
+      "base": "block/encasedcogwheel",
+      "rotateY": 90
+    },
+    "*-none-y": {
+      "base": "block/encasedcogwheel",
+      "rotateX": 270
+    },
+    "*-none-z": {
+      "base": "block/encasedcogwheel"
+    },
+    "*-neg-x": {
+      "base": "block/encasedcogwheel-shaftneg",
+      "rotateY": 90
+    },
+    "*-neg-y": {
+      "base": "block/encasedcogwheel-shaftneg",
+      "rotateX": 270
+    },
+    "*-neg-z": {
+      "base": "block/encasedcogwheel-shaftneg"
+    },
+    "*-pos-x": {
+      "base": "block/encasedcogwheel-shaftpos",
+      "rotateY": 90
+    },
+    "*-pos-y": {
+      "base": "block/encasedcogwheel-shaftpos",
+      "rotateX": 270
+    },
+    "*-pos-z": {
+      "base": "block/encasedcogwheel-shaftpos"
+    },
+    "encasedcogwheel-*-none-x": {
+      "base": "block/encasedcogwheel",
+      "rotateY": 90
+    },
+    "encasedcogwheel-*-none-y": {
+      "base": "block/encasedcogwheel",
+      "rotateX": 270
+    },
+    "encasedcogwheel-*-none-z": {
+      "base": "block/encasedcogwheel"
+    },
+    "encasedcogwheel-*-neg-x": {
+      "base": "block/encasedcogwheel-shaftneg",
+      "rotateY": 90
+    },
+    "encasedcogwheel-*-neg-y": {
+      "base": "block/encasedcogwheel-shaftneg",
+      "rotateX": 270
+    },
+    "encasedcogwheel-*-neg-z": {
+      "base": "block/encasedcogwheel-shaftneg"
+    },
+    "encasedcogwheel-*-pos-x": {
+      "base": "block/encasedcogwheel-shaftpos",
+      "rotateY": 90
+    },
+    "encasedcogwheel-*-pos-y": {
+      "base": "block/encasedcogwheel-shaftpos",
+      "rotateX": 270
+    },
+    "encasedcogwheel-*-pos-z": {
+      "base": "block/encasedcogwheel-shaftpos"
+    }
+  },
+  "textures": {
+    "wood": {
+      "base": "game:block/wood/planks/{wood}*"
+    },
+    "cog": {
+      "base": "game:block/wood/planks/generic"
+    }
+  },
+  "texturesByType": {
+    "encasedcogwheel-aged-*": {
+      "wood": { "base": "game:block/wood/planks/aged/aged*" }
+    },
+    "encasedcogwheel-veryaged-*": {
+      "wood": { "base": "game:block/wood/planks/aged/veryaged*" }
+    },
+    "encasedcogwheel-agedacacia-*": {
+      "wood": { "base": "game:block/wood/planks/aged/acacia*" }
+    },
+    "encasedcogwheel-agedebony-*": {
+      "wood": { "base": "game:block/wood/planks/aged/ebony*" }
+    }
+  },
+  "blockmaterial": "Wood",
+  "resistance": 2.5,
+  "creativeinventory": {
+    "general": [
+      "*-oak-none-z"
+    ],
+    "vintagekinematics": [
+      "*-oak-none-z"
+    ]
+  },
+  "lightAbsorption": 0,
+  "sideopaque": {
+    "all": "false"
+  },
+  "sidesolid": {
+    "all": "true"
+  },
+  "collisionbox": {
+    "x1": 0,
+    "y1": 0,
+    "z1": 0,
+    "x2": 1,
+    "y2": 1,
+    "z2": 1
+  },
+  "selectionbox": {
+    "x1": 0,
+    "y1": 0,
+    "z1": 0,
+    "x2": 1,
+    "y2": 1,
+    "z2": 1
+  }
+}

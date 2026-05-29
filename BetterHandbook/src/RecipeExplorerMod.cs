@@ -37,6 +37,8 @@ namespace RecipeExplorer
 
             // Initialize auto-craft system
             AutoCraftSystem.Initialize(api, harmony);
+            HandbookRecipeOverlays.SetApi(api);
+            HandbookRecipeAssets.Load(api);
 
             // Build recipe index after world finalized
             api.Event.LevelFinalize += OnLevelFinalize;

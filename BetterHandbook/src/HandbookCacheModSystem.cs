@@ -22,6 +22,11 @@ namespace HandbookCache
             try
             {
                 RecipeExplorer.BetterHandbookLog.Config = api.LoadModConfig<RecipeExplorer.ModConfig>("betterhandbook.json") ?? new RecipeExplorer.ModConfig();
+                if (api is Vintagestory.API.Client.ICoreClientAPI clientApi)
+                {
+                    RecipeExplorer.HandbookRecipeOverlays.SetApi(clientApi);
+                    RecipeExplorer.HandbookRecipeAssets.Load(clientApi);
+                }
                 harmony = new Harmony(HarmonyId);
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
                 RecipeExplorer.BetterHandbookLog.Info(api, "[BetterHandbook] Handbook cache patches applied.");

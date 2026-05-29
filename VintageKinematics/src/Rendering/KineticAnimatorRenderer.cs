@@ -97,6 +97,10 @@ namespace VintageKinematics.Rendering
                 {
                     angle *= AxisAlignmentSign(blockRotMat, r.Axis, kineticWorldAxis);
                 }
+                if (kineticBeh?.Blockentity is IKineticAnimatorRotatorMultiplier speedProvider)
+                {
+                    angle *= speedProvider.GetRotatorSpeedMultiplier(r.ElementName);
+                }
 
                 modelMat.Identity()
                     .Translate((float)(pos.X - camPos.X), (float)(pos.Y - camPos.Y), (float)(pos.Z - camPos.Z))

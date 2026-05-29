@@ -48,6 +48,7 @@ namespace VintageKinematics.Blocks
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (blockSel == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             BEKineticIgniter be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BEKineticIgniter;
             if (be != null && be.TryRelightHeldTorch(byPlayer)) return true;
             return base.OnBlockInteractStart(world, byPlayer, blockSel);

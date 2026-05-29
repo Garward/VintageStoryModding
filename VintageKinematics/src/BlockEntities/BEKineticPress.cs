@@ -45,12 +45,12 @@ namespace VintageKinematics.BlockEntities
         public string DialogTitle { get; private set; }
 
         public override InventoryBase Inventory => inventory;
-        public override string InventoryClassName => "kineticpress";
+        public override string InventoryClassName => "kineticextractor";
         public IOFaceMap IOFaces => ioFaces;
 
         public BEKineticPress()
         {
-            inventory = new InventoryGeneric(InventorySize, "kineticpress-0", null, null, (slotId, self) =>
+            inventory = new InventoryGeneric(InventorySize, "kineticextractor-0", null, null, (slotId, self) =>
             {
                 return slotId == SlotInput
                     ? new ItemSlot(self)
@@ -63,8 +63,8 @@ namespace VintageKinematics.BlockEntities
             base.Initialize(api);
             inventory.SlotModified += _ => MarkDirty(true);
 
-            string title = Lang.Get("vintagekinematics:kineticpress-title");
-            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Extractor";
+            string title = Lang.Get("vintagekinematics:kineticextractor-title");
+            if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticextractor-title") title = "Kinetic Extractor";
             DialogTitle = title;
 
             // FromTreeAttributes can run before Api is set, so resolution there is skipped.
@@ -79,15 +79,18 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            // Automation input is side-specific so belts can target the press deliberately.
-            // Output buffer stays on the bottom for barrels/funnels below the press.
+            // Automation input follows the model's west infeed deck in the base shape.
+            // Solid output can leave through the opposite side for inline belts or downward
+            // for compact barrel/funnel setups.
             BlockFacing inputFace = AutomationInputFace();
+            BlockFacing outputFace = inputFace.Opposite;
             ioFaces = new IOFaceMap(Pos)
                 .MapInput(inputFace, SlotInput)
                 .MapInput(BlockFacing.UP, SlotInput);
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
                 ioFaces.MapOutput(BlockFacing.DOWN, i);
+                ioFaces.MapOutput(outputFace, i);
             }
             ioFaces.Apply(inventory);
 
@@ -101,12 +104,21 @@ namespace VintageKinematics.BlockEntities
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
         }
 
-        // Shaft sits on the variant axis (axis-x → east/west, axis-z → north/south). Automation
-        // input belongs on the perpendicular axis so the feed face doesn't fight the shaft.
         private BlockFacing AutomationInputFace()
         {
-            string axis = Block?.Variant?["axis"] ?? "x";
-            return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
+            return InputLipFace(Block?.Variant?["side"]);
+        }
+
+        private static BlockFacing InputLipFace(string side)
+        {
+            switch (side)
+            {
+                case "n": return BlockFacing.WEST;
+                case "e": return BlockFacing.SOUTH;
+                case "s": return BlockFacing.EAST;
+                case "w":
+                default: return BlockFacing.NORTH;
+            }
         }
 
         private void OnServerPushTick(float dt)
@@ -267,8 +279,8 @@ namespace VintageKinematics.BlockEntities
         {
             if (Api.World is IServerWorldAccessor)
             {
-                string title = Lang.Get("vintagekinematics:kineticpress-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticpress-title") title = "Kinetic Extractor";
+                string title = Lang.Get("vintagekinematics:kineticextractor-title");
+                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticextractor-title") title = "Kinetic Extractor";
 
                 using var ms = new MemoryStream();
                 using var bw = new BinaryWriter(ms);

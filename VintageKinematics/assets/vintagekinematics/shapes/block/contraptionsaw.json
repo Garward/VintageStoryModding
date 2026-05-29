@@ -1,0 +1,4847 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textureSizes": {},
+    "textures": {
+        "wood": "game:block/wood/planks/generic",
+        "iron": "game:block/metal/plate/iron",
+        "dark": "game:block/coal/charcoal",
+        "steel": "game:block/metal/plate/steel"
+    },
+    "elements": [
+        {
+            "name": "rearMount",
+            "from": [
+                2,
+                2,
+                9.5
+            ],
+            "to": [
+                14,
+                14,
+                15.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "east": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "south": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "west": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "up": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                },
+                "down": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "mountCap",
+            "from": [
+                1.5,
+                1.5,
+                8.5
+            ],
+            "to": [
+                14.5,
+                14.5,
+                10.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        13,
+                        13
+                    ]
+                }
+            }
+        },
+        {
+            "name": "bearingHousing",
+            "from": [
+                4.5,
+                4.5,
+                4.2
+            ],
+            "to": [
+                11.5,
+                11.5,
+                9.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        7,
+                        7
+                    ]
+                }
+            }
+        },
+        {
+            "name": "bladeShaft",
+            "from": [
+                3.1,
+                7,
+                2.4
+            ],
+            "to": [
+                12.9,
+                9,
+                4.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "upperGuard",
+            "from": [
+                1,
+                8.45,
+                2.55
+            ],
+            "to": [
+                15,
+                14.75,
+                4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        6
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        6
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        6
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        6
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        6
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        14,
+                        6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "leftGuardCheek",
+            "from": [
+                0.8,
+                2,
+                2.45
+            ],
+            "to": [
+                2.15,
+                13.8,
+                4.05
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "rightGuardCheek",
+            "from": [
+                13.85,
+                2,
+                2.45
+            ],
+            "to": [
+                15.2,
+                13.8,
+                4.05
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        2
+                    ]
+                }
+            }
+        },
+        {
+            "name": "bladeStrip00",
+            "from": [
+                7.85,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.92,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ]
+        },
+        {
+            "name": "bladeStrip01",
+            "from": [
+                7.86,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.93,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 7.5
+        },
+        {
+            "name": "bladeStrip02",
+            "from": [
+                7.87,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.94,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 15
+        },
+        {
+            "name": "bladeStrip03",
+            "from": [
+                7.88,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.95,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 22.5
+        },
+        {
+            "name": "bladeStrip04",
+            "from": [
+                7.89,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.96,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 30
+        },
+        {
+            "name": "bladeStrip05",
+            "from": [
+                7.9,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.97,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 37.5
+        },
+        {
+            "name": "bladeStrip06",
+            "from": [
+                7.91,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.98,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 45
+        },
+        {
+            "name": "bladeStrip07",
+            "from": [
+                7.92,
+                1.95,
+                1.625
+            ],
+            "to": [
+                7.99,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 52.5
+        },
+        {
+            "name": "bladeStrip08",
+            "from": [
+                7.93,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 60
+        },
+        {
+            "name": "bladeStrip09",
+            "from": [
+                7.94,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.01,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 67.5
+        },
+        {
+            "name": "bladeStrip10",
+            "from": [
+                7.95,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.02,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 75
+        },
+        {
+            "name": "bladeStrip11",
+            "from": [
+                7.96,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.03,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 82.5
+        },
+        {
+            "name": "bladeStrip12",
+            "from": [
+                7.97,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.04,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 90
+        },
+        {
+            "name": "bladeStrip13",
+            "from": [
+                7.98,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.05,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 97.5
+        },
+        {
+            "name": "bladeStrip14",
+            "from": [
+                7.99,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.06,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 105
+        },
+        {
+            "name": "bladeStrip15",
+            "from": [
+                8,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.07,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 112.5
+        },
+        {
+            "name": "bladeStrip16",
+            "from": [
+                8.01,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.08,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 120
+        },
+        {
+            "name": "bladeStrip17",
+            "from": [
+                8.02,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.09,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 127.5
+        },
+        {
+            "name": "bladeStrip18",
+            "from": [
+                8.03,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.1,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 135
+        },
+        {
+            "name": "bladeStrip19",
+            "from": [
+                8.04,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.11,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 142.5
+        },
+        {
+            "name": "bladeStrip20",
+            "from": [
+                8.05,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.12,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 150
+        },
+        {
+            "name": "bladeStrip21",
+            "from": [
+                8.06,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.13,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 157.5
+        },
+        {
+            "name": "bladeStrip22",
+            "from": [
+                8.07,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.14,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 165
+        },
+        {
+            "name": "bladeStrip23",
+            "from": [
+                8.08,
+                1.95,
+                1.625
+            ],
+            "to": [
+                8.15,
+                14.05,
+                2.775
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        3,
+                        7,
+                        13,
+                        9
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 172.5
+        },
+        {
+            "name": "bladeTooth00",
+            "from": [
+                7.845,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.925,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ]
+        },
+        {
+            "name": "bladeTooth01",
+            "from": [
+                7.855,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.935,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 15
+        },
+        {
+            "name": "bladeTooth02",
+            "from": [
+                7.865,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.945,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 30
+        },
+        {
+            "name": "bladeTooth03",
+            "from": [
+                7.875,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.955,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 45
+        },
+        {
+            "name": "bladeTooth04",
+            "from": [
+                7.885,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.965,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 60
+        },
+        {
+            "name": "bladeTooth05",
+            "from": [
+                7.895,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.975,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 75
+        },
+        {
+            "name": "bladeTooth06",
+            "from": [
+                7.905,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.985,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 90
+        },
+        {
+            "name": "bladeTooth07",
+            "from": [
+                7.915,
+                1.25,
+                1.75
+            ],
+            "to": [
+                7.995,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 105
+        },
+        {
+            "name": "bladeTooth08",
+            "from": [
+                7.925,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.005,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 120
+        },
+        {
+            "name": "bladeTooth09",
+            "from": [
+                7.935,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.015,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 135
+        },
+        {
+            "name": "bladeTooth10",
+            "from": [
+                7.945,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.025,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 150
+        },
+        {
+            "name": "bladeTooth11",
+            "from": [
+                7.955,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.035,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 165
+        },
+        {
+            "name": "bladeTooth12",
+            "from": [
+                7.965,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.045,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 180
+        },
+        {
+            "name": "bladeTooth13",
+            "from": [
+                7.975,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.055,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 195
+        },
+        {
+            "name": "bladeTooth14",
+            "from": [
+                7.985,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.065,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 210
+        },
+        {
+            "name": "bladeTooth15",
+            "from": [
+                7.995,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.075,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 225
+        },
+        {
+            "name": "bladeTooth16",
+            "from": [
+                8.005,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.085,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 240
+        },
+        {
+            "name": "bladeTooth17",
+            "from": [
+                8.015,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.095,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 255
+        },
+        {
+            "name": "bladeTooth18",
+            "from": [
+                8.025,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.105,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 270
+        },
+        {
+            "name": "bladeTooth19",
+            "from": [
+                8.035,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.115,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 285
+        },
+        {
+            "name": "bladeTooth20",
+            "from": [
+                8.045,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.125,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 300
+        },
+        {
+            "name": "bladeTooth21",
+            "from": [
+                8.055,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.135,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 315
+        },
+        {
+            "name": "bladeTooth22",
+            "from": [
+                8.065,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.145,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 330
+        },
+        {
+            "name": "bladeTooth23",
+            "from": [
+                8.075,
+                1.25,
+                1.75
+            ],
+            "to": [
+                8.155,
+                2.1,
+                2.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 345
+        },
+        {
+            "name": "hubRound00",
+            "from": [
+                7.775,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.135,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ]
+        },
+        {
+            "name": "hubRound01",
+            "from": [
+                7.785,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.145,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 18
+        },
+        {
+            "name": "hubRound02",
+            "from": [
+                7.795,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.155,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 36
+        },
+        {
+            "name": "hubRound03",
+            "from": [
+                7.805,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.165,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 54
+        },
+        {
+            "name": "hubRound04",
+            "from": [
+                7.815,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.175,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 72
+        },
+        {
+            "name": "hubRound05",
+            "from": [
+                7.825,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.185,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 90
+        },
+        {
+            "name": "hubRound06",
+            "from": [
+                7.835,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.195,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 108
+        },
+        {
+            "name": "hubRound07",
+            "from": [
+                7.845,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.205,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 126
+        },
+        {
+            "name": "hubRound08",
+            "from": [
+                7.855,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.215,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 144
+        },
+        {
+            "name": "hubRound09",
+            "from": [
+                7.865,
+                6.55,
+                1.875
+            ],
+            "to": [
+                8.225,
+                9.45,
+                2.525
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        6,
+                        6,
+                        10,
+                        10
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                2.2
+            ],
+            "rotationX": 162
+        }
+    ]
+}

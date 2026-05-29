@@ -1,0 +1,5 @@
+{
+  "stackSize": "\nMax stack size: {0}\n",
+  "durability": "\nRecipe will use {0} durability.\n",
+  "autofilltip": "Click: fill one craft\nShift-click: fill the maximum amount"
+}

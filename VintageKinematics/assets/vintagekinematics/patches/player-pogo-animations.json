@@ -53,51 +53,69 @@
   },
   {
     "op": "add",
+    "path": "/client/animations/-",
+    "file": "game:entities/humanoid/player.json",
+    "value": {
+      "code": "pogouse",
+      "animation": "pogouse",
+      "animationSpeed": 1.8,
+      "blendMode": "Add",
+      "holdEyePosAfterEasein": 0.5,
+      "elementWeight": {
+        "UpperArmR": 70,
+        "LowerArmR": 70,
+        "UpperArmL": 70,
+        "LowerArmL": 70,
+        "ItemAnchor": 100
+      },
+      "elementBlendMode": {
+        "UpperArmR": "AddAverage",
+        "LowerArmR": "AddAverage",
+        "UpperArmL": "AddAverage",
+        "LowerArmL": "AddAverage",
+        "ItemAnchor": "AddAverage"
+      }
+    }
+  },
+  {
+    "op": "add",
+    "path": "/client/animations/-",
+    "file": "game:entities/humanoid/player.json",
+    "value": {
+      "code": "pogouse-fp",
+      "animation": "pogouse-fp",
+      "animationSpeed": 1.8,
+      "blendMode": "Add",
+      "holdEyePosAfterEasein": 0.5,
+      "elementWeight": {
+        "UpperArmR": 80,
+        "LowerArmR": 80,
+        "UpperArmL": 80,
+        "LowerArmL": 80,
+        "ItemAnchor": 100
+      },
+      "elementBlendMode": {
+        "UpperArmR": "AddAverage",
+        "LowerArmR": "AddAverage",
+        "UpperArmL": "AddAverage",
+        "LowerArmL": "AddAverage",
+        "ItemAnchor": "AddAverage"
+      }
+    }
+  },
+  {
+    "op": "add",
     "path": "/animations/-",
     "file": "game:shapes/entity/humanoid/seraph-faceless.json",
-    "side": "Client",
     "value": {
       "name": "Pogo",
       "code": "pogo",
-      "quantityframes": 30,
+      "quantityframes": 1,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Repeat",
       "keyframes": [
         {
           "frame": 0,
-          "elements": {
-            "UpperArmR": {
-              "rotationX": 17.0,
-              "rotationY": -17.0,
-              "rotationZ": -42.0
-            },
-            "LowerArmR": {
-              "rotationX": -53.0,
-              "rotationY": -14.0,
-              "rotationZ": -6.0
-            },
-            "UpperArmL": {
-              "rotationX": -17.0,
-              "rotationY": 17.0,
-              "rotationZ": -42.0
-            },
-            "LowerArmL": {
-              "rotationX": 53.0,
-              "rotationY": -14.0,
-              "rotationZ": -6.0
-            },
-            "ItemAnchor": {
-              "offsetX": -0.5,
-              "offsetY": -0.1,
-              "offsetZ": 0.3,
-              "rotationX": 36.0,
-              "rotationY": 17.0,
-              "rotationZ": 20.0
-            }
-          }
-        },
-        {
-          "frame": 15,
           "elements": {
             "UpperArmR": {
               "rotationX": 17.0,
@@ -136,11 +154,10 @@
     "op": "add",
     "path": "/animations/-",
     "file": "game:shapes/entity/humanoid/seraph-faceless.json",
-    "side": "Client",
     "value": {
       "name": "PogoFp",
       "code": "pogo-fp",
-      "quantityframes": 30,
+      "quantityframes": 1,
       "onActivityStopped": "EaseOut",
       "onAnimationEnd": "Repeat",
       "keyframes": [
@@ -176,38 +193,53 @@
               "rotationZ": 20.0
             }
           }
-        },
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "file": "game:shapes/entity/humanoid/seraph-faceless.json",
+    "value": {
+      "name": "PogoUse",
+      "code": "pogouse",
+      "quantityframes": 1,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Repeat",
+      "keyframes": [
         {
-          "frame": 15,
+          "frame": 0,
           "elements": {
-            "UpperArmR": {
-              "rotationX": 17.0,
-              "rotationY": -17.0,
-              "rotationZ": -42.0
-            },
-            "LowerArmR": {
-              "rotationX": -53.0,
-              "rotationY": -14.0,
-              "rotationZ": -6.0
-            },
-            "UpperArmL": {
-              "rotationX": -17.0,
-              "rotationY": 17.0,
-              "rotationZ": -42.0
-            },
-            "LowerArmL": {
-              "rotationX": 53.0,
-              "rotationY": -14.0,
-              "rotationZ": -6.0
-            },
-            "ItemAnchor": {
-              "offsetX": -0.5,
-              "offsetY": -0.1,
-              "offsetZ": 0.3,
-              "rotationX": 36.0,
-              "rotationY": 17.0,
-              "rotationZ": 20.0
-            }
+            "UpperArmR": { "rotationX": 17.0, "rotationY": -17.0, "rotationZ": -42.0 },
+            "LowerArmR": { "rotationX": -53.0, "rotationY": -14.0, "rotationZ": -6.0 },
+            "UpperArmL": { "rotationX": -17.0, "rotationY": 17.0, "rotationZ": -42.0 },
+            "LowerArmL": { "rotationX": 53.0, "rotationY": -14.0, "rotationZ": -6.0 },
+            "ItemAnchor": { "offsetX": -0.5, "offsetY": -0.1, "offsetZ": 0.3, "rotationX": 36.0, "rotationY": 17.0, "rotationZ": 20.0 }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "file": "game:shapes/entity/humanoid/seraph-faceless.json",
+    "value": {
+      "name": "PogoUseFp",
+      "code": "pogouse-fp",
+      "quantityframes": 1,
+      "onActivityStopped": "EaseOut",
+      "onAnimationEnd": "Repeat",
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {
+            "UpperArmR": { "rotationX": 17.0, "rotationY": -17.0, "rotationZ": -42.0 },
+            "LowerArmR": { "rotationX": -53.0, "rotationY": -14.0, "rotationZ": -6.0 },
+            "UpperArmL": { "rotationX": -17.0, "rotationY": 17.0, "rotationZ": -42.0 },
+            "LowerArmL": { "rotationX": 53.0, "rotationY": -14.0, "rotationZ": -6.0 },
+            "ItemAnchor": { "offsetX": -0.5, "offsetY": -0.1, "offsetZ": 0.3, "rotationX": 36.0, "rotationY": 17.0, "rotationZ": 20.0 }
           }
         }
       ]

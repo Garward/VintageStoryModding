@@ -11,6 +11,8 @@ namespace VintageKinematics.Blocks
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
+            if (KineticCasingHelper.TryApplyCasing(world, byPlayer, blockSel, "shaft")) return true;
+
             if (CanChargeWornBackpackFlywheel(world, byPlayer, blockSel))
             {
                 byPlayer.Entity.Attributes.SetFloat(BackpackFlywheelChargeStepAttribute, 0f);

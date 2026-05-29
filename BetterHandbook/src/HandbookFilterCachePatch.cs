@@ -71,8 +71,6 @@ namespace HandbookCache
             Stopwatch stopwatch = Stopwatch.StartNew();
             List<IFlatListItem> shownPages = ShownPages(dialog);
             List<GuiHandbookPage> allPages = AllPages(dialog);
-            DisposeGeneratedRows(shownPages);
-            shownPages.Clear();
 
             if (LoadingPagesAsync(dialog) || allPages == null)
             {
@@ -82,8 +80,9 @@ namespace HandbookCache
             }
 
             string categoryCode = dialog.currentCatgoryCode;
+            string effectiveCategoryCode = HandbookModCategories.EffectiveCategoryCode(dialog, categoryCode);
             string searchText = CurrentSearchText(dialog) ?? "";
-            string cacheKey = MakeCacheKey(categoryCode, searchText);
+            string cacheKey = MakeCacheKey(effectiveCategoryCode, searchText);
 
             CacheState state = CacheByDialog.GetOrCreateValue(dialog);
             if (state.PageCount != allPages.Count)
@@ -91,9 +90,11 @@ namespace HandbookCache
                 state.Clear(allPages.Count);
             }
 
-            if (HandbookModCategories.IsModsRootCategory(categoryCode))
+            if (HandbookModCategories.IsModsRootCategory(effectiveCategoryCode))
             {
                 state.Clear(allPages.Count);
+                DisposeGeneratedRows(shownPages);
+                shownPages.Clear();
                 shownPages.AddRange(HandbookModCategories.BuildModListItems(ClientApi(dialog), allPages, searchText));
                 UpdateScrollbar(dialog);
                 HandbookCacheDiagnostics.Log(
@@ -109,16 +110,18 @@ namespace HandbookCache
             {
                 if (state.ActiveKey != cacheKey || !state.ActiveIsLazyEmpty)
                 {
-                    state.StartLazyEmpty(cacheKey, categoryCode);
+                    state.StartLazyEmpty(cacheKey, effectiveCategoryCode);
                 }
 
                 EnsureLazyEmptyLoaded(state, allPages, InitialResultBatchSize);
+                DisposeGeneratedRows(shownPages);
+                shownPages.Clear();
                 AddLoadedResults(shownPages, state.LazyEmptyResults, state.LoadedCount);
                 UpdateScrollbar(dialog);
                 HandbookCacheDiagnostics.Log(
                     ClientApi(dialog),
                     "Filter empty lazy category={0} shown={1} scanned={2}/{3} scanElapsed={4}ms elapsed={5}ms",
-                    categoryCode ?? "<all>",
+                    effectiveCategoryCode ?? "<all>",
                     state.LoadedCount,
                     state.NextPageIndex,
                     allPages.Count,
@@ -130,18 +133,34 @@ namespace HandbookCache
             bool cacheHit = state.ResultsByKey.ContainsKey(cacheKey);
             if (!state.ResultsByKey.TryGetValue(cacheKey, out List<IFlatListItem> cachedResults))
             {
-                cachedResults = BuildResults(allPages, categoryCode, searchText);
+                try
+                {
+                    cachedResults = BuildResults(allPages, effectiveCategoryCode, searchText);
+                }
+                catch (Exception ex)
+                {
+                    HandbookCacheDiagnostics.LogFailure(
+                        ClientApi(dialog),
+                        "Filter search failed category={0} text='{1}'; keeping previous results: {2}",
+                        effectiveCategoryCode ?? "<all>",
+                        searchText,
+                        ex);
+                    UpdateScrollbar(dialog);
+                    return;
+                }
                 state.ResultsByKey[cacheKey] = cachedResults;
             }
 
             if (state.ActiveKey != cacheKey)
             {
                 state.ActiveKey = cacheKey;
-                state.ActiveCategoryCode = categoryCode;
+                state.ActiveCategoryCode = effectiveCategoryCode;
                 state.ActiveIsLazyEmpty = false;
                 state.LoadedCount = Math.Min(InitialResultBatchSize, cachedResults.Count);
             }
 
+            DisposeGeneratedRows(shownPages);
+            shownPages.Clear();
             AddLoadedResults(shownPages, cachedResults, state.LoadedCount);
             UpdateScrollbar(dialog);
             HandbookCacheDiagnostics.Log(
@@ -149,7 +168,7 @@ namespace HandbookCache
                 "Filter search hit={0} text='{1}' category={2} shown={3}/{4} pages={5} elapsed={6}ms",
                 cacheHit,
                 searchText,
-                categoryCode ?? "<all>",
+                effectiveCategoryCode ?? "<all>",
                 state.LoadedCount,
                 cachedResults.Count,
                 allPages.Count,
@@ -312,8 +331,9 @@ namespace HandbookCache
                 int titleMatches = CountMatches(pageText.Title ?? "", regex);
                 int strictTitleMatches = CountMatches(pageText.Title ?? "", strictRegex);
                 int textMatches = CountMatches(pageText.Text ?? "", regex);
+                int extraMatches = CountMatches(ExtraSearchText(page, categoryCode), regex);
 
-                if (titleMatches > 0 || textMatches > 0)
+                if (titleMatches > 0 || textMatches > 0 || extraMatches > 0)
                 {
                     foundPages.Add(new WeightedPage(new WeightedHandbookPage
                     {
@@ -321,7 +341,7 @@ namespace HandbookCache
                         TitleMatches = titleMatches,
                         StrictTitleMatches = strictTitleMatches,
                         TitleLength = pageText.Title?.Length ?? 0,
-                        TextMatches = textMatches,
+                        TextMatches = textMatches + extraMatches,
                         SearchWeight = 1f + page.SearchWeightOffset
                     }));
                 }
@@ -332,6 +352,40 @@ namespace HandbookCache
             return foundPages
                 .Select(page => (IFlatListItem)page.Value.Page)
                 .ToList();
+        }
+
+        private static string ExtraSearchText(GuiHandbookPage page, string categoryCode)
+        {
+            if (!HandbookModCategories.IsModDomainCategory(categoryCode))
+            {
+                return "";
+            }
+
+            if (page is GuiHandbookGroupedItemstackPage groupedPage)
+            {
+                return string.Join(" ", groupedPage.Stacks.Select(StackSearchText))
+                    + " "
+                    + (groupedPage.Name ?? "")
+                    + " "
+                    + (groupedPage.PageCode ?? "");
+            }
+
+            if (page is GuiHandbookItemStackPage itemStackPage)
+            {
+                return StackSearchText(itemStackPage.Stack) + " " + (itemStackPage.PageCode ?? "");
+            }
+
+            return page.PageCode ?? "";
+        }
+
+        private static string StackSearchText(ItemStack stack)
+        {
+            if (stack?.Collectible?.Code == null)
+            {
+                return "";
+            }
+
+            return stack.Collectible.Code.ToString() + " " + stack.Collectible.Code.ToShortString();
         }
 
         private static int CountMatches(string text, Regex regex)
@@ -437,6 +491,29 @@ namespace HandbookCache
             {
                 Value = value;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(GuiDialogHandbook), "FilterItemsBySearchText")]
+    internal static class HandbookSearchTextPatch
+    {
+        private static readonly AccessTools.FieldRef<GuiDialogHandbook, string> CurrentSearchText =
+            AccessTools.FieldRefAccess<GuiDialogHandbook, string>("currentSearchText");
+
+        private static readonly AccessTools.FieldRef<GuiDialog, ICoreClientAPI> ClientApi =
+            AccessTools.FieldRefAccess<GuiDialog, ICoreClientAPI>("capi");
+
+        public static bool Prefix(GuiDialogHandbook __instance, string text)
+        {
+            string oldText = CurrentSearchText(__instance);
+            if (oldText == text)
+            {
+                return false;
+            }
+
+            CurrentSearchText(__instance) = text;
+            HandbookFilterCachePatch.ApplyFilter(__instance);
+            return false;
         }
     }
 

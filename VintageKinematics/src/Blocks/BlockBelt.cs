@@ -117,6 +117,8 @@ namespace VintageKinematics.Blocks
                 return base.OnBlockInteractStart(world, byPlayer, blockSel);
             }
 
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
+
             if (world.BlockAccessor.GetBlockEntity(blockSel.Position) is not BEBelt belt)
             {
                 return base.OnBlockInteractStart(world, byPlayer, blockSel);

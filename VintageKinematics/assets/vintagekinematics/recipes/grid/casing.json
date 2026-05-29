@@ -1,0 +1,21 @@
+{
+  "ingredientPattern": "PPP,PSP,PPP",
+  "ingredients": {
+    "P": {
+      "type": "item",
+      "code": "game:plank-*",
+      "name": "wood"
+    },
+    "S": {
+      "type": "block",
+      "code": "shaft-y"
+    }
+  },
+  "width": 3,
+  "height": 3,
+  "output": {
+    "type": "item",
+    "code": "casing-{wood}",
+    "quantity": 2
+  }
+}

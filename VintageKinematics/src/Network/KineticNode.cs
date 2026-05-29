@@ -37,6 +37,18 @@ namespace VintageKinematics.Network
         // fresh reading into this field, then derives StressImpact from the smoothed value.
         // Zero for non-bridge nodes.
         public float SmoothedTorque;
-        public bool IsCogwheel { get { return Role == EnumKineticRole.SmallCogwheel || Role == EnumKineticRole.LargeCogwheel; } }
+        // Block code path used by connection rules that need variant-level detail without
+        // promoting every visual variant to a new kinetic role.
+        public string BlockCode;
+        public bool IsCogwheel
+        {
+            get
+            {
+                return Role == EnumKineticRole.SmallCogwheel
+                    || Role == EnumKineticRole.LargeCogwheel
+                    || Role == EnumKineticRole.EncasedSmallCogwheel
+                    || Role == EnumKineticRole.EncasedLargeCogwheel;
+            }
+        }
     }
 }

@@ -15,6 +15,10 @@
         ]
     },
     "maxstacksize": 64,
+    "combustibleProps": {
+        "burnTemperature": 700,
+        "burnDuration": 2
+    },
     "materialDensity": 250,
     "guiTransform": {
         "translation": {

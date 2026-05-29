@@ -1,134 +1,133 @@
 {
-    "code": "largecogwheel",
-    "class": "BlockLargeCogwheel",
-    "entityClass": "Kinetic",
-    "entityBehaviors": [
-        {
-            "name": "Kinetic",
-            "properties": {
-                "role": "LargeCogwheel",
-                "stressImpact": 0
-            }
-        }
-    ],
-    "variantgroups": [
-        {
-            "code": "axis",
-            "states": [
-                "x",
-                "y",
-                "z"
-            ]
-        }
-    ],
-    "shape": {
-        "base": "block/largecogwheel"
-    },
-    "shapeByType": {
-        "largecogwheel-x": {
-            "base": "block/largecogwheel",
-            "rotateY": 0,
-            "rotateZ": 90
-        },
-        "largecogwheel-y": {
-            "base": "block/largecogwheel"
-        },
-        "largecogwheel-z": {
-            "base": "block/largecogwheel",
-            "rotateX": 90
-        }
-    },
-    "textures": {
-        "cog": {
-            "base": "game:block/wood/planks/generic"
-        },
-        "wood": {
-            "base": "game:block/wood/planks/generic"
-        }
-    },
-    "blockmaterial": "Wood",
-    "resistance": 1,
-    "creativeinventory": {
-        "general": [
-            "*-y"
-        ],
-        "vintagekinematics": [
-            "*-y"
-        ]
-    },
-    "lightAbsorption": 0,
-    "sideopaque": {
-        "all": "false"
-    },
-    "sidesolid": {
-        "all": "false"
-    },
-    "collisionbox": {
-        "x1": 0,
-        "y1": 0.375,
-        "z1": 0,
-        "x2": 1,
-        "y2": 0.625,
-        "z2": 1
-    },
-    "collisionboxByType": {
-        "largecogwheel-x": {
-            "x1": 0.375,
-            "y1": 0,
-            "z1": 0,
-            "x2": 0.625,
-            "y2": 1,
-            "z2": 1
-        },
-        "largecogwheel-y": {
-            "x1": 0,
-            "y1": 0.375,
-            "z1": 0,
-            "x2": 1,
-            "y2": 0.625,
-            "z2": 1
-        },
-        "largecogwheel-z": {
-            "x1": 0,
-            "y1": 0,
-            "z1": 0.375,
-            "x2": 1,
-            "y2": 1,
-            "z2": 0.625
-        }
-    },
-    "selectionbox": {
-        "x1": 0,
-        "y1": 0.375,
-        "z1": 0,
-        "x2": 1,
-        "y2": 0.625,
-        "z2": 1
-    },
-    "selectionboxByType": {
-        "largecogwheel-x": {
-            "x1": 0.375,
-            "y1": 0,
-            "z1": 0,
-            "x2": 0.625,
-            "y2": 1,
-            "z2": 1
-        },
-        "largecogwheel-y": {
-            "x1": 0,
-            "y1": 0.375,
-            "z1": 0,
-            "x2": 1,
-            "y2": 0.625,
-            "z2": 1
-        },
-        "largecogwheel-z": {
-            "x1": 0,
-            "y1": 0,
-            "z1": 0.375,
-            "x2": 1,
-            "y2": 1,
-            "z2": 0.625
-        }
+  "code": "largecogwheel",
+  "class": "BlockLargeCogwheel",
+  "entityClass": "Kinetic",
+  "entityBehaviors": [
+    {
+      "name": "Kinetic",
+      "properties": {
+        "role": "LargeCogwheel",
+        "stressImpact": 0
+      }
     }
+  ],
+  "variantgroups": [
+    {
+      "code": "axis",
+      "states": [
+        "x",
+        "y",
+        "z"
+      ]
+    }
+  ],
+  "shape": {
+    "base": "block/largecogwheel"
+  },
+  "shapeByType": {
+    "largecogwheel-x": {
+      "base": "block/largecogwheel",
+      "rotateY": 90
+    },
+    "largecogwheel-y": {
+      "base": "block/largecogwheel",
+      "rotateX": 270
+    },
+    "largecogwheel-z": {
+      "base": "block/largecogwheel"
+    }
+  },
+  "textures": {
+    "cog": {
+      "base": "game:block/wood/planks/generic"
+    },
+    "wood": {
+      "base": "game:block/wood/planks/generic"
+    }
+  },
+  "blockmaterial": "Wood",
+  "resistance": 1,
+  "creativeinventory": {
+    "general": [
+      "*-y"
+    ],
+    "vintagekinematics": [
+      "*-y"
+    ]
+  },
+  "lightAbsorption": 0,
+  "sideopaque": {
+    "all": "false"
+  },
+  "sidesolid": {
+    "all": "false"
+  },
+  "collisionbox": {
+    "x1": 0,
+    "y1": 0,
+    "z1": 0.3531,
+    "x2": 1,
+    "y2": 1,
+    "z2": 0.6469
+  },
+  "collisionboxByType": {
+    "largecogwheel-x": {
+      "x1": 0.3531,
+      "y1": 0,
+      "z1": 0,
+      "x2": 0.6469,
+      "y2": 1,
+      "z2": 1
+    },
+    "largecogwheel-y": {
+      "x1": 0,
+      "y1": 0.3531,
+      "z1": 0,
+      "x2": 1,
+      "y2": 0.6469,
+      "z2": 1
+    },
+    "largecogwheel-z": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0.3531,
+      "x2": 1,
+      "y2": 1,
+      "z2": 0.6469
+    }
+  },
+  "selectionbox": {
+    "x1": 0,
+    "y1": 0,
+    "z1": 0.3531,
+    "x2": 1,
+    "y2": 1,
+    "z2": 0.6469
+  },
+  "selectionboxByType": {
+    "largecogwheel-x": {
+      "x1": 0.3531,
+      "y1": 0,
+      "z1": 0,
+      "x2": 0.6469,
+      "y2": 1,
+      "z2": 1
+    },
+    "largecogwheel-y": {
+      "x1": 0,
+      "y1": 0.3531,
+      "z1": 0,
+      "x2": 1,
+      "y2": 0.6469,
+      "z2": 1
+    },
+    "largecogwheel-z": {
+      "x1": 0,
+      "y1": 0,
+      "z1": 0.3531,
+      "x2": 1,
+      "y2": 1,
+      "z2": 0.6469
+    }
+  }
 }

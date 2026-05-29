@@ -95,8 +95,19 @@ namespace VintageKinematics.BlockEntities
 
         private BlockFacing AutomationInputFace()
         {
-            string axis = Block?.Variant?["axis"] ?? "x";
-            return axis == "z" ? BlockFacing.EAST : BlockFacing.SOUTH;
+            return InputLipFace(Block?.Variant?["side"]);
+        }
+
+        private static BlockFacing InputLipFace(string side)
+        {
+            switch (side)
+            {
+                case "n": return BlockFacing.WEST;
+                case "e": return BlockFacing.SOUTH;
+                case "s": return BlockFacing.EAST;
+                case "w":
+                default: return BlockFacing.NORTH;
+            }
         }
 
         private void OnServerPushTick(float dt)

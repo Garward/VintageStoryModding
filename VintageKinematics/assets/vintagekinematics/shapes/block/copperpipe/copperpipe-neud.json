@@ -1,0 +1,3517 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textureSizes": {},
+    "textures": {
+        "copper": "game:block/metal/plate/copper",
+        "dark": "game:block/metal/plate/tinbronze",
+        "cog": "game:block/wood/planks/generic"
+    },
+    "elements": [
+        {
+            "name": "pipe-ud-wall-00",
+            "from": [
+                7.325,
+                0,
+                10.05
+            ],
+            "to": [
+                8.675,
+                16,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.2,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.2,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        1.2
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        1.2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 0.0
+        },
+        {
+            "name": "pipe-ud-wall-01",
+            "from": [
+                7.315,
+                0,
+                10.04
+            ],
+            "to": [
+                8.685,
+                16,
+                11.01
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.22,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.22,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        1.22
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        1.22
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 22.5
+        },
+        {
+            "name": "pipe-ud-wall-02",
+            "from": [
+                7.335,
+                0,
+                10.06
+            ],
+            "to": [
+                8.665,
+                16,
+                10.99
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.18,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.18,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        1.18
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        1.18
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 45.0
+        },
+        {
+            "name": "pipe-ud-wall-03",
+            "from": [
+                7.305,
+                0,
+                10.03
+            ],
+            "to": [
+                8.695,
+                16,
+                11.02
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.24,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.24,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        1.24
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        1.24
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 67.5
+        },
+        {
+            "name": "pipe-ud-wall-04",
+            "from": [
+                7.345,
+                0,
+                10.07
+            ],
+            "to": [
+                8.655,
+                16,
+                10.98
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.16,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.16,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        1.16
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        1.16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 90.0
+        },
+        {
+            "name": "pipe-ud-wall-05",
+            "from": [
+                7.295,
+                0,
+                10.02
+            ],
+            "to": [
+                8.705,
+                16,
+                11.03
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.26,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.26,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        1.26
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        1.26
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 112.5
+        },
+        {
+            "name": "pipe-ud-wall-06",
+            "from": [
+                7.355,
+                0,
+                10.08
+            ],
+            "to": [
+                8.645,
+                16,
+                10.97
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.14,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.14,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        1.14
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        1.14
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 135.0
+        },
+        {
+            "name": "pipe-ud-wall-07",
+            "from": [
+                7.285,
+                0,
+                10.01
+            ],
+            "to": [
+                8.715,
+                16,
+                11.04
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.28,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.28,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        1.28
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        1.28
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 157.5
+        },
+        {
+            "name": "pipe-ud-wall-08",
+            "from": [
+                7.365,
+                0,
+                10.09
+            ],
+            "to": [
+                8.635,
+                16,
+                10.96
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.12,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.12,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        1.12
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        1.12
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 180.0
+        },
+        {
+            "name": "pipe-ud-wall-09",
+            "from": [
+                7.275,
+                0,
+                10
+            ],
+            "to": [
+                8.725,
+                16,
+                11.05
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.3,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.3,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        1.3
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        1.3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 202.5
+        },
+        {
+            "name": "pipe-ud-wall-10",
+            "from": [
+                7.375,
+                0,
+                10.1
+            ],
+            "to": [
+                8.625,
+                16,
+                10.95
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.1,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.1,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        1.1
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        1.1
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 225.0
+        },
+        {
+            "name": "pipe-ud-wall-11",
+            "from": [
+                7.265,
+                0,
+                9.99
+            ],
+            "to": [
+                8.735,
+                16,
+                11.06
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.32,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.32,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        1.32
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        1.32
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 247.5
+        },
+        {
+            "name": "pipe-ud-wall-12",
+            "from": [
+                7.385,
+                0,
+                10.11
+            ],
+            "to": [
+                8.615,
+                16,
+                10.94
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.08,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.08,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        1.08
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        1.08
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 270.0
+        },
+        {
+            "name": "pipe-ud-wall-13",
+            "from": [
+                7.255,
+                0,
+                9.98
+            ],
+            "to": [
+                8.745,
+                16,
+                11.07
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.34,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.34,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        1.34
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        1.34
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 292.5
+        },
+        {
+            "name": "pipe-ud-wall-14",
+            "from": [
+                7.395,
+                0,
+                10.12
+            ],
+            "to": [
+                8.605,
+                16,
+                10.93
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.06,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.06,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        1.06
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        1.06
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 315.0
+        },
+        {
+            "name": "pipe-ud-wall-15",
+            "from": [
+                7.245,
+                0,
+                9.97
+            ],
+            "to": [
+                8.755,
+                16,
+                11.08
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        15.75
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.36,
+                        15.75
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        15.75
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.36,
+                        15.75
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        1.36
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        1.36
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 337.5
+        },
+        {
+            "name": "pipe-n-wall-00",
+            "from": [
+                7.325,
+                10.05,
+                0
+            ],
+            "to": [
+                8.675,
+                11,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        1.2
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.2
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.2
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.6,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 0.0
+        },
+        {
+            "name": "pipe-n-wall-01",
+            "from": [
+                7.315,
+                10.04,
+                0
+            ],
+            "to": [
+                8.685,
+                11.01,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        1.22
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.22
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.22
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.62,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 22.5
+        },
+        {
+            "name": "pipe-n-wall-02",
+            "from": [
+                7.335,
+                10.06,
+                0
+            ],
+            "to": [
+                8.665,
+                10.99,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        1.18
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.18
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.18
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.58,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 45.0
+        },
+        {
+            "name": "pipe-n-wall-03",
+            "from": [
+                7.305,
+                10.03,
+                0
+            ],
+            "to": [
+                8.695,
+                11.02,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        1.24
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.24
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.24
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.64,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 67.5
+        },
+        {
+            "name": "pipe-n-wall-04",
+            "from": [
+                7.345,
+                10.07,
+                0
+            ],
+            "to": [
+                8.655,
+                10.98,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        1.16
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.16
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.16
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.56,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 90.0
+        },
+        {
+            "name": "pipe-n-wall-05",
+            "from": [
+                7.295,
+                10.02,
+                0
+            ],
+            "to": [
+                8.705,
+                11.03,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        1.26
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.26
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.26
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.66,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 112.5
+        },
+        {
+            "name": "pipe-n-wall-06",
+            "from": [
+                7.355,
+                10.08,
+                0
+            ],
+            "to": [
+                8.645,
+                10.97,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        1.14
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.14
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.14
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.54,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 135.0
+        },
+        {
+            "name": "pipe-n-wall-07",
+            "from": [
+                7.285,
+                10.01,
+                0
+            ],
+            "to": [
+                8.715,
+                11.04,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        1.28
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.28
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.28
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.68,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 157.5
+        },
+        {
+            "name": "pipe-n-wall-08",
+            "from": [
+                7.365,
+                10.09,
+                0
+            ],
+            "to": [
+                8.635,
+                10.96,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        1.12
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.12
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.12
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.52,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 180.0
+        },
+        {
+            "name": "pipe-n-wall-09",
+            "from": [
+                7.275,
+                10,
+                0
+            ],
+            "to": [
+                8.725,
+                11.05,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        1.3
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.3
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.3
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.7,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 202.5
+        },
+        {
+            "name": "pipe-n-wall-10",
+            "from": [
+                7.375,
+                10.1,
+                0
+            ],
+            "to": [
+                8.625,
+                10.95,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        1.1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.5,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 225.0
+        },
+        {
+            "name": "pipe-n-wall-11",
+            "from": [
+                7.265,
+                9.99,
+                0
+            ],
+            "to": [
+                8.735,
+                11.06,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        1.32
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.32
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.32
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.72,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 247.5
+        },
+        {
+            "name": "pipe-n-wall-12",
+            "from": [
+                7.385,
+                10.11,
+                0
+            ],
+            "to": [
+                8.615,
+                10.94,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        1.08
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.08
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.08
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.48,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 270.0
+        },
+        {
+            "name": "pipe-n-wall-13",
+            "from": [
+                7.255,
+                9.98,
+                0
+            ],
+            "to": [
+                8.745,
+                11.07,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        1.34
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.34
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.34
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.74,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 292.5
+        },
+        {
+            "name": "pipe-n-wall-14",
+            "from": [
+                7.395,
+                10.12,
+                0
+            ],
+            "to": [
+                8.605,
+                10.93,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        1.06
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.06
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.06
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.46,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 315.0
+        },
+        {
+            "name": "pipe-n-wall-15",
+            "from": [
+                7.245,
+                9.97,
+                0
+            ],
+            "to": [
+                8.755,
+                11.08,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        1.36
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.36
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.25,
+                        1.36
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        11.25
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.76,
+                        11.25
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationZ": 337.5
+        },
+        {
+            "name": "pipe-e-wall-00",
+            "from": [
+                4.99,
+                7.325,
+                10.05
+            ],
+            "to": [
+                16,
+                8.675,
+                11
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.6
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.2,
+                        1.6
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.6
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.2
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.2
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 0.0
+        },
+        {
+            "name": "pipe-e-wall-01",
+            "from": [
+                4.99,
+                7.315,
+                10.04
+            ],
+            "to": [
+                16,
+                8.685,
+                11.01
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.62
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.22,
+                        1.62
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.62
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.22
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.22
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 22.5
+        },
+        {
+            "name": "pipe-e-wall-02",
+            "from": [
+                4.99,
+                7.335,
+                10.06
+            ],
+            "to": [
+                16,
+                8.665,
+                10.99
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.58
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.18,
+                        1.58
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.58
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.18
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.18
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 45.0
+        },
+        {
+            "name": "pipe-e-wall-03",
+            "from": [
+                4.99,
+                7.305,
+                10.03
+            ],
+            "to": [
+                16,
+                8.695,
+                11.02
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.64
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.24,
+                        1.64
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.64
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.24
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.24
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 67.5
+        },
+        {
+            "name": "pipe-e-wall-04",
+            "from": [
+                4.99,
+                7.345,
+                10.07
+            ],
+            "to": [
+                16,
+                8.655,
+                10.98
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.56
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.16,
+                        1.56
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.56
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.16
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 90.0
+        },
+        {
+            "name": "pipe-e-wall-05",
+            "from": [
+                4.99,
+                7.295,
+                10.02
+            ],
+            "to": [
+                16,
+                8.705,
+                11.03
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.66
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.26,
+                        1.66
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.66
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.26
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.26
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 112.5
+        },
+        {
+            "name": "pipe-e-wall-06",
+            "from": [
+                4.99,
+                7.355,
+                10.08
+            ],
+            "to": [
+                16,
+                8.645,
+                10.97
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.54
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.14,
+                        1.54
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.54
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.14
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.14
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 135.0
+        },
+        {
+            "name": "pipe-e-wall-07",
+            "from": [
+                4.99,
+                7.285,
+                10.01
+            ],
+            "to": [
+                16,
+                8.715,
+                11.04
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.68
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.28,
+                        1.68
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.68
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.28
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.28
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 157.5
+        },
+        {
+            "name": "pipe-e-wall-08",
+            "from": [
+                4.99,
+                7.365,
+                10.09
+            ],
+            "to": [
+                16,
+                8.635,
+                10.96
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.52
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.12,
+                        1.52
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.52
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.12
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.12
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 180.0
+        },
+        {
+            "name": "pipe-e-wall-09",
+            "from": [
+                4.99,
+                7.275,
+                10
+            ],
+            "to": [
+                16,
+                8.725,
+                11.05
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.7
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.3,
+                        1.7
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.7
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.3
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.3
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 202.5
+        },
+        {
+            "name": "pipe-e-wall-10",
+            "from": [
+                4.99,
+                7.375,
+                10.1
+            ],
+            "to": [
+                16,
+                8.625,
+                10.95
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.5
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.1,
+                        1.5
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.5
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.1
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.1
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 225.0
+        },
+        {
+            "name": "pipe-e-wall-11",
+            "from": [
+                4.99,
+                7.265,
+                9.99
+            ],
+            "to": [
+                16,
+                8.735,
+                11.06
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.72
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.32,
+                        1.72
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.72
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.32
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.32
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 247.5
+        },
+        {
+            "name": "pipe-e-wall-12",
+            "from": [
+                4.99,
+                7.385,
+                10.11
+            ],
+            "to": [
+                16,
+                8.615,
+                10.94
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.48
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.08,
+                        1.48
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.48
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.08
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.08
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 270.0
+        },
+        {
+            "name": "pipe-e-wall-13",
+            "from": [
+                4.99,
+                7.255,
+                9.98
+            ],
+            "to": [
+                16,
+                8.745,
+                11.07
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.74
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.34,
+                        1.74
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.74
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.34
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.34
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 292.5
+        },
+        {
+            "name": "pipe-e-wall-14",
+            "from": [
+                4.99,
+                7.395,
+                10.12
+            ],
+            "to": [
+                16,
+                8.605,
+                10.93
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.46
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.06,
+                        1.46
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.46
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.06
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.06
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 315.0
+        },
+        {
+            "name": "pipe-e-wall-15",
+            "from": [
+                4.99,
+                7.245,
+                9.97
+            ],
+            "to": [
+                16,
+                8.755,
+                11.08
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.76
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        1.36,
+                        1.76
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.76
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.36
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        11.26,
+                        1.36
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationX": 337.5
+        },
+        {
+            "name": "intersection-body",
+            "from": [
+                4.85,
+                4.85,
+                4.85
+            ],
+            "to": [
+                11.15,
+                11.15,
+                11.15
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        6.55,
+                        6.55
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        6.55,
+                        6.55
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        6.55,
+                        6.55
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        6.55,
+                        6.55
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        6.55,
+                        6.55
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        6.55,
+                        6.55
+                    ]
+                }
+            }
+        },
+        {
+            "name": "intersection-top-face",
+            "from": [
+                5.45,
+                11.14,
+                5.45
+            ],
+            "to": [
+                10.55,
+                11.75,
+                10.55
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        5.35
+                    ]
+                }
+            }
+        },
+        {
+            "name": "intersection-bottom-face",
+            "from": [
+                5.45,
+                4.25,
+                5.45
+            ],
+            "to": [
+                10.55,
+                4.86,
+                10.55
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        0.86
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0.25,
+                        0.25,
+                        5.35,
+                        5.35
+                    ]
+                }
+            }
+        }
+    ]
+}

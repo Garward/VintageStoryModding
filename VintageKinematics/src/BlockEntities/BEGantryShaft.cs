@@ -5,6 +5,7 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.Entities;
+using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
 {
@@ -12,6 +13,8 @@ namespace VintageKinematics.BlockEntities
     {
         private const int MoveIntervalMs = 10;
         private const float BlocksPerRotation = 1.2f;
+        private const float ContraptionBaseStressImpact = 1f;
+        private const float ContraptionStressImpactPerBlock = 0.25f;
         private const long MoveSoundIntervalMs = 450;
         private const long AutoRestoreSettleDelayMs = 250;
         private static readonly AssetLocation GantryMoveSound = new AssetLocation("sounds/effect/gearbox_turn.ogg");
@@ -52,11 +55,24 @@ namespace VintageKinematics.BlockEntities
             double delta = rpm * BlocksPerRotation * dt / 60.0;
             TryAssembleControllersThatCanMove(trackMin, trackMax, axis, delta);
 
+            double pendingDx = axisVec.X * delta;
+            double pendingDy = axisVec.Y * delta;
+            double pendingDz = axisVec.Z * delta;
+
+            if (!TryApplyContraptionLoad(trackMin, trackMax, axis, rpm, dt, pendingDx, pendingDy, pendingDz, out List<EntityVKContraption> movingContraptions))
+            {
+                RestoreStoppedContraptions(trackMin, trackMax, axis);
+                UpdateGantrySound(soundKey, false, rpm, trackMin, trackMax);
+                return;
+            }
+
             bool movedAny = false;
-            foreach (EntityVKContraption contraption in FindContraptionsNearTrack(trackMin, trackMax, axis))
+            foreach (EntityVKContraption contraption in movingContraptions)
             {
                 if (!TryClaimEntityMove(contraption)) continue;
                 if (!contraption.TryGetControllerWorldPosition(out Vec3d controllerPos)) continue;
+                contraption.RunContraptionWorkTick(rpm, dt, pendingDx, pendingDy, pendingDz);
+                if (contraption.IsMovementPaused(out _)) continue;
 
                 double railAnchorCoord = AxisCoord(controllerPos, axis);
                 double minRailCoord = AxisCoord(trackMin, axis);
@@ -70,7 +86,10 @@ namespace VintageKinematics.BlockEntities
 
                 if (!CanMoveInDirection(railAnchorCoord, minRailCoord, maxRailCoord, delta))
                 {
-                    TryAutoRestoreAfterSettle(contraption);
+                    if (!ShouldHoldAsWorkingEntity(contraption, rpm, dt, pendingDx, pendingDy, pendingDz))
+                    {
+                        TryAutoRestoreAfterSettle(contraption);
+                    }
                     continue;
                 }
 
@@ -78,16 +97,55 @@ namespace VintageKinematics.BlockEntities
                 double move = nextRailAnchorCoord - railAnchorCoord;
                 if (Math.Abs(move) < 0.000001)
                 {
-                    TryAutoRestoreAfterSettle(contraption);
+                    if (!ShouldHoldAsWorkingEntity(contraption, rpm, dt, pendingDx, pendingDy, pendingDz))
+                    {
+                        TryAutoRestoreAfterSettle(contraption);
+                    }
+                    continue;
+                }
+
+                double dx = axisVec.X * move;
+                double dy = axisVec.Y * move;
+                double dz = axisVec.Z * move;
+                if (contraption.WouldMovementHitWorldBlock(dx, dy, dz, out string blockReason))
+                {
+                    contraption.RequestMovementPause("gantry-blocked", 250, blockReason);
+                    AutoRestoreSettleStartMs.Remove(contraption.EntityId);
                     continue;
                 }
 
                 AutoRestoreSettleStartMs.Remove(contraption.EntityId);
-                contraption.MoveBy(axisVec.X * move, axisVec.Y * move, axisVec.Z * move);
+                contraption.MoveBy(dx, dy, dz);
                 movedAny = true;
             }
 
             UpdateGantrySound(soundKey, movedAny, rpm, trackMin, trackMax);
+        }
+
+        private bool TryApplyContraptionLoad(BlockPos trackMin, BlockPos trackMax, EnumKineticAxis axis, float rpm, float dt, double moveX, double moveY, double moveZ, out List<EntityVKContraption> movingContraptions)
+        {
+            movingContraptions = new List<EntityVKContraption>();
+            float stressImpact = 0f;
+
+            foreach (EntityVKContraption contraption in FindContraptionsNearTrack(trackMin, trackMax, axis))
+            {
+                if (!contraption.TryGetControllerWorldPosition(out _)) continue;
+
+                movingContraptions.Add(contraption);
+                stressImpact += ContraptionBaseStressImpact + ContraptionStressImpactPerBlock * MathF.Max(1, contraption.CapturedBlockCount);
+                stressImpact += contraption.GetActiveContraptionWorkStressImpact(rpm, dt, moveX, moveY, moveZ);
+            }
+
+            if (movingContraptions.Count == 0) return true;
+
+            KineticNetworkManager networks = Api.ModLoader.GetModSystem<KineticNetworkManager>();
+            if (networks == null) return true;
+
+            string loadKey = TrackKey(trackMin, trackMax, axis) + ":contraption-load";
+            if (networks.TryApplyTransientStress(Pos, loadKey, stressImpact, out _)) return true;
+
+            KineticNetwork net = networks.GetNetworkAt(Pos);
+            return net == null || !net.IsOverstressed;
         }
 
         private bool IsCanonicalTrackHost(BlockPos trackMin)
@@ -180,8 +238,16 @@ namespace VintageKinematics.BlockEntities
             foreach (EntityVKContraption contraption in FindContraptionsNearTrack(trackMin, trackMax, axis))
             {
                 if (!TryClaimEntityMove(contraption)) continue;
+                if (contraption.IsMovementPaused(out _)) continue;
                 TryAutoRestoreAfterSettle(contraption);
             }
+        }
+
+        private static bool ShouldHoldAsWorkingEntity(EntityVKContraption contraption, float rpm, float dt, double moveX, double moveY, double moveZ)
+        {
+            if (contraption == null) return false;
+            if (contraption.IsMovementPaused(out _)) return true;
+            return contraption.GetActiveContraptionWorkStressImpact(rpm, dt, moveX, moveY, moveZ) > 0f;
         }
 
         private bool TryAutoRestoreAfterSettle(EntityVKContraption contraption)
@@ -222,7 +288,7 @@ namespace VintageKinematics.BlockEntities
                         if (Api.World.BlockAccessor.GetBlockEntity(pos) is not BEGantryCarriage controller) continue;
                         if (!seen.Add(PositionKey(pos))) continue;
                         if (!controller.TryGetGantryAnchor(axis, out BlockPos anchorPos)) continue;
-                        if (!IsControllerNearTrack(anchorPos.ToVec3d(), axis)) continue;
+                        if (!IsAnchorOnTrack(anchorPos, trackMin, trackMax, axis)) continue;
 
                         yield return controller;
                     }
@@ -282,26 +348,58 @@ namespace VintageKinematics.BlockEntities
                 (trackMin.InternalY + trackMax.InternalY) * 0.5 + 0.5,
                 (trackMin.Z + trackMax.Z) * 0.5 + 0.5);
             float radius = Math.Max(2f, Math.Abs(AxisInt(trackMax, axis) - AxisInt(trackMin, axis)) + 2f);
-            Entity[] entities = Api.World.GetEntitiesAround(center, radius, radius, entity => entity is EntityVKContraption);
+            Entity[] entities = Api.World.GetEntitiesAround(center, radius, radius, entity => entity is EntityVKContraption contraption && contraption.Alive && !contraption.SnapshotRestored);
 
             for (int i = 0; i < entities.Length; i++)
             {
                 if (entities[i] is not EntityVKContraption contraption) continue;
+                if (!contraption.Alive || contraption.SnapshotRestored) continue;
                 if (!seen.Add(contraption.EntityId.ToString())) continue;
-                if (!contraption.TryGetControllerWorldPosition(out Vec3d controllerPos)) continue;
-                if (!IsControllerNearTrack(controllerPos, axis)) continue;
+                if (!contraption.TryGetControllerAxis(out EnumKineticAxis controllerAxis) || controllerAxis != axis) continue;
+                if (!TryGetContraptionAnchorBlockPos(contraption, out BlockPos anchorPos)) continue;
+                if (!IsAnchorOnTrack(anchorPos, trackMin, trackMax, axis)) continue;
 
                 yield return contraption;
             }
         }
 
-        private bool IsControllerNearTrack(Vec3d controllerPos, EnumKineticAxis axis)
+        private bool TryGetContraptionAnchorBlockPos(EntityVKContraption contraption, out BlockPos anchorPos)
         {
-            const double maxPerpendicularDistance = 2.25;
-            double dx = axis == EnumKineticAxis.X ? 0 : controllerPos.X - (Pos.X + 0.5);
-            double dy = axis == EnumKineticAxis.Y ? 0 : controllerPos.Y - (Pos.InternalY + 0.5);
-            double dz = axis == EnumKineticAxis.Z ? 0 : controllerPos.Z - (Pos.Z + 0.5);
-            return dx * dx + dy * dy + dz * dz <= maxPerpendicularDistance * maxPerpendicularDistance;
+            anchorPos = null;
+            if (contraption == null || !contraption.TryGetControllerWorldPosition(out Vec3d anchorWorldPos)) return false;
+
+            anchorPos = new BlockPos(
+                (int)Math.Floor(anchorWorldPos.X + 0.5),
+                (int)Math.Floor(anchorWorldPos.Y + 0.5) % BlockPos.DimensionBoundary,
+                (int)Math.Floor(anchorWorldPos.Z + 0.5),
+                Pos.dimension);
+            return true;
+        }
+
+        private bool IsAnchorOnTrack(BlockPos anchorPos, BlockPos trackMin, BlockPos trackMax, EnumKineticAxis axis)
+        {
+            if (anchorPos == null || trackMin == null || trackMax == null) return false;
+            if (anchorPos.dimension != trackMin.dimension || anchorPos.dimension != trackMax.dimension) return false;
+            if (!IsSameTrackLine(anchorPos, trackMin, axis)) return false;
+
+            int anchorCoord = AxisInt(anchorPos, axis);
+            int minCoord = Math.Min(AxisInt(trackMin, axis), AxisInt(trackMax, axis));
+            int maxCoord = Math.Max(AxisInt(trackMin, axis), AxisInt(trackMax, axis));
+            if (anchorCoord < minCoord || anchorCoord > maxCoord) return false;
+
+            Block anchorBlock = Api.World.BlockAccessor.GetBlock(anchorPos);
+            return IsGantryShaft(anchorBlock, out EnumKineticAxis anchorAxis) && anchorAxis == axis;
+        }
+
+        private static bool IsSameTrackLine(BlockPos pos, BlockPos trackPos, EnumKineticAxis axis)
+        {
+            return axis switch
+            {
+                EnumKineticAxis.X => pos.InternalY == trackPos.InternalY && pos.Z == trackPos.Z,
+                EnumKineticAxis.Y => pos.X == trackPos.X && pos.Z == trackPos.Z,
+                EnumKineticAxis.Z => pos.X == trackPos.X && pos.InternalY == trackPos.InternalY,
+                _ => false
+            };
         }
 
         private void ExpandTrack(EnumKineticAxis axis, out BlockPos trackMin, out BlockPos trackMax)

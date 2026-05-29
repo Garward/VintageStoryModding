@@ -1,0 +1,14 @@
+{
+    "ingredientPattern": "BVB,FCF,PSP",
+    "ingredients": {
+        "B": { "type": "item", "code": "boilerplate-steel", "quantity": 2 },
+        "V": { "type": "item", "code": "valvebody-brass", "quantity": 2 },
+        "F": { "type": "item", "code": "pipeflange-iron", "quantity": 2 },
+        "C": { "type": "block", "code": "largecogwheel-y", "quantity": 2 },
+        "P": { "type": "item", "code": "industrialplate-steel", "quantity": 2 },
+        "S": { "type": "block", "code": "shaft-y", "quantity": 2 }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "geothermalsteamengine-n-cool", "quantity": 1 }
+}

@@ -1,0 +1,49 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"wood": "game:block/wood/planks/generic",
+		"metal": "game:block/metal/ingot/iron"
+	},
+	"elements": [
+		{
+			"name": "wooden-core",
+			"from": [6, 6, 0],
+			"to": [10, 10, 16],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [6, 6, 10, 10] },
+				"south": { "texture": "#wood", "uv": [6, 6, 10, 10] },
+				"east": { "texture": "#wood", "uv": [0, 6, 16, 10] },
+				"west": { "texture": "#wood", "uv": [0, 6, 16, 10] },
+				"up": { "texture": "#wood", "uv": [6, 0, 10, 16] },
+				"down": { "texture": "#wood", "uv": [6, 0, 10, 16] }
+			}
+		},
+		{
+			"name": "upper-collar",
+			"from": [5.2, 5.2, 2.2],
+			"to": [10.8, 10.8, 4.2],
+			"faces": {
+				"north": { "texture": "#metal", "uv": [5, 5, 11, 11] },
+				"south": { "texture": "#metal", "uv": [5, 5, 11, 11] },
+				"east": { "texture": "#metal", "uv": [2, 5, 4, 11] },
+				"west": { "texture": "#metal", "uv": [2, 5, 4, 11] },
+				"up": { "texture": "#metal", "uv": [5, 2, 11, 4] },
+				"down": { "texture": "#metal", "uv": [5, 2, 11, 4] }
+			}
+		},
+		{
+			"name": "lower-collar",
+			"from": [5.2, 5.2, 11.8],
+			"to": [10.8, 10.8, 13.8],
+			"faces": {
+				"north": { "texture": "#metal", "uv": [5, 5, 11, 11] },
+				"south": { "texture": "#metal", "uv": [5, 5, 11, 11] },
+				"east": { "texture": "#metal", "uv": [12, 5, 14, 11] },
+				"west": { "texture": "#metal", "uv": [12, 5, 14, 11] },
+				"up": { "texture": "#metal", "uv": [5, 12, 11, 14] },
+				"down": { "texture": "#metal", "uv": [5, 12, 11, 14] }
+			}
+		}
+	]
+}

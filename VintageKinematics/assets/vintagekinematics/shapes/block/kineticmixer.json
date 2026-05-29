@@ -7,9 +7,7 @@
 	"textureHeight": 16,
 	"textureSizes": {
 	},
-	"textures": {
-		"wood-generic": "assets/survival/textures/block/wood-generic"
-	},
+	"textures": {},
 	"elements": [
 		{
 			"name": "TubBase",

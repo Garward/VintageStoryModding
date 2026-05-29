@@ -24,6 +24,10 @@ namespace VintageKinematics.Api
     // DiagonalCogHelper logic, adapted for VS BlockSelection conventions.
     public static class CogPlacementResolver
     {
+        // Broad-face mixed-size cog placement should require an intentional corner/quadrant click.
+        // Without this, tiny aim drift around 0.5 redirects to a diagonal cog position.
+        private const double DiagonalHitDeadzone = 0.18;
+
         // VS pre-applies face offset before TryPlaceBlock (DidOffset=true). The originally-clicked
         // cell is one step back along -face from blockSel.Position.
         public static BlockPos ClickedPos(BlockSelection sel)
@@ -67,8 +71,7 @@ namespace VintageKinematics.Api
             // with inherited axis — except gearboxes, whose stored Axis is the CLOSED axis
             // (no rotation axis exists for the whole block). Use the click face axis instead,
             // which is the port direction at that face — the only axis the cog can mesh with.
-            bool clickedIsCog = clickedKin.Role == EnumKineticRole.SmallCogwheel
-                             || clickedKin.Role == EnumKineticRole.LargeCogwheel;
+            bool clickedIsCog = IsCogRole(clickedKin.Role);
             if (!clickedIsCog)
             {
                 EnumKineticAxis chosenAxis = clickedKin.Role == EnumKineticRole.Gearbox
@@ -80,47 +83,72 @@ namespace VintageKinematics.Api
             // Case C: clicked a cog of the SAME role. No corner redirect — face-adjacent placement
             // is the right outcome. Either coaxial (face along axis) or same-axis face mesh
             // (face perpendicular to axis).
-            if (clickedKin.Role == myRole)
+            if (IsSameCogSize(clickedKin.Role, myRole))
             {
                 return new CogPlacement(defaultTarget, axis, redirected: false);
             }
 
             // Case D: clicked a cog of the OPPOSITE size — corner redirect candidate.
-            // Corner mesh only forms in the plane perpendicular to the rotation axis, so the
-            // clicked face must be a "side" face (perpendicular to axis). Top/bottom clicks
-            // (along the axis) fall through to coaxial placement.
-            if (!IsFacePerpToAxis(sel.Face, axis))
-            {
-                return new CogPlacement(defaultTarget, axis, redirected: false);
-            }
-
-            // The clicked face is one of the two non-axis directions. The corner cell sits
-            // diagonally — face direction plus a sign on the OTHER non-axis direction, picked
-            // from where on the face the player aimed.
+            // Corner mesh forms diagonally in the plane perpendicular to the rotation axis.
+            // If the clicked face is a side face, use that face as the first plane direction
+            // and the hit position for the other. If the clicked face is along the cog axis
+            // (common on vertical cogs now that the shaft mesh is not selectable), infer both
+            // perpendicular directions from the hit position on the broad cog face.
             Vec3i faceN = sel.Face.Normali;
             Vec3d hit = sel.HitPosition;
+            bool facePerpToAxis = IsFacePerpToAxis(sel.Face, axis);
 
             int sx = 0, sy = 0, sz = 0;
             switch (axis)
             {
                 case EnumKineticAxis.X:
-                    if (faceN.Y != 0) sz = hit.Z >= 0.5 ? 1 : -1;
-                    else              sy = hit.Y >= 0.5 ? 1 : -1;
+                    if (facePerpToAxis)
+                    {
+                        if (faceN.Y != 0)
+                        {
+                            if (!TryHitSign(hit.Z, out sz)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                        }
+                        else if (!TryHitSign(hit.Y, out sy)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                    }
+                    else
+                    {
+                        if (!TryHitSign(hit.Y, out sy) || !TryHitSign(hit.Z, out sz)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                    }
                     break;
                 case EnumKineticAxis.Y:
-                    if (faceN.X != 0) sz = hit.Z >= 0.5 ? 1 : -1;
-                    else              sx = hit.X >= 0.5 ? 1 : -1;
+                    if (facePerpToAxis)
+                    {
+                        if (faceN.X != 0)
+                        {
+                            if (!TryHitSign(hit.Z, out sz)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                        }
+                        else if (!TryHitSign(hit.X, out sx)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                    }
+                    else
+                    {
+                        if (!TryHitSign(hit.X, out sx) || !TryHitSign(hit.Z, out sz)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                    }
                     break;
                 case EnumKineticAxis.Z:
-                    if (faceN.X != 0) sy = hit.Y >= 0.5 ? 1 : -1;
-                    else              sx = hit.X >= 0.5 ? 1 : -1;
+                    if (facePerpToAxis)
+                    {
+                        if (faceN.X != 0)
+                        {
+                            if (!TryHitSign(hit.Y, out sy)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                        }
+                        else if (!TryHitSign(hit.X, out sx)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                    }
+                    else
+                    {
+                        if (!TryHitSign(hit.X, out sx) || !TryHitSign(hit.Y, out sy)) return new CogPlacement(defaultTarget, axis, redirected: false);
+                    }
                     break;
             }
 
             BlockPos cornerPos = new BlockPos(
-                clicked.X + faceN.X + sx,
-                clicked.Y + faceN.Y + sy,
-                clicked.Z + faceN.Z + sz,
+                clicked.X + (facePerpToAxis ? faceN.X : 0) + sx,
+                clicked.Y + (facePerpToAxis ? faceN.Y : 0) + sy,
+                clicked.Z + (facePerpToAxis ? faceN.Z : 0) + sz,
                 clicked.dimension);
 
             Block atCorner = world.BlockAccessor.GetBlock(cornerPos);
@@ -132,6 +160,15 @@ namespace VintageKinematics.Api
             }
 
             return new CogPlacement(cornerPos, axis, redirected: true);
+        }
+
+        private static bool TryHitSign(double value, out int sign)
+        {
+            sign = 0;
+            double delta = value - 0.5;
+            if (System.Math.Abs(delta) < DiagonalHitDeadzone) return false;
+            sign = delta > 0 ? 1 : -1;
+            return true;
         }
 
         private static BEBehaviorKinetic GetKinetic(IWorldAccessor world, BlockPos pos)
@@ -186,9 +223,10 @@ namespace VintageKinematics.Api
 
         // Per Create's CogWheelBlock.isValidCogwheelPosition: a cog can't sit face-adjacent
         // (perpendicular to its rotation axis) to another cog whose rotation axis differs —
-        // their teeth would visually and logically clash. Same-axis face-adjacency is fine
-        // even at mixed sizes; those simply don't form a mesh but don't fight either.
-        public static bool IsValidCogPlacement(IWorldAccessor world, BlockPos pos, EnumKineticAxis cogAxis)
+        // their teeth would visually and logically clash. Same-axis face-adjacency is only valid
+        // when it maps to an actual connection rule: coaxial along the shaft axis, or small-small
+        // teeth meshing perpendicular to the shaft. Mixed-size cogs must use diagonal placement.
+        public static bool IsValidCogPlacement(IWorldAccessor world, BlockPos pos, EnumKineticAxis cogAxis, EnumKineticRole cogRole)
         {
             for (int i = 0; i < 6; i++)
             {
@@ -201,12 +239,35 @@ namespace VintageKinematics.Api
                 BlockPos nbr = new BlockPos(pos.X + off.X, pos.Y + off.Y, pos.Z + off.Z, pos.dimension);
                 BEBehaviorKinetic kin = GetKinetic(world, nbr);
                 if (kin == null) continue;
-                bool isCog = kin.Role == EnumKineticRole.SmallCogwheel
-                          || kin.Role == EnumKineticRole.LargeCogwheel;
-                if (!isCog) continue;
+                if (!IsCogRole(kin.Role)) continue;
                 if (kin.Axis != cogAxis) return false;
+                if (!faceAlongAxis && (!IsSmallCogRole(cogRole) || !IsSmallCogRole(kin.Role))) return false;
             }
             return true;
+        }
+
+        private static bool IsCogRole(EnumKineticRole role)
+        {
+            return role == EnumKineticRole.SmallCogwheel
+                || role == EnumKineticRole.LargeCogwheel
+                || role == EnumKineticRole.EncasedSmallCogwheel
+                || role == EnumKineticRole.EncasedLargeCogwheel;
+        }
+
+        private static bool IsSameCogSize(EnumKineticRole left, EnumKineticRole right)
+        {
+            return (IsSmallCogRole(left) && IsSmallCogRole(right))
+                || (IsLargeCogRole(left) && IsLargeCogRole(right));
+        }
+
+        private static bool IsSmallCogRole(EnumKineticRole role)
+        {
+            return role == EnumKineticRole.SmallCogwheel || role == EnumKineticRole.EncasedSmallCogwheel;
+        }
+
+        private static bool IsLargeCogRole(EnumKineticRole role)
+        {
+            return role == EnumKineticRole.LargeCogwheel || role == EnumKineticRole.EncasedLargeCogwheel;
         }
 
         private static readonly Vec3i[] FaceOffsets = new[]

@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "modid": "craftingghostitemfix",
+  "name": "Crafting Ghost Item Fix",
+  "version": "1.0.0",
+  "description": "Server-authoritative mitigation for crafting output ghost items and dupes caused by partial shift-crafts and number-key output moves. Optional on clients for cleaner prediction.",
+  "authors": ["garward"],
+  "side": "Universal",
+  "requiredOnClient": false,
+  "requiredOnServer": true,
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

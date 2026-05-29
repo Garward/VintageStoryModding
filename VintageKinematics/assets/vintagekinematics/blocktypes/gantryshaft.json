@@ -23,15 +23,14 @@
     "shapeByType": {
         "gantryshaft-x": {
             "base": "block/shaft",
-            "rotateY": 0,
-            "rotateZ": 90
+            "rotateY": 90
         },
         "gantryshaft-y": {
-            "base": "block/shaft"
+            "base": "block/shaft",
+            "rotateX": 270
         },
         "gantryshaft-z": {
-            "base": "block/shaft",
-            "rotateX": 90
+            "base": "block/shaft"
         }
     },
     "textures": {
@@ -53,11 +52,11 @@
     "sidesolid": { "all": "false" },
     "collisionbox": {
         "x1": 0.375,
-        "y1": 0,
-        "z1": 0.375,
+        "y1": 0.375,
+        "z1": 0,
         "x2": 0.625,
-        "y2": 1,
-        "z2": 0.625
+        "y2": 0.625,
+        "z2": 1
     },
     "collisionboxByType": {
         "gantryshaft-x": {
@@ -87,11 +86,11 @@
     },
     "selectionbox": {
         "x1": 0.375,
-        "y1": 0,
-        "z1": 0.375,
+        "y1": 0.375,
+        "z1": 0,
         "x2": 0.625,
-        "y2": 1,
-        "z2": 0.625
+        "y2": 0.625,
+        "z2": 1
     },
     "selectionboxByType": {
         "gantryshaft-x": {

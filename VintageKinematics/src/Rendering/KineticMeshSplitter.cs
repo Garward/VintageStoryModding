@@ -168,6 +168,23 @@ namespace VintageKinematics.Rendering
             return (capi.Render.UploadMultiTextureMesh(mesh), pivot);
         }
 
+        public static MultiTextureMeshRef TesselateElements(ICoreClientAPI capi, Block block, string[] elementNames)
+        {
+            Shape orig = LoadShape(capi, block);
+            if (orig == null || elementNames == null || elementNames.Length == 0) return null;
+
+            string[] selectiveElements = new string[elementNames.Length];
+            for (int i = 0; i < elementNames.Length; i++)
+            {
+                selectiveElements[i] = elementNames[i] + "/*";
+            }
+
+            capi.Tesselator.TesselateShape(block, orig, out MeshData mesh,
+                new Vec3f(), null, selectiveElements);
+            if (mesh == null) return null;
+            return capi.Render.UploadMultiTextureMesh(mesh);
+        }
+
         public static float GetCanonicalElementLength(ICoreClientAPI capi, Block block, string elementName, string axis)
         {
             Shape shape = LoadShape(capi, block);

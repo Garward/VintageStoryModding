@@ -5,7 +5,7 @@
     "R": { "type": "item", "code": "game:resin" },
     "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
     "M": { "type": "item", "code": "machinebracket-iron" },
-    "S": { "type": "block", "code": "shaft-z" }
+    "S": { "type": "block", "code": "shaft-y" }
   },
   "width": 3,
   "height": 3,

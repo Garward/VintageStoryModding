@@ -65,6 +65,7 @@ namespace VintageKinematics.Blocks
         {
             if (byPlayer?.Entity == null) return false;
             if (blockSel == null) return false;
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             return (MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BETreadwheel)?.TryMount(byPlayer.Entity) == true;
         }
     }

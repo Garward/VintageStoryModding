@@ -15,10 +15,10 @@ namespace VintageKinematics.BlockEntities
 {
     /// <summary>
     /// Vertical drill: chews the 3×3 column directly below the multiblock footprint one layer
-    /// per work cycle, depositing drops into an output-only 9-slot buffer. Each descent consumes
-    /// one shaft (or encased shaft) from the 3-slot input row. The drill halts permanently on
+    /// per work cycle, depositing drops into an output-only 9-slot buffer. Each descent deploys
+    /// one drill rod from the 3-slot input row. The drill halts permanently on
     /// bedrock / out-of-mining-tier blocks. Right-clicking opens the dialog with a Retract button
-    /// that walks the bore back to the surface, returning one shaft per layer.
+    /// that walks the bore back to the surface, returning one drill rod per layer.
     /// </summary>
     public class BEKineticBore : BlockEntity, IFaceMappedContainer
     {
@@ -46,10 +46,10 @@ namespace VintageKinematics.BlockEntities
         private bool halted;
         private bool retracting;
         // Paused after a completed retract so the bore doesn't immediately consume the just-returned
-        // shafts. Player must click the button again to resume drilling.
+        // rods. Player must click the button again to resume drilling.
         private bool paused;
         private int miningTier;
-        // Stack of shaft items consumed on descent. Popped back into the input row during retract
+        // Stack of rod items consumed on descent. Popped back into the input row during retract
         // so the player always recovers what they put in (subject to inventory space).
         private readonly List<ItemStack> deployedShafts = new List<ItemStack>();
 
@@ -104,6 +104,7 @@ namespace VintageKinematics.BlockEntities
                 // never populated. Without this re-call, breaking a bore that was descended in
                 // a previous session would leave the shaft column orphaned forever.
                 RebuildPlacedShaftPositions();
+                if (drillDepth <= 0) AdoptExistingShaftColumn();
             }
 
             if (api is ICoreClientAPI capi)
@@ -318,10 +319,10 @@ namespace VintageKinematics.BlockEntities
 
         private void StepRetract()
         {
-            if (drillDepth <= 0 || deployedShafts.Count == 0)
+            if (drillDepth <= 0)
             {
                 retracting = false;
-                // Pause on completion so the bore doesn't race the player and eat the shafts that
+                // Pause on completion so the bore doesn't race the player and eat the rods that
                 // were just returned to the input row. Player resumes by clicking the button again.
                 paused = true;
                 drillDepth = 0;
@@ -330,16 +331,20 @@ namespace VintageKinematics.BlockEntities
                 return;
             }
 
-            int lastIdx = deployedShafts.Count - 1;
-            ItemStack shaft = deployedShafts[lastIdx];
-            deployedShafts.RemoveAt(lastIdx);
+            ItemStack shaft = null;
+            if (deployedShafts.Count > 0)
+            {
+                int lastIdx = deployedShafts.Count - 1;
+                shaft = deployedShafts[lastIdx];
+                deployedShafts.RemoveAt(lastIdx);
+            }
             drillDepth--;
             // Pop the visual shaft at the layer the drill is rising through, before the depth
             // change reaches the client. Otherwise the renderer would briefly draw the drill mesh
             // overlapping the still-present fake block.
-            RemoveVisualShaft();
+            ItemStack returnedShaft = RemoveVisualShaft(shaft);
 
-            if (shaft != null && shaft.StackSize > 0) ReturnShaftToInput(shaft);
+            if (returnedShaft != null && returnedShaft.StackSize > 0) ReturnShaftToInput(returnedShaft);
             MarkDirty(true);
         }
 
@@ -383,7 +388,7 @@ namespace VintageKinematics.BlockEntities
             }
 
             // Consume the drill rod for this layer before mining so failures past this point still
-            // bank progress correctly. The popped shaft is tracked on the deployed stack so retract
+            // bank progress correctly. The popped rod is tracked on the deployed stack so retract
             // can return the same item type that was deployed.
             ItemStack consumed = shaftSlot.TakeOut(1);
             shaftSlot.MarkDirty();
@@ -458,16 +463,22 @@ namespace VintageKinematics.BlockEntities
             placedShaftPositions.Add(columnPos.Copy());
         }
 
-        private void RemoveVisualShaft()
+        private ItemStack RemoveVisualShaft(ItemStack deployedShaft)
         {
-            if (placedShaftPositions.Count == 0) return;
+            if (placedShaftPositions.Count == 0) return null;
             int lastIdx = placedShaftPositions.Count - 1;
             BlockPos columnPos = placedShaftPositions[lastIdx];
             placedShaftPositions.RemoveAt(lastIdx);
             // Only clear if it's still our shaft block — a player who manually broke the column
             // would leave air, and a falling-block landing on the cell would be theirs to keep.
             Block here = Api.World.BlockAccessor.GetBlock(columnPos);
-            if (here?.Id == boreShaftBlockId) Api.World.BlockAccessor.SetBlock(0, columnPos);
+            if (here?.Id != boreShaftBlockId) return null;
+
+            Api.World.BlockAccessor.SetBlock(0, columnPos);
+            if (deployedShaft != null) return deployedShaft;
+
+            Item drillRod = Api.World.GetItem(new AssetLocation("vintagekinematics:drillrod"));
+            return drillRod == null ? null : new ItemStack(drillRod, 1);
         }
 
         private ItemSlot FindShaftSlot()
@@ -476,8 +487,7 @@ namespace VintageKinematics.BlockEntities
             {
                 ItemSlot s = inventory[i];
                 if (s.Empty) continue;
-                string code = s.Itemstack?.Collectible?.Code?.FirstCodePart();
-                if (ItemSlotShaftInput.IsAcceptedCode(code)) return s;
+                if (ItemSlotShaftInput.IsAcceptedCode(s.Itemstack?.Collectible?.Code)) return s;
             }
             return null;
         }
@@ -573,6 +583,28 @@ namespace VintageKinematics.BlockEntities
             }
         }
 
+        private void AdoptExistingShaftColumn()
+        {
+            if (Api == null || Api.Side != EnumAppSide.Server || boreShaftBlockId < 0) return;
+            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _)) return;
+
+            placedShaftPositions.Clear();
+            for (int y = baseCorner.Y - 1; y > 0; y--)
+            {
+                BlockPos columnPos = CenterColumnPos(baseCorner, y);
+                Block here = Api.World.BlockAccessor.GetBlock(columnPos);
+                if (here?.Id != boreShaftBlockId) break;
+                placedShaftPositions.Add(columnPos);
+            }
+
+            if (placedShaftPositions.Count <= 0) return;
+            drillDepth = placedShaftPositions.Count;
+            halted = false;
+            retracting = false;
+            paused = false;
+            MarkDirty(true);
+        }
+
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
@@ -609,21 +641,13 @@ namespace VintageKinematics.BlockEntities
 
         public override void OnBlockRemoved()
         {
-            // Wipe the column BEFORE base.OnBlockRemoved tears down behaviours / state. The
-            // tracking list is derived from drillDepth + the multiblock claim, both of which
-            // need this BE's Block and Pos to still be wired up. Rebuild defensively so a
-            // stale or never-populated list (e.g. controller broken via a placeholder cell
-            // right after world load) still clears every shaft we ever placed.
+            // Leave the deployed column in-world. A replacement bore placed over the same
+            // center column adopts those shaft blocks on initialize, letting players recover
+            // from accidentally breaking the controller without voiding drill rods.
             if (Api?.Side == EnumAppSide.Server)
             {
-                if (placedShaftPositions.Count == 0 && drillDepth > 0) RebuildPlacedShaftPositions();
-                for (int i = placedShaftPositions.Count - 1; i >= 0; i--)
-                {
-                    BlockPos columnPos = placedShaftPositions[i];
-                    Block here = Api.World.BlockAccessor.GetBlock(columnPos);
-                    if (here?.Id == boreShaftBlockId) Api.World.BlockAccessor.SetBlock(0, columnPos);
-                }
                 placedShaftPositions.Clear();
+                deployedShafts.Clear();
             }
             base.OnBlockRemoved();
             DisposeDialog();

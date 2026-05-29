@@ -1,0 +1,13 @@
+{
+	"ingredientPattern": "HDH,PMP,C_C",
+	"ingredients": {
+		"H": { "type": "item", "code": "drillhead-iron" },
+		"D": { "type": "item", "code": "drillrod", "quantity": 2 },
+		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"M": { "type": "item", "code": "machinebracket-iron" },
+		"C": { "type": "item", "code": "shaftcollar-iron" }
+	},
+	"width": 3,
+	"height": 3,
+	"output": { "type": "block", "code": "contraptiondrill-n", "quantity": 2 }
+}

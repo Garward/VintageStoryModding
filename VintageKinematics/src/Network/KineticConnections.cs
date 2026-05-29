@@ -9,7 +9,8 @@ namespace VintageKinematics.Network
         // Tooth counts on the cogwheel models. The half-tooth phase offsets used to
         // mesh adjacent cogs are derived from these. Update if the model changes.
         private const int SmallCogTeeth = 10;
-        private const int LargeCogTeeth = 16;
+        private const int LargeCogTeeth = 20;
+        private const float LargeCogGapBias = 1.35f;
 
         public static KineticConnection? GetConnection(KineticNode from, KineticNode to)
         {
@@ -23,7 +24,10 @@ namespace VintageKinematics.Network
             int absSum = Math.Abs(offset.X) + Math.Abs(offset.Y) + Math.Abs(offset.Z);
 
             // Case 1: Coaxial (face neighbor, same axis)
-            if (absSum == 1 && from.Axis == to.Axis)
+            if (absSum == 1
+             && from.Axis == to.Axis
+             && AllowsCoaxialShaftConnection(from, offset)
+             && AllowsCoaxialShaftConnection(to, new Vec3i(-offset.X, -offset.Y, -offset.Z)))
             {
                 Vec3i axisVec = EnumKineticAxisExtensions.UnitVector(from.Axis);
                 if (IsAlongAxis(offset, axisVec))
@@ -39,8 +43,8 @@ namespace VintageKinematics.Network
             // circles overlap heavily) and is rejected by the placement validator.
             // Phase offset = half a tooth pitch (π / teeth) so a tooth on one falls in a gap on the other.
             if (absSum == 1
-             && from.Role == EnumKineticRole.SmallCogwheel
-             && to.Role == EnumKineticRole.SmallCogwheel
+             && IsSmallCogRole(from.Role)
+             && IsSmallCogRole(to.Role)
              && from.Axis == to.Axis)
             {
                 EnumKineticAxis offsetAxis = EnumKineticAxisExtensions.FromVec(offset);
@@ -66,11 +70,9 @@ namespace VintageKinematics.Network
                                    || (axis == EnumKineticAxis.Z && offset.Z == 0);
                 if (axisOffsetZero)
                 {
-                    // Connection.PhaseOffset is applied to the `to` node, so the half-tooth
-                    // value depends on which cog is the destination.
-                    bool fromIsLarge = from.Role == EnumKineticRole.LargeCogwheel;
-                    if (fromIsLarge) return new KineticConnection(2f, -1, MathF.PI / SmallCogTeeth);
-                    return new KineticConnection(0.5f, -1, MathF.PI / LargeCogTeeth);
+                    float phaseOffset = MixedCogPhaseOffset(from, to, offset);
+                    if (IsLargeCogRole(from.Role)) return new KineticConnection(2f, -1, phaseOffset);
+                    return new KineticConnection(0.5f, -1, phaseOffset);
                 }
             }
 
@@ -79,8 +81,76 @@ namespace VintageKinematics.Network
 
         private static bool IsSmallLargePair(EnumKineticRole a, EnumKineticRole b)
         {
-            return (a == EnumKineticRole.SmallCogwheel && b == EnumKineticRole.LargeCogwheel)
-                || (a == EnumKineticRole.LargeCogwheel && b == EnumKineticRole.SmallCogwheel);
+            return (IsSmallCogRole(a) && IsLargeCogRole(b))
+                || (IsLargeCogRole(a) && IsSmallCogRole(b));
+        }
+
+        private static bool IsSmallCogRole(EnumKineticRole role)
+        {
+            return role == EnumKineticRole.SmallCogwheel || role == EnumKineticRole.EncasedSmallCogwheel;
+        }
+
+        private static bool IsLargeCogRole(EnumKineticRole role)
+        {
+            return role == EnumKineticRole.LargeCogwheel || role == EnumKineticRole.EncasedLargeCogwheel;
+        }
+
+        private static float MixedCogPhaseOffset(KineticNode from, KineticNode to, Vec3i offsetFromTo)
+        {
+            Vec3i toFrom = new Vec3i(-offsetFromTo.X, -offsetFromTo.Y, -offsetFromTo.Z);
+            return DesiredMixedCogPhase(to, toFrom) - DesiredMixedCogPhase(from, offsetFromTo);
+        }
+
+        private static float DesiredMixedCogPhase(KineticNode node, Vec3i vectorToOther)
+        {
+            float contactAngle = ContactAngle(node.Axis, vectorToOther);
+            if (IsLargeCogRole(node.Role))
+            {
+                // Large cog teeth are twice as dense. Put the contacted point in the center
+                // of a large-cog gap so the small cog tooth does not render tooth-on-tooth.
+                // The model's cuboid teeth read slightly over-centered at the mathematical
+                // half-tooth pitch, so keep a small visual bias for cleaner idle alignment.
+                return contactAngle - ((MathF.PI / LargeCogTeeth) * LargeCogGapBias);
+            }
+            return contactAngle;
+        }
+
+        private static float ContactAngle(EnumKineticAxis axis, Vec3i vector)
+        {
+            return axis switch
+            {
+                // Base Z-axis cog shape has tooth_000 pointing toward -Y.
+                EnumKineticAxis.Z => MathF.Atan2(vector.X, -vector.Y),
+                // X-axis variants keep tooth_000 on -Y; positive spin follows the Z side
+                // of the Y/Z plane after the block rotation.
+                EnumKineticAxis.X => MathF.Atan2(vector.Z, -vector.Y),
+                // Y-axis variants rotate the base shape so tooth_000 points toward +Z.
+                EnumKineticAxis.Y => MathF.Atan2(vector.X, vector.Z),
+                _ => 0f
+            };
+        }
+
+        private static bool AllowsCoaxialShaftConnection(KineticNode node, Vec3i offsetFromNode)
+        {
+            if (node.Role != EnumKineticRole.EncasedSmallCogwheel && node.Role != EnumKineticRole.EncasedLargeCogwheel)
+            {
+                return true;
+            }
+
+            string path = node.BlockCode ?? "";
+            bool hasNegPort = path.Contains("-neg-");
+            bool hasPosPort = path.Contains("-pos-");
+            if (!hasNegPort && !hasPosPort) return false;
+
+            Vec3i axisVec = EnumKineticAxisExtensions.UnitVector(node.Axis);
+            if (!IsAlongAxis(offsetFromNode, axisVec)) return false;
+
+            int sign = 0;
+            if (axisVec.X != 0) sign = Math.Sign(offsetFromNode.X);
+            else if (axisVec.Y != 0) sign = Math.Sign(offsetFromNode.Y);
+            else if (axisVec.Z != 0) sign = Math.Sign(offsetFromNode.Z);
+
+            return (sign < 0 && hasNegPort) || (sign > 0 && hasPosPort);
         }
 
         private static bool IsAlongAxis(Vec3i offset, Vec3i axisVec)

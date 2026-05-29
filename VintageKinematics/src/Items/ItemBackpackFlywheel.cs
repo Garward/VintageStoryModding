@@ -6,6 +6,7 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
@@ -176,6 +177,7 @@ namespace VintageKinematics.Items
             SetStoredSeconds(stack, stored);
             remainingSeconds = stored;
             slot.MarkDirty();
+            (player as IServerPlayer)?.BroadcastPlayerData(true);
             return true;
         }
 

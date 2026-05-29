@@ -1,0 +1,9 @@
+{
+    "ingredientPattern": "C",
+    "ingredients": {
+        "C": { "type": "item", "code": "game:metalplate-copper" }
+    },
+    "width": 1,
+    "height": 1,
+    "output": { "type": "block", "code": "copperpipe-ns", "quantity": 8 }
+}

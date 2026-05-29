@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -13,6 +14,7 @@ namespace HandbookCache
     {
         public const string ModsRootCategoryCode = "betterhandbook:mods";
         private const string ModCategoryPrefix = "betterhandbook:mod:";
+        private static readonly ConditionalWeakTable<GuiDialogHandbook, ModDomainSelection> SelectedModDomainByDialog = new ConditionalWeakTable<GuiDialogHandbook, ModDomainSelection>();
 
         private static readonly HashSet<string> HiddenDomains = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -54,10 +56,51 @@ namespace HandbookCache
             return IsModsRootCategory(categoryCode) || HandbookBookmarks.IsBookmarksCategory(categoryCode);
         }
 
+        public static string EffectiveCategoryCode(GuiDialogHandbook dialog, string categoryCode)
+        {
+            if (IsModDomainCategory(categoryCode))
+            {
+                SelectModDomain(dialog, categoryCode);
+                return categoryCode;
+            }
+
+            if ((categoryCode == null || IsModsRootCategory(categoryCode)) && TryGetSelectedModDomain(dialog, out string selectedCategoryCode))
+            {
+                return selectedCategoryCode;
+            }
+
+            return categoryCode;
+        }
+
+        public static void SelectModDomain(GuiDialogHandbook dialog, string categoryCode)
+        {
+            if (dialog == null || !IsModDomainCategory(categoryCode)) return;
+            SelectedModDomainByDialog.GetOrCreateValue(dialog).CategoryCode = categoryCode;
+        }
+
+        public static void ClearSelectedModDomain(GuiDialogHandbook dialog)
+        {
+            if (dialog == null) return;
+            SelectedModDomainByDialog.Remove(dialog);
+        }
+
+        public static bool TryGetSelectedModDomain(GuiDialogHandbook dialog, out string categoryCode)
+        {
+            categoryCode = null;
+            if (dialog == null || !SelectedModDomainByDialog.TryGetValue(dialog, out ModDomainSelection selection))
+            {
+                return false;
+            }
+
+            categoryCode = selection.CategoryCode;
+            return IsModDomainCategory(categoryCode);
+        }
+
         public static void ResetModDomainToRoot(GuiDialogHandbook dialog)
         {
             if (dialog != null && IsModDomainCategory(dialog.currentCatgoryCode))
             {
+                ClearSelectedModDomain(dialog);
                 dialog.currentCatgoryCode = ModsRootCategoryCode;
             }
         }
@@ -70,21 +113,22 @@ namespace HandbookCache
             }
 
             List<GuiTab> tabs = new List<GuiTab>(originalTabs);
-            if (pages != null && pages.Count > 0 && BuildDomainSummaries(capi, pages).Count > 0)
+            int tabIndex = Math.Min(2, tabs.Count);
+            tabs.Insert(tabIndex, new HandbookTab
             {
-                int tabIndex = tabs.Count;
-                tabs.Add(new HandbookTab
-                {
-                    PaddingTop = 20.0,
-                    DataInt = tabIndex,
-                    Name = "Mods",
-                    CategoryCode = ModsRootCategoryCode
-                });
+                PaddingTop = 20.0,
+                DataInt = tabIndex,
+                Name = "Mods",
+                CategoryCode = ModsRootCategoryCode
+            });
 
-                if (IsModsRootCategory(currentCategoryCode) || IsModDomainCategory(currentCategoryCode))
-                {
-                    curTab = tabIndex;
-                }
+            if (IsModsRootCategory(currentCategoryCode) || IsModDomainCategory(currentCategoryCode))
+            {
+                curTab = tabIndex;
+            }
+            else if (curTab >= tabIndex)
+            {
+                curTab++;
             }
 
             HandbookBookmarks.AppendBookmarkTab(capi, tabs, currentCategoryCode, ref curTab);
@@ -212,6 +256,11 @@ namespace HandbookCache
                 Count = count;
             }
         }
+
+        private sealed class ModDomainSelection
+        {
+            public string CategoryCode;
+        }
     }
 
     internal sealed class ModCategoryListItem : IFlatListItem
@@ -304,9 +353,10 @@ namespace HandbookCache
                 if (!(shownPages[index] is ModCategoryListItem modItem)) return true;
 
                 __instance.currentCatgoryCode = modItem.CategoryCode;
+                HandbookModCategories.SelectModDomain(__instance, modItem.CategoryCode);
                 CurrentSearchText(__instance) = "";
                 OverviewGui(__instance)?.GetTextInput("searchField")?.SetValue("", true);
-                ClientApi(__instance).Settings.String["currentHandbookCategoryCode"] = modItem.CategoryCode;
+                ClientApi(__instance).Settings.String["currentHandbookCategoryCode"] = HandbookModCategories.ModsRootCategoryCode;
                 HandbookFilterCachePatch.ApplyFilter(__instance);
                 return false;
             }
@@ -335,6 +385,7 @@ namespace HandbookCache
         {
             if (!(tab is HandbookTab handbookTab) || !HandbookModCategories.IsManagedCategory(handbookTab.CategoryCode))
             {
+                HandbookModCategories.ClearSelectedModDomain(__instance);
                 return;
             }
 
@@ -343,11 +394,52 @@ namespace HandbookCache
 
         private static void SelectManagedTab(GuiDialogHandbook dialog, string categoryCode)
         {
+            HandbookModCategories.ClearSelectedModDomain(dialog);
             dialog.currentCatgoryCode = categoryCode;
             CurrentSearchText(dialog) = "";
             OverviewGui(dialog)?.GetTextInput("searchField")?.SetValue("", true);
             ClientApi(dialog).Settings.String["currentHandbookCategoryCode"] = categoryCode;
             HandbookFilterCachePatch.ApplyFilter(dialog);
+        }
+    }
+
+    [HarmonyPatch(typeof(GuiDialogHandbook), "initOverviewGui")]
+    internal static class HandbookModOverviewCategoryPatch
+    {
+        private static readonly AccessTools.FieldRef<GuiDialogHandbook, string> CurrentSearchText =
+            AccessTools.FieldRefAccess<GuiDialogHandbook, string>("currentSearchText");
+
+        private static readonly AccessTools.FieldRef<GuiDialogHandbook, GuiComposer> OverviewGui =
+            AccessTools.FieldRefAccess<GuiDialogHandbook, GuiComposer>("overviewGui");
+
+        public static void Prefix(GuiDialogHandbook __instance, out string __state)
+        {
+            __state = __instance.currentCatgoryCode;
+        }
+
+        public static void Postfix(GuiDialogHandbook __instance, string __state)
+        {
+            string categoryCode = __state;
+            if (HandbookModCategories.IsModDomainCategory(categoryCode))
+            {
+                HandbookModCategories.SelectModDomain(__instance, categoryCode);
+            }
+            else if (!HandbookModCategories.TryGetSelectedModDomain(__instance, out categoryCode))
+            {
+                return;
+            }
+
+            // Vanilla can only select the visible "Mods" tab, so it rewrites hidden
+            // per-mod categories back to the mods root during overview recomposition.
+            __instance.currentCatgoryCode = categoryCode;
+
+            string searchText = CurrentSearchText(__instance);
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                OverviewGui(__instance)?.GetTextInput("searchField")?.SetValue(searchText, false);
+            }
+
+            HandbookFilterCachePatch.ApplyFilter(__instance);
         }
     }
 }

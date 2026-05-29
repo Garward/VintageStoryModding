@@ -1,0 +1,13 @@
+{
+  "type": "code",
+  "side": "client",
+  "modid": "storagecontrollerclientfix",
+  "name": "Storage Controller Client Fix",
+  "authors": ["garward"],
+  "description": "Client-only one-off performance patch for Storage Controller. Skips the expensive empty-search filter pass when opening or refreshing a controller GUI.",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "",
+    "storagecontroller": ""
+  }
+}

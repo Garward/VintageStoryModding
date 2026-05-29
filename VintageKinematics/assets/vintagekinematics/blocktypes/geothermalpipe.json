@@ -1,0 +1,30 @@
+{
+    "code": "geothermalpipe",
+    "class": "BlockGeothermalPipe",
+    "shape": { "base": "block/kineticboreshaft" },
+    "textures": {
+        "metal": { "base": "game:block/metal/plate/iron" }
+    },
+    "blockmaterial": "Metal",
+    "creativeinventory": {
+        "general": [ "*" ],
+        "vintagekinematics": [ "*" ]
+    },
+    "maxstacksize": 64,
+    "lightAbsorption": 0,
+    "sideopaque": { "all": "false" },
+    "sidesolid": { "all": "false" },
+    "replaceable": 6000,
+    "collisionbox": null,
+    "selectionbox": {
+        "x1": 0.35, "y1": 0, "z1": 0.35,
+        "x2": 0.65, "y2": 1, "z2": 0.65
+    },
+    "resistance": 2,
+    "requiredMiningTier": 2,
+    "sounds": {
+        "place": "game:block/anvil",
+        "break": "game:block/anvil",
+        "hit": "game:block/anvil"
+    }
+}

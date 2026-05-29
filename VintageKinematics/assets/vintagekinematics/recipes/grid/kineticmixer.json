@@ -9,5 +9,5 @@
 	},
 	"width": 3,
 	"height": 3,
-	"output": { "type": "block", "code": "kineticmixer-x", "quantity": 1 }
+	"output": { "type": "block", "code": "kineticmixer-n", "quantity": 1 }
 }

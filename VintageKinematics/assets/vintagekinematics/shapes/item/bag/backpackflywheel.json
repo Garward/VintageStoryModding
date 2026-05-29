@@ -6,15 +6,7 @@
 	"textureWidth": 16,
 	"textureHeight": 16,
 	"textureSizes": {},
-	"textures": {
-		"midtone": "block/leather/blue",
-		"leather": "block/leather/chromium",
-		"darktone": "block/leather/chromium",
-		"flaps": "block/leather/poor",
-		"metal": "block/metal/sheet/brass2",
-		"wood": "block/wood/planks/generic",
-		"darkwood": "block/wood/oak-dark"
-	},
+	"textures": {},
 	"elements": [
 		{
 			"name": "backpack",

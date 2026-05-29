@@ -7,14 +7,7 @@
 	"textureHeight": 16,
 	"textureSizes": {
 	},
-	"textures": {
-		"midtone": "assets/survival/textures/block/leather/blue",
-		"darktone": "assets/survival/textures/block/leather/chromium",
-		"leather": "assets/survival/textures/block/leather/chromium",
-		"flaps": "assets/survival/textures/block/leather/poor",
-		"metal": "assets/survival/textures/block/metal/sheet/brass2",
-		"wood": "assets/survival/textures/block/wood/planks/generic"
-	},
+	"textures": {},
 	"elements": [
 		{
 			"name": "backpack",

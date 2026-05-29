@@ -33,15 +33,14 @@
     "shapeByType": {
         "shaft-x": {
             "base": "block/shaft",
-            "rotateY": 0,
-            "rotateZ": 90
+            "rotateY": 90
         },
         "shaft-y": {
-            "base": "block/shaft"
+            "base": "block/shaft",
+            "rotateX": 270
         },
         "shaft-z": {
-            "base": "block/shaft",
-            "rotateX": 90
+            "base": "block/shaft"
         }
     },
     "textures": {
@@ -68,11 +67,11 @@
     },
     "collisionbox": {
         "x1": 0.375,
-        "y1": 0,
-        "z1": 0.375,
+        "y1": 0.375,
+        "z1": 0,
         "x2": 0.625,
-        "y2": 1,
-        "z2": 0.625
+        "y2": 0.625,
+        "z2": 1
     },
     "collisionboxByType": {
         "shaft-x": {
@@ -102,11 +101,11 @@
     },
     "selectionbox": {
         "x1": 0.375,
-        "y1": 0,
-        "z1": 0.375,
+        "y1": 0.375,
+        "z1": 0,
         "x2": 0.625,
-        "y2": 1,
-        "z2": 0.625
+        "y2": 0.625,
+        "z2": 1
     },
     "selectionboxByType": {
         "shaft-x": {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Vintagestory.API.Common;
@@ -47,6 +48,7 @@ namespace VintageKinematics.Items
             private readonly ICoreAPI api;
             private readonly bool playerModelLibEnabled;
             private readonly Dictionary<string, AppliedBoostState> appliedByPlayerUid = new Dictionary<string, AppliedBoostState>();
+            private bool stopRequested;
 
             public long TickListenerId;
 
@@ -73,6 +75,20 @@ namespace VintageKinematics.Items
             }
 
             public void Stop()
+            {
+                if (stopRequested) return;
+                stopRequested = true;
+
+                if (api?.Side == EnumAppSide.Client && Environment.CurrentManagedThreadId != RuntimeEnv.MainThreadId)
+                {
+                    api.Event.EnqueueMainThreadTask(StopOnMainThread, "vintagekinematics-kineticboots-stop");
+                    return;
+                }
+
+                StopOnMainThread();
+            }
+
+            private void StopOnMainThread()
             {
                 ClearAllTrackedPlayers();
 

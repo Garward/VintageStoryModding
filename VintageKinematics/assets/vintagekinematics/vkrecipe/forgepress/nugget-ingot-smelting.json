@@ -17,5 +17,5 @@
 	],
 	"useInputSmeltedStack": true,
 	"useInputSmeltingTemperature": true,
-	"pressTicks": 18
+	"pressTicks": 9
 }

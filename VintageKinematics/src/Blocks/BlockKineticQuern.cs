@@ -64,6 +64,12 @@ namespace VintageKinematics.Blocks
             return placed;
         }
 
+        public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
+        {
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
+            return base.OnBlockInteractStart(world, byPlayer, blockSel);
+        }
+
         private static BlockFacing PlacementFacing(IPlayer byPlayer)
         {
             if (byPlayer?.Entity == null) return BlockFacing.SOUTH;

@@ -19,6 +19,10 @@ namespace VintageKinematics.Api
         EncasedShaft = 4,
         /// <summary>Player-driven hand crank source.</summary>
         HandCrank = 5,
+        /// <summary>Small cogwheel inside a casing; meshes as a cog but does not expose shaft ends.</summary>
+        EncasedSmallCogwheel = 6,
+        /// <summary>Large cogwheel inside a casing; meshes as a cog but does not expose shaft ends.</summary>
+        EncasedLargeCogwheel = 7,
         /// <summary>Mod-defined role; pair with <see cref="IKineticConnector"/> for custom rules.</summary>
         Custom = 255
     }
