@@ -5,9 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>./</OutputPath>
-    <AssemblyName>CraftingGhostItemFix</AssemblyName>
-    <RootNamespace>CraftingGhostItemFix</RootNamespace>
-    <Version>1.0.0</Version>
+    <AssemblyName>ItemSyncFixes</AssemblyName>
+    <RootNamespace>ItemSyncFixes</RootNamespace>
+    <Version>1.0.2</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <PackageFileName>$(AssemblyName)-v$(Version).zip</PackageFileName>
@@ -36,7 +36,7 @@
   <Target Name="PackageDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <MakeDir Directories="$(PackageOutputPath)" />
     <Delete Files="$(PackageOutputPath)/$(PackageFileName)" />
-    <Exec Command="python3 -c &quot;import os, zipfile; root=r'$(MSBuildProjectDirectory)'; out=r'$(PackageOutputPath)/$(PackageFileName)'; z=zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','$(AssemblyName).dll'),(r'$(TargetDir)$(AssemblyName).pdb','$(AssemblyName).pdb'),(os.path.join(root,'modinfo.json'),'modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
+    <Exec Command="python3 -c &quot;import os, zipfile; root=r'$(MSBuildProjectDirectory)'; out=r'$(PackageOutputPath)/$(PackageFileName)'; z=zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','$(AssemblyName).dll'),(r'$(TargetDir)$(AssemblyName).pdb','$(AssemblyName).pdb'),(os.path.join(root,'modinfo.json'),'modinfo.json'),(os.path.join(root,'README.md'),'README.md')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
     <Message Text="Packaged: $(PackageOutputPath)/$(PackageFileName)" Importance="high" />
   </Target>
 </Project>

@@ -56,7 +56,7 @@ namespace VintageKinematics.BlockEntities
             base.Initialize(api);
             inventory.LateInitialize("kineticsawmill-" + Pos, api);
             inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += _ => MarkDirty(true);
+            inventory.SlotModified += _ => Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
 
             ConfigureIOFaceMap();
 

@@ -234,6 +234,9 @@ namespace RecipeExplorer
         internal static void ReportFailedFill(IEnumerable<GridRecipe> triedRecipes)
         {
             List<ItemSlot> available = CollectAvailableSlots(includeOpenContainers: true, includeCraftingGrid: true);
+            SlideshowGridRecipeTextComponent bestComponent = null;
+            GridRecipe bestRecipe = null;
+            int bestMissingCount = int.MaxValue;
 
             foreach (GridRecipe recipe in triedRecipes ?? Enumerable.Empty<GridRecipe>())
             {
@@ -248,14 +251,33 @@ namespace RecipeExplorer
                     continue;
                 }
 
-                lastFailedComponent = component;
-                lastFailedRecipe = recipe;
-                lastFailedAvailable = available;
-                lastFailedTick = api?.ElapsedMilliseconds ?? 0;
+                CraftingRecipeIngredient[] ingredients = FindSnapshotIngredients(recipe);
+                if (ingredients == null)
+                {
+                    continue;
+                }
+
+                int missingCount = ComputeMissingSlots(recipe, ingredients, available).Count;
+                if (missingCount >= bestMissingCount)
+                {
+                    continue;
+                }
+
+                bestComponent = component;
+                bestRecipe = recipe;
+                bestMissingCount = missingCount;
+            }
+
+            if (bestComponent == null)
+            {
+                ClearFailedFill();
                 return;
             }
 
-            ClearFailedFill();
+            lastFailedComponent = bestComponent;
+            lastFailedRecipe = bestRecipe;
+            lastFailedAvailable = available;
+            lastFailedTick = api?.ElapsedMilliseconds ?? 0;
         }
 
         internal static void ClearFailedFill()
@@ -279,45 +301,88 @@ namespace RecipeExplorer
         {
             var missing = new HashSet<int>();
             var counts = new Dictionary<string, int>();
+            CraftingRecipeIngredient[] matchingIngredients = BuildOriginalIngredients(recipe, ingredients);
 
             for (int row = 0; row < recipe.Height; row++)
             {
                 for (int col = 0; col < recipe.Width; col++)
                 {
-                    CraftingRecipeIngredient ingredient = recipe.GetElementInGrid(row, col, ingredients, recipe.Width);
-                    if (ingredient == null)
+                    CraftingRecipeIngredient displayIngredient = recipe.GetElementInGrid(row, col, ingredients, recipe.Width);
+                    CraftingRecipeIngredient matchingIngredient = recipe.GetElementInGrid(row, col, matchingIngredients, recipe.Width);
+                    if (displayIngredient == null || matchingIngredient == null)
                     {
                         continue;
                     }
 
                     int slotIndex = row * 3 + col;
-                    if (ingredient.IsTool || HasDurabilityTool(ingredient, available))
+                    if (displayIngredient.IsTool || matchingIngredient.IsTool || HasDurabilityTool(matchingIngredient, available))
                     {
-                        if (!available.Any(slot => SlotSatisfies(slot, ingredient) && slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack) >= ingredient.ToolDurabilityCost))
+                        int durabilityCost = Math.Max(displayIngredient.ToolDurabilityCost, matchingIngredient.ToolDurabilityCost);
+                        if (!available.Any(slot => SlotSatisfies(slot, matchingIngredient) && slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack) >= durabilityCost))
                         {
                             missing.Add(slotIndex);
                         }
                         continue;
                     }
 
-                    string key = IngredientKey.Create(ingredient).Key;
+                    string key = IngredientKey.Create(matchingIngredient).Key;
                     if (!counts.TryGetValue(key, out int count))
                     {
-                        count = available.Where(slot => SlotSatisfies(slot, ingredient)).Sum(slot => slot.StackSize);
+                        count = available.Where(slot => SlotSatisfies(slot, matchingIngredient)).Sum(slot => slot.StackSize);
                     }
 
-                    if (count < ingredient.Quantity)
+                    int requiredQuantity = displayIngredient.Quantity;
+                    if (count < requiredQuantity)
                     {
                         missing.Add(slotIndex);
+                        counts[key] = 0;
                     }
                     else
                     {
-                        counts[key] = count - ingredient.Quantity;
+                        counts[key] = count - requiredQuantity;
                     }
                 }
             }
 
             return missing;
+        }
+
+        private static CraftingRecipeIngredient[] BuildOriginalIngredients(GridRecipe recipe, CraftingRecipeIngredient[] fallbackIngredients)
+        {
+            if (recipe?.Ingredients == null || fallbackIngredients == null)
+            {
+                return fallbackIngredients;
+            }
+
+            var originalIngredients = new CraftingRecipeIngredient[fallbackIngredients.Length];
+            string flatPattern = recipe.IngredientPattern?
+                .Replace(",", "")
+                .Replace("\t", "")
+                .Replace("\r", "")
+                .Replace("\n", "") ?? "";
+
+            for (int i = 0; i < fallbackIngredients.Length; i++)
+            {
+                CraftingRecipeIngredient ingredient = fallbackIngredients[i];
+                if (ingredient == null)
+                {
+                    continue;
+                }
+
+                CraftingRecipeIngredient originalIngredient = ingredient;
+                if (i < flatPattern.Length && flatPattern[i] != '_')
+                {
+                    string patternChar = flatPattern[i].ToString();
+                    if (recipe.Ingredients.TryGetValue(patternChar, out CraftingRecipeIngredient mappedIngredient) && mappedIngredient != null)
+                    {
+                        originalIngredient = mappedIngredient;
+                    }
+                }
+
+                originalIngredients[i] = originalIngredient;
+            }
+
+            return originalIngredients;
         }
 
         private static List<ItemSlot> CollectAvailableSlots(bool includeOpenContainers, bool includeCraftingGrid)
@@ -353,7 +418,7 @@ namespace RecipeExplorer
             return slot?.Itemstack != null
                 && slot.StackSize > 0
                 && ingredient != null
-                && ingredient.SatisfiesAsIngredient(slot.Itemstack, false)
+                && AutoCraftSystem.DoesSlotMatchIngredient(slot, ingredient)
                 && (!ingredient.IsTool || slot.Itemstack.Collectible.GetRemainingDurability(slot.Itemstack) >= ingredient.ToolDurabilityCost);
         }
 

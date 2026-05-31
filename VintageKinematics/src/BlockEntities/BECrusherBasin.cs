@@ -218,7 +218,7 @@ namespace VintageKinematics.BlockEntities
 
         private void OnSlotModified(int slotId)
         {
-            MarkDirty(true);
+            Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
             if (slotId == SlotInput && itemRenderer != null)
             {
                 itemRenderer.UpdateStack(inventory[SlotInput]?.Itemstack);

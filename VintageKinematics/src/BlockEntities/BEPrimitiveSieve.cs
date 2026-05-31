@@ -59,7 +59,7 @@ namespace VintageKinematics.BlockEntities
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            inventory.SlotModified += _ => MarkDirty(true);
+            inventory.SlotModified += _ => Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
 
             string title = Lang.Get("vintagekinematics:primitivesieve-title");
             if (string.IsNullOrEmpty(title) || title == "vintagekinematics:primitivesieve-title") title = "Primitive Sieve";

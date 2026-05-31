@@ -85,7 +85,7 @@ namespace VintageKinematics.BlockEntities
             base.Initialize(api);
             inventory.LateInitialize("kineticbore-" + Pos, api);
             inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += _ => MarkDirty(true);
+            inventory.SlotModified += _ => Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
 
             miningTier = Block?.Attributes?["miningTier"].AsInt(DefaultMiningTier) ?? DefaultMiningTier;
 

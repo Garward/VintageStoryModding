@@ -914,7 +914,7 @@ namespace RecipeExplorer
             return null;
         }
 
-        private static bool DoesSlotMatchIngredient(ItemSlot slot, CraftingRecipeIngredient ingredient)
+        internal static bool DoesSlotMatchIngredient(ItemSlot slot, CraftingRecipeIngredient ingredient)
         {
             if (slot?.Itemstack == null || ingredient == null) return false;
 

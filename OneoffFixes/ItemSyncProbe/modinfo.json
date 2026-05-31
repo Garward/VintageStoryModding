@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "side": "universal",
+  "modid": "itemsyncprobe",
+  "name": "Item Sync Probe",
+  "authors": ["garward"],
+  "description": "Log-only probe for Vintage Story inventory client prediction and server confirmation behavior.",
+  "version": "1.0.0",
+  "requiredOnClient": false,
+  "requiredOnServer": false,
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

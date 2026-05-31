@@ -52,7 +52,7 @@ namespace VintageKinematics.BlockEntities
             inventory.SlotModified += _ =>
             {
                 NormalizeStoredStacks();
-                MarkDirty(true);
+                Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
             };
             NormalizeStoredStacks();
 

@@ -6,15 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "CraftingGhostItemFix/1.0.0": {
+      "ItemSyncProbe/1.0.0": {
         "runtime": {
-          "CraftingGhostItemFix.dll": {}
+          "ItemSyncProbe.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "CraftingGhostItemFix/1.0.0": {
+    "ItemSyncProbe/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
