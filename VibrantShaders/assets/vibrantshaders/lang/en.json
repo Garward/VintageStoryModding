@@ -92,6 +92,9 @@
   "setting-colormap_brightness": "Colormap Brightness",
   "setting-colormap_brightness-tooltip": "Brightens or darkens sampled climate and season colormap tints before they multiply base textures. 1 = unchanged.",
 
+  "setting-warm_light_stability": "Warm Light Stability",
+  "setting-warm_light_stability-tooltip": "Protects torch, lava, and lamp-lit highlights from extra final-pass color shifts. Higher values keep warm lights closer to vanilla while leaving other colors vibrant.",
+
   "setting-golden_hour_strength": "Golden Hour",
   "setting-golden_hour_strength-tooltip": "Adds warm highlight and cool shadow separation around sunrise and sunset."
 }

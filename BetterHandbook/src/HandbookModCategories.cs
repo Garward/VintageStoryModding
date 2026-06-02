@@ -29,11 +29,12 @@ namespace HandbookCache
         public static bool PageMatchesCategory(GuiHandbookPage page, string categoryCode)
         {
             if (categoryCode == null) return true;
-            if (HandbookBookmarks.IsBookmarksCategory(categoryCode)) return HandbookBookmarks.IsBookmarked(page);
+            if (HandbookBookmarks.IsBookmarksCategory(categoryCode)) return RecipeExplorer.BetterHandbookFeatures.Bookmarks && HandbookBookmarks.IsBookmarked(page);
             if (IsModsRootCategory(categoryCode)) return false;
 
             if (TryGetModDomain(categoryCode, out string domain))
             {
+                if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab) return false;
                 return TryGetPageDomain(page, out string pageDomain)
                     && string.Equals(pageDomain, domain, StringComparison.OrdinalIgnoreCase);
             }
@@ -53,11 +54,17 @@ namespace HandbookCache
 
         public static bool IsManagedCategory(string categoryCode)
         {
-            return IsModsRootCategory(categoryCode) || HandbookBookmarks.IsBookmarksCategory(categoryCode);
+            return (RecipeExplorer.BetterHandbookFeatures.ModCategoryTab && IsModsRootCategory(categoryCode))
+                || (RecipeExplorer.BetterHandbookFeatures.Bookmarks && HandbookBookmarks.IsBookmarksCategory(categoryCode));
         }
 
         public static string EffectiveCategoryCode(GuiDialogHandbook dialog, string categoryCode)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab)
+            {
+                return categoryCode;
+            }
+
             if (IsModDomainCategory(categoryCode))
             {
                 SelectModDomain(dialog, categoryCode);
@@ -74,6 +81,7 @@ namespace HandbookCache
 
         public static void SelectModDomain(GuiDialogHandbook dialog, string categoryCode)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab) return;
             if (dialog == null || !IsModDomainCategory(categoryCode)) return;
             SelectedModDomainByDialog.GetOrCreateValue(dialog).CategoryCode = categoryCode;
         }
@@ -87,7 +95,7 @@ namespace HandbookCache
         public static bool TryGetSelectedModDomain(GuiDialogHandbook dialog, out string categoryCode)
         {
             categoryCode = null;
-            if (dialog == null || !SelectedModDomainByDialog.TryGetValue(dialog, out ModDomainSelection selection))
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab || dialog == null || !SelectedModDomainByDialog.TryGetValue(dialog, out ModDomainSelection selection))
             {
                 return false;
             }
@@ -98,6 +106,7 @@ namespace HandbookCache
 
         public static void ResetModDomainToRoot(GuiDialogHandbook dialog)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab) return;
             if (dialog != null && IsModDomainCategory(dialog.currentCatgoryCode))
             {
                 ClearSelectedModDomain(dialog);
@@ -113,30 +122,41 @@ namespace HandbookCache
             }
 
             List<GuiTab> tabs = new List<GuiTab>(originalTabs);
-            int tabIndex = Math.Min(2, tabs.Count);
-            tabs.Insert(tabIndex, new HandbookTab
+            if (RecipeExplorer.BetterHandbookFeatures.ModCategoryTab)
             {
-                PaddingTop = 20.0,
-                DataInt = tabIndex,
-                Name = "Mods",
-                CategoryCode = ModsRootCategoryCode
-            });
+                int tabIndex = Math.Min(2, tabs.Count);
+                tabs.Insert(tabIndex, new HandbookTab
+                {
+                    PaddingTop = 20.0,
+                    DataInt = tabIndex,
+                    Name = "Mods",
+                    CategoryCode = ModsRootCategoryCode
+                });
 
-            if (IsModsRootCategory(currentCategoryCode) || IsModDomainCategory(currentCategoryCode))
-            {
-                curTab = tabIndex;
-            }
-            else if (curTab >= tabIndex)
-            {
-                curTab++;
+                if (IsModsRootCategory(currentCategoryCode) || IsModDomainCategory(currentCategoryCode))
+                {
+                    curTab = tabIndex;
+                }
+                else if (curTab >= tabIndex)
+                {
+                    curTab++;
+                }
             }
 
-            HandbookBookmarks.AppendBookmarkTab(capi, tabs, currentCategoryCode, ref curTab);
+            if (RecipeExplorer.BetterHandbookFeatures.Bookmarks)
+            {
+                HandbookBookmarks.AppendBookmarkTab(capi, tabs, currentCategoryCode, ref curTab);
+            }
             return tabs.ToArray();
         }
 
         public static List<IFlatListItem> BuildModListItems(ICoreClientAPI capi, IList<GuiHandbookPage> pages, string searchText)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab)
+            {
+                return new List<IFlatListItem>();
+            }
+
             string normalizedSearch = (searchText ?? "").Trim();
             return BuildDomainSummaries(capi, pages)
                 .Where(summary => normalizedSearch.Length == 0 || MatchesSearch(summary, normalizedSearch))
@@ -313,6 +333,11 @@ namespace HandbookCache
 
         public static void Postfix(GuiDialogSurvivalHandbook __instance, ref GuiTab[] __result, ref int curTab)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab && !RecipeExplorer.BetterHandbookFeatures.Bookmarks)
+            {
+                return;
+            }
+
             try
             {
                 __result = HandbookModCategories.AppendModTabs(
@@ -346,6 +371,8 @@ namespace HandbookCache
 
         public static bool Prefix(GuiDialogHandbook __instance, int index)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab) return true;
+
             try
             {
                 List<IFlatListItem> shownPages = ShownPages(__instance);
@@ -380,16 +407,28 @@ namespace HandbookCache
         private static readonly AccessTools.FieldRef<GuiDialog, ICoreClientAPI> ClientApi =
             AccessTools.FieldRefAccess<GuiDialog, ICoreClientAPI>("capi");
 
-        [HarmonyPriority(Priority.Last)]
-        public static void Postfix(GuiDialogHandbook __instance, GuiTab tab)
+        [HarmonyPriority(Priority.First)]
+        public static bool Prefix(GuiDialogHandbook __instance, GuiTab tab)
         {
-            if (!(tab is HandbookTab handbookTab) || !HandbookModCategories.IsManagedCategory(handbookTab.CategoryCode))
+            if (!(tab is HandbookTab handbookTab))
             {
-                HandbookModCategories.ClearSelectedModDomain(__instance);
-                return;
+                return true;
             }
 
-            SelectManagedTab(__instance, handbookTab.CategoryCode);
+            if (HandbookModCategories.IsManagedCategory(handbookTab.CategoryCode))
+            {
+                SelectManagedTab(__instance, handbookTab.CategoryCode);
+                return false;
+            }
+
+            if (!RecipeExplorer.BetterHandbookFeatures.HandbookPerformance)
+            {
+                HandbookModCategories.ClearSelectedModDomain(__instance);
+                return true;
+            }
+
+            SelectVanillaTab(__instance, handbookTab.CategoryCode);
+            return false;
         }
 
         private static void SelectManagedTab(GuiDialogHandbook dialog, string categoryCode)
@@ -398,6 +437,14 @@ namespace HandbookCache
             dialog.currentCatgoryCode = categoryCode;
             CurrentSearchText(dialog) = "";
             OverviewGui(dialog)?.GetTextInput("searchField")?.SetValue("", true);
+            ClientApi(dialog).Settings.String["currentHandbookCategoryCode"] = categoryCode;
+            HandbookFilterCachePatch.ApplyFilter(dialog);
+        }
+
+        private static void SelectVanillaTab(GuiDialogHandbook dialog, string categoryCode)
+        {
+            HandbookModCategories.ClearSelectedModDomain(dialog);
+            dialog.currentCatgoryCode = categoryCode;
             ClientApi(dialog).Settings.String["currentHandbookCategoryCode"] = categoryCode;
             HandbookFilterCachePatch.ApplyFilter(dialog);
         }
@@ -414,11 +461,16 @@ namespace HandbookCache
 
         public static void Prefix(GuiDialogHandbook __instance, out string __state)
         {
-            __state = __instance.currentCatgoryCode;
+            __state = RecipeExplorer.BetterHandbookFeatures.ModCategoryTab ? __instance.currentCatgoryCode : null;
         }
 
         public static void Postfix(GuiDialogHandbook __instance, string __state)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.ModCategoryTab || __state == null)
+            {
+                return;
+            }
+
             string categoryCode = __state;
             if (HandbookModCategories.IsModDomainCategory(categoryCode))
             {

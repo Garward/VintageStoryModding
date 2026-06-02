@@ -40,12 +40,18 @@ public sealed class ItemSyncClientFixModSystem : ModSystem
             AccessTools.Method(typeof(InventoryNetworkUtil), nameof(InventoryNetworkUtil.UpdateFromPacket), new[] { typeof(IWorldAccessor), typeof(Packet_InventoryContents) }),
             prefix: new HarmonyMethod(typeof(Patch_InventoryNetworkUtil_UpdateFromPacket_Contents), nameof(Patch_InventoryNetworkUtil_UpdateFromPacket_Contents.Prefix)));
         harmony.Patch(
+            AccessTools.Method(typeof(PlayerInventoryNetworkUtil), nameof(PlayerInventoryNetworkUtil.UpdateFromPacket), new[] { typeof(IWorldAccessor), typeof(Packet_InventoryUpdate) }),
+            prefix: new HarmonyMethod(typeof(Patch_PlayerInventoryNetworkUtil_UpdateFromPacket), nameof(Patch_PlayerInventoryNetworkUtil_UpdateFromPacket.Prefix)));
+        harmony.Patch(
             AccessTools.Method(typeof(InventoryBase), nameof(InventoryBase.SlotsFromTreeAttributes), new[] { typeof(ITreeAttribute), typeof(ItemSlot[]), typeof(List<ItemSlot>) }),
             prefix: new HarmonyMethod(typeof(Patch_InventoryBase_SlotsFromTreeAttributes), nameof(Patch_InventoryBase_SlotsFromTreeAttributes.Prefix)));
         harmony.Patch(
             AccessTools.Method(typeof(GuiElementItemSlotGridBase), nameof(GuiElementItemSlotGridBase.SlotClick), new[] { typeof(ICoreClientAPI), typeof(int), typeof(EnumMouseButton), typeof(bool), typeof(bool), typeof(bool) }),
             prefix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_SlotClick), nameof(Patch_GuiElementItemSlotGridBase_SlotClick.Prefix)),
             postfix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_SlotClick), nameof(Patch_GuiElementItemSlotGridBase_SlotClick.Postfix)));
+        harmony.Patch(
+            AccessTools.Method(typeof(GuiElementItemSlotGridBase), nameof(GuiElementItemSlotGridBase.OnMouseDownOnElement), new[] { typeof(ICoreClientAPI), typeof(MouseEvent) }),
+            postfix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement), nameof(Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement.Postfix)));
         ClientDoubleUpdatePatchInstaller.Patch(harmony);
         CraftingPatchInstaller.Patch(harmony);
 
@@ -81,7 +87,7 @@ public sealed class ItemSyncServerFixModSystem : ModSystem
             prefix: new HarmonyMethod(typeof(Patch_ServerMain_SendPacket), nameof(Patch_ServerMain_SendPacket.Prefix)));
         CraftingPatchInstaller.Patch(harmony);
 
-        api.Logger.Notification("[ItemSyncFixes] Server exact hotbar/backpack self-confirmation suppression and crafting output ghost mitigation active.");
+        api.Logger.Notification("[ItemSyncFixes] Server crafting output ghost mitigation active.");
     }
 
     public override void Dispose()
@@ -593,6 +599,7 @@ internal static class ClientPredictionSuppressor
 
         if (ShouldSuppressStaleMonotonicConfirmation(inv, packet.SlotId, key, incoming))
         {
+            RemoveMatchingPrediction(key, incoming.Fingerprint, Environment.TickCount64);
             return true;
         }
 
@@ -623,6 +630,26 @@ internal static class ClientPredictionSuppressor
         }
 
         return hasLaterPrediction || alreadyMatches;
+    }
+
+    private static void RemoveMatchingPrediction(string key, string fingerprint, long now)
+    {
+        if (!PredictedBySlot.TryGetValue(key, out List<ClientPredictedSlotUpdate> entries))
+        {
+            return;
+        }
+
+        PruneExpired(entries, now);
+        int matchIndex = entries.FindIndex(entry => entry.Fingerprint == fingerprint);
+        if (matchIndex >= 0)
+        {
+            entries.RemoveAt(matchIndex);
+        }
+
+        if (entries.Count == 0)
+        {
+            PredictedBySlot.Remove(key);
+        }
     }
 
     public static ClientPredictionDirection Direction(string beforeFingerprint, string afterFingerprint)
@@ -804,18 +831,7 @@ internal static class ClientExternalClickGate
         lock (LockObj)
         {
             PruneExpired(now);
-            if (PendingBySlot.Count == 0)
-            {
-                return false;
-            }
-
-            SyncDiagnostics.Log(
-                api,
-                "CLIENT gate blocked click {0}[{1}] pending={2}",
-                targetInv?.InventoryID ?? "?",
-                slotId,
-                PendingBySlot.Count);
-            return true;
+            return false;
         }
     }
 
@@ -1075,6 +1091,11 @@ internal static class Patch_GuiElementItemSlotGridBase_SlotClick
             && (mouseButton == EnumMouseButton.Left
                 || (mouseButton == EnumMouseButton.Right && !mouseEmpty));
 
+        if (targetInv is InventoryCraftingGrid)
+        {
+            canTrackPrediction = false;
+        }
+
         if (mouseEmpty)
         {
             if (mouseButton == EnumMouseButton.Right
@@ -1160,6 +1181,33 @@ internal static class Patch_GuiElementItemSlotGridBase_SlotClick
     }
 }
 
+internal static class Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement
+{
+    private static readonly FieldInfo InventoryField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "inventory");
+
+    public static void Postfix(GuiElementItemSlotGridBase __instance, ICoreClientAPI api, MouseEvent args)
+    {
+        if (api?.Side != EnumAppSide.Client || args?.Button != EnumMouseButton.Left)
+        {
+            return;
+        }
+
+        InventoryBase inv = InventoryField.GetValue(__instance) as InventoryBase;
+        if (inv is not InventoryCraftingGrid)
+        {
+            return;
+        }
+
+        inv.InvNetworkUtil.PauseInventoryUpdates = false;
+        if (api.World?.Player?.InventoryManager?.MouseItemSlot?.Inventory?.InvNetworkUtil != null)
+        {
+            api.World.Player.InventoryManager.MouseItemSlot.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
+        }
+
+        SyncDiagnostics.Log(api, "CLIENT crafting drag left server updates unpaused {0}", inv.InventoryID ?? "?");
+    }
+}
+
 internal static class Patch_InventoryNetworkUtil_UpdateFromPacket
 {
     private static readonly FieldInfo InvField = AccessTools.Field(typeof(InventoryNetworkUtil), "inv");
@@ -1183,14 +1231,14 @@ internal static class Patch_InventoryNetworkUtil_UpdateFromPacket
 
         InventoryBase inv = InvField.GetValue(__instance) as InventoryBase;
         bool isMouseInventory = inv?.InventoryID != null && inv.InventoryID.StartsWith("mouse-", StringComparison.Ordinal);
-        ClientExternalClickGate.Clear(api, inv, packet.SlotId);
-
         bool suppress = !isMouseInventory && ClientPredictionSuppressor.ShouldSuppress(inv, packet);
         SyncDiagnostics.ClientUpdate(api, "InventoryUpdate", inv, packet.SlotId, packet.ItemStack, suppress ? "suppressed" : "incoming");
         if (suppress)
         {
             return false;
         }
+
+        ClientExternalClickGate.Clear(api, inv, packet.SlotId);
 
         if (inv?.InventoryID == null)
         {
@@ -1296,7 +1344,6 @@ internal static class Patch_InventoryNetworkUtil_UpdateFromPacket_Double
         };
 
         bool isMouseInventory = inv?.InventoryID != null && inv.InventoryID.StartsWith("mouse-", StringComparison.Ordinal);
-        ClientExternalClickGate.Clear(util.Api, inv, slotId);
         if (isMouseInventory)
         {
             ClientPredictionSuppressor.Clear(inv, slotId);
@@ -1306,8 +1353,48 @@ internal static class Patch_InventoryNetworkUtil_UpdateFromPacket_Double
         SyncDiagnostics.ClientUpdate(util.Api, "InventoryDoubleUpdate", inv, slotId, itemStack, suppress ? "suppressed" : "apply-single");
         if (!suppress)
         {
+            ClientExternalClickGate.Clear(util.Api, inv, slotId);
             util.UpdateFromPacket(resolver, update);
         }
+    }
+}
+
+internal static class Patch_PlayerInventoryNetworkUtil_UpdateFromPacket
+{
+    private static readonly FieldInfo InvField = AccessTools.Field(typeof(InventoryNetworkUtil), "inv");
+
+    public static bool Prefix(PlayerInventoryNetworkUtil __instance, Packet_InventoryUpdate packet)
+    {
+        ICoreAPI api = __instance?.Api;
+        if (api?.Side != EnumAppSide.Client || packet == null)
+        {
+            return true;
+        }
+
+        InventoryBase inv = InvField.GetValue(__instance) as InventoryBase;
+        if (!IsClientPlayerStorage(inv) || packet.SlotId < 0 || packet.SlotId >= inv.Count)
+        {
+            return true;
+        }
+
+        string incoming = ClientPredictionSuppressor.Fingerprint(packet.ItemStack);
+        string local = ClientPredictionSuppressor.Fingerprint(inv[packet.SlotId]?.Itemstack);
+        if (incoming != local)
+        {
+            return true;
+        }
+
+        ClientPredictionSuppressor.Clear(inv, packet.SlotId);
+        SyncDiagnostics.ClientUpdate(api, "PlayerInventoryUpdate", inv, packet.SlotId, packet.ItemStack, "exact-local-suppressed");
+        return false;
+    }
+
+    private static bool IsClientPlayerStorage(InventoryBase inv)
+    {
+        string id = inv?.InventoryID;
+        return id != null
+            && (id.StartsWith("hotbar-", StringComparison.Ordinal)
+                || id.StartsWith("backpack-", StringComparison.Ordinal));
     }
 }
 
@@ -1608,18 +1695,12 @@ internal static class Patch_InventoryNetworkUtil_HandleClientPacket
             return false;
         }
 
-        __state = DirtySnapshot.Capture(byPlayer);
+        __state = null;
         return true;
     }
 
     public static void Postfix(IPlayer byPlayer, DirtySnapshot __state)
     {
-        if (byPlayer == null || __state == null) return;
-
-        foreach ((InventoryBase inv, int slotId) in __state.FindNewlyDirtySlots(byPlayer))
-        {
-            EchoSuppressor.Remember(byPlayer.ClientId, inv, slotId);
-        }
     }
 
     private static bool TryHandleRightClickFromMouseStack(InventoryNetworkUtil util, IPlayer byPlayer, int packetId, Packet_Client packet)
@@ -1721,9 +1802,8 @@ internal static class Patch_ServerMain_SendPacket
             return true;
         }
 
-        bool suppress = EchoSuppressor.ShouldSuppress(clientId, packet.InventoryUpdate);
-        SyncDiagnostics.ServerSend(EchoSuppressor.Api, clientId, packet, suppress ? "suppressed" : "outgoing");
-        return !suppress;
+        SyncDiagnostics.ServerSend(EchoSuppressor.Api, clientId, packet, "outgoing");
+        return true;
     }
 }
 

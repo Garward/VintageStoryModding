@@ -62,12 +62,15 @@ namespace HandbookCache
 
         public static bool Prefix(GuiDialogHandbook __instance)
         {
+            if (!ShouldHandleFilter(__instance)) return true;
             ApplyFilter(__instance);
             return false;
         }
 
         internal static void ApplyFilter(GuiDialogHandbook dialog)
         {
+            if (!ShouldHandleFilter(dialog)) return;
+
             Stopwatch stopwatch = Stopwatch.StartNew();
             List<IFlatListItem> shownPages = ShownPages(dialog);
             List<GuiHandbookPage> allPages = AllPages(dialog);
@@ -85,14 +88,14 @@ namespace HandbookCache
             string cacheKey = MakeCacheKey(effectiveCategoryCode, searchText);
 
             CacheState state = CacheByDialog.GetOrCreateValue(dialog);
-            if (state.PageCount != allPages.Count)
-            {
-                state.Clear(allPages.Count);
-            }
 
             if (HandbookModCategories.IsModsRootCategory(effectiveCategoryCode))
             {
-                state.Clear(allPages.Count);
+                if (state.PageCount != allPages.Count)
+                {
+                    state.Clear(allPages.Count);
+                }
+
                 DisposeGeneratedRows(shownPages);
                 shownPages.Clear();
                 shownPages.AddRange(HandbookModCategories.BuildModListItems(ClientApi(dialog), allPages, searchText));
@@ -106,6 +109,12 @@ namespace HandbookCache
                 return;
             }
 
+            List<GuiHandbookPage> displayPages = HandbookVariantGrouping.GetDisplayPages(dialog, ClientApi(dialog), allPages);
+            if (state.PageCount != displayPages.Count)
+            {
+                state.Clear(displayPages.Count);
+            }
+
             if (searchText.Length == 0)
             {
                 if (state.ActiveKey != cacheKey || !state.ActiveIsLazyEmpty)
@@ -113,7 +122,7 @@ namespace HandbookCache
                     state.StartLazyEmpty(cacheKey, effectiveCategoryCode);
                 }
 
-                EnsureLazyEmptyLoaded(state, allPages, InitialResultBatchSize);
+                EnsureLazyEmptyLoaded(state, displayPages, InitialResultBatchSize);
                 DisposeGeneratedRows(shownPages);
                 shownPages.Clear();
                 AddLoadedResults(shownPages, state.LazyEmptyResults, state.LoadedCount);
@@ -124,7 +133,7 @@ namespace HandbookCache
                     effectiveCategoryCode ?? "<all>",
                     state.LoadedCount,
                     state.NextPageIndex,
-                    allPages.Count,
+                    displayPages.Count,
                     state.LastLazyScanElapsedMs,
                     stopwatch.ElapsedMilliseconds);
                 return;
@@ -135,7 +144,7 @@ namespace HandbookCache
             {
                 try
                 {
-                    cachedResults = BuildResults(allPages, effectiveCategoryCode, searchText);
+                    cachedResults = BuildResults(displayPages, effectiveCategoryCode, searchText);
                 }
                 catch (Exception ex)
                 {
@@ -171,7 +180,7 @@ namespace HandbookCache
                 effectiveCategoryCode ?? "<all>",
                 state.LoadedCount,
                 cachedResults.Count,
-                allPages.Count,
+                displayPages.Count,
                 stopwatch.ElapsedMilliseconds);
             return;
         }
@@ -180,12 +189,14 @@ namespace HandbookCache
         {
             if (dialog == null) return;
             CacheByDialog.Remove(dialog);
+            HandbookVariantGrouping.Clear(dialog);
         }
 
         internal static void LoadMoreIfNeeded(GuiDialogHandbook dialog, float scrollValue)
         {
             try
             {
+                if (!ShouldHandleFilter(dialog)) return;
                 if (dialog == null) return;
                 if (!CacheByDialog.TryGetValue(dialog, out CacheState state)) return;
                 if (state.ActiveKey == null || state.AppendQueued) return;
@@ -226,8 +237,9 @@ namespace HandbookCache
                 if (state.ActiveIsLazyEmpty)
                 {
                     List<GuiHandbookPage> allPages = AllPages(dialog);
+                    List<GuiHandbookPage> displayPages = HandbookVariantGrouping.GetDisplayPages(dialog, capi, allPages);
                     int oldCount = state.LoadedCount;
-                    EnsureLazyEmptyLoaded(state, allPages, state.LoadedCount + AdditionalResultBatchSize);
+                    EnsureLazyEmptyLoaded(state, displayPages, state.LoadedCount + AdditionalResultBatchSize);
                     for (int i = oldCount; i < state.LoadedCount; i++)
                     {
                         shownPages.Add(state.LazyEmptyResults[i]);
@@ -239,7 +251,7 @@ namespace HandbookCache
                         "Lazy append empty shown={0} scanned={1}/{2} scanElapsed={3}ms elapsed={4}ms",
                         state.LoadedCount,
                         state.NextPageIndex,
-                        allPages.Count,
+                        displayPages.Count,
                         state.LastLazyScanElapsedMs,
                         stopwatch.ElapsedMilliseconds);
                     return;
@@ -440,6 +452,16 @@ namespace HandbookCache
             overviewGui.GetScrollbar("scrollbar").SetHeights((float)ListHeight(dialog), (float)stacklist.insideBounds.fixedHeight);
         }
 
+        internal static bool ShouldHandleFilter(GuiDialogHandbook dialog)
+        {
+            if (RecipeExplorer.BetterHandbookFeatures.HandbookPerformance || RecipeExplorer.BetterHandbookFeatures.VariantGrouping) return true;
+            if (dialog == null) return false;
+
+            string categoryCode = dialog.currentCatgoryCode;
+            return HandbookModCategories.IsManagedCategory(categoryCode)
+                || (RecipeExplorer.BetterHandbookFeatures.ModCategoryTab && HandbookModCategories.IsModDomainCategory(categoryCode));
+        }
+
         private sealed class CacheState
         {
             public int PageCount = -1;
@@ -505,6 +527,8 @@ namespace HandbookCache
 
         public static bool Prefix(GuiDialogHandbook __instance, string text)
         {
+            if (!HandbookFilterCachePatch.ShouldHandleFilter(__instance)) return true;
+
             string oldText = CurrentSearchText(__instance);
             if (oldText == text)
             {
@@ -522,6 +546,7 @@ namespace HandbookCache
     {
         public static void Postfix(GuiDialogHandbook __instance, float value)
         {
+            if (!HandbookFilterCachePatch.ShouldHandleFilter(__instance)) return;
             HandbookFilterCachePatch.LoadMoreIfNeeded(__instance, value);
         }
     }
@@ -530,9 +555,16 @@ namespace HandbookCache
     internal static class HandbookOpenCachePatch
     {
         private static readonly ConditionalWeakTable<GuiDialogHandbook, WarmedState> WarmedByDialog = new ConditionalWeakTable<GuiDialogHandbook, WarmedState>();
+        private static readonly ConditionalWeakTable<GuiDialogHandbook, DetailState> DetailByDialog = new ConditionalWeakTable<GuiDialogHandbook, DetailState>();
 
         private static readonly AccessTools.FieldRef<GuiDialogHandbook, GuiComposer> OverviewGui =
             AccessTools.FieldRefAccess<GuiDialogHandbook, GuiComposer>("overviewGui");
+
+        private static readonly AccessTools.FieldRef<GuiDialogHandbook, GuiComposer> DetailViewGui =
+            AccessTools.FieldRefAccess<GuiDialogHandbook, GuiComposer>("detailViewGui");
+
+        private static readonly AccessTools.FieldRef<GuiDialogHandbook, List<GuiHandbookPage>> AllPages =
+            AccessTools.FieldRefAccess<GuiDialogHandbook, List<GuiHandbookPage>>("allHandbookPages");
 
         private static readonly AccessTools.FieldRef<GuiDialogHandbook, Stack<BrowseHistoryElement>> BrowseHistory =
             AccessTools.FieldRefAccess<GuiDialogHandbook, Stack<BrowseHistoryElement>>("browseHistory");
@@ -545,6 +577,8 @@ namespace HandbookCache
 
         public static bool Prefix(GuiDialogHandbook __instance)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.HandbookPerformance) return true;
+
             Stopwatch stopwatch = Stopwatch.StartNew();
             if (LoadingPagesAsync(__instance))
             {
@@ -589,6 +623,8 @@ namespace HandbookCache
             if (OverviewGui(__instance) == null) return;
 
             TryOpenLockedPage(__instance, ClientApi(__instance));
+            if (!RecipeExplorer.BetterHandbookFeatures.HandbookPerformance) return;
+
             WarmedByDialog.GetOrCreateValue(__instance).Ready = true;
             HandbookCacheDiagnostics.Log(ClientApi(__instance), "Open marked overview warmed");
         }
@@ -597,6 +633,24 @@ namespace HandbookCache
         {
             if (dialog == null) return;
             WarmedByDialog.Remove(dialog);
+            DetailByDialog.Remove(dialog);
+        }
+
+        internal static void RecordDetailPage(GuiDialogHandbook dialog)
+        {
+            if (!RecipeExplorer.BetterHandbookFeatures.HandbookPerformance) return;
+            if (!RecipeExplorer.BetterHandbookFeatures.LockedPage) return;
+            if (dialog == null) return;
+
+            Stack<BrowseHistoryElement> browseHistory = BrowseHistory(dialog);
+            if (browseHistory == null || browseHistory.Count == 0) return;
+
+            GuiHandbookPage page = browseHistory.Peek().Page;
+            if (page == null || string.IsNullOrEmpty(page.PageCode)) return;
+
+            DetailState state = DetailByDialog.GetOrCreateValue(dialog);
+            state.PageCode = page.PageCode;
+            state.Page = page;
         }
 
         private static void FocusSearchField(GuiComposer overviewGui)
@@ -609,18 +663,98 @@ namespace HandbookCache
 
         private static bool TryOpenLockedPage(GuiDialogHandbook dialog, ICoreClientAPI capi)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.LockedPage) return false;
             if (dialog == null || capi == null) return false;
             if (BrowseHistory(dialog)?.Count > 0) return false;
 
             string pageCode = HandbookBookmarks.LockedPageCode(capi);
             if (string.IsNullOrEmpty(pageCode)) return false;
 
+            if (RecipeExplorer.BetterHandbookFeatures.HandbookPerformance && TryReuseDetailPage(dialog, pageCode))
+            {
+                HandbookCacheDiagnostics.Log(capi, "Open reused locked detail page page={0}", pageCode);
+                return true;
+            }
+
             return dialog.OpenDetailPageFor(pageCode);
+        }
+
+        private static bool TryReuseDetailPage(GuiDialogHandbook dialog, string pageCode)
+        {
+            if (!DetailByDialog.TryGetValue(dialog, out DetailState state)) return false;
+
+            GuiComposer detailViewGui = DetailViewGui(dialog);
+            if (detailViewGui == null) return false;
+            if (!string.Equals(state.PageCode, pageCode, StringComparison.Ordinal)) return false;
+
+            GuiHandbookPage page = state.Page ?? FindPage(dialog, pageCode);
+            if (page == null) return false;
+
+            Stack<BrowseHistoryElement> browseHistory = BrowseHistory(dialog);
+            if (browseHistory == null) return false;
+
+            browseHistory.Push(new BrowseHistoryElement
+            {
+                Page = page,
+                PosY = 0
+            });
+
+            ResetDetailScroll(detailViewGui);
+            dialog.SingleComposer = detailViewGui;
+            return true;
+        }
+
+        private static GuiHandbookPage FindPage(GuiDialogHandbook dialog, string pageCode)
+        {
+            List<GuiHandbookPage> allPages = AllPages(dialog);
+            if (allPages == null) return null;
+
+            for (int i = 0; i < allPages.Count; i++)
+            {
+                GuiHandbookPage page = allPages[i];
+                if (string.Equals(page?.PageCode, pageCode, StringComparison.Ordinal))
+                {
+                    return page;
+                }
+            }
+
+            return null;
+        }
+
+        private static void ResetDetailScroll(GuiComposer detailViewGui)
+        {
+            GuiElementScrollbar scrollbar = detailViewGui.GetScrollbar("scrollbar");
+            if (scrollbar != null)
+            {
+                scrollbar.CurrentYPosition = 0;
+            }
+
+            GuiElementRichtext richtext = detailViewGui.GetRichtext("richtext");
+            if (richtext == null) return;
+
+            richtext.Bounds.fixedY = 3;
+            richtext.Bounds.CalcWorldBounds();
         }
 
         private sealed class WarmedState
         {
             public bool Ready;
+        }
+
+        private sealed class DetailState
+        {
+            public string PageCode;
+            public GuiHandbookPage Page;
+        }
+    }
+
+    [HarmonyPatch(typeof(GuiDialogHandbook), "initDetailGui")]
+    internal static class HandbookDetailCacheTrackingPatch
+    {
+        public static void Postfix(GuiDialogHandbook __instance)
+        {
+            if (!RecipeExplorer.BetterHandbookFeatures.HandbookPerformance) return;
+            HandbookOpenCachePatch.RecordDetailPage(__instance);
         }
     }
 
@@ -660,6 +794,8 @@ namespace HandbookCache
 
         public static bool Prefix(GuiDialogHandbook __instance)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.HandbookPerformance) return true;
+
             ICoreClientAPI capi = ClientApi(__instance);
 
             try

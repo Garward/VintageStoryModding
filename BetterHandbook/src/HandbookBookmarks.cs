@@ -68,6 +68,8 @@ namespace HandbookCache
 
         public static bool IsBookmarked(GuiHandbookPage page)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.Bookmarks) return false;
+
             string pageCode = page?.PageCode;
             if (string.IsNullOrEmpty(pageCode)) return false;
 
@@ -79,6 +81,8 @@ namespace HandbookCache
 
         public static bool IsLocked(GuiHandbookPage page)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.LockedPage) return false;
+
             string pageCode = page?.PageCode;
             if (string.IsNullOrEmpty(pageCode)) return false;
 
@@ -90,6 +94,7 @@ namespace HandbookCache
 
         public static string LockedPageCode(ICoreClientAPI api)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.LockedPage) return null;
             EnsureLoaded(api);
             lock (Sync)
             {
@@ -99,6 +104,8 @@ namespace HandbookCache
 
         public static bool Toggle(GuiHandbookPage page, ICoreClientAPI api)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.Bookmarks) return false;
+
             EnsureLoaded(api);
             string pageCode = page?.PageCode;
             if (string.IsNullOrEmpty(pageCode)) return false;
@@ -126,6 +133,8 @@ namespace HandbookCache
 
         public static bool ToggleLock(GuiHandbookPage page, ICoreClientAPI api)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.LockedPage) return false;
+
             EnsureLoaded(api);
             string pageCode = page?.PageCode;
             if (string.IsNullOrEmpty(pageCode)) return false;
@@ -152,6 +161,8 @@ namespace HandbookCache
 
         public static GuiTab AppendBookmarkTab(ICoreClientAPI api, List<GuiTab> tabs, string currentCategoryCode, ref int curTab)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.Bookmarks) return null;
+
             EnsureLoaded(api);
             int tabIndex = tabs.Count;
             GuiTab tab = new HandbookTab
@@ -207,6 +218,11 @@ namespace HandbookCache
 
         public static void Postfix(GuiDialogHandbook __instance)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.Bookmarks && !RecipeExplorer.BetterHandbookFeatures.LockedPage)
+            {
+                return;
+            }
+
             ICoreClientAPI api = ClientApi(__instance);
 
             try
@@ -218,11 +234,13 @@ namespace HandbookCache
                 if (page == null) return;
 
                 GuiComposer detailViewGui = DetailViewGui(__instance);
-                if (detailViewGui == null || detailViewGui.GetElement(ButtonKey) != null || detailViewGui.GetElement(LockButtonKey) != null) return;
+                if (detailViewGui == null) return;
 
                 HandbookBookmarks.EnsureLoaded(api);
-                AddBookmarkButtons(detailViewGui, page, api);
-                detailViewGui.ReCompose();
+                if (AddBookmarkButtons(detailViewGui, page, api))
+                {
+                    detailViewGui.ReCompose();
+                }
             }
             catch (Exception ex)
             {
@@ -230,27 +248,43 @@ namespace HandbookCache
             }
         }
 
-        private static void AddBookmarkButtons(GuiComposer detailViewGui, GuiHandbookPage page, ICoreClientAPI api)
+        private static bool AddBookmarkButtons(GuiComposer detailViewGui, GuiHandbookPage page, ICoreClientAPI api)
         {
-            bool isBookmarked = HandbookBookmarks.IsBookmarked(page);
-            bool isLocked = HandbookBookmarks.IsLocked(page);
-            HeaderIconButton bookmarkButton = new HeaderIconButton(
-                api,
-                CreateButtonBounds(),
-                HeaderIconKind.Bookmark,
-                isBookmarked,
-                () => HandbookBookmarks.Toggle(page, api));
-            HeaderIconButton lockButton = new HeaderIconButton(
-                api,
-                CreateButtonBounds(),
-                HeaderIconKind.Lock,
-                isLocked,
-                () => HandbookBookmarks.ToggleLock(page, api));
+            bool added = false;
+            int slot = 0;
 
-            PositionAfterTitle(detailViewGui, bookmarkButton.Bounds, 0);
-            PositionAfterTitle(detailViewGui, lockButton.Bounds, 1);
-            detailViewGui.AddInteractiveElement(bookmarkButton, ButtonKey);
-            detailViewGui.AddInteractiveElement(lockButton, LockButtonKey);
+            if (RecipeExplorer.BetterHandbookFeatures.Bookmarks && detailViewGui.GetElement(ButtonKey) == null)
+            {
+                bool isBookmarked = HandbookBookmarks.IsBookmarked(page);
+                HeaderIconButton bookmarkButton = new HeaderIconButton(
+                    api,
+                    CreateButtonBounds(),
+                    HeaderIconKind.Bookmark,
+                    isBookmarked,
+                    () => HandbookBookmarks.Toggle(page, api));
+
+                PositionAfterTitle(detailViewGui, bookmarkButton.Bounds, slot++);
+                detailViewGui.AddInteractiveElement(bookmarkButton, ButtonKey);
+                added = true;
+            }
+
+            if (RecipeExplorer.BetterHandbookFeatures.LockedPage && detailViewGui.GetElement(LockButtonKey) == null)
+            {
+                bool isLocked = HandbookBookmarks.IsLocked(page);
+                HeaderIconButton lockButton = new HeaderIconButton(
+                    api,
+                    CreateButtonBounds(),
+                    HeaderIconKind.Lock,
+                    isLocked,
+                    () => HandbookBookmarks.ToggleLock(page, api));
+
+                int lockSlot = detailViewGui.GetElement(ButtonKey) != null ? Math.Max(slot, 1) : slot;
+                PositionAfterTitle(detailViewGui, lockButton.Bounds, lockSlot);
+                detailViewGui.AddInteractiveElement(lockButton, LockButtonKey);
+                added = true;
+            }
+
+            return added;
         }
 
         private static ElementBounds CreateButtonBounds()

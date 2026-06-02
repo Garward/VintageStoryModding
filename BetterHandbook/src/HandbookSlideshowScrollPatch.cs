@@ -20,6 +20,8 @@ namespace HandbookCache
 
         public static void Prefix(GuiElement __instance, ICoreClientAPI api, MouseWheelEventArgs args)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.SlideshowScroll) return;
+
             if (args.IsHandled || !(__instance is GuiElementRichtext richtext) || api == null)
             {
                 return;

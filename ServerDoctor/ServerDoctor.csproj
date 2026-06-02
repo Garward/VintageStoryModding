@@ -4,8 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <RootNamespace>NetSpy</RootNamespace>
-    <AssemblyName>NetSpy</AssemblyName>
+    <RootNamespace>ServerDoctor</RootNamespace>
+    <AssemblyName>ServerDoctor</AssemblyName>
     <OutputType>Library</OutputType>
     <LangVersion>12.0</LangVersion>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
@@ -17,7 +17,7 @@
   <PropertyGroup>
     <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
     <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MOD_OUTPUT)' != ''">$(VINTAGE_STORY_MOD_OUTPUT)</ModOutputPath>
-    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/NetSpy</ModOutputPath>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/ServerDoctor</ModOutputPath>
     <PackageOutputPath>$(MSBuildProjectDirectory)/dist</PackageOutputPath>
     <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
     <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
@@ -34,6 +34,14 @@
     </Reference>
     <Reference Include="0Harmony">
       <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>$(VSPath)/Lib/protobuf-net.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="cairo-sharp">
+      <HintPath>$(VSPath)/Lib/cairo-sharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
@@ -56,9 +64,9 @@
 
   <Target Name="PackageZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <MakeDir Directories="$(PackageOutputPath)" />
-    <Delete Files="$(PackageOutputPath)/NetSpy.zip" />
-    <Exec Command="python3 -c &quot;import zipfile, os; z=zipfile.ZipFile(r'$(PackageOutputPath)/NetSpy.zip','w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','NetSpy.dll'),(r'$(TargetDir)NetSpy.pdb','NetSpy.pdb'),(r'$(MSBuildProjectDirectory)/modinfo.json','modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
-    <Message Text="Packaged: $(PackageOutputPath)/NetSpy.zip" Importance="high" />
+    <Delete Files="$(PackageOutputPath)/ServerDoctor.zip" />
+    <Exec Command="python3 -c &quot;import zipfile, os; z=zipfile.ZipFile(r'$(PackageOutputPath)/ServerDoctor.zip','w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','ServerDoctor.dll'),(r'$(TargetDir)ServerDoctor.pdb','ServerDoctor.pdb'),(r'$(MSBuildProjectDirectory)/modinfo.json','modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
+    <Message Text="Packaged: $(PackageOutputPath)/ServerDoctor.zip" Importance="high" />
   </Target>
 
 </Project>

@@ -74,6 +74,7 @@ uniform float LOCAL_CONTRAST_STRENGTH = 0.187;
 uniform float COLOR_RICHNESS = 0.800;
 uniform float EARTH_TONE_SEPARATION = 0.441;
 uniform float SEASON_GRASS_CORRECTION = 0.000;
+uniform float WARM_LIGHT_STABILITY = 0.650;
 uniform float GOLDEN_HOUR_STRENGTH = 0.000;
 
 // ============================================
@@ -108,6 +109,40 @@ vec3 matchLuminance(vec3 color, float targetLum) {
 float hueBand(float hue, float center, float width, float feather) {
     float dist = abs(fract(hue - center + 0.5) - 0.5);
     return 1.0 - smoothstep(width, width + feather, dist);
+}
+
+vec3 rgb2hslLocal(vec3 c);
+
+float warmLightMask(vec3 color) {
+    if (WARM_LIGHT_STABILITY <= 0.0) return 0.0;
+
+    vec3 hsl = rgb2hslLocal(clamp(color, 0.0, 1.0));
+    float warmHue = max(
+        hueBand(hsl.x, 0.075, 0.115, 0.055),
+        hueBand(hsl.x, 0.985, 0.045, 0.035)
+    );
+    float linearLum = luminance(srgbToLinear(color));
+    float bright = smoothstep(0.18, 0.72, linearLum);
+    float saturated = smoothstep(0.18, 0.74, hsl.y);
+    float redDominance = smoothstep(0.02, 0.28, color.r - color.b);
+    float yellowDominance = smoothstep(-0.06, 0.20, color.g - color.b);
+
+    return clamp(warmHue * bright * saturated * redDominance * yellowDominance, 0.0, 1.0);
+}
+
+vec3 stabilizeWarmLight(vec3 adjusted, vec3 vanillaColor, float mask) {
+    float amount = clamp(mask * WARM_LIGHT_STABILITY, 0.0, 1.0);
+    if (amount <= 0.0) return adjusted;
+
+    vec3 stable = mix(adjusted, vanillaColor, 0.82);
+    vec3 stableHsl = rgb2hslLocal(clamp(stable, 0.0, 1.0));
+    vec3 vanillaHsl = rgb2hslLocal(clamp(vanillaColor, 0.0, 1.0));
+
+    stableHsl.x = vanillaHsl.x;
+    stableHsl.y = min(stableHsl.y, vanillaHsl.y * 1.08);
+    stable = hsl2rgb(stableHsl);
+
+    return mix(adjusted, stable, amount);
 }
 
 // Convert RGB to HSL
@@ -518,6 +553,8 @@ void main(void)
     // Vanilla color grading
     vec4 gradedColor = ColorGrade(color);
     outColor = mix(color, gradedColor, gradedColor.a);
+    vec3 vanillaGradedColor = outColor.rgb;
+    float warmLightProtection = warmLightMask(vanillaGradedColor);
 
     // ============================================
     // NEW EFFECTS (not in vanilla)
@@ -552,6 +589,9 @@ void main(void)
 
     // ACES-style highlight rolloff
     outColor.rgb = applyTonemap(outColor.rgb);
+
+    // Keep torch/lava/lamp highlights from being recolored by the extra grading passes.
+    outColor.rgb = stabilizeWarmLight(outColor.rgb, vanillaGradedColor, warmLightProtection);
 
     // Artistic vignette - darkens edges/corners for cinematic focus
     vec2 position = (gl_FragCoord.xy * invFrameSize.xy) - vec2(0.5);

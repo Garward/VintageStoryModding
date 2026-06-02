@@ -43,7 +43,7 @@ This mod suppresses only exact matching self-confirmation updates for `hotbar-*`
 
 External storage clicks are still client-predicted in vanilla. Rapid repeated clicks can chain local predictions before the server has confirmed the previous chest, quern, or machine slot mutation. That creates temporary fake items even when the server state is correct.
 
-The current test pass adds a short client-side confirmation gate after a predicted click changes an external storage slot. While that gate is pending, further slot-grid clicks are ignored until the matching server slot update or full contents packet arrives, or until a short timeout expires. This is intentionally conservative: correctness comes before perfectly smooth rapid clicking while the root vanilla race is still being narrowed down.
+The current storage pass keeps a short client-side pending record after a predicted click changes an external storage slot. That pending record no longer blocks later slot-grid clicks; it is only used to protect the recently changed slot from broad block-entity/tree corrections until a direct server confirmation or timeout resolves it.
 
 The next refinement gives pending external slots a tiny defer window for broad `InventoryContents` packets. Direct `InventoryUpdate` and `InventoryDoubleUpdate` packets still apply immediately. If a direct slot confirmation arrives during the defer window, the broad contents correction for that pending slot is dropped; if no confirmation arrives, the deferred contents correction applies. This should reduce the last short snapback flicker without returning to fake cursor/item state.
 

@@ -26,6 +26,11 @@ namespace RecipeExplorer
         public static void Initialize(ICoreClientAPI api, Harmony harmony)
         {
             capi = api;
+            if (!BetterHandbookFeatures.AutoFillButton && !BetterHandbookFeatures.UsesButton)
+            {
+                BetterHandbookLog.Info(capi, "[BetterHandbook/RecipeExplorer] Handbook footer buttons disabled by config");
+                return;
+            }
 
             try
             {
@@ -75,6 +80,7 @@ namespace RecipeExplorer
 
         public static void InitDetailGuiPostfix(object __instance)
         {
+            if (!BetterHandbookFeatures.AutoFillButton && !BetterHandbookFeatures.UsesButton) return;
             if (__instance == null) { BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Postfix] __instance null"); return; }
 
             try
@@ -148,30 +154,45 @@ namespace RecipeExplorer
 
         private static void AddAutoCraftButton(object dialog, GuiComposer detailViewGui, ItemStack stack)
         {
+            bool autoFillEnabled = BetterHandbookFeatures.AutoFillButton;
+            bool usesEnabled = BetterHandbookFeatures.UsesButton;
+            if (!autoFillEnabled && !usesEnabled)
+            {
+                return;
+            }
+
             bool hasAutoCraftButton = detailViewGui.GetButton("autocraft-button") != null;
             bool hasUsesButton = detailViewGui.GetButton("recipeuses-button") != null;
-            if (hasAutoCraftButton && hasUsesButton)
+            if ((!autoFillEnabled || hasAutoCraftButton) && (!usesEnabled || hasUsesButton))
             {
                 BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Postfix] Buttons already present for {0}", stack.Collectible?.Code);
                 return;
             }
 
-            var recipes = FindCraftingRecipes(stack);
+            var recipes = autoFillEnabled ? FindCraftingRecipes(stack) : new List<GridRecipe>();
             BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Postfix] Page item={0} matchedRecipes={1}", stack.Collectible?.Code, recipes.Count);
+            bool added = false;
 
-            if (!hasAutoCraftButton && recipes.Count > 0)
+            if (autoFillEnabled && !hasAutoCraftButton && recipes.Count > 0)
             {
                 BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Postfix] Adding Auto-Fill button");
                 AddAutoFillFooterButton(
                     detailViewGui,
                     () => OnAutoCraftClicked(recipes));
+                added = true;
             }
 
-            if (!hasUsesButton)
+            if (usesEnabled && !hasUsesButton)
             {
                 AddUsesFooterButton(
                     detailViewGui,
                     () => RecipeExplorerMod.ShowUsesForStack(stack));
+                added = true;
+            }
+
+            if (!added)
+            {
+                return;
             }
 
             detailViewGui.ReCompose();

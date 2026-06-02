@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace NetSpy;
+namespace ServerDoctor;
 
 internal sealed class PacketCounter
 {

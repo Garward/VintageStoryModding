@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "file": "betterhandbook.json",
+  "patches": {},
+  "settings": [
+    {
+      "type": "separator",
+      "title": "betterhandbook:config-title-performance"
+    },
+    {
+      "code": "EnableHandbookPerformanceOptimizations",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-handbook-performance",
+      "comment": "betterhandbook:setting-handbook-performance-tooltip"
+    },
+    {
+      "code": "EnableCreatedByRecipeFilter",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-created-by-filter",
+      "comment": "betterhandbook:setting-created-by-filter-tooltip"
+    },
+    {
+      "code": "EnableVariantGrouping",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-variant-grouping",
+      "comment": "betterhandbook:setting-variant-grouping-tooltip"
+    },
+    {
+      "type": "separator",
+      "title": "betterhandbook:config-title-handbook-features"
+    },
+    {
+      "code": "EnableModCategoryTab",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-mod-category-tab",
+      "comment": "betterhandbook:setting-mod-category-tab-tooltip"
+    },
+    {
+      "code": "EnableBookmarks",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-bookmarks",
+      "comment": "betterhandbook:setting-bookmarks-tooltip"
+    },
+    {
+      "code": "EnableLockedPage",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-locked-page",
+      "comment": "betterhandbook:setting-locked-page-tooltip"
+    },
+    {
+      "type": "separator",
+      "title": "betterhandbook:config-title-crafting"
+    },
+    {
+      "code": "EnableAutoFillButton",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-autofill-button",
+      "comment": "betterhandbook:setting-autofill-button-tooltip"
+    },
+    {
+      "code": "EnableUsesButton",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-uses-button",
+      "comment": "betterhandbook:setting-uses-button-tooltip"
+    },
+    {
+      "code": "EnableUsesHotkey",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-uses-hotkey",
+      "comment": "betterhandbook:setting-uses-hotkey-tooltip"
+    },
+    {
+      "code": "EnableRecipeOverlays",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-recipe-overlays",
+      "comment": "betterhandbook:setting-recipe-overlays-tooltip"
+    },
+    {
+      "code": "EnableSlideshowScroll",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-slideshow-scroll",
+      "comment": "betterhandbook:setting-slideshow-scroll-tooltip"
+    },
+    {
+      "code": "EnableCraftingOutputConflictScroll",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-crafting-output-conflict-scroll",
+      "comment": "betterhandbook:setting-crafting-output-conflict-scroll-tooltip"
+    },
+    {
+      "type": "separator",
+      "title": "betterhandbook:config-title-compatibility"
+    },
+    {
+      "code": "EnableGenericContainerDropFix",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-generic-container-drop-fix",
+      "comment": "betterhandbook:setting-generic-container-drop-fix-tooltip"
+    },
+    {
+      "type": "separator",
+      "title": "betterhandbook:config-title-messages-logging"
+    },
+    {
+      "code": "ShowAutoFillMessages",
+      "type": "boolean",
+      "default": false,
+      "ingui": "betterhandbook:setting-show-autofill-messages",
+      "comment": "betterhandbook:setting-show-autofill-messages-tooltip"
+    },
+    {
+      "code": "EnableInfoLogging",
+      "type": "boolean",
+      "default": false,
+      "ingui": "betterhandbook:setting-info-logging",
+      "comment": "betterhandbook:setting-info-logging-tooltip"
+    },
+    {
+      "code": "EnableDiagnosticLogging",
+      "type": "boolean",
+      "default": false,
+      "ingui": "betterhandbook:setting-diagnostic-logging",
+      "comment": "betterhandbook:setting-diagnostic-logging-tooltip"
+    },
+    {
+      "code": "EnableAutoFillTraceLogging",
+      "type": "boolean",
+      "default": false,
+      "ingui": "betterhandbook:setting-autofill-trace-logging",
+      "comment": "betterhandbook:setting-autofill-trace-logging-tooltip"
+    },
+    {
+      "code": "EnableFailureLogging",
+      "type": "boolean",
+      "default": true,
+      "ingui": "betterhandbook:setting-failure-logging",
+      "comment": "betterhandbook:setting-failure-logging-tooltip"
+    }
+  ]
+}

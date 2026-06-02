@@ -5,7 +5,7 @@
   "name": "Item Sync Fixes",
   "authors": ["garward"],
   "description": "An attempt to fix inventory desync symptoms: crafting output ghost items from partial output moves, temporary fake/ghost client items from stale queued corrections, exact delayed hotbar/backpack item echoes, and right click single item snapbacks/flicker.",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "requiredOnClient": true,
   "requiredOnServer": true,
   "dependencies": {

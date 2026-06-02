@@ -57,6 +57,7 @@ namespace VibrantShaders
         private float colormapChromaStrength = 1.256f;
         private float colormapYellowGreenGuard = 0.833f;
         private float colormapBrightness = 0.500f;
+        private float warmLightStability = 0.650f;
         private float goldenHourStrength = 0.000f;
         private int seasonalGrassMapIndex = 14;
         private int climatePlantMapIndex = 0;
@@ -165,6 +166,7 @@ namespace VibrantShaders
             colormapChromaStrength = GetFloatSetting(config, "colormap_chroma_strength", colormapChromaStrength);
             colormapYellowGreenGuard = GetFloatSetting(config, "colormap_yellow_green_guard", colormapYellowGreenGuard);
             colormapBrightness = GetFloatSetting(config, "colormap_brightness", colormapBrightness);
+            warmLightStability = GetFloatSetting(config, "warm_light_stability", warmLightStability);
             goldenHourStrength = GetFloatSetting(config, "golden_hour_strength", goldenHourStrength);
         }
 
@@ -289,6 +291,9 @@ namespace VibrantShaders
                     break;
                 case "colormap_brightness":
                     colormapBrightness = setting.Value.AsFloat(colormapBrightness);
+                    break;
+                case "warm_light_stability":
+                    warmLightStability = setting.Value.AsFloat(warmLightStability);
                     break;
                 case "golden_hour_strength":
                     goldenHourStrength = setting.Value.AsFloat(goldenHourStrength);
@@ -422,6 +427,7 @@ namespace VibrantShaders
             SetFloatIfPresent(shader, "COLOR_RICHNESS", Effective(colorRichness, 0f));
             SetFloatIfPresent(shader, "EARTH_TONE_SEPARATION", Effective(earthToneSeparation, 0f));
             SetFloatIfPresent(shader, "SEASON_GRASS_CORRECTION", Effective(seasonGrassCorrection, 0f));
+            SetFloatIfPresent(shader, "WARM_LIGHT_STABILITY", Effective(warmLightStability, 0f));
             SetFloatIfPresent(shader, "GOLDEN_HOUR_STRENGTH", Effective(goldenHourStrength, 0f));
 
             if (shader.HasUniform("depthHazeEnabled"))

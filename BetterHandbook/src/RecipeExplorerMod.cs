@@ -25,9 +25,8 @@ namespace RecipeExplorer
             capi = api;
 
             // Load config
-            Config = api.LoadModConfig<ModConfig>("betterhandbook.json") ?? new ModConfig();
-            BetterHandbookLog.Config = Config;
-            api.StoreModConfig(Config, "betterhandbook.json");
+            ApplyConfig(BetterHandbookConfigStore.Load(api));
+            BetterHandbookConfigLibIntegration.TryInitialize(api);
 
             // Initialize Harmony for patching
             harmony = new Harmony(HarmonyId);
@@ -37,20 +36,31 @@ namespace RecipeExplorer
 
             // Initialize auto-craft system
             AutoCraftSystem.Initialize(api, harmony);
-            HandbookRecipeOverlays.SetApi(api);
-            HandbookRecipeAssets.Load(api);
+            if (BetterHandbookFeatures.RecipeOverlays)
+            {
+                HandbookRecipeOverlays.SetApi(api);
+                HandbookRecipeAssets.Load(api);
+            }
 
             // Build recipe index after world finalized
-            api.Event.LevelFinalize += OnLevelFinalize;
+            if (BetterHandbookFeatures.UsesLookup)
+            {
+                api.Event.LevelFinalize += OnLevelFinalize;
+            }
 
             // Register hotkeys
-            RegisterHotkeys();
+            if (BetterHandbookFeatures.UsesHotkey)
+            {
+                RegisterHotkeys();
+            }
 
             BetterHandbookLog.Info(api, "[BetterHandbook] Recipe Explorer features loaded successfully");
         }
 
         private void OnLevelFinalize()
         {
+            if (!BetterHandbookFeatures.UsesLookup) return;
+
             BuildIndexNow();
 
             // 1.22 timing: grid recipes may not be synced to client at LevelFinalize. Retry once
@@ -102,7 +112,7 @@ namespace RecipeExplorer
 
         public static bool ShowUsesForStack(ItemStack stack)
         {
-            if (instance == null || stack == null)
+            if (!BetterHandbookFeatures.UsesLookup || instance == null || stack == null || instance.recipeIndex == null)
             {
                 return false;
             }
@@ -118,8 +128,15 @@ namespace RecipeExplorer
             return true;
         }
 
+        internal static void ApplyConfig(ModConfig config)
+        {
+            Config = config ?? new ModConfig();
+            BetterHandbookLog.Config = Config;
+        }
+
         public override void Dispose()
         {
+            BetterHandbookConfigLibIntegration.Cleanup();
             harmony?.UnpatchAll(HarmonyId);
             if (instance == this)
             {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Vintagestory.Server;
 
-namespace NetSpy;
+namespace ServerDoctor;
 
 internal static class PacketInspector
 {

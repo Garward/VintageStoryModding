@@ -94,7 +94,7 @@ namespace VintageKinematics.Blocks
 
             if (byPlayer?.Entity?.Controls?.ShiftKey == true)
             {
-                be.Release(-1);
+                be.Release(1);
                 return;
             }
 

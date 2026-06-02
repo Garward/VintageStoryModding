@@ -1,0 +1,14 @@
+{
+    "type": "code",
+    "modid": "serverdoctor",
+    "name": "ServerDoctor",
+    "version": "0.1.0",
+    "description": "Server diagnostic mod: samples outbound packet sources, profiles server tick usage, and optionally renders top block tick offenders client-side.",
+    "authors": ["garward"],
+    "side": "Universal",
+    "requiredOnClient": false,
+    "requiredOnServer": true,
+    "dependencies": {
+        "game": "1.22.0"
+    }
+}

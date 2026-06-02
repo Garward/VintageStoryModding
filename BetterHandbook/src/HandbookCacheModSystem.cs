@@ -21,8 +21,8 @@ namespace HandbookCache
 
             try
             {
-                RecipeExplorer.BetterHandbookLog.Config = api.LoadModConfig<RecipeExplorer.ModConfig>("betterhandbook.json") ?? new RecipeExplorer.ModConfig();
-                if (api is Vintagestory.API.Client.ICoreClientAPI clientApi)
+                RecipeExplorer.RecipeExplorerMod.ApplyConfig(RecipeExplorer.BetterHandbookConfigStore.Load(api));
+                if (RecipeExplorer.BetterHandbookFeatures.RecipeOverlays && api is Vintagestory.API.Client.ICoreClientAPI clientApi)
                 {
                     RecipeExplorer.HandbookRecipeOverlays.SetApi(clientApi);
                     RecipeExplorer.HandbookRecipeAssets.Load(clientApi);

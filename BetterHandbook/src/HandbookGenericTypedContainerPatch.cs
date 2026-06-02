@@ -14,6 +14,8 @@ namespace HandbookCache
 
         public static bool Prefix(ItemStack handbookStack, IPlayer forPlayer, ref BlockDropItemStack[] __result)
         {
+            if (!RecipeExplorer.BetterHandbookFeatures.GenericContainerDropFix) return true;
+
             ITreeAttribute attributes = handbookStack?.Attributes;
             if (attributes?.GetString("type", null) != null)
             {

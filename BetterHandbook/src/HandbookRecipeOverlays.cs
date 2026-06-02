@@ -48,6 +48,15 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(SlideshowGridRecipeTextComponent), "RenderInteractiveElements")]
         public static IEnumerable<CodeInstruction> CaptureRenderedGridIngredient(IEnumerable<CodeInstruction> instructions)
         {
+            if (!BetterHandbookFeatures.RecipeOverlays)
+            {
+                foreach (CodeInstruction instruction in instructions)
+                {
+                    yield return instruction;
+                }
+                yield break;
+            }
+
             MethodInfo getElement = AccessTools.Method(typeof(GridRecipe), "GetElementInGrid", null, new[] { typeof(CraftingRecipeIngredient) });
 
             foreach (CodeInstruction instruction in instructions)
@@ -72,6 +81,7 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(GuiDialogHandbook), "OnRenderGUI")]
         public static void ResetRenderState()
         {
+            if (!BetterHandbookFeatures.RecipeOverlays) return;
             currentObject = null;
             durabilityCost = 0;
         }
@@ -80,7 +90,7 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(CollectibleObject), "OnHandbookRecipeRender")]
         public static void MarkToolIngredients(object[] __args, CollectibleObject __instance)
         {
-            if (api == null || currentIngredient == null || !currentIngredient.IsTool)
+            if (!BetterHandbookFeatures.RecipeOverlays || api == null || currentIngredient == null || !currentIngredient.IsTool)
             {
                 return;
             }
@@ -118,6 +128,8 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(CollectibleObject), "GetHeldItemInfo")]
         public static void AddStackAndDurabilityInfo(StringBuilder dsc, CollectibleObject __instance)
         {
+            if (!BetterHandbookFeatures.RecipeOverlays) return;
+
             if (!__instance.IsLiquid())
             {
                 dsc.Append(Lang.Get("betterhandbook:stackSize", __instance.MaxStackSize));
@@ -133,7 +145,7 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(CollectibleBehaviorHandbookTextAndExtraInfo), "addCreatedByInfo")]
         public static void SnapshotCreatedByRecipes(List<RichTextComponentBase> components)
         {
-            if (components == null)
+            if (!BetterHandbookFeatures.RecipeOverlays || components == null)
             {
                 return;
             }
@@ -173,7 +185,7 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(SlideshowGridRecipeTextComponent), "RenderInteractiveElements")]
         public static void RenderMissingIngredientOverlay(SlideshowGridRecipeTextComponent __instance, double renderX, double renderY)
         {
-            if (api == null || lastFailedComponent == null || !ReferenceEquals(__instance, lastFailedComponent))
+            if (!BetterHandbookFeatures.RecipeOverlays || api == null || lastFailedComponent == null || !ReferenceEquals(__instance, lastFailedComponent))
             {
                 return;
             }
@@ -228,11 +240,14 @@ namespace RecipeExplorer
         [HarmonyPatch(typeof(GuiDialogInventory), "OnGuiClosed")]
         public static void ClearInventoryScopedState()
         {
+            if (!BetterHandbookFeatures.RecipeOverlays) return;
             ClearFailedFill();
         }
 
         internal static void ReportFailedFill(IEnumerable<GridRecipe> triedRecipes)
         {
+            if (!BetterHandbookFeatures.RecipeOverlays) return;
+
             List<ItemSlot> available = CollectAvailableSlots(includeOpenContainers: true, includeCraftingGrid: true);
             SlideshowGridRecipeTextComponent bestComponent = null;
             GridRecipe bestRecipe = null;
@@ -282,6 +297,8 @@ namespace RecipeExplorer
 
         internal static void ClearFailedFill()
         {
+            if (!BetterHandbookFeatures.RecipeOverlays) return;
+
             lastFailedComponent = null;
             lastFailedRecipe = null;
             lastFailedAvailable = null;
