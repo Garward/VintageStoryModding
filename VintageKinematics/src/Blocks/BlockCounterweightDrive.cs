@@ -1,14 +1,34 @@
+using System;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
-    public class BlockCounterweightDrive : Block, IPlacementPreviewProvider
+    public class BlockCounterweightDrive : Block, IPlacementPreviewProvider, IMultiBlockColSelBoxes
     {
         private WorldInteraction[] interactions;
+        private static readonly Cuboidf[] EmptyBoxes = Array.Empty<Cuboidf>();
+        private static readonly Cuboidf[] BottomBaseBoxes =
+        {
+            new Cuboidf(0f, 0f, 0f, 1f, 0.1875f, 1f)
+        };
+        private static readonly Cuboidf[] BottomCenterBoxes =
+        {
+            new Cuboidf(0f, 0f, 0f, 1f, 0.1875f, 1f),
+            new Cuboidf(0.0625f, 0.1875f, 0.25f, 0.9375f, 1f, 0.75f)
+        };
+        private static readonly Cuboidf[] MiddleCenterBoxes =
+        {
+            new Cuboidf(0.1875f, 0f, 0.25f, 0.8125f, 1f, 0.8125f)
+        };
+        private static readonly Cuboidf[] TopCenterBoxes =
+        {
+            new Cuboidf(0f, 0f, 0.25f, 1f, 1f, 0.75f)
+        };
 
         public bool TryResolvePlacementPreview(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, out BlockPos targetPos, out Block variant)
         {
@@ -59,6 +79,26 @@ namespace VintageKinematics.Blocks
         public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)
         {
             return interactions ?? base.GetPlacedBlockInteractionHelp(world, selection, forPlayer);
+        }
+
+        public override Cuboidf[] GetCollisionBoxes(IBlockAccessor blockAccessor, BlockPos pos)
+        {
+            return CounterweightBoxesForControllerCell();
+        }
+
+        public override Cuboidf[] GetSelectionBoxes(IBlockAccessor blockAccessor, BlockPos pos)
+        {
+            return CounterweightBoxesForControllerCell();
+        }
+
+        public Cuboidf[] MBGetCollisionBoxes(IBlockAccessor blockAccessor, BlockPos pos, Vec3i offset)
+        {
+            return CounterweightBoxesForOffset(offset);
+        }
+
+        public Cuboidf[] MBGetSelectionBoxes(IBlockAccessor blockAccessor, BlockPos pos, Vec3i offset)
+        {
+            return CounterweightBoxesForOffset(offset);
         }
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
@@ -112,6 +152,34 @@ namespace VintageKinematics.Blocks
             if (blockSel == null) return;
             BECounterweightDrive be = MultiblockHelper.GetMultiblockAwareBE(world, blockSel.Position) as BECounterweightDrive;
             be?.EndWinding();
+        }
+
+        private Cuboidf[] CounterweightBoxesForControllerCell()
+        {
+            return BoxesForCellOffset(0, 0);
+        }
+
+        private Cuboidf[] CounterweightBoxesForOffset(Vec3i offsetToController)
+        {
+            if (offsetToController == null) return CounterweightBoxesForControllerCell();
+
+            int cellY = -offsetToController.Y;
+            int span = UsesXSpan() ? -offsetToController.X : -offsetToController.Z;
+            return BoxesForCellOffset(cellY, span);
+        }
+
+        private bool UsesXSpan()
+        {
+            string side = Variant?["side"];
+            return side == "n" || side == "s";
+        }
+
+        private static Cuboidf[] BoxesForCellOffset(int cellY, int span)
+        {
+            if (span < -1 || span > 1 || cellY < 0 || cellY > 2) return EmptyBoxes;
+            if (cellY == 0) return span == 0 ? BottomCenterBoxes : BottomBaseBoxes;
+            if (span != 0) return EmptyBoxes;
+            return cellY == 1 ? MiddleCenterBoxes : TopCenterBoxes;
         }
     }
 }
