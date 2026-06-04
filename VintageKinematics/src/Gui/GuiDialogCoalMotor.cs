@@ -19,10 +19,13 @@ namespace VintageKinematics.Gui
         private void ComposeDialog(string title)
         {
             double slotPad = GuiElementItemSlotGridBase.unscaledSlotPadding;
-            double rowWidth = 260.0;
+            double topOffset = 16.0;
+            double rowWidth = 130.0;
+            ElementBounds slotMeasure = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0.0, 0.0, 1, 1);
+            double slotX = slotPad + (rowWidth - slotMeasure.fixedWidth) / 2.0;
 
-            ElementBounds fuelLabelBounds = ElementBounds.Fixed(slotPad, slotPad, rowWidth, 22.0);
-            ElementBounds fuelSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + 24.0, 1, 1);
+            ElementBounds fuelLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, rowWidth, 22.0);
+            ElementBounds fuelSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotX, slotPad + topOffset + 24.0, 1, 1);
 
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
@@ -39,7 +42,7 @@ namespace VintageKinematics.Gui
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(title, CloseIconPressed)
                 .BeginChildElements(bgBounds)
-                    .AddStaticText(fuelLabel, CairoFont.WhiteSmallText(), fuelLabelBounds)
+                    .AddStaticText(fuelLabel, CairoFont.WhiteSmallText(), EnumTextOrientation.Center, fuelLabelBounds)
                     .AddItemSlotGrid(Inventory, DoSendPacket, 1, fuelSlot, fuelSlotBounds, "fuelslot")
                 .EndChildElements()
                 .Compose();

@@ -35,22 +35,29 @@ namespace VintageKinematics.Items
         private void Compose()
         {
             double pad = GuiElementItemSlotGrid.unscaledSlotPadding;
-            double elementPad = GuiStyle.ElementToDialogPadding;
+            double topOffset = 16.0;
+            double rowWidth = 180.0;
+            ElementBounds slotMeasure = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0.0, 0.0, 1, 1);
+            double slotX = pad + (rowWidth - slotMeasure.fixedWidth) / 2.0;
 
-            ElementBounds slotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, pad, 42, 1, 1);
-            ElementBounds labelBounds = ElementBounds.Fixed(pad, 18, 160, 20);
+            ElementBounds labelBounds = ElementBounds.Fixed(pad, pad + topOffset, rowWidth, 20);
+            ElementBounds slotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotX, pad + topOffset + 24.0, 1, 1);
             ElementBounds insetBounds = slotBounds.ForkBoundingParent(6, 6, 6, 6);
-            ElementBounds dialogBounds = insetBounds
-                .ForkBoundingParent(elementPad, elementPad + 20, elementPad, elementPad)
+
+            ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
+            bgBounds.BothSizing = ElementSizing.FitToChildren;
+            bgBounds.WithChildren(labelBounds, insetBounds);
+
+            ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog
                 .WithAlignment(EnumDialogArea.RightMiddle)
                 .WithFixedAlignmentOffset(-GuiStyle.DialogToScreenPadding, 0);
 
             SingleComposer = capi.Gui
                 .CreateCompo("powereddrillfuel-" + inventory.InventoryID, dialogBounds)
-                .AddShadedDialogBG(ElementBounds.Fill)
+                .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(DialogTitle, CloseIconPressed)
-                .BeginChildElements(ElementBounds.Fill)
-                .AddStaticText(Lang.Get("vintagekinematics:powereddrill-fuel"), CairoFont.WhiteSmallText(), labelBounds)
+                .BeginChildElements(bgBounds)
+                .AddStaticText(Lang.Get("vintagekinematics:powereddrill-fuel"), CairoFont.WhiteSmallText(), EnumTextOrientation.Center, labelBounds)
                 .AddInset(insetBounds)
                 .AddItemSlotGrid(inventory, SendInvPacket, 1, new[] { 0 }, slotBounds, "fuelslot")
                 .EndChildElements()

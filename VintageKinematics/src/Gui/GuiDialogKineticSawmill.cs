@@ -37,9 +37,10 @@ namespace VintageKinematics.Gui
             double slotPad = GuiElementItemSlotGridBase.unscaledSlotPadding;
             double slotSize = GuiElementPassiveItemSlot.unscaledSlotSize;
             double rowWidth = Math.Max(3 * (slotSize + slotPad), 260.0);
+            double topOffset = 16.0;
 
-            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad, rowWidth, 22.0);
-            ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + 24.0, 1, 1);
+            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, rowWidth, 22.0);
+            ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + topOffset + 24.0, 1, 1);
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, rowWidth, 22.0);
             ElementBounds outputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
             ElementBounds modeBounds = ElementBounds.Fixed(slotPad, outputBounds.fixedY + outputBounds.fixedHeight + 12.0, rowWidth, 28.0);

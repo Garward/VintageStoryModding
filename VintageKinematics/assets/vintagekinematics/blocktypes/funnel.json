@@ -95,7 +95,8 @@
         "all": "false"
     },
     "sidesolid": {
-        "all": "false"
+        "all": "false",
+        "up": "true"
     },
     "collisionbox": {
         "x1": 0.125,

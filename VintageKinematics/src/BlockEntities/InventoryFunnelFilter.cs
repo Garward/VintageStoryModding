@@ -1,4 +1,5 @@
 using Vintagestory.API.Common;
+using Vintagestory.GameContent;
 
 namespace VintageKinematics.BlockEntities
 {
@@ -50,6 +51,48 @@ namespace VintageKinematics.BlockEntities
                 Itemstack = copy;
                 OnItemSlotModified(Itemstack);
             }
+            op.MovedQuantity = 0;
+        }
+    }
+
+    public class InventoryLiquidFilter : InventoryGeneric
+    {
+        public InventoryLiquidFilter(int slotCount, string className, ICoreAPI api)
+            : base(slotCount, className, null, api, (slotId, self) => new ItemSlotLiquidFilter(self))
+        {
+        }
+    }
+
+    public class ItemSlotLiquidFilter : ItemSlotFunnelFilter
+    {
+        public ItemSlotLiquidFilter(InventoryBase inventory) : base(inventory)
+        {
+        }
+
+        public override void ActivateSlot(ItemSlot sourceSlot, ref ItemStackMoveOperation op)
+        {
+            if (op.MouseButton != EnumMouseButton.Left && op.MouseButton != EnumMouseButton.Right) return;
+
+            if (sourceSlot.Empty)
+            {
+                if (Itemstack != null)
+                {
+                    Itemstack = null;
+                    OnItemSlotModified(null);
+                }
+            }
+            else if (sourceSlot.Itemstack.Collectible is ILiquidSource source && source.AllowHeldLiquidTransfer)
+            {
+                ItemStack content = source.GetContent(sourceSlot.Itemstack);
+                if (BlockLiquidContainerBase.GetContainableProps(content) != null)
+                {
+                    ItemStack copy = content.Clone();
+                    copy.StackSize = 1;
+                    Itemstack = copy;
+                    OnItemSlotModified(Itemstack);
+                }
+            }
+
             op.MovedQuantity = 0;
         }
     }

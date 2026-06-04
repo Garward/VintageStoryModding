@@ -107,8 +107,15 @@ namespace VintageKinematics.BlockEntities
                 double dx = axisVec.X * move;
                 double dy = axisVec.Y * move;
                 double dz = axisVec.Z * move;
-                if (contraption.WouldMovementHitWorldBlock(dx, dy, dz, out string blockReason))
+                if (contraption.WouldMovementHitWorldBlock(dx, dy, dz, out string blockReason, out bool protectedClaim))
                 {
+                    if (protectedClaim && contraption.TryRestoreToWorld(null, overwrite: false))
+                    {
+                        AutoRestoreSettleStartMs.Remove(contraption.EntityId);
+                        LastMovedEntityMs.Remove(contraption.EntityId);
+                        continue;
+                    }
+
                     contraption.RequestMovementPause("gantry-blocked", 250, blockReason);
                     AutoRestoreSettleStartMs.Remove(contraption.EntityId);
                     continue;

@@ -13,12 +13,20 @@ using VintageKinematics.Gui;
 
 namespace VintageKinematics.BlockEntities
 {
+    public enum FunnelPulseMode
+    {
+        Continuous = 0,
+        One = 1,
+        HalfStack = 2,
+        FullStack = 3
+    }
+
     /// <summary>
     /// Directional belt/storage output adapter. Belts can hand item stacks to this block entity,
     /// and inventories directly above can be drained into the configured output face.
     /// A single ghost filter slot (whitelist/blacklist toggle) gates every transfer.
     /// </summary>
-    public class BEFunnel : BlockEntity
+    public class BEFunnel : BlockEntity, IKineticActivatable
     {
         // 50 ms matches belt tick cadence so funnels keep up with max-RPM producers.
         // The tick early-exits cheaply when nothing is available to pull.
@@ -30,12 +38,14 @@ namespace VintageKinematics.BlockEntities
         public const int PacketIdToggleMode = 5301;
         public const int PacketIdSetFilter = 5302;
         public const int PacketIdToggleFuzzy = 5303;
+        public const int PacketIdTogglePulseMode = 5304;
 
         public BlockFacing OutputFacing => BlockFunnelFacing(Block?.Variant?["facing"]);
 
         private InventoryFunnelFilter filterInv;
         private bool whitelist;
         private bool fuzzy;
+        private FunnelPulseMode pulseMode = FunnelPulseMode.Continuous;
         private bool suppressClientSync;
         private GuiDialogFunnelFilter invDialog;
 
@@ -44,6 +54,7 @@ namespace VintageKinematics.BlockEntities
         public bool IsIron => Block?.Variant?["tier"] == "iron";
         public int ActiveFilterSlotCount => IsIron ? 5 : 1;
         public int PullQuantity => IsIron ? 16 : 1;
+        public FunnelPulseMode PulseMode => IsIron ? pulseMode : FunnelPulseMode.Continuous;
 
         public BEFunnel()
         {
@@ -111,44 +122,118 @@ namespace VintageKinematics.BlockEntities
 
             BlockFacing output = OutputFacing;
             if (output == BlockFacing.UP) return;
+            if (PulseMode != FunnelPulseMode.Continuous) return;
 
-            BlockPos sourcePos = Pos.AddCopy(BlockFacing.UP);
+            if (TryPullFromSource(Pos.AddCopy(BlockFacing.UP), BlockFacing.DOWN, PullQuantity)) return;
+
+            BlockPos sideSourcePos = Pos.AddCopy(output.Opposite);
+            if (Api.World.BlockAccessor.GetBlockEntity(sideSourcePos) is BlockEntityBarrel barrel && !barrel.Sealed)
+            {
+                TryPullFromSource(sideSourcePos, output, PullQuantity);
+            }
+        }
+
+        public bool OnKineticActivate(IWorldAccessor world, BlockPos targetPos, BlockFacing activatedFace, BlockPos activatorPos, float signedRPM)
+        {
+            if (Api?.Side != EnumAppSide.Server) return false;
+            if (!IsIron || PulseMode == FunnelPulseMode.Continuous) return false;
+
+            BlockFacing output = OutputFacing;
+            if (output == BlockFacing.UP) return false;
+
+            if (TryPulseFromSource(Pos.AddCopy(BlockFacing.UP), BlockFacing.DOWN)) return true;
+
+            BlockPos sideSourcePos = Pos.AddCopy(output.Opposite);
+            if (Api.World.BlockAccessor.GetBlockEntity(sideSourcePos) is BlockEntityBarrel barrel && !barrel.Sealed)
+            {
+                return TryPulseFromSource(sideSourcePos, output);
+            }
+
+            return false;
+        }
+
+        private bool TryPulseFromSource(BlockPos sourcePos, BlockFacing sourceFace)
+        {
             BlockEntity sourceBe = MultiblockHelper.GetMultiblockAwareBE(Api.World, sourcePos);
-            if (sourceBe is not IBlockEntityContainer container) return;
+            if (sourceBe is not IBlockEntityContainer container) return false;
 
             IInventory inventory = container.Inventory;
-            if (inventory == null || inventory.TakeLocked) return;
+            if (inventory == null || inventory.TakeLocked) return false;
 
-            ItemSlot sourceSlot = GetPullSlot(inventory, sourceBe, sourcePos);
-            if (sourceSlot == null || sourceSlot.Empty || !sourceSlot.CanTake()) return;
+            ItemSlot sourceSlot = GetPullSlot(inventory, sourceBe, sourcePos, sourceFace);
+            if (sourceSlot == null || sourceSlot.Empty || !sourceSlot.CanTake()) return false;
+
+            return TryPullFromSlot(sourceSlot, sourceBe, ActivationPullQuantity(sourceSlot.Itemstack));
+        }
+
+        private bool TryPullFromSource(BlockPos sourcePos, BlockFacing sourceFace, int maxQuantity)
+        {
+            BlockEntity sourceBe = MultiblockHelper.GetMultiblockAwareBE(Api.World, sourcePos);
+            if (sourceBe is not IBlockEntityContainer container) return false;
+
+            IInventory inventory = container.Inventory;
+            if (inventory == null || inventory.TakeLocked) return false;
+
+            ItemSlot sourceSlot = GetPullSlot(inventory, sourceBe, sourcePos, sourceFace);
+            if (sourceSlot == null || sourceSlot.Empty || !sourceSlot.CanTake()) return false;
+
+            return TryPullFromSlot(sourceSlot, sourceBe, maxQuantity);
+        }
+
+        private bool TryPullFromSlot(ItemSlot sourceSlot, BlockEntity sourceBe, int maxQuantity)
+        {
+            if (sourceSlot == null || sourceSlot.Empty || !sourceSlot.CanTake()) return false;
+            maxQuantity = Math.Max(1, maxQuantity);
 
             ItemStack moving = sourceSlot.Itemstack.Clone();
-            moving.StackSize = Math.Min(moving.StackSize, PullQuantity);
+            moving.StackSize = Math.Min(moving.StackSize, maxQuantity);
             int startSize = moving.StackSize;
 
             TryOutputStack(moving);
 
             int remaining = moving?.StackSize ?? 0;
             int moved = startSize - remaining;
-            if (moved <= 0) return;
+            if (moved <= 0) return false;
 
             sourceSlot.TakeOut(moved);
             sourceSlot.MarkDirty();
             sourceBe.MarkDirty(true);
             MarkDirty(false);
+            return true;
         }
 
-        private ItemSlot GetPullSlot(IInventory inventory, BlockEntity sourceBe, BlockPos sourceCell)
+        private int ActivationPullQuantity(ItemStack stack)
         {
-            // Cell-aware VK source: only pull from explicitly declared (cell, DOWN) outputs.
-            // The face on the source touching the funnel is DOWN regardless of multiblock layout.
+            if (stack == null) return 0;
+            return PulseMode switch
+            {
+                FunnelPulseMode.One => 1,
+                FunnelPulseMode.HalfStack => Math.Max(1, (stack.StackSize + 1) / 2),
+                FunnelPulseMode.FullStack => stack.StackSize,
+                _ => PullQuantity
+            };
+        }
+
+        private ItemSlot GetPullSlot(IInventory inventory, BlockEntity sourceBe, BlockPos sourceCell, BlockFacing sourceFace)
+        {
+            // Cell-aware VK source: only pull from explicitly declared outputs on the face
+            // touching the funnel. For the normal above-source case this is DOWN; side barrel
+            // support passes the horizontal face that points toward the funnel.
             // The mapped slot is the contract: if its contents fail the filter, we don't scan
             // around it (that would let the funnel reach into input slots).
             if (sourceBe is IFaceMappedContainer faceMapped)
             {
-                ItemSlot mapped = faceMapped.IOFaces.GetPullSlot(inventory, sourceCell, BlockFacing.DOWN);
+                ItemSlot mapped = faceMapped.IOFaces.GetPullSlot(inventory, sourceCell, sourceFace);
                 if (mapped == null || mapped.Empty || !mapped.CanTake()) return null;
                 return MatchesFilter(mapped.Itemstack) ? mapped : null;
+            }
+
+            if (sourceBe is BlockEntityBarrel barrel)
+            {
+                if (barrel.Sealed) return null;
+                ItemSlot itemSlot = inventory[0];
+                if (itemSlot == null || itemSlot.Empty || !itemSlot.CanTake()) return null;
+                return MatchesFilter(itemSlot.Itemstack) ? itemSlot : null;
             }
 
             // Vanilla quern's inventory has slot 0 = input (grain) and slot 1 = output (flour);
@@ -207,6 +292,11 @@ namespace VintageKinematics.BlockEntities
                 return sink.TryAcceptFromFunnel(stack);
             }
 
+            if (targetBe is BlockEntityBarrel barrel)
+            {
+                return TryOutputToBarrel(stack, barrel);
+            }
+
             if (targetBe is not IBlockEntityContainer) return false;
 
             DummySlot probe = new DummySlot(stack);
@@ -237,6 +327,26 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
+        private bool TryOutputToBarrel(ItemStack stack, BlockEntityBarrel barrel)
+        {
+            if (stack == null || stack.StackSize <= 0) return true;
+            if (barrel == null || barrel.Sealed) return false;
+
+            IInventory inventory = barrel.Inventory;
+            if (inventory == null || inventory.PutLocked || inventory.Count == 0) return false;
+
+            DummySlot source = new DummySlot(stack);
+            int startSize = stack.StackSize;
+            int moved = BarrelAutomation.TryPushItemIntoBarrel(Api.World, barrel, source, stack.StackSize);
+
+            if (moved <= 0) return false;
+
+            int remaining = source.Empty ? 0 : source.Itemstack.StackSize;
+            stack.StackSize = remaining;
+            MarkDirty(false);
+            return startSize > stack.StackSize;
+        }
+
         public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
             if (Api.World is IServerWorldAccessor)
@@ -251,6 +361,7 @@ namespace VintageKinematics.BlockEntities
                 bw.Write(fuzzy);
                 var tree = new TreeAttribute();
                 filterInv.ToTreeAttributes(tree);
+                tree.SetInt("pulseMode", (int)PulseMode);
                 tree.ToBytes(bw);
                 byte[] data = ms.ToArray();
 
@@ -279,6 +390,14 @@ namespace VintageKinematics.BlockEntities
             {
                 if (!CheckClaim(player)) return;
                 fuzzy = !fuzzy;
+                MarkDirty(true);
+                return;
+            }
+            if (packetid == PacketIdTogglePulseMode)
+            {
+                if (!CheckClaim(player)) return;
+                if (!IsIron) return;
+                CyclePulseMode();
                 MarkDirty(true);
                 return;
             }
@@ -331,6 +450,7 @@ namespace VintageKinematics.BlockEntities
             fuzzy = br.ReadBoolean();
             var tree = new TreeAttribute();
             tree.FromBytes(br);
+            pulseMode = (FunnelPulseMode)tree.GetInt("pulseMode", (int)FunnelPulseMode.Continuous);
             suppressClientSync = true;
             try
             {
@@ -347,7 +467,10 @@ namespace VintageKinematics.BlockEntities
                 invDialog = new GuiDialogFunnelFilter(
                     title, filterInv, Pos, ActiveFilterSlotCount,
                     () => whitelist, () => fuzzy,
-                    OnClientToggleMode, OnClientToggleFuzzy, capi);
+                    OnClientToggleMode, OnClientToggleFuzzy, capi,
+                    IsIron ? GetPulseModeLabel : null,
+                    IsIron ? OnClientTogglePulseMode : null,
+                    centerSingleSlot: ActiveFilterSlotCount == 1);
                 invDialog.OnClosed += OnDialogClosed;
                 invDialog.TryOpen();
             }
@@ -373,6 +496,36 @@ namespace VintageKinematics.BlockEntities
             invDialog?.OnFilterStateUpdated();
         }
 
+        private void OnClientTogglePulseMode()
+        {
+            if (!IsIron) return;
+            CyclePulseMode();
+            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdTogglePulseMode);
+            invDialog?.OnFilterStateUpdated();
+        }
+
+        private void CyclePulseMode()
+        {
+            pulseMode = PulseMode switch
+            {
+                FunnelPulseMode.Continuous => FunnelPulseMode.One,
+                FunnelPulseMode.One => FunnelPulseMode.HalfStack,
+                FunnelPulseMode.HalfStack => FunnelPulseMode.FullStack,
+                _ => FunnelPulseMode.Continuous
+            };
+        }
+
+        private string GetPulseModeLabel()
+        {
+            return PulseMode switch
+            {
+                FunnelPulseMode.One => Lang.Get("vintagekinematics:funnel-pulse-one"),
+                FunnelPulseMode.HalfStack => Lang.Get("vintagekinematics:funnel-pulse-half"),
+                FunnelPulseMode.FullStack => Lang.Get("vintagekinematics:funnel-pulse-full"),
+                _ => Lang.Get("vintagekinematics:funnel-pulse-continuous")
+            };
+        }
+
         private void OnDialogClosed()
         {
             invDialog = null;
@@ -384,6 +537,7 @@ namespace VintageKinematics.BlockEntities
             filterInv?.ToTreeAttributes(tree);
             tree.SetBool("whitelist", whitelist);
             tree.SetBool("fuzzy", fuzzy);
+            tree.SetInt("pulseMode", (int)PulseMode);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -401,6 +555,7 @@ namespace VintageKinematics.BlockEntities
             }
             whitelist = tree.GetBool("whitelist", false);
             fuzzy = tree.GetBool("fuzzy", false);
+            pulseMode = (FunnelPulseMode)tree.GetInt("pulseMode", (int)FunnelPulseMode.Continuous);
 
             if (Api != null) filterInv.ResolveBlocksOrItems();
             invDialog?.OnFilterStateUpdated();

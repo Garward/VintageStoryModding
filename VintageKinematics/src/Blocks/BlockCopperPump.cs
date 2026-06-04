@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
@@ -71,6 +72,14 @@ namespace VintageKinematics.Blocks
         public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
             return CanonicalStack(world, 1) ?? base.OnPickBlock(world, pos);
+        }
+
+        public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
+        {
+            if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
+            BECopperPump be = world.BlockAccessor.GetBlockEntity(blockSel.Position) as BECopperPump;
+            if (be == null) return base.OnBlockInteractStart(world, byPlayer, blockSel);
+            return be.OnPlayerRightClick(byPlayer, blockSel);
         }
 
         internal static bool HasPipePort(Block block, string face)

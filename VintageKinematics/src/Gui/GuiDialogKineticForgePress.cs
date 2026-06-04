@@ -77,24 +77,25 @@ namespace VintageKinematics.Gui
             double slotSize = GuiElementPassiveItemSlot.unscaledSlotSize;
             double rowWidth = System.Math.Max(3 * (slotSize + slotPad), 260.0);
             double slotColumnWidth = 70.0;
+            double topOffset = 16.0;
             GetOperationOptions(out _, out string[] operationNames, out int selectedIndex);
 
-            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad, slotColumnWidth, 22.0);
-            ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + 24.0, 1, 1);
-            ElementBounds fuelLabelBounds = ElementBounds.Fixed(slotPad + slotColumnWidth + 10.0, slotPad, slotColumnWidth, 22.0);
-            ElementBounds fuelSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad + slotColumnWidth + 10.0, slotPad + 24.0, 1, 1);
-            ElementBounds dieLabelBounds = ElementBounds.Fixed(slotPad + 2.0 * (slotColumnWidth + 10.0), slotPad, slotColumnWidth, 22.0);
-            ElementBounds dieSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad + 2.0 * (slotColumnWidth + 10.0), slotPad + 24.0, 1, 1);
-            ElementBounds operationLabelBounds = ElementBounds.Fixed(slotPad, slotPad + 24.0 + inputSlotBounds.fixedHeight + 8.0, rowWidth, 22.0);
+            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, slotColumnWidth, 22.0);
+            ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + topOffset + 24.0, 1, 1);
+            ElementBounds fuelLabelBounds = ElementBounds.Fixed(slotPad + slotColumnWidth + 10.0, slotPad + topOffset, slotColumnWidth, 22.0);
+            ElementBounds fuelSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad + slotColumnWidth + 10.0, slotPad + topOffset + 24.0, 1, 1);
+            ElementBounds dieLabelBounds = ElementBounds.Fixed(slotPad + 2.0 * (slotColumnWidth + 10.0), slotPad + topOffset, slotColumnWidth, 22.0);
+            ElementBounds dieSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad + 2.0 * (slotColumnWidth + 10.0), slotPad + topOffset + 24.0, 1, 1);
+            ElementBounds operationLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset + 24.0 + inputSlotBounds.fixedHeight + 8.0, rowWidth, 22.0);
             ElementBounds operationButtonBounds = ElementBounds.Fixed(slotPad, operationLabelBounds.fixedY + 24.0, rowWidth, 32.0);
             ElementBounds progressBounds = ElementBounds.Fixed(slotPad, operationButtonBounds.fixedY + operationButtonBounds.fixedHeight + 8.0, rowWidth, 18.0);
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, progressBounds.fixedY + progressBounds.fixedHeight + 10.0, rowWidth, 22.0);
             ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
 
             double browserX = slotPad + rowWidth + 24.0;
-            ElementBounds browserTitleBounds = ElementBounds.Fixed(browserX, slotPad, BrowserWidth, 22.0);
-            ElementBounds browserSearchBounds = ElementBounds.Fixed(browserX, slotPad + 26.0, BrowserWidth - 26.0, 28.0);
-            ElementBounds browserListBounds = ElementBounds.Fixed(browserX, slotPad + 64.0, BrowserWidth - 28.0, BrowserListHeight);
+            ElementBounds browserTitleBounds = ElementBounds.Fixed(browserX, slotPad + topOffset, BrowserWidth, 22.0);
+            ElementBounds browserSearchBounds = ElementBounds.Fixed(browserX, slotPad + topOffset + 26.0, BrowserWidth - 26.0, 28.0);
+            ElementBounds browserListBounds = ElementBounds.Fixed(browserX, slotPad + topOffset + 64.0, BrowserWidth - 28.0, BrowserListHeight);
             ElementBounds browserClipBounds = browserListBounds.ForkBoundingParent();
             ElementBounds browserInsetBounds = browserListBounds.FlatCopy().FixedGrow(6.0).WithFixedOffset(-3.0, -3.0);
             ElementBounds browserScrollbarBounds = browserInsetBounds.CopyOffsetedSibling(browserListBounds.fixedWidth + 7.0).WithFixedWidth(20.0);

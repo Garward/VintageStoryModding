@@ -378,6 +378,12 @@ namespace VintageKinematics.BlockEntities
                     BlockPos check = new BlockPos(baseCorner.X + dx, targetY, baseCorner.Z + dz, Pos.dimension);
                     Block b = Api.World.BlockAccessor.GetBlock(check);
                     if (b == null || b.Id == 0) continue;
+                    if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, check, EnumBlockAccessFlags.BuildOrBreak))
+                    {
+                        halted = true;
+                        MarkDirty(true);
+                        return;
+                    }
                     if (IsUnbreakable(b))
                     {
                         halted = true;
@@ -459,6 +465,7 @@ namespace VintageKinematics.BlockEntities
         {
             if (boreShaftBlockId < 0) return;
             BlockPos columnPos = CenterColumnPos(baseCorner, atY);
+            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return;
             Api.World.BlockAccessor.SetBlock(boreShaftBlockId, columnPos);
             placedShaftPositions.Add(columnPos.Copy());
         }
@@ -473,6 +480,7 @@ namespace VintageKinematics.BlockEntities
             // would leave air, and a falling-block landing on the cell would be theirs to keep.
             Block here = Api.World.BlockAccessor.GetBlock(columnPos);
             if (here?.Id != boreShaftBlockId) return null;
+            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return null;
 
             Api.World.BlockAccessor.SetBlock(0, columnPos);
             if (deployedShaft != null) return deployedShaft;

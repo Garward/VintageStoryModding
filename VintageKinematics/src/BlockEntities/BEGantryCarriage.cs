@@ -233,6 +233,11 @@ namespace VintageKinematics.BlockEntities
                 if (notify) Notify(byPlayer, "Contraption selection has no blocks to assemble.");
                 return true;
             }
+            if (!CanAssembleSnapshot(byPlayer))
+            {
+                if (notify) Notify(byPlayer, "Contraption selection crosses a protected claim.");
+                return true;
+            }
 
             EntityProperties entityType = Api.World.GetEntityType(ContraptionEntityCode);
             if (entityType == null)
@@ -254,11 +259,35 @@ namespace VintageKinematics.BlockEntities
             entity.ServerPos.SetFrom(entity.Pos);
             entity.PreviousServerPos.SetFrom(entity.Pos);
             entity.PositionBeforeFalling.Set(spawnPos.X, spawnPos.Y, spawnPos.Z);
-            entity.Configure(Pos, localMin.Clone(), localMax.Clone(), snapshotOffsets, snapshotBlockCodes, snapshotBlockEntityTrees, snapshotOffsets.Length, placementMode);
+            string ownerUid = byPlayer?.PlayerUID ?? AutomationClaimUtil.GetClaimOwnerUidAt(Api.World, Pos);
+            string ownerName = byPlayer?.PlayerName ?? AutomationClaimUtil.GetClaimOwnerNameAt(Api.World, Pos);
+            entity.Configure(Pos, localMin.Clone(), localMax.Clone(), snapshotOffsets, snapshotBlockCodes, snapshotBlockEntityTrees, snapshotOffsets.Length, placementMode, ownerUid, ownerName);
 
             Api.World.SpawnEntity(entity);
             assemblingEntity = true;
             RemoveSnapshotBlocksFromWorld();
+            return true;
+        }
+
+        private bool CanAssembleSnapshot(IPlayer byPlayer)
+        {
+            if (Api?.World == null || snapshotOffsets == null) return false;
+
+            for (int i = 0; i < snapshotOffsets.Length; i++)
+            {
+                Vec3i offset = snapshotOffsets[i];
+                if (offset == null) continue;
+
+                BlockPos blockPos = WorldPosFromOffset(offset);
+                if (byPlayer != null)
+                {
+                    if (!Api.World.Claims.TryAccess(byPlayer, blockPos, EnumBlockAccessFlags.BuildOrBreak)) return false;
+                    continue;
+                }
+
+                if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, blockPos, EnumBlockAccessFlags.BuildOrBreak)) return false;
+            }
+
             return true;
         }
 

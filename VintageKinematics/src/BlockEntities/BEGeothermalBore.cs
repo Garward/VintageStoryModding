@@ -279,6 +279,12 @@ namespace VintageKinematics.BlockEntities
 
             BlockPos targetPos = CenterColumnPos(baseCorner, targetY);
             Block targetBlock = Api.World.BlockAccessor.GetBlock(targetPos);
+            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, targetPos, EnumBlockAccessFlags.BuildOrBreak))
+            {
+                halted = true;
+                MarkDirty(true);
+                return;
+            }
             if (IsBedrock(targetBlock))
             {
                 SetTapped(true);
@@ -351,6 +357,7 @@ namespace VintageKinematics.BlockEntities
         private void PlaceVisualPipe(BlockPos columnPos)
         {
             if (geothermalPipeBlockId < 0) return;
+            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return;
             Api.World.BlockAccessor.SetBlock(geothermalPipeBlockId, columnPos);
             placedPipePositions.Add(columnPos.Copy());
         }
@@ -363,6 +370,7 @@ namespace VintageKinematics.BlockEntities
             placedPipePositions.RemoveAt(lastIdx);
             Block here = Api.World.BlockAccessor.GetBlock(columnPos);
             if (here?.Id != geothermalPipeBlockId) return null;
+            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return null;
 
             Api.World.BlockAccessor.SetBlock(0, columnPos);
             if (deployedPipe != null) return deployedPipe;

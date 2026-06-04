@@ -47,13 +47,14 @@ namespace VintageKinematics.Gui
         private void ComposeDialog(string title)
         {
             double width = 280.0;
-            ElementBounds distanceLabel = ElementBounds.Fixed(0.0, 0.0, width, 22.0);
-            ElementBounds distanceInput = ElementBounds.Fixed(0.0, 26.0, width, 28.0);
-            ElementBounds angleLabel = ElementBounds.Fixed(0.0, 66.0, width, 22.0);
-            ElementBounds angleInput = ElementBounds.Fixed(0.0, 92.0, width, 28.0);
-            ElementBounds statusBounds = ElementBounds.Fixed(0.0, 132.0, width, 46.0);
-            ElementBounds applyBounds = ElementBounds.Fixed(0.0, 190.0, 132.0, 30.0);
-            ElementBounds launchBounds = ElementBounds.Fixed(148.0, 190.0, 132.0, 30.0);
+            double topOffset = 16.0;
+            ElementBounds distanceLabel = ElementBounds.Fixed(0.0, topOffset + 0.0, width, 22.0);
+            ElementBounds distanceInput = ElementBounds.Fixed(0.0, topOffset + 26.0, width, 28.0);
+            ElementBounds angleLabel = ElementBounds.Fixed(0.0, topOffset + 66.0, width, 22.0);
+            ElementBounds angleInput = ElementBounds.Fixed(0.0, topOffset + 92.0, width, 28.0);
+            ElementBounds statusBounds = ElementBounds.Fixed(0.0, topOffset + 132.0, width, 46.0);
+            ElementBounds applyBounds = ElementBounds.Fixed(0.0, topOffset + 190.0, 132.0, 30.0);
+            ElementBounds launchBounds = ElementBounds.Fixed(148.0, topOffset + 190.0, 132.0, 30.0);
 
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;

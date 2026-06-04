@@ -26,6 +26,8 @@ namespace VintageKinematics.Entities
         private const string AttrSnapshotBlockEntityTrees = "vkSnapshotBlockEntityTrees";
         private const string AttrPlacementMode = "vkPlacementMode";
         private const string AttrInitialYaw = "vkInitialYaw";
+        private const string AttrOwnerPlayerUid = "vkOwnerPlayerUid";
+        private const string AttrOwnerPlayerName = "vkOwnerPlayerName";
         private const float InitialAngleRestoreToleranceRad = 23f * GameMath.DEG2RAD;
         private const double CollisionEpsilon = 0.001;
         private const double HorizontalCollisionSkin = 0.0078125;
@@ -53,6 +55,8 @@ namespace VintageKinematics.Entities
         public BlockPos ControllerPos { get; private set; }
         public int CapturedBlockCount => WatchedAttributes.GetInt(AttrCapturedBlockCount);
         public string SnapshotId => WatchedAttributes.GetString(AttrSnapshotId);
+        public string OwnerPlayerUid => WatchedAttributes.GetString(AttrOwnerPlayerUid);
+        public string OwnerPlayerName => WatchedAttributes.GetString(AttrOwnerPlayerName);
         public ContraptionPlacementMode PlacementMode => (ContraptionPlacementMode)WatchedAttributes.GetInt(AttrPlacementMode, (int)ContraptionPlacementMode.AlwaysPlaceWhenStopped);
         private Vec3i localMin = new Vec3i(0, 1, 0);
         private Vec3i localMax = new Vec3i(0, 1, 0);
@@ -99,7 +103,7 @@ namespace VintageKinematics.Entities
             Configure(controllerPos, localMin, localMax, snapshotOffsets, snapshotBlockCodes, snapshotBlockEntityTrees, capturedBlockCount, ContraptionPlacementMode.AlwaysPlaceWhenStopped);
         }
 
-        public void Configure(BlockPos controllerPos, Vec3i localMin, Vec3i localMax, Vec3i[] snapshotOffsets, string[] snapshotBlockCodes, TreeAttribute[] snapshotBlockEntityTrees, int capturedBlockCount, ContraptionPlacementMode placementMode)
+        public void Configure(BlockPos controllerPos, Vec3i localMin, Vec3i localMax, Vec3i[] snapshotOffsets, string[] snapshotBlockCodes, TreeAttribute[] snapshotBlockEntityTrees, int capturedBlockCount, ContraptionPlacementMode placementMode, string ownerPlayerUid = null, string ownerPlayerName = null)
         {
             ControllerPos = controllerPos?.Copy();
             if (ControllerPos != null)
@@ -116,6 +120,8 @@ namespace VintageKinematics.Entities
             WatchedAttributes.SetInt(AttrCapturedBlockCount, capturedBlockCount);
             WatchedAttributes.SetInt(AttrPlacementMode, (int)placementMode);
             WatchedAttributes.SetFloat(AttrInitialYaw, (float)SidedPos.Yaw);
+            if (!string.IsNullOrEmpty(ownerPlayerUid)) WatchedAttributes.SetString(AttrOwnerPlayerUid, ownerPlayerUid);
+            if (!string.IsNullOrEmpty(ownerPlayerName)) WatchedAttributes.SetString(AttrOwnerPlayerName, ownerPlayerName);
             if (string.IsNullOrEmpty(SnapshotId) && ControllerPos != null)
             {
                 WatchedAttributes.SetString(AttrSnapshotId, GameMath.MurmurHash3Mod(ControllerPos.X, ControllerPos.Y, ControllerPos.Z, int.MaxValue).ToString("x"));
@@ -975,9 +981,22 @@ namespace VintageKinematics.Entities
 
         public bool WouldMovementHitWorldBlock(double dx, double dy, double dz, out string reason)
         {
+            return WouldMovementHitWorldBlock(dx, dy, dz, out reason, out _);
+        }
+
+        public bool WouldMovementHitWorldBlock(double dx, double dy, double dz, out string reason, out bool protectedClaim)
+        {
             reason = null;
+            protectedClaim = false;
             if (World == null) return false;
             if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out _)) return false;
+
+            if (WouldMovementEnterProtectedClaim(offsets, blockCodes, dx, dy, dz, out BlockPos claimPos))
+            {
+                protectedClaim = true;
+                reason = $"Blocked by protected claim at {claimPos.X},{claimPos.InternalY},{claimPos.Z}";
+                return true;
+            }
 
             Cuboidd[] currentBoxes = GetWorldSnapshotCollisionBoxes();
             Cuboidd[] movedBoxes = OffsetBoxes(currentBoxes, dx, dy, dz);
@@ -1015,6 +1034,25 @@ namespace VintageKinematics.Entities
                         return true;
                     }
                 }
+            }
+
+            return false;
+        }
+
+        private bool WouldMovementEnterProtectedClaim(Vec3i[] offsets, string[] blockCodes, double dx, double dy, double dz, out BlockPos claimPos)
+        {
+            claimPos = null;
+            int count = Math.Min(offsets?.Length ?? 0, blockCodes?.Length ?? 0);
+            for (int i = 0; i < count; i++)
+            {
+                if (offsets[i] == null || string.IsNullOrEmpty(blockCodes[i])) continue;
+                if (IsGantryShaftCode(blockCodes[i])) continue;
+
+                BlockPos targetPos = GetWorldBlockPositionForOffsetAfterMove(offsets[i], dx, dy, dz);
+                if (CanAutomationBuildOrBreakAt(targetPos)) continue;
+
+                claimPos = targetPos;
+                return true;
             }
 
             return false;
@@ -1617,9 +1655,24 @@ namespace VintageKinematics.Entities
         private bool CanRestoreBlockAt(BlockPos blockPos, IPlayer player, bool overwrite)
         {
             if (player != null && !World.Claims.TryAccess(player, blockPos, EnumBlockAccessFlags.BuildOrBreak)) return false;
+            if (player == null && !CanAutomationBuildOrBreakAt(blockPos)) return false;
 
             Block existing = World.BlockAccessor.GetBlock(blockPos);
             return overwrite || existing == null || existing.Id == 0;
+        }
+
+        public bool CanAutomationBuildOrBreakAt(BlockPos blockPos)
+        {
+            if (World?.Claims == null || blockPos == null) return true;
+
+            string ownerUid = OwnerPlayerUid;
+            IPlayer ownerPlayer = string.IsNullOrEmpty(ownerUid) ? null : World.PlayerByUid(ownerUid);
+            if (!string.IsNullOrEmpty(ownerUid))
+            {
+                return AutomationClaimUtil.CanOwnerAccessClaim(World, blockPos, ownerUid, ownerPlayer, EnumBlockAccessFlags.BuildOrBreak);
+            }
+
+            return AutomationClaimUtil.CanAutomatedBlockAccess(World, ControllerPos, blockPos, EnumBlockAccessFlags.BuildOrBreak);
         }
 
         private static bool IsReservedRestorePosition(BlockPos candidate, BlockPos[] reservedPositions, int count)

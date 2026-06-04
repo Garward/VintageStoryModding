@@ -145,6 +145,7 @@ namespace VintageKinematics.BlockEntities
             {
                 foreach (var p in positions)
                 {
+                    if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, p, EnumBlockAccessFlags.BuildOrBreak)) continue;
                     Api.World.BlockAccessor.BreakBlock(p, null);
                 }
             }

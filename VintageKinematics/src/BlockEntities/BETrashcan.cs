@@ -16,7 +16,7 @@ namespace VintageKinematics.BlockEntities
     /// </summary>
     public class BETrashcan : BlockEntity, IAutomationItemSink
     {
-        private const int FilterSlotCount = 1;
+        private const int FilterSlotCount = 6;
 
         public const int PacketIdOpenDialog = 5400;
         public const int PacketIdToggleMode = 5401;
@@ -138,7 +138,7 @@ namespace VintageKinematics.BlockEntities
                 using var ms = new MemoryStream(data);
                 using var br = new BinaryReader(ms);
                 int slotId = br.ReadInt32();
-                if (slotId != 0) return;
+                if (slotId < 0 || slotId >= FilterSlotCount) return;
 
                 bool hasStack = br.ReadBoolean();
                 ItemStack stack = null;
@@ -150,8 +150,8 @@ namespace VintageKinematics.BlockEntities
                     stack.StackSize = 1;
                 }
 
-                filterInv[0].Itemstack = stack;
-                filterInv[0].MarkDirty();
+                filterInv[slotId].Itemstack = stack;
+                filterInv[slotId].MarkDirty();
                 MarkDirty(true);
                 return;
             }

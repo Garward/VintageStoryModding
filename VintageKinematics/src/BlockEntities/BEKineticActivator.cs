@@ -3,6 +3,7 @@ using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Network;
 
@@ -194,6 +195,11 @@ namespace VintageKinematics.BlockEntities
                 return false;
             }
 
+            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, targetPos, EnumBlockAccessFlags.Use))
+            {
+                return false;
+            }
+
             if (targetBe is IKineticActivatable beTarget
                 && beTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
             {
@@ -206,11 +212,15 @@ namespace VintageKinematics.BlockEntities
                 return true;
             }
 
+            if (targetBe is BlockEntityBarrel barrel)
+            {
+                return TrySealBarrel(barrel);
+            }
+
             try
             {
                 Caller caller = new Caller
                 {
-                    CallerPrivileges = new[] { "*" },
                     Pos = Pos.ToVec3d(),
                     Type = EnumCallerType.Block
                 };
@@ -222,6 +232,15 @@ namespace VintageKinematics.BlockEntities
                 Api.Logger.Warning("[VintageKinematics] Kinetic Activator failed to activate {0} at {1}: {2}", targetBlock.Code, targetPos, e.Message);
                 return false;
             }
+        }
+
+        private static bool TrySealBarrel(BlockEntityBarrel barrel)
+        {
+            if (barrel == null || barrel.Sealed) return false;
+            if (!barrel.GetCanSeal(null)) return false;
+
+            barrel.SealBarrel();
+            return true;
         }
 
         private bool IsBlacklistedTarget(Block targetBlock, BlockEntity targetBe)

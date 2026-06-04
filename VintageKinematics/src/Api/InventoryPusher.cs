@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VintageKinematics.BlockEntities;
 using VintageKinematics.Blocks;
 
@@ -42,6 +43,7 @@ namespace VintageKinematics.Api
             // output faces should still feed them just like they feed adjacent storage.
             if (targetBe is BEBelt belt) return TryPushOntoBelt(world, belt, toFace, source, maxQuantity);
             if (targetBe is BEFunnel funnel) return TryPushIntoFunnel(funnel, source, maxQuantity);
+            if (targetBe is BlockEntityBarrel barrel) return BarrelAutomation.TryPushItemIntoBarrel(world, barrel, source, maxQuantity);
 
             if (targetBe is not IBlockEntityContainer container) return 0;
 

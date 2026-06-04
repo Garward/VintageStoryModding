@@ -141,6 +141,7 @@ namespace VintageKinematics.Blocks
         private static bool CanDrillBreak(ContraptionWorkContext context, Block block, BlockPos pos)
         {
             if (block == null || block.Id == 0) return false;
+            if (!CanBreakAt(context, pos)) return false;
             if (block.Resistance >= 99999f || block.RequiredMiningTier > MaxDrillMiningTier) return false;
 
             EnumBlockMaterial material = block.GetBlockMaterial(context.World.BlockAccessor, pos);
@@ -258,6 +259,7 @@ namespace VintageKinematics.Blocks
         {
             return block != null
                 && block.Id != 0
+                && CanBreakAt(context, pos)
                 && block.GetBlockMaterial(context.World.BlockAccessor, pos) == EnumBlockMaterial.Wood
                 && block.Resistance < 99999f;
         }
@@ -266,6 +268,7 @@ namespace VintageKinematics.Blocks
         {
             return block != null
                 && block.Id != 0
+                && CanBreakAt(context, pos)
                 && block.GetBlockMaterial(context.World.BlockAccessor, pos) == EnumBlockMaterial.Leaves
                 && block.Resistance < 99999f;
         }
@@ -353,6 +356,8 @@ namespace VintageKinematics.Blocks
 
         private static void BreakBlockToContraptionOutput(ContraptionWorkContext context, BlockPos pos, Block block)
         {
+            if (!CanBreakAt(context, pos)) return;
+
             ItemStack[] drops = null;
             try
             {
@@ -374,6 +379,16 @@ namespace VintageKinematics.Blocks
 
             context.World.BlockAccessor.SetBlock(0, pos);
             context.World.BlockAccessor.MarkBlockDirty(pos);
+        }
+
+        private static bool CanBreakAt(ContraptionWorkContext context, BlockPos pos)
+        {
+            if (context.Contraption != null)
+            {
+                return context.Contraption.CanAutomationBuildOrBreakAt(pos);
+            }
+
+            return AutomationClaimUtil.CanAutomatedBlockAccess(context.World, context.ToolWorldPos, pos, EnumBlockAccessFlags.BuildOrBreak);
         }
 
         private static bool TryGetToolFacing(Block block, out BlockFacing facing)
