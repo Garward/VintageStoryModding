@@ -24,10 +24,11 @@ namespace VintageKinematics.Gui
         private void ComposeDialog(string title)
         {
             double slotPad = GuiElementItemSlotGridBase.unscaledSlotPadding;
+            double topOffset = 16.0;
 
-            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad, 220.0, 22.0);
-            ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + 24.0, 1, 1);
-            ElementBounds arrowBounds = ElementBounds.Fixed(slotPad + 60.0, slotPad + 24.0, 96.0, 48.0);
+            ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, 220.0, 22.0);
+            ElementBounds inputSlotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + topOffset + 24.0, 1, 1);
+            ElementBounds arrowBounds = ElementBounds.Fixed(slotPad + 60.0, slotPad + topOffset + 24.0, 96.0, 48.0);
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, inputSlotBounds.fixedY + inputSlotBounds.fixedHeight + 8.0, 220.0, 22.0);
             ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 2, 2);
 
