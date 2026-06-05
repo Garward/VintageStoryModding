@@ -203,17 +203,27 @@ namespace VintageKinematics.BlockEntities
                 return false;
             }
 
-            if (targetBe is IKineticActivatable beTarget
-                && beTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
+            bool handledByActivatorApi = false;
+
+            if (targetBe is IKineticActivatable beTarget)
             {
-                return true;
+                handledByActivatorApi = true;
+                if (beTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
+                {
+                    return true;
+                }
             }
 
-            if (targetBlock is IKineticActivatable blockTarget
-                && blockTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
+            if (!handledByActivatorApi && targetBlock is IKineticActivatable blockTarget)
             {
-                return true;
+                handledByActivatorApi = true;
+                if (blockTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
+                {
+                    return true;
+                }
             }
+
+            if (handledByActivatorApi) return false;
 
             if (targetBe is BlockEntityBarrel barrel)
             {

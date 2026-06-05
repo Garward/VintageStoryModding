@@ -54,6 +54,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityBehaviorClass("KineticMultiblock", typeof(BEBehaviorKineticMultiblock));
             api.RegisterBlockEntityBehaviorClass("BellowsPulse", typeof(BEBehaviorBellowsPulse));
             api.RegisterBlockEntityBehaviorClass("CrusherProcess", typeof(BEBehaviorCrusherProcess));
+            api.RegisterBlockBehaviorClass("CanonicalDrop", typeof(Blocks.BlockBehaviorCanonicalDrop));
             api.RegisterBlockEntityClass("Kinetic", typeof(BlockEntities.BEKinetic));
             api.RegisterBlockEntityClass("HandCrank", typeof(BlockEntities.BEHandCrank));
             api.RegisterBlockEntityClass("KineticAnimated", typeof(BlockEntities.BEKineticAnimated));

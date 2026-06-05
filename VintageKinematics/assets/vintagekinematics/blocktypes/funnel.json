@@ -2,6 +2,16 @@
     "code": "funnel",
     "class": "BlockFunnel",
     "entityClass": "Funnel",
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "facing": "north"
+                }
+            }
+        }
+    ],
     "variantgroups": [
         {
             "code": "tier",
