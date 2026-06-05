@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
-using VintageKinematics.Gui;
 
 namespace VintageKinematics.BlockEntities
 {
@@ -42,15 +39,11 @@ namespace VintageKinematics.BlockEntities
 
         public BlockFacing OutputFacing => BlockFunnelFacing(Block?.Variant?["facing"]);
 
-        private InventoryFunnelFilter filterInv;
-        private bool whitelist;
-        private bool fuzzy;
+        private readonly FilterDialogController filter;
         private FunnelPulseMode pulseMode = FunnelPulseMode.Continuous;
-        private bool suppressClientSync;
-        private GuiDialogFunnelFilter invDialog;
 
-        public bool Whitelist => whitelist;
-        public bool Fuzzy => fuzzy;
+        public bool Whitelist => filter.Whitelist;
+        public bool Fuzzy => filter.Fuzzy;
         public bool IsIron => Block?.Variant?["tier"] == "iron";
         public int ActiveFilterSlotCount => IsIron ? 5 : 1;
         public int PullQuantity => IsIron ? 16 : 1;
@@ -58,47 +51,37 @@ namespace VintageKinematics.BlockEntities
 
         public BEFunnel()
         {
-            filterInv = new InventoryFunnelFilter(MaxFilterSlots, "funnelfilter", null);
+            filter = new FilterDialogController(
+                this,
+                new InventoryFunnelFilter(MaxFilterSlots, "funnelfilter", null),
+                "funnelfilter",
+                "vintagekinematics:funnel-filter-title",
+                "Funnel Filter",
+                "funnel",
+                PacketIdOpenDialog,
+                PacketIdToggleMode,
+                PacketIdSetFilter,
+                PacketIdToggleFuzzy,
+                () => ActiveFilterSlotCount,
+                centerSingleSlot: () => ActiveFilterSlotCount == 1);
+            filter.ExtraTogglePacketId = PacketIdTogglePulseMode;
+            filter.CanToggleExtra = () => IsIron;
+            filter.ToggleExtraServer = CyclePulseMode;
+            filter.ToggleExtraClient = CyclePulseMode;
+            filter.ExtraToggleLabel = GetPulseModeLabel;
+            filter.WriteExtraState = tree => tree.SetInt("pulseMode", (int)PulseMode);
+            filter.ReadExtraState = tree => pulseMode = (FunnelPulseMode)tree.GetInt("pulseMode", (int)FunnelPulseMode.Continuous);
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            filterInv.LateInitialize("funnelfilter-" + Pos, api);
-            filterInv.ResolveBlocksOrItems();
+            filter.Initialize(api);
 
             if (api.Side == EnumAppSide.Server)
             {
                 RegisterGameTickListener(OnServerTick, AutoPullTickMs);
             }
-            else
-            {
-                // Slot transaction packets unreliably route into our ghost slot, so we
-                // forward filter changes directly via a BE packet instead.
-                filterInv.SlotModified += OnClientFilterSlotModified;
-            }
-        }
-
-        private void OnClientFilterSlotModified(int slotId)
-        {
-            if (Api?.Side != EnumAppSide.Client) return;
-            if (suppressClientSync) return;
-
-            using var ms = new MemoryStream();
-            using var bw = new BinaryWriter(ms);
-            bw.Write(slotId);
-            ItemSlot s = filterInv[slotId];
-            if (s.Empty)
-            {
-                bw.Write(false);
-            }
-            else
-            {
-                bw.Write(true);
-                s.Itemstack.ToBytes(bw);
-            }
-
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSetFilter, ms.ToArray());
         }
 
         public bool TryAcceptFromBelt(ItemStack stack) => TryAcceptFromPush(stack);
@@ -112,9 +95,9 @@ namespace VintageKinematics.BlockEntities
             return TryOutputStack(stack);
         }
 
-        // All-empty filter: whitelist blocks everything, blacklist allows everything.
-        // Otherwise the stack matches if any active filter slot matches it.
-        public bool MatchesFilter(ItemStack stack) => ItemFilterMatcher.Matches(stack, filterInv, ActiveFilterSlotCount, whitelist, fuzzy);
+        // All-empty filter means default behavior. Once a filter exists, whitelist/blacklist
+        // and fuzzy matching decide whether the stack can pass.
+        public bool MatchesFilter(ItemStack stack) => filter.Matches(stack);
 
         private void OnServerTick(float dt)
         {
@@ -349,159 +332,19 @@ namespace VintageKinematics.BlockEntities
 
         public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
-            if (Api.World is IServerWorldAccessor)
-            {
-                string title = Lang.Get("vintagekinematics:funnel-filter-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:funnel-filter-title") title = "Funnel Filter";
-
-                using var ms = new MemoryStream();
-                using var bw = new BinaryWriter(ms);
-                bw.Write(title);
-                bw.Write(whitelist);
-                bw.Write(fuzzy);
-                var tree = new TreeAttribute();
-                filterInv.ToTreeAttributes(tree);
-                tree.SetInt("pulseMode", (int)PulseMode);
-                tree.ToBytes(bw);
-                byte[] data = ms.ToArray();
-
-                ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, data);
-                byPlayer.InventoryManager.OpenInventory(filterInv);
-            }
-            return true;
+            return filter.Open(byPlayer);
         }
 
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
-            if (packetid == 1001)
-            {
-                player.InventoryManager?.CloseInventory(filterInv);
-                return;
-            }
-            if (packetid == PacketIdToggleMode)
-            {
-                if (!CheckClaim(player)) return;
-                whitelist = !whitelist;
-                MarkDirty(true);
-                return;
-            }
-            if (packetid == PacketIdToggleFuzzy)
-            {
-                if (!CheckClaim(player)) return;
-                fuzzy = !fuzzy;
-                MarkDirty(true);
-                return;
-            }
-            if (packetid == PacketIdTogglePulseMode)
-            {
-                if (!CheckClaim(player)) return;
-                if (!IsIron) return;
-                CyclePulseMode();
-                MarkDirty(true);
-                return;
-            }
-            if (packetid == PacketIdSetFilter)
-            {
-                if (!CheckClaim(player)) return;
-                using var ms = new MemoryStream(data);
-                using var br = new BinaryReader(ms);
-                int slotId = br.ReadInt32();
-                if (slotId < 0 || slotId >= ActiveFilterSlotCount) return;
-                bool hasStack = br.ReadBoolean();
-                ItemStack stack = null;
-                if (hasStack)
-                {
-                    stack = new ItemStack();
-                    stack.FromBytes(br);
-                    stack.ResolveBlockOrItem(Api.World);
-                    stack.StackSize = 1;
-                }
-                filterInv[slotId].Itemstack = stack;
-                filterInv[slotId].MarkDirty();
-                MarkDirty(true);
-                return;
-            }
-            if (packetid < 1000)
-            {
-                if (!CheckClaim(player)) return;
-                filterInv.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-            }
-        }
-
-        private bool CheckClaim(IPlayer player)
-        {
-            if (Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) return true;
-            Api.World.Logger.Audit("Player {0} sent funnel filter packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
-            return false;
+            if (filter.OnReceivedClientPacket(player, packetid, data)) return;
+            base.OnReceivedClientPacket(player, packetid, data);
         }
 
         public override void OnReceivedServerPacket(int packetid, byte[] data)
         {
-            if (packetid != PacketIdOpenDialog) return;
-
-            ICoreClientAPI capi = Api as ICoreClientAPI;
-            if (capi == null) return;
-
-            using var ms = new MemoryStream(data);
-            using var br = new BinaryReader(ms);
-            string title = br.ReadString();
-            whitelist = br.ReadBoolean();
-            fuzzy = br.ReadBoolean();
-            var tree = new TreeAttribute();
-            tree.FromBytes(br);
-            pulseMode = (FunnelPulseMode)tree.GetInt("pulseMode", (int)FunnelPulseMode.Continuous);
-            suppressClientSync = true;
-            try
-            {
-                filterInv.FromTreeAttributes(tree);
-                filterInv.ResolveBlocksOrItems();
-            }
-            finally
-            {
-                suppressClientSync = false;
-            }
-
-            if (invDialog == null)
-            {
-                invDialog = new GuiDialogFunnelFilter(
-                    title, filterInv, Pos, ActiveFilterSlotCount,
-                    () => whitelist, () => fuzzy,
-                    OnClientToggleMode, OnClientToggleFuzzy, capi,
-                    IsIron ? GetPulseModeLabel : null,
-                    IsIron ? OnClientTogglePulseMode : null,
-                    centerSingleSlot: ActiveFilterSlotCount == 1);
-                invDialog.OnClosed += OnDialogClosed;
-                invDialog.TryOpen();
-            }
-            else
-            {
-                invDialog.OnFilterStateUpdated();
-            }
-        }
-
-        // Click handlers: flip locally for instant label refresh, then forward to server.
-        // The server is authoritative; if we ever drift, the next BE sync corrects us.
-        private void OnClientToggleMode()
-        {
-            whitelist = !whitelist;
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleMode);
-            invDialog?.OnFilterStateUpdated();
-        }
-
-        private void OnClientToggleFuzzy()
-        {
-            fuzzy = !fuzzy;
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleFuzzy);
-            invDialog?.OnFilterStateUpdated();
-        }
-
-        private void OnClientTogglePulseMode()
-        {
-            if (!IsIron) return;
-            CyclePulseMode();
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdTogglePulseMode);
-            invDialog?.OnFilterStateUpdated();
+            if (filter.OnReceivedServerPacket(packetid, data)) return;
+            base.OnReceivedServerPacket(packetid, data);
         }
 
         private void CyclePulseMode()
@@ -526,54 +369,29 @@ namespace VintageKinematics.BlockEntities
             };
         }
 
-        private void OnDialogClosed()
-        {
-            invDialog = null;
-        }
-
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            filterInv?.ToTreeAttributes(tree);
-            tree.SetBool("whitelist", whitelist);
-            tree.SetBool("fuzzy", fuzzy);
-            tree.SetInt("pulseMode", (int)PulseMode);
+            filter.WriteToTree(tree);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
         {
             base.FromTreeAttributes(tree, worldForResolving);
-            filterInv ??= new InventoryFunnelFilter(MaxFilterSlots, "funnelfilter", null);
-            suppressClientSync = true;
-            try
-            {
-                filterInv.FromTreeAttributes(tree);
-            }
-            finally
-            {
-                suppressClientSync = false;
-            }
-            whitelist = tree.GetBool("whitelist", false);
-            fuzzy = tree.GetBool("fuzzy", false);
-            pulseMode = (FunnelPulseMode)tree.GetInt("pulseMode", (int)FunnelPulseMode.Continuous);
-
-            if (Api != null) filterInv.ResolveBlocksOrItems();
-            invDialog?.OnFilterStateUpdated();
+            filter.ReadFromTree(tree);
         }
 
         public override void OnBlockUnloaded()
         {
             base.OnBlockUnloaded();
-            DisposeDialog();
+            filter.DisposeDialog();
         }
 
         public override void OnBlockRemoved()
         {
             base.OnBlockRemoved();
-            DisposeDialog();
+            filter.DisposeDialog();
         }
-
-        private void DisposeDialog() => GuiDialogUtil.SafeDispose(ref invDialog);
 
         public static BlockFacing BlockFunnelFacing(string code)
         {

@@ -3,7 +3,12 @@
     "class": "BlockCounterweightDrive",
     "entityClass": "CounterweightDrive",
     "attributes": {
-        "kineticShaftControllerOffset": { "x": 0, "y": 2, "z": 0 }
+        "kineticShaftControllerOffset": { "x": 0, "y": 2, "z": 0 },
+        "vkGenerator": {
+            "maxChargeSeconds": 90,
+            "windSecondsPerSecond": 8,
+            "clickWindSeconds": 8
+        }
     },
     "entityBehaviorsByType": {
         "*-n": [

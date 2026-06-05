@@ -1,5 +1,6 @@
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.Rendering;
@@ -8,8 +9,16 @@ namespace VintageKinematics.BlockEntities
 {
     public class BEHandCrank : BlockEntity, IKineticActivatable
     {
-        private const float WindPulseSeconds = 0.5f;
         private KineticRotationRenderer renderer;
+        private int manualClockwiseDirection = 1;
+
+        public int ManualClockwiseDirection => manualClockwiseDirection < 0 ? -1 : 1;
+
+        public void SetManualClockwiseDirection(int direction)
+        {
+            manualClockwiseDirection = direction < 0 ? -1 : 1;
+            MarkDirty(true);
+        }
 
         public override void Initialize(ICoreAPI api)
         {
@@ -42,6 +51,18 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            base.ToTreeAttributes(tree);
+            tree.SetInt("manualClockwiseDirection", ManualClockwiseDirection);
+        }
+
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+        {
+            base.FromTreeAttributes(tree, worldAccessForResolve);
+            manualClockwiseDirection = tree.GetInt("manualClockwiseDirection", 1) < 0 ? -1 : 1;
+        }
+
         public bool OnKineticActivate(IWorldAccessor world, BlockPos targetPos, BlockFacing activatedFace, BlockPos activatorPos, float signedRPM)
         {
             if (world.Side != EnumAppSide.Server) return false;
@@ -50,7 +71,7 @@ namespace VintageKinematics.BlockEntities
             if (src == null) return false;
 
             int direction = signedRPM < 0f ? -1 : 1;
-            src.Wind(seconds: WindPulseSeconds, direction: direction);
+            src.Wind(seconds: KineticGeneratorAttributes.WindSeconds(Block, 0.5f), direction: direction);
             return true;
         }
     }

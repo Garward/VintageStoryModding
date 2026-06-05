@@ -19,7 +19,7 @@ namespace VintageKinematics.BlockEntities
         public const int PacketIdOpenDialog = 5900;
         public const int PacketIdSetBurst = 5901;
 
-        private const int TickMs = 200;
+        private const int DefaultTickMs = 200;
         private const float DefaultMaxStoredSeconds = 180f;
         private const float DefaultChargeStress = 64f;
         private const float DefaultDischargeStress = 64f;
@@ -28,6 +28,8 @@ namespace VintageKinematics.BlockEntities
         private const float DefaultMinReleaseSeconds = 0.25f;
         private const float DefaultMaxOutputRPM = 16f;
         private const float DefaultMaxBurstMultiplier = 8f;
+        private const float DefaultDischargeWindSeconds = 1.25f;
+        private const float DefaultSpinDecayPerSecond = 0.985f;
         private static readonly float[] BurstSteps = { 1f, 2f, 4f, 8f, 16f };
 
         private float maxStoredSeconds = DefaultMaxStoredSeconds;
@@ -38,6 +40,9 @@ namespace VintageKinematics.BlockEntities
         private float minReleaseSeconds = DefaultMinReleaseSeconds;
         private float maxOutputRPM = DefaultMaxOutputRPM;
         private float maxBurstMultiplier = DefaultMaxBurstMultiplier;
+        private float dischargeWindSeconds = DefaultDischargeWindSeconds;
+        private float spinDecayPerSecond = DefaultSpinDecayPerSecond;
+        private int tickMs = DefaultTickMs;
 
         private float storedSeconds;
         private float spinRPM;
@@ -58,7 +63,7 @@ namespace VintageKinematics.BlockEntities
             ApplyModeToKinetic(false);
             if (api.Side == EnumAppSide.Server)
             {
-                RegisterGameTickListener(OnServerTick, TickMs);
+                RegisterGameTickListener(OnServerTick, tickMs);
             }
         }
 
@@ -74,6 +79,9 @@ namespace VintageKinematics.BlockEntities
             minReleaseSeconds = MathF.Max(0f, stats["minReleaseSeconds"].AsFloat(DefaultMinReleaseSeconds));
             maxOutputRPM = MathF.Max(KineticNetwork.MinAbsRPM, stats["maxOutputRPM"].AsFloat(DefaultMaxOutputRPM));
             maxBurstMultiplier = NormalizeBurstMultiplier(stats["maxBurstMultiplier"].AsFloat(DefaultMaxBurstMultiplier), 16f);
+            dischargeWindSeconds = MathF.Max(0.05f, stats["dischargeWindSeconds"].AsFloat(DefaultDischargeWindSeconds));
+            spinDecayPerSecond = GameMath.Clamp(stats["spinDecayPerSecond"].AsFloat(DefaultSpinDecayPerSecond), 0f, 1f);
+            tickMs = Math.Max(50, stats["tickMs"].AsInt(DefaultTickMs));
             burstMultiplier = NormalizeBurstMultiplier(burstMultiplier, maxBurstMultiplier);
 
             float leakFullToEmptySeconds = stats["leakFullToEmptySeconds"].AsFloat(DefaultLeakFullToEmptySeconds);
@@ -372,7 +380,7 @@ namespace VintageKinematics.BlockEntities
         {
             float outputRPM = GameMath.Clamp(spinRPM, KineticNetwork.MinAbsRPM, maxOutputRPM);
             source.TargetRPM = outputRPM;
-            source.Wind(1.25f, spinDirection);
+            source.Wind(dischargeWindSeconds, spinDirection);
 
             storedSeconds -= outputRPM / maxOutputRPM * dt * burstMultiplier;
             spinRPM = outputRPM;
@@ -392,7 +400,7 @@ namespace VintageKinematics.BlockEntities
         {
             if (storedSeconds <= 0f) return;
             storedSeconds = MathF.Max(0f, storedSeconds - leakSecondsPerSecond * dt);
-            spinRPM *= MathF.Pow(0.985f, dt);
+            spinRPM *= MathF.Pow(spinDecayPerSecond, dt);
         }
 
         private static bool IsValidStorageNetwork(KineticNetwork net)

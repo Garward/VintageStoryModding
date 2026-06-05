@@ -106,6 +106,10 @@ namespace VintageKinematics.BlockEntities
 
             elapsedSec = 0f;
             lastActivationWorked = TryActivateTarget(rpm);
+            if (Mode == KineticActivatorMode.PulseBurst && lastActivationWorked && burstPulsesRemaining > 0)
+            {
+                burstPulsesRemaining--;
+            }
             if (Mode != KineticActivatorMode.RepeatWhileRotating && Mode != KineticActivatorMode.PulseBurst)
             {
                 activatedThisRun = true;
@@ -153,7 +157,6 @@ namespace VintageKinematics.BlockEntities
                     if (burstPulsesRemaining <= 0) return false;
                     elapsedSec += dt;
                     if (elapsedSec < delaySeconds) return false;
-                    burstPulsesRemaining--;
                     elapsedSec = 0f;
                     return true;
 

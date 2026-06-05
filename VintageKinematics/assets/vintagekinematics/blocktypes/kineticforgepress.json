@@ -6,7 +6,29 @@
         "kineticShaftCells": [
             { "x": 1, "y": 0, "z": 0 },
             { "x": 1, "y": 0, "z": 2 }
-        ]
+        ],
+        "vkForgePress": {
+            "outputPushIntervalMs": 250,
+            "outputPushBatch": 8,
+            "ambientTemperature": 20,
+            "heatTickMs": 500,
+            "heatRatePerSecond": 80,
+            "coolRatePerSecond": 18,
+            "inputHeatTransferMultiplier": 1.0,
+            "inputCoolTransferMultiplier": 0.25,
+            "maxBellowsAssistCount": 2,
+            "bellowsTemperatureBonusPerUnit": 75,
+            "bellowsHeatRateBonusPerUnit": 0.5,
+            "bellowsStackPenaltyReliefPerUnit": 0.5,
+            "maxBellowsStackPenaltyRelief": 0.9,
+            "refractoryLiningBrickCost": 24,
+            "refractoryLiningTemperatureBonus": 250,
+            "refractoryLiningFuelDurationMultiplier": 2,
+            "smokeStackLocalPositions": [
+                { "x": -0.375, "y": 2.21875, "z": 1.375 },
+                { "x": 1.375, "y": 2.21875, "z": 1.375 }
+            ]
+        }
     },
     "entityBehaviorsByType": {
         "*-n": [

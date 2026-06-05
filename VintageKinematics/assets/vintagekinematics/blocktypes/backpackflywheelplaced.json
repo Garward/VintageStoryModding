@@ -2,6 +2,14 @@
 	"code": "backpackflywheelplaced",
 	"class": "BlockBackpackFlywheelPlaced",
 	"entityClass": "BackpackFlywheelPlaced",
+	"attributes": {
+		"vkGenerator": {
+			"tickMs": 250,
+			"chargeStress": 64,
+			"chargeEfficiency": 0.75,
+			"maxOutputRPM": 16
+		}
+	},
 	"variantgroups": [
 		{ "code": "side", "states": [ "n", "e", "s", "w" ] }
 	],

@@ -9,14 +9,13 @@ namespace VintageKinematics.BlockEntities
 {
     public class BECounterweightDrive : BEKineticAnimated
     {
-        public const float MaxChargeSeconds = 90f;
-        public const float WindSecondsPerSecond = 8f;
-        public const float ClickWindSeconds = 8f;
-
         private float storedSeconds;
         private int lastWindSecond = -1;
 
         public float StoredSeconds => storedSeconds;
+        private float MaxChargeSeconds => KineticGeneratorAttributes.MaxChargeSeconds(Block, 90f);
+        private float WindSecondsPerSecond => KineticGeneratorAttributes.WindSecondsPerSecond(Block, 8f);
+        private float ClickWindSeconds => KineticGeneratorAttributes.ClickWindSeconds(Block, 8f);
 
         public void AddCharge(float seconds)
         {

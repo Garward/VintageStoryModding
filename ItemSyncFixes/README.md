@@ -1,150 +1,146 @@
 # Item Sync Fixes
 
-Item Sync Fixes is my attempt to fix specific Vintage Story inventory desync symptoms, including the temporary fake/ghost item behavior that can show up while rapidly interacting with inventories. It is intentionally narrow: it does not try to rewrite inventory networking or make the client authoritative.
+Item Sync Fixes targets a few specific Vintage Story inventory desync symptoms. The main goal is to reduce temporary fake or ghost items while keeping the server authoritative.
 
-The targeted symptoms are:
+The mod does not rewrite inventory networking. It narrows in on the paths that have produced reliable symptoms during testing.
 
-1. Crafting output ghost/fake items caused by partial shift-crafts and output-slot moves.
-2. Rapid clicking or dragging through crafting-grid and cursor interactions can make items feel like they move late, flicker backward, briefly duplicate client-side, or appear as fake/ghost items until the next normal click forces reconciliation.
-3. Moving stacks in hotbar/backpack slots can receive exact delayed server self-confirmations after the client has already predicted the same final state, causing visible snapback/flicker.
-4. Right-click place-one and left-click stack placement into normal or external inventories can flicker while the client waits for the server to catch up.
+## Targeted Symptoms
 
-## What it fixes
+1. Crafting output can leave fake items after partial shift crafts or output slot moves.
+2. Rapid clicking or dragging through the crafting grid can make items move late, flicker back, briefly duplicate on the client, or appear fake until the next normal click reconciles the UI.
+3. Hotbar and backpack slots can receive delayed server confirmations after the client already predicted the same final state, causing visible snapback.
+4. Right click place one and left click stack placement into normal or external inventories can flicker while the client waits for the server.
 
-### 1. Crafting output ghost/fake items
+## What It Fixes
 
-Crafting output slots have special behavior for shift-click crafting and output moves. Partial output transfers can leave the client and server disagreeing about whether the output was fully crafted, partially moved, or should be resynced.
+### Crafting Output
 
-This mod makes crafting output moves all-or-resync for the targeted paths:
+Crafting output slots have special rules for shift crafting, output moves, and slot flips. Partial output transfers can leave the client and server disagreeing about whether the output was fully crafted, partially moved, or should be synced again.
 
-- shift-clicking crafting output;
-- moving crafting output into another slot;
-- output-slot flip/number-key style moves.
+This mod makes the targeted crafting output moves behave as all or resync. For multi craft output moves, it accepts only full recipe output transfers. If the full output does not fit, it marks the output and sink slots dirty so the server can send a clean state instead of leaving a leftover ghost state.
 
-For multi-craft output moves, it only accepts full recipe-output transfers. If the full output does not fit, it marks the output and sink slots dirty so the server can resync them instead of leaving a leftover ghost state.
+The patched paths are:
 
-### 2. Stale queued client corrections
+1. Shift clicking crafting output.
+2. Moving crafting output into another slot.
+3. Output slot flip and number key style moves.
 
-Vintage Story already pauses single-slot inventory updates during some drag interactions. When the pause ends, vanilla replays every queued server correction in order. During fast crafting-grid or mouse-slot interactions, many of those queued updates are stale intermediate states.
+### Stale Queued Corrections
 
-This mod keeps only the latest queued correction per slot before the vanilla flush applies them. The client still ends on the latest server state; it just skips stale intermediate corrections that can no longer be correct.
+Vintage Story pauses some single slot inventory updates during drag interactions. When the pause ends, vanilla replays every queued server correction in order. During fast crafting grid or mouse slot interactions, many queued updates are stale intermediate states.
 
-Mouse cursor slot corrections are handled more aggressively: if a server mouse-slot update arrives while the mouse inventory is paused, the mod applies that correction immediately and drops older queued mouse-slot corrections. This targets temporary client-only duplicate/fake-item visuals where the cursor and a grid slot both appear to hold the same stack until the next normal click.
+This mod keeps only the latest queued correction per slot before vanilla applies the flush. The client still ends on the latest server state, but it skips intermediate corrections that can no longer be correct.
 
-As of the current 1.0.2 test pass, mouse cursor corrections are also treated as authoritative instead of being prediction-suppressed. The server cursor state wins because the latest repros showed the client sending later moves from a cursor stack the server no longer had.
+Mouse cursor slot corrections are treated as authoritative. If a server mouse slot update arrives while the mouse inventory is paused, the mod applies that correction immediately and drops older queued mouse slot corrections.
 
-### 3. Exact delayed self-confirmation echoes
+### Delayed Self Confirmations
 
-After the client predicts a hotbar or backpack inventory action and the server accepts the same resulting slot state, the server can still send an exact delayed confirmation back to that same client. This was the original fake-item mitigation attempt: avoid applying delayed self-confirmations that can make the client appear to bounce through old slot states.
+After the client predicts a hotbar or backpack action and the server accepts that same resulting slot state, the server can still send an exact delayed confirmation back to the same client. That can make the client appear to bounce through old states.
 
-This mod suppresses only exact matching self-confirmation updates for `hotbar-*` and `backpack-*` slots. It does not suppress mismatched updates.
+This mod suppresses only exact matching self confirmations for hotbar and backpack slots. Mismatched updates still apply.
 
-### 4. External storage click confirmation gate
+### External Storage
 
-External storage clicks are still client-predicted in vanilla. Rapid repeated clicks can chain local predictions before the server has confirmed the previous chest, quern, or machine slot mutation. That creates temporary fake items even when the server state is correct.
+External storage clicks are still predicted by vanilla. Rapid repeated clicks can chain local predictions before the server confirms the previous chest, quern, or machine slot change.
 
-The current storage pass keeps a short client-side pending record after a predicted click changes an external storage slot. That pending record no longer blocks later slot-grid clicks; it is only used to protect the recently changed slot from broad block-entity/tree corrections until a direct server confirmation or timeout resolves it.
+The current storage pass keeps a short client side pending record after a predicted click changes an external slot. That record protects the recently changed slot from broad block entity tree corrections until a direct server confirmation or timeout resolves it.
 
-The next refinement gives pending external slots a tiny defer window for broad `InventoryContents` packets. Direct `InventoryUpdate` and `InventoryDoubleUpdate` packets still apply immediately. If a direct slot confirmation arrives during the defer window, the broad contents correction for that pending slot is dropped; if no confirmation arrives, the deferred contents correction applies. This should reduce the last short snapback flicker without returning to fake cursor/item state.
+Broad `InventoryContents` packets can be deferred briefly for a pending external slot. Direct `InventoryUpdate` and `InventoryDoubleUpdate` packets still apply immediately. If a direct slot confirmation arrives during the defer window, the broad contents correction for that pending slot is dropped. If no direct confirmation arrives, the deferred contents correction applies.
 
-The latest diagnostic repro showed a separate machine/quern path: after a local click predicted a slot change, the slot could fall back before the direct server `InventoryUpdate` arrived, with no inventory packet logged between those states. That points at block-entity tree sync applying inventory `FromTreeAttributes` from a `MarkDirty(true)` redraw/state packet. The current pass preserves pending external slots during client-side `InventoryBase.SlotsFromTreeAttributes`, so machine state updates can still apply without rolling back the actively clicked slot. This covers `InventoryGeneric`, vanilla `InventoryQuern`, and other vanilla storage inventories that use the shared slot tree restore helper.
+The current pass also preserves pending external slots during client side `InventoryBase.SlotsFromTreeAttributes`. This covers `InventoryGeneric`, vanilla `InventoryQuern`, and other vanilla storage inventories that use the shared slot tree restore helper.
+
+### Crafting Grid Drag Preview
+
+Vanilla mutates real client inventory slots during click drag through the crafting grid, then catches up with server corrections later. In multiplayer this can create visible stack growth or fake items while the drag is still in progress.
+
+This mod changes crafting grid drag into a preview. The client records the selected slots while dragging and applies the real slot clicks on mouse up. Right drag previews one item per slot. Left drag previews vanilla redistribution, including the leftover amount on the final selected slot.
 
 ## Boundaries
 
-- The server-side echo suppression does not touch crafting-grid, mouse-slot, creative inventory, or recipe-output updates.
-- The crafting output fix only targets crafting-output movement paths; it does not change normal recipe matching.
-- The mod does not make the client authoritative.
-- The client still applies the latest server correction for each slot.
-- Mouse cursor server corrections are not suppressed by the client prediction suppressor.
-- External storage clicks may briefly ignore extra rapid clicks while waiting for the server correction.
-- Broad full-inventory contents packets may defer a currently pending external slot for a very short window so direct slot confirmation can win.
-- Client-side block-entity tree updates preserve currently pending slots while `InventoryBase.SlotsFromTreeAttributes` restores tree state, because some machines serialize inventory into broader machine-state packets.
-- The server echo suppression only applies when the outgoing server stack fingerprint exactly matches a recently accepted client-predicted state.
-- This is an attempt to reduce the observed fake/ghost client item symptoms caused by these targeted paths, not a guarantee against every possible fake item, ghost item, or inventory race.
+1. The mod does not make the client authoritative.
+2. The client still applies the latest server correction for each slot.
+3. Mouse cursor server corrections are not suppressed by the prediction suppressor.
+4. The crafting output fix only targets crafting output movement paths. It does not change normal recipe matching.
+5. The server echo suppression does not touch crafting grid, mouse slot, creative inventory, or recipe output updates.
+6. Broad full inventory contents packets may defer a currently pending external slot for a very short window so direct slot confirmation can win.
+7. Client side block entity tree updates preserve currently pending slots while `InventoryBase.SlotsFromTreeAttributes` restores tree state.
+8. This is an attempt to reduce observed fake or ghost client item symptoms in these targeted paths, not a guarantee against every inventory race.
 
 ## Current Findings
 
-### Vanilla external-storage click path
+### Vanilla External Storage Path
 
-External storage and block-entity inventories do not use a direct player-inventory packet path. The normal path for a click into a chest, quern, or machine inventory is:
+The normal click path for a chest, quern, or machine inventory is:
 
-1. `GuiElementItemSlotGridBase.SlotClick` mutates the client-side slot immediately for responsiveness.
+1. `GuiElementItemSlotGridBase.SlotClick` mutates the client slot immediately for responsiveness.
 2. The GUI sends an inventory operation packet.
-3. For block entities, `GuiDialogBlockEntity.DoSendPacket` wraps that inventory packet in a block-entity packet for the target position.
+3. For block entities, `GuiDialogBlockEntity.DoSendPacket` wraps the inventory packet in a block entity packet for the target position.
 4. The server block entity receives the packet and forwards normal inventory packets to `Inventory.InvNetworkUtil.HandleClientPacket(...)`.
 5. The server applies the move against the authoritative inventory.
 6. Dirty inventory slots are sent later by the server inventory tick, roughly every 30 ms, or a broader full inventory contents packet is sent when the server thinks the client operated on stale state.
 7. The client applies `InventoryUpdate`, `InventoryDoubleUpdate`, or `InventoryContents` corrections.
 
-This means the client is always predicting ahead of the server. There is no per-click "wait until this exact operation has been accepted" handshake before the next local click can run.
+This means the client is always predicting ahead of the server. There is no per click handshake that waits until one exact operation has been accepted before the next local click can run.
 
-### Most likely remaining vanilla causes
+### Likely Remaining Vanilla Causes
 
-The remaining vanilla-style flicker is most likely one of these packet paths:
+The remaining vanilla style flicker is most likely one of these packet paths:
 
-- `InventoryContents`: broad resyncs are the strongest snapback signal. They are sent when the server thinks the client `TargetLastChanged` is stale, so repeated full contents packets point at stale or missing `lastChanged` tracking for that inventory.
-- `InventoryDoubleUpdate`: right-click place-one touches both the target slot and the mouse cursor slot. If those two sides do not apply together, the client can briefly think the cursor stack or target stack is wrong.
-- `InventoryUpdate`: normal delayed dirty-slot confirmation can still visibly replay an older state after the client already predicted a newer one, especially during rapid left-click or right-click placement.
-- `PauseInventoryUpdates`: vanilla pauses some single-slot updates during drag gestures, but the first click can happen before the pause is set, and the pause does not naturally cover every full-contents, double-update, or block-entity sync path.
+1. `InventoryContents`: broad resyncs are the strongest snapback signal. Repeated full contents packets point at stale or missing `lastChanged` tracking for that inventory.
+2. `InventoryDoubleUpdate`: right click place one touches both the target slot and the mouse cursor slot. If those two sides do not apply together, the client can briefly think the cursor stack or target stack is wrong.
+3. `InventoryUpdate`: normal delayed dirty slot confirmation can still visibly replay an older state after the client already predicted a newer one.
+4. `PauseInventoryUpdates`: vanilla pauses some single slot updates during drag gestures, but the first click can happen before the pause is set, and the pause does not cover every contents, double update, or block entity sync path.
 
-The next useful log split is to reproduce with a vanilla chest or quern and classify each flicker by the incoming packet type: `InventoryContents`, `InventoryDoubleUpdate`, or plain `InventoryUpdate`.
+### Kinematics Result
 
-### Kinematics result was an amplifier, not the root cause
+VintageKinematics machines amplified the same class of issue because many machine inventories called `MarkDirty(true)` from `SlotModified`. That caused an extra broad block entity sync and redraw path on every stack change, on top of the normal inventory dirty slot sync.
 
-VintageKinematics machines were making the same class of issue feel worse because many machine inventories called `MarkDirty(true)` from `SlotModified`. That caused an extra broad block-entity sync/redraw path on every item stack change, on top of the normal inventory dirty-slot sync.
+That pattern was changed in Kinematics 1.3.4 to mark the chunk modified for persistence instead of forcing a full block entity sync for every inventory only slot change. This made those machines feel closer to vanilla storage, but it did not remove the remaining vanilla prediction and correction race.
 
-That pattern was changed in Kinematics 1.3.4 to mark the chunk modified for persistence instead of forcing a full block-entity redraw/sync for every inventory-only slot change. This made those machines feel closer to vanilla storage, but it did not remove the remaining vanilla prediction/correction race.
+### Assumptions To Watch
 
-### Important assumptions to watch
+1. The client assumes its local predicted move is temporarily valid until the server proves otherwise.
+2. A fake item can be entirely visual on the client. The server can remain correct while the client cursor or slot still chains later actions from stale predicted state.
+3. The server assumes a stale `TargetLastChanged` means the client should receive a full inventory correction instead of applying the requested operation.
+4. Vanilla assumes queued or delayed corrections will eventually converge, even if intermediate visual states flicker.
+5. Block entity inventories assume the wrapped packet path plus later inventory dirty slot sync is enough to reconcile the GUI.
+6. Any mod that sends extra `MarkDirty(true)` block entity syncs during pure inventory moves can amplify the vanilla race.
 
-- The client assumes its local predicted move is temporarily valid until the server proves otherwise.
-- A fake item can be entirely visual/client-side: the server can remain correct while the client cursor or slot still chains follow-up actions from stale predicted state.
-- The server assumes a stale `TargetLastChanged` means the client should receive a full inventory correction instead of applying the requested operation.
-- Vanilla assumes queued or delayed corrections will eventually converge, even if intermediate visual states flicker.
-- Block-entity inventories assume the wrapped block-entity packet path plus later inventory dirty-slot sync is enough to reconcile the GUI.
-- Any mod that sends extra `MarkDirty(true)` block-entity syncs during pure inventory moves can amplify the vanilla race.
+### Minor Vanilla Patch Review
 
-### Minor vanilla patch review
+A later 1.22.x minor patch changelog did not list a direct fix for this desync class. The closest adjacent fixes were arrow key inventory crashes, shelf placement with partially full jugs, and emptying liquid containers onto the ground.
 
-A later 1.22.x minor patch changelog did not list a direct fix for this desync class. The closest adjacent fixes were:
+After refreshing the decompiled source, these sync path observations still appeared unchanged:
 
-- crash when using arrow keys to navigate an inventory with no slots;
-- unable to place a partially-full jug onto a shelf with another liquid container while holding shift;
-- API fix for emptying liquid container contents onto the ground.
-
-Those touch inventory-adjacent UI or direct block interaction paths, but they do not appear to change the mouse click prediction/server correction path used by normal GUI storage.
-
-After refreshing the decompiled source, these important sync-path observations still appeared unchanged:
-
-- `GuiElementItemSlotGridBase.OnMouseDownOnElement` still calls `SlotClick(...)` before setting `PauseInventoryUpdates`.
-- `InventoryNetworkUtil` still sends full `InventoryContents` when `lastChangedSinceServerStart > lastChangedClient`, and activate-slot packets still rely on `TargetLastChanged`.
-- `GeneralPacketHandler.HandleInventoryDoubleUpdate` still appears to fetch `invId1` for the second inventory lookup when `invId1 != invId2`. If the decompile is accurate, this remains suspicious for cursor-plus-target updates.
+1. `GuiElementItemSlotGridBase.OnMouseDownOnElement` still calls `SlotClick(...)` before setting `PauseInventoryUpdates`.
+2. `InventoryNetworkUtil` still sends full `InventoryContents` when `lastChangedSinceServerStart > lastChangedClient`, and activate slot packets still rely on `TargetLastChanged`.
+3. `GeneralPacketHandler.HandleInventoryDoubleUpdate` still appears to fetch `invId1` for the second inventory lookup when `invId1 != invId2`. If the decompile is accurate, this remains suspicious for cursor plus target updates.
 
 ## Install Notes
 
-Install this mod on both the client and the server. The combined public package is marked as required on both sides so servers using it should make clients install it too.
+Install this mod on both the client and the server. The public package is marked as required on both sides so servers using it should make clients install it too.
 
-Client-side install enables stale queued correction coalescing.
+Client install enables queued correction coalescing and crafting grid drag preview.
 
-Server-side install enables hotbar/backpack exact self-echo suppression.
+Server install enables hotbar and backpack exact self echo suppression.
 
-The two pieces are technically independent, but the published package is intentionally not marked optional because only one side gives only half of the intended behavior.
+The two pieces are technically independent, but the published package is intentionally not optional because one side gives only half of the intended behavior.
 
 ## Test Notes
 
-In testing, the client-side coalescer dropped large numbers of stale queued crafting-grid corrections while preserving the latest server state. The separate probe build reported no inventory packet pollution and no UI-to-packet inventory mismatch during the successful test runs.
+In testing, the client coalescer dropped large numbers of stale queued crafting grid corrections while preserving the latest server state. The separate probe build reported no inventory packet pollution and no UI to packet inventory mismatch during successful test runs.
 
-The latest storage-focused pass intentionally removed the experimental broad `lastChangedSinceServerStart` sequence patch. That path was too invasive and did not match the clarified symptom: fake client items rather than real server-side duplication.
+The storage focused pass intentionally removed the experimental broad `lastChangedSinceServerStart` sequence patch. That path was too invasive and did not match the clarified symptom: fake client items rather than real server duplication.
 
 Observed probe examples:
 
-- 247 queued paused updates observed, 156 stale queued updates dropped in one crafting-grid stress test.
-- 0 outgoing creative inventory actions during the successful test run.
-- 0 UI-to-packet inventory mismatches during the successful test run.
+1. 247 queued paused updates observed, 156 stale queued updates dropped in one crafting grid stress test.
+2. 0 outgoing creative inventory actions during the successful test run.
+3. 0 UI to packet inventory mismatches during the successful test run.
 
 ## Diagnostic Logging
 
-Version 1.0.2 has a diagnostic classifier for the remaining storage flicker work. It is off by default.
+The diagnostic classifier is off by default.
 
 Enable it on the client:
 
@@ -173,36 +169,34 @@ The diagnostic log prefix is:
 
 The classifier records:
 
-- client slot clicks: target inventory/slot, mouse button, modifiers, target stack before/after, mouse stack before/after;
-- incoming client `InventoryUpdate`;
-- incoming client `InventoryDoubleUpdate`;
-- incoming client `InventoryContents`, with per-slot detail for recently clicked or mismatching slots and a summary for the whole contents packet;
-- server received activate/move/flip inventory packets, including `TargetLastChanged` vs server `lastChangedSinceServerStart`;
-- server outgoing inventory update, double-update, and full-contents packets where visible through `ServerMain.SendPacket`.
+1. Client slot clicks, including target inventory, slot, mouse button, modifiers, target stack before and after, and mouse stack before and after.
+2. Incoming client `InventoryUpdate`.
+3. Incoming client `InventoryDoubleUpdate`.
+4. Incoming client `InventoryContents`, with detail for recently clicked or mismatching slots and a summary for the whole contents packet.
+5. Server received activate, move, and flip inventory packets, including `TargetLastChanged` vs server `lastChangedSinceServerStart`.
+6. Server outgoing inventory update, double update, and full contents packets where visible through `ServerMain.SendPacket`.
 
 Recommended repro matrix:
 
-1. Vanilla chest: left-click a full stack into a slot 10-20 times.
-2. Vanilla chest: right-click place-one into a slot 10-20 times.
+1. Vanilla chest: left click a full stack into a slot 10 to 20 times.
+2. Vanilla chest: right click place one into a slot 10 to 20 times.
 3. Vanilla quern: repeat both tests.
 4. Player inventory only: repeat both tests.
+5. Crafting grid: drag a stack through recipe slots quickly, then release.
 
 The goal is to classify each visible flicker by the packet that caused the correction:
 
-- `InventoryContents` means chase stale `TargetLastChanged` or broad full resyncs.
-- `InventoryDoubleUpdate` means chase cursor-plus-target atomic application.
-- `InventoryUpdate` means chase delayed stale dirty-slot confirmation.
-- No inventory packet at flicker time means look for block-entity tree sync or rendering/UI-only causes.
+1. `InventoryContents` means chase stale `TargetLastChanged` or broad full resyncs.
+2. `InventoryDoubleUpdate` means chase cursor plus target atomic application.
+3. `InventoryUpdate` means chase delayed stale dirty slot confirmation.
+4. No inventory packet at flicker time means look for block entity tree sync or rendering and UI only causes.
 
 ## Short ModDB Description
 
-My attempt to fix specific inventory desync symptoms in Vintage Story, including temporary fake/ghost client items:
+Item Sync Fixes is my attempt to fix specific inventory desync symptoms in Vintage Story, including temporary fake or ghost client items.
 
-- crafting output ghost/fake items from partial shift-crafts and output-slot moves;
-- stale queued client corrections during rapid crafting-grid/cursor dragging, which can make items flicker, briefly duplicate client-side, or appear fake until the next reconciliation;
-- exact delayed hotbar/backpack self-confirmation echoes from the server, which can make stacks snap back through old states after the client already predicted the accepted state;
-- right-click place-one and left-click stack placement flicker while normal or external inventories wait for server correction.
+It targets crafting output ghosts, stale queued client corrections during rapid crafting grid and cursor interaction, delayed hotbar and backpack self confirmations from the server, external storage flicker, and crafting grid drag prediction.
 
-It does this by making targeted crafting-output moves all-or-resync, coalescing queued client corrections to the latest correction per slot, applying mouse-slot corrections authoritatively, briefly gating repeated external-storage clicks while waiting for server confirmation, giving broad full-inventory corrections a tiny defer window for pending external slots, preserving pending slots across shared client-side inventory tree restores, and suppressing only exact matching hotbar/backpack self-echoes on the server.
+It does this by making targeted crafting output moves all or resync, coalescing queued client corrections to the latest correction per slot, applying mouse slot corrections authoritatively, preserving pending external slots across shared inventory tree restores, suppressing only exact matching hotbar and backpack echoes on the server, and changing crafting grid click drag into a preview that commits on mouse up.
 
-It does not make the client authoritative and does not suppress crafting-grid, mouse-slot, creative, or recipe-output server updates.
+It does not make the client authoritative.

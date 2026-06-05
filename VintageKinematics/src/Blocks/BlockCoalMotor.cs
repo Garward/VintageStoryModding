@@ -31,8 +31,8 @@ namespace VintageKinematics.Blocks
             return variant.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
         }
 
-        // The "side" variant is which compass direction the firedoor/flywheel point. We want
-        // them pointing at the player, i.e. opposite the player's view direction.
+        // The "side" variant is which compass direction the front/flywheel point. We want
+        // that side pointing at the player, i.e. opposite the player's view direction.
         private static string SideFacingPlayer(IPlayer byPlayer)
         {
             if (byPlayer?.Entity == null) return null;

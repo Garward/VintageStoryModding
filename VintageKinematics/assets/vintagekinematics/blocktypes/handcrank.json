@@ -2,6 +2,11 @@
     "code": "handcrank",
     "class": "BlockHandCrank",
     "entityClass": "HandCrank",
+    "attributes": {
+        "vkGenerator": {
+            "windSeconds": 0.5
+        }
+    },
     "entityBehaviors": [
         {
             "name": "Kinetic",

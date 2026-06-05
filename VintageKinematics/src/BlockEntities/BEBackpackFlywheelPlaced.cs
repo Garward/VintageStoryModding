@@ -13,10 +13,6 @@ namespace VintageKinematics.BlockEntities
 {
     public class BEBackpackFlywheelPlaced : BEKineticAnimated, IKineticConnector
     {
-        private const int TickMs = 250;
-        private const float ChargeStress = 64f;
-        private const float ChargeEfficiency = 0.75f;
-        private const float MaxOutputRPM = 16f;
         private ItemStack storedStack;
 
         public override void Initialize(ICoreAPI api)
@@ -25,7 +21,7 @@ namespace VintageKinematics.BlockEntities
             storedStack?.ResolveBlockOrItem(api.World);
             if (api.Side == EnumAppSide.Server)
             {
-                RegisterGameTickListener(OnServerTick, TickMs);
+                RegisterGameTickListener(OnServerTick, KineticGeneratorAttributes.TickMs(Block, 250));
             }
         }
 
@@ -59,7 +55,12 @@ namespace VintageKinematics.BlockEntities
             float rpm = MathF.Abs(kinetic?.ActualRPM ?? 0f);
             if (rpm < KineticNetwork.MinAbsRPM) return;
 
-            float secondsGained = ChargeStress * rpm / (ChargeStress * MaxOutputRPM) * ChargeEfficiency * MathF.Max(0f, dt);
+            float maxOutputRPM = MathF.Max(KineticNetwork.MinAbsRPM, KineticGeneratorAttributes.MaxOutputRPM(Block, 16f));
+            float chargeEfficiency = GameMath.Clamp(KineticGeneratorAttributes.ChargeEfficiency(Block, 0.75f), 0f, 1f);
+            float chargeStress = MathF.Max(0f, KineticGeneratorAttributes.ChargeStress(Block, 64f));
+            float ratedOutputPower = chargeStress * maxOutputRPM;
+            float inputPower = chargeStress * rpm;
+            float secondsGained = ratedOutputPower > 0f ? inputPower / ratedOutputPower * chargeEfficiency * MathF.Max(0f, dt) : 0f;
             if (!ItemBackpackFlywheel.AddCharge(storedStack, secondsGained)) return;
 
             MarkDirty(true);

@@ -12,14 +12,13 @@ namespace VintageKinematics.BlockEntities
 {
     public class BEGeothermalSteamEngine : BlockEntity
     {
-        private const float WaterLitresPerSecond = 0.05f;
         private bool hasHeat;
         private bool hasWater;
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            if (api.Side == EnumAppSide.Server) RegisterGameTickListener(OnSteamTick, 1000);
+            if (api.Side == EnumAppSide.Server) RegisterGameTickListener(OnSteamTick, KineticGeneratorAttributes.TickMs(Block, 1000));
         }
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
@@ -45,7 +44,7 @@ namespace VintageKinematics.BlockEntities
                 return;
             }
 
-            float litres = WaterLitresPerSecond * GameMath.Max(0.001f, dt);
+            float litres = KineticGeneratorAttributes.WaterLitresPerSecond(Block, 0.05f) * GameMath.Max(0.001f, dt);
             hasWater = ConsumeAdjacentWater(litres);
             if (!hasWater)
             {
@@ -55,7 +54,7 @@ namespace VintageKinematics.BlockEntities
                 return;
             }
 
-            source.Wind(1.25f);
+            source.Wind(KineticGeneratorAttributes.WindSeconds(Block, 1.25f), KineticSourceDirection.ForHorizontalSide(Block, "n"));
             SetGlowState(true);
             MarkDirty(true);
         }

@@ -11,9 +11,6 @@ namespace VintageKinematics.BlockEntities
 {
     public class BETreadwheel : BEKineticAnimated, IMountableSeat, IMountable
     {
-        private const int TickMs = 50;
-        private const float WindSeconds = 0.2f;
-
         private readonly EntityControls controls = new EntityControls();
         private readonly EntityPos seatPos = new EntityPos();
         private readonly Vec3f eyePos = new Vec3f(0f, 1.45f, 0f);
@@ -37,7 +34,7 @@ namespace VintageKinematics.BlockEntities
 
             if (api.Side == EnumAppSide.Server)
             {
-                RegisterGameTickListener(OnServerTick, TickMs);
+                RegisterGameTickListener(OnServerTick, KineticGeneratorAttributes.TickMs(Block, 50));
             }
         }
 
@@ -47,8 +44,9 @@ namespace VintageKinematics.BlockEntities
             if (src == null || mountedBy == null || !mountedBy.Alive) return;
             if (!controls.TriesToMove || controls.Jump || controls.IsFlying) return;
 
-            int direction = controls.Backward && !controls.Forward ? -1 : 1;
-            src.Wind(WindSeconds, direction);
+            int direction = (controls.Backward && !controls.Forward ? -1 : 1)
+                * KineticSourceDirection.ForHorizontalSide(Block, "w");
+            src.Wind(KineticGeneratorAttributes.WindSeconds(Block, 0.2f), direction);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)

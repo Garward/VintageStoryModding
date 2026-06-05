@@ -3,7 +3,11 @@
     "class": "BlockTreadwheel",
     "entityClass": "Treadwheel",
     "attributes": {
-        "kineticShaftControllerOffset": { "x": 0, "y": 1, "z": 0 }
+        "kineticShaftControllerOffset": { "x": 0, "y": 1, "z": 0 },
+        "vkGenerator": {
+            "tickMs": 50,
+            "windSeconds": 0.2
+        }
     },
     "entityBehaviorsByType": {
         "*-n": [

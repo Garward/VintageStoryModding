@@ -2,6 +2,12 @@
     "code": "coalmotor",
     "class": "BlockCoalMotor",
     "entityClass": "CoalMotor",
+    "attributes": {
+        "vkGenerator": {
+            "tickMs": 500,
+            "sourceRefreshThresholdSeconds": 1
+        }
+    },
     "entityBehaviors": [
         {
             "name": "Kinetic",

@@ -22,7 +22,7 @@ namespace VintageKinematics.BlockEntities
     /// Fueled metal press. Fuel heats the chamber, kinetic cycles form the hot input into parts,
     /// and outputs inherit the chamber temperature.
     /// </summary>
-    public class BEKineticForgePress : BlockEntityOpenableContainer, IFaceMappedContainer
+    public class BEKineticForgePress : BEKineticForgePressBase
     {
         public const int SlotInput = 0;
         public const int SlotFuel = 1;
@@ -30,39 +30,36 @@ namespace VintageKinematics.BlockEntities
         public const int SlotOutputFirst = 2;
         public const int SlotOutputLast = 10;
         public const int InventorySize = 12;
-        public const int PacketIdOpenDialog = 5510;
+        // Dialog packets are handled by BEKineticForgePressBase; this is the forge-press operation picker.
         public const int PacketIdSelectOperation = 5511;
-        public const int RefractoryLiningBrickCost = 24;
+        private const int DefaultRefractoryLiningBrickCost = 24;
 
-        private const float AmbientTemperature = 20f;
-        private const float OutputPushIntervalMs = 250f;
-        private const int OutputPushBatch = 8;
-        private const float HeatTickIntervalMs = 500f;
-        private const float HeatRatePerSecond = 80f;
-        private const float CoolRatePerSecond = 18f;
-        private const float InputHeatTransferMultiplier = 1.0f;
-        private const float InputCoolTransferMultiplier = 0.25f;
-        private const int MaxBellowsAssistCount = 2;
-        private const float BellowsTemperatureBonusPerUnit = 75f;
-        private const float RefractoryLiningTemperatureBonus = 250f;
-        private const float RefractoryLiningFuelDurationMultiplier = 2f;
-        private const float BellowsHeatRateBonusPerUnit = 0.5f;
-        private const float BellowsStackPenaltyReliefPerUnit = 0.5f;
-        private const float MaxBellowsStackPenaltyRelief = 0.9f;
-        private const float SmokeParticleY = 35.5f / 16f;
+        private const float DefaultOutputPushIntervalMs = 250f;
+        private const int DefaultOutputPushBatch = 8;
+        private const float DefaultAmbientTemperature = 20f;
+        private const float DefaultHeatTickMs = 500f;
+        private const float DefaultHeatRatePerSecond = 80f;
+        private const float DefaultCoolRatePerSecond = 18f;
+        private const float DefaultInputHeatTransferMultiplier = 1.0f;
+        private const float DefaultInputCoolTransferMultiplier = 0.25f;
+        private const int DefaultMaxBellowsAssistCount = 2;
+        private const float DefaultBellowsTemperatureBonusPerUnit = 75f;
+        private const float DefaultRefractoryLiningTemperatureBonus = 250f;
+        private const float DefaultRefractoryLiningFuelDurationMultiplier = 2f;
+        private const float DefaultBellowsHeatRateBonusPerUnit = 0.5f;
+        private const float DefaultBellowsStackPenaltyReliefPerUnit = 0.5f;
+        private const float DefaultMaxBellowsStackPenaltyRelief = 0.9f;
+        private const float DefaultSmokeParticleY = 35.5f / 16f;
         private static readonly AssetLocation PressHitSound = new AssetLocation("sounds/effect/anvilhit");
         private static readonly AssetLocation PressCompleteSound = new AssetLocation("game:sounds/block/anvil");
-        private static readonly Vec3d[] SmokeStackLocalPositions =
+        private static readonly Vec3d[] DefaultSmokeStackLocalPositions =
         {
-            new Vec3d(-6f / 16f, SmokeParticleY, 22f / 16f),
-            new Vec3d(22f / 16f, SmokeParticleY, 22f / 16f)
+            new Vec3d(-6f / 16f, DefaultSmokeParticleY, 22f / 16f),
+            new Vec3d(22f / 16f, DefaultSmokeParticleY, 22f / 16f)
         };
 
-        private readonly InventoryGeneric inventory;
-        private IOFaceMap ioFaces;
-        private GuiDialogKineticForgePress clientDialog;
         private ItemStackDisplayRenderer activeInputRenderer;
-        private float chamberTemperature = AmbientTemperature;
+        private float chamberTemperature = DefaultAmbientTemperature;
         private float burnSecondsRemaining;
         private float activeBurnTemperature;
         private string selectedOperationCode;
@@ -72,40 +69,45 @@ namespace VintageKinematics.BlockEntities
         private string pressingDieCode;
         private bool hasTier3RefractoryLining;
 
-        public override InventoryBase Inventory => inventory;
-        public override string InventoryClassName => "kineticforgepress";
-        public IOFaceMap IOFaces => ioFaces;
         public bool HasTier3RefractoryLining => hasTier3RefractoryLining;
 
         public BEKineticForgePress()
+            : base("kineticforgepress", InventorySize, CreateSlot)
         {
-            inventory = new InventoryGeneric(InventorySize, "kineticforgepress-0", null, null, (slotId, self) =>
-            {
-                if (slotId == SlotInput) return new ItemSlotForgePressInput(self);
-                if (slotId == SlotFuel) return new ItemSlotFuelOnly(self);
-                if (slotId == SlotDie) return new ItemSlotForgePressDie(self);
-                return new ItemSlotCrusherOutput(self);
-            });
         }
+
+        private static ItemSlot CreateSlot(int slotId, InventoryBase self)
+        {
+            if (slotId == SlotInput) return new ItemSlotForgePressInput(self);
+            if (slotId == SlotFuel) return new ItemSlotFuelOnly(self);
+            if (slotId == SlotDie) return new ItemSlotForgePressDie(self);
+            return new ItemSlotCrusherOutput(self);
+        }
+
+        protected override string TitleLangCode => "vintagekinematics:kineticforgepress-title";
+        protected override string FallbackTitle => "Kinetic Forge Press";
+        protected override float OutputPushIntervalMs => KineticForgePressAttributes.OutputPushIntervalMs(Block, DefaultOutputPushIntervalMs);
+        protected override int OutputPushBatch => KineticForgePressAttributes.OutputPushBatch(Block, DefaultOutputPushBatch);
+        private float AmbientTemperature => KineticForgePressAttributes.AmbientTemperature(Block, DefaultAmbientTemperature);
+        private float HeatTickMs => KineticForgePressAttributes.HeatTickMs(Block, DefaultHeatTickMs);
+        private float HeatRatePerSecond => KineticForgePressAttributes.HeatRatePerSecond(Block, DefaultHeatRatePerSecond);
+        private float CoolRatePerSecond => KineticForgePressAttributes.CoolRatePerSecond(Block, DefaultCoolRatePerSecond);
+        private float InputHeatTransferMultiplier => KineticForgePressAttributes.InputHeatTransferMultiplier(Block, DefaultInputHeatTransferMultiplier);
+        private float InputCoolTransferMultiplier => KineticForgePressAttributes.InputCoolTransferMultiplier(Block, DefaultInputCoolTransferMultiplier);
+        private int MaxBellowsAssistCount => Math.Max(0, KineticForgePressAttributes.MaxBellowsAssistCount(Block, DefaultMaxBellowsAssistCount));
+        private float BellowsTemperatureBonusPerUnit => KineticForgePressAttributes.BellowsTemperatureBonusPerUnit(Block, DefaultBellowsTemperatureBonusPerUnit);
+        private float RefractoryLiningTemperatureBonus => KineticForgePressAttributes.RefractoryLiningTemperatureBonus(Block, DefaultRefractoryLiningTemperatureBonus);
+        private float RefractoryLiningFuelDurationMultiplier => Math.Max(0.001f, KineticForgePressAttributes.RefractoryLiningFuelDurationMultiplier(Block, DefaultRefractoryLiningFuelDurationMultiplier));
+        private float BellowsHeatRateBonusPerUnit => KineticForgePressAttributes.BellowsHeatRateBonusPerUnit(Block, DefaultBellowsHeatRateBonusPerUnit);
+        private float BellowsStackPenaltyReliefPerUnit => KineticForgePressAttributes.BellowsStackPenaltyReliefPerUnit(Block, DefaultBellowsStackPenaltyReliefPerUnit);
+        private float MaxBellowsStackPenaltyRelief => GameMath.Clamp(KineticForgePressAttributes.MaxBellowsStackPenaltyRelief(Block, DefaultMaxBellowsStackPenaltyRelief), 0f, 1f);
+        private int RefractoryLiningBrickCost => Math.Max(0, KineticForgePressAttributes.RefractoryLiningBrickCost(Block, DefaultRefractoryLiningBrickCost));
+        private Vec3d[] SmokeStackLocalPositions => KineticForgePressAttributes.SmokeStackLocalPositions(Block, DefaultSmokeStackLocalPositions);
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            inventory.LateInitialize("kineticforgepress-" + Pos, api);
-            inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += OnSlotModified;
-            EnsureSelectedOperation();
-
-            BuildIOFaceMap();
-
-            if (api.Side == EnumAppSide.Server)
-            {
-                RegisterGameTickListener(OnServerPushTick, (int)OutputPushIntervalMs);
-                RegisterGameTickListener(OnHeatTick, (int)HeatTickIntervalMs);
-            }
-
-            BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
-            if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
+            if (api.Side == EnumAppSide.Server) RegisterGameTickListener(OnHeatTick, (int)HeatTickMs);
 
             if (api is ICoreClientAPI capi)
             {
@@ -120,9 +122,14 @@ namespace VintageKinematics.BlockEntities
             }
         }
 
-        private void OnSlotModified(int slotId)
+        protected override void OnAfterInventoryInitialized()
         {
-            Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
+            EnsureSelectedOperation();
+        }
+
+        protected override void OnInventorySlotModified(int slotId)
+        {
+            base.OnInventorySlotModified(slotId);
             if (slotId == SlotInput && activeInputRenderer != null)
             {
                 activeInputRenderer.UpdateStack(inventory[SlotInput]?.Itemstack);
@@ -144,20 +151,19 @@ namespace VintageKinematics.BlockEntities
             return axis == "z" ? BlockFacing.WEST : BlockFacing.SOUTH;
         }
 
-        private void BuildIOFaceMap()
+        protected override IOFaceMap BuildIOFaceMap()
         {
-            ioFaces = new IOFaceMap(Pos);
+            IOFaceMap map = new IOFaceMap(Pos);
             BlockFacing inputFace = AutomationInputFace();
             BlockFacing outputFace = inputFace.Opposite;
 
             if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size))
             {
-                MapInputCell(Pos, inputFace);
-                MapInputCell(Pos, BlockFacing.UP);
-                MapOutputCell(Pos, outputFace);
-                MapOutputCell(Pos, BlockFacing.DOWN);
-                ioFaces.Apply(inventory);
-                return;
+                MapInputCell(map, Pos, inputFace);
+                MapInputCell(map, Pos, BlockFacing.UP);
+                MapOutputCell(map, Pos, outputFace);
+                MapOutputCell(map, Pos, BlockFacing.DOWN);
+                return map;
             }
 
             int centerX = baseCorner.X + size.X / 2;
@@ -192,39 +198,24 @@ namespace VintageKinematics.BlockEntities
                     break;
             }
 
-            MapInputCell(inputCell, inputFace);
-            MapInputCell(new BlockPos(centerX, topY, centerZ, Pos.dimension), BlockFacing.UP);
-            MapOutputCell(outputCell, outputFace);
-            MapOutputCell(new BlockPos(centerX, bottomY, centerZ, Pos.dimension), BlockFacing.DOWN);
-            ioFaces.Apply(inventory);
+            MapInputCell(map, inputCell, inputFace);
+            MapInputCell(map, new BlockPos(centerX, topY, centerZ, Pos.dimension), BlockFacing.UP);
+            MapOutputCell(map, outputCell, outputFace);
+            MapOutputCell(map, new BlockPos(centerX, bottomY, centerZ, Pos.dimension), BlockFacing.DOWN);
+            return map;
         }
 
-        private void MapInputCell(BlockPos cell, BlockFacing face)
+        private void MapInputCell(IOFaceMap map, BlockPos cell, BlockFacing face)
         {
-            ioFaces.MapInput(cell, face, SlotInput);
-            ioFaces.MapInput(cell, face, SlotFuel);
+            map.MapInput(cell, face, SlotInput);
+            map.MapInput(cell, face, SlotFuel);
         }
 
-        private void MapOutputCell(BlockPos cell, BlockFacing face)
+        private void MapOutputCell(IOFaceMap map, BlockPos cell, BlockFacing face)
         {
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
-                ioFaces.MapOutput(cell, face, i);
-            }
-        }
-
-        private void OnServerPushTick(float dt)
-        {
-            if (ioFaces == null) return;
-            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
-            {
-                foreach (int slotId in entry.SlotIds)
-                {
-                    ItemSlot slot = inventory[slotId];
-                    if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
-                    if (moved > 0) MarkDirty(true);
-                }
+                map.MapOutput(cell, face, i);
             }
         }
 
@@ -481,7 +472,7 @@ namespace VintageKinematics.BlockEntities
             return kinetic != null && Math.Abs(kinetic.ActualRPM) >= KineticNetwork.MinAbsRPM;
         }
 
-        private void OnWorkCycle(KineticWorkCompletedArgs args)
+        protected override void OnWorkCycle(KineticWorkCompletedArgs args)
         {
             ItemSlot inputSlot = inventory[SlotInput];
             if (inputSlot.Empty) return;
@@ -671,7 +662,7 @@ namespace VintageKinematics.BlockEntities
         private void DepositOutput(ItemStack stack)
         {
             Vec3d at = new Vec3d(Pos.X + 0.5, Pos.Y + 0.1, Pos.Z + 0.5);
-            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
+            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, MachineIOFaces?.OutputEntries, OutputPushBatch, at);
         }
 
         private static float Approach(float current, float target, float delta)
@@ -696,57 +687,15 @@ namespace VintageKinematics.BlockEntities
             return Math.Max(combustibleMax, attributeMax);
         }
 
-        public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
+        protected override bool HandleCustomClientPacket(IPlayer player, int packetid, byte[] data)
         {
-            if (Api.World is IServerWorldAccessor)
-            {
-                string title = Lang.Get("vintagekinematics:kineticforgepress-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticforgepress-title") title = "Kinetic Forge Press";
+            if (packetid != PacketIdSelectOperation) return false;
+            if (!CheckClaim(player)) return true;
 
-                using var ms = new MemoryStream();
-                using var bw = new BinaryWriter(ms);
-                bw.Write(title);
-                EnsureSelectedOperation();
-                bw.Write(selectedOperationCode ?? "");
-                var tree = new TreeAttribute();
-                inventory.ToTreeAttributes(tree);
-                tree.ToBytes(bw);
-
-                ((ICoreServerAPI)Api).Network.SendBlockEntityPacket((IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
-                byPlayer.InventoryManager.OpenInventory(inventory);
-            }
+            using var ms = new MemoryStream(data);
+            using var br = new BinaryReader(ms);
+            SetSelectedOperation(br.ReadString());
             return true;
-        }
-
-        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
-        {
-            if (packetid == 1001)
-            {
-                player.InventoryManager?.CloseInventory(inventory);
-                return;
-            }
-            if (packetid == PacketIdSelectOperation)
-            {
-                if (!CheckClaim(player)) return;
-                using var ms = new MemoryStream(data);
-                using var br = new BinaryReader(ms);
-                SetSelectedOperation(br.ReadString());
-                return;
-            }
-            if (packetid < 1000)
-            {
-                if (!CheckClaim(player)) return;
-                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-                return;
-            }
-            base.OnReceivedClientPacket(player, packetid, data);
-        }
-
-        private bool CheckClaim(IPlayer player)
-        {
-            if (Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) return true;
-            Api.World.Logger.Audit("Player {0} sent kinetic forge press packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
-            return false;
         }
 
         private void SetSelectedOperation(string operationCode)
@@ -761,36 +710,14 @@ namespace VintageKinematics.BlockEntities
             MarkDirty(true);
         }
 
-        public override void OnReceivedServerPacket(int packetid, byte[] data)
+        protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            if (packetid != PacketIdOpenDialog)
-            {
-                base.OnReceivedServerPacket(packetid, data);
-                return;
-            }
+            return new GuiDialogKineticForgePress(title, inventory, Pos, () => selectedOperationCode, CurrentPressProgress, CurrentPressProgressMax, CanPressCurrentRecipe, OnClientSelectOperation, capi);
+        }
 
-            ICoreClientAPI capi = Api as ICoreClientAPI;
-            if (capi == null) return;
-
-            using var ms = new MemoryStream(data);
-            using var br = new BinaryReader(ms);
-            string title = br.ReadString();
-            selectedOperationCode = br.ReadString();
-            var tree = new TreeAttribute();
-            tree.FromBytes(br);
-            inventory.FromTreeAttributes(tree);
-            inventory.ResolveBlocksOrItems();
-
-            if (clientDialog == null)
-            {
-                clientDialog = new GuiDialogKineticForgePress(title, inventory, Pos, () => selectedOperationCode, CurrentPressProgress, CurrentPressProgressMax, CanPressCurrentRecipe, OnClientSelectOperation, capi);
-                clientDialog.OnClosed += () => clientDialog = null;
-                clientDialog.TryOpen();
-            }
-            else
-            {
-                clientDialog.OnOperationUpdated();
-            }
+        protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog)
+        {
+            (dialog as GuiDialogKineticForgePress)?.OnOperationUpdated();
         }
 
         private void OnClientSelectOperation(string operationCode)
@@ -800,7 +727,7 @@ namespace VintageKinematics.BlockEntities
             using var bw = new BinaryWriter(ms);
             bw.Write(selectedOperationCode);
             ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSelectOperation, ms.ToArray());
-            clientDialog?.OnOperationUpdated();
+            RefreshClientDialog();
         }
 
         private float CurrentPressProgress()
@@ -849,18 +776,8 @@ namespace VintageKinematics.BlockEntities
                 : Lang.Get("vintagekinematics:kineticforgepress-lining-missing", RefractoryLiningBrickCost));
         }
 
-        public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
+        protected override void WriteState(ITreeAttribute tree)
         {
-            string[] excluded = KineticMeshSplitter.CollectManagedElements(this);
-            var body = KineticMeshSplitter.TesselateBodyExcluding(Api as ICoreClientAPI, Block, tessThreadTesselator, excluded);
-            if (body != null) mesher.AddMeshData(body);
-            return true;
-        }
-
-        public override void ToTreeAttributes(ITreeAttribute tree)
-        {
-            base.ToTreeAttributes(tree);
-            inventory?.ToTreeAttributes(tree);
             tree.SetFloat("chamberTemperature", chamberTemperature);
             tree.SetFloat("burnSecondsRemaining", burnSecondsRemaining);
             tree.SetFloat("activeBurnTemperature", activeBurnTemperature);
@@ -872,10 +789,8 @@ namespace VintageKinematics.BlockEntities
             tree.SetBool("tier3RefractoryLining", hasTier3RefractoryLining);
         }
 
-        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
+        protected override void ReadState(ITreeAttribute tree)
         {
-            base.FromTreeAttributes(tree, worldForResolving);
-            inventory?.FromTreeAttributes(tree);
             chamberTemperature = tree.GetFloat("chamberTemperature", AmbientTemperature);
             burnSecondsRemaining = tree.GetFloat("burnSecondsRemaining", 0f);
             activeBurnTemperature = tree.GetFloat("activeBurnTemperature", 0f);
@@ -888,27 +803,24 @@ namespace VintageKinematics.BlockEntities
             pressingDieCode = tree.GetString("pressingDieCode", "");
             if (string.IsNullOrEmpty(pressingDieCode)) pressingDieCode = null;
             hasTier3RefractoryLining = tree.GetBool("tier3RefractoryLining", false);
-            if (Api != null)
-            {
-                inventory?.ResolveBlocksOrItems();
-                EnsureSelectedOperation();
-            }
+        }
+
+        protected override void OnAfterStateRead()
+        {
             activeInputRenderer?.UpdateStack(inventory[SlotInput]?.Itemstack);
-            clientDialog?.OnOperationUpdated();
+            RefreshClientDialog();
         }
 
         public override void OnBlockUnloaded()
         {
             base.OnBlockUnloaded();
             DisposeActiveInputRenderer();
-            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         public override void OnBlockRemoved()
         {
             base.OnBlockRemoved();
             DisposeActiveInputRenderer();
-            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         private void DisposeActiveInputRenderer()

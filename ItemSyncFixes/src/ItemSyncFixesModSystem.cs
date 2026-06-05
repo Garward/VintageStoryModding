@@ -8,6 +8,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.Common;
 using Vintagestory.Server;
@@ -51,7 +52,17 @@ public sealed class ItemSyncClientFixModSystem : ModSystem
             postfix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_SlotClick), nameof(Patch_GuiElementItemSlotGridBase_SlotClick.Postfix)));
         harmony.Patch(
             AccessTools.Method(typeof(GuiElementItemSlotGridBase), nameof(GuiElementItemSlotGridBase.OnMouseDownOnElement), new[] { typeof(ICoreClientAPI), typeof(MouseEvent) }),
+            prefix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement), nameof(Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement.Prefix)),
             postfix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement), nameof(Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement.Postfix)));
+        harmony.Patch(
+            AccessTools.Method(typeof(GuiElementItemSlotGridBase), nameof(GuiElementItemSlotGridBase.OnMouseMove), new[] { typeof(ICoreClientAPI), typeof(MouseEvent) }),
+            prefix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_OnMouseMove), nameof(Patch_GuiElementItemSlotGridBase_OnMouseMove.Prefix)));
+        harmony.Patch(
+            AccessTools.Method(typeof(GuiElementItemSlotGridBase), nameof(GuiElementItemSlotGridBase.OnMouseUp), new[] { typeof(ICoreClientAPI), typeof(MouseEvent) }),
+            prefix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_OnMouseUp), nameof(Patch_GuiElementItemSlotGridBase_OnMouseUp.Prefix)));
+        harmony.Patch(
+            AccessTools.Method(typeof(GuiElementItemSlotGridBase), nameof(GuiElementItemSlotGridBase.RenderInteractiveElements), new[] { typeof(float) }),
+            postfix: new HarmonyMethod(typeof(Patch_GuiElementItemSlotGridBase_RenderInteractiveElements), nameof(Patch_GuiElementItemSlotGridBase_RenderInteractiveElements.Postfix)));
         ClientDoubleUpdatePatchInstaller.Patch(harmony);
         CraftingPatchInstaller.Patch(harmony);
 
@@ -1185,6 +1196,11 @@ internal static class Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement
 {
     private static readonly FieldInfo InventoryField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "inventory");
 
+    public static bool Prefix(GuiElementItemSlotGridBase __instance, ICoreClientAPI api, MouseEvent args)
+    {
+        return !CraftingGridDragPreview.TryBegin(__instance, api, args);
+    }
+
     public static void Postfix(GuiElementItemSlotGridBase __instance, ICoreClientAPI api, MouseEvent args)
     {
         if (api?.Side != EnumAppSide.Client || args?.Button != EnumMouseButton.Left)
@@ -1205,6 +1221,418 @@ internal static class Patch_GuiElementItemSlotGridBase_OnMouseDownOnElement
         }
 
         SyncDiagnostics.Log(api, "CLIENT crafting drag left server updates unpaused {0}", inv.InventoryID ?? "?");
+    }
+}
+
+internal static class Patch_GuiElementItemSlotGridBase_OnMouseMove
+{
+    public static bool Prefix(GuiElementItemSlotGridBase __instance, ICoreClientAPI api, MouseEvent args)
+    {
+        return !CraftingGridDragPreview.TryMove(__instance, api, args);
+    }
+}
+
+internal static class Patch_GuiElementItemSlotGridBase_OnMouseUp
+{
+    public static bool Prefix(GuiElementItemSlotGridBase __instance, ICoreClientAPI api, MouseEvent args)
+    {
+        return !CraftingGridDragPreview.TryEnd(__instance, api, args);
+    }
+}
+
+internal static class Patch_GuiElementItemSlotGridBase_RenderInteractiveElements
+{
+    public static void Postfix(GuiElementItemSlotGridBase __instance, float deltaTime)
+    {
+        CraftingGridDragPreview.Render(__instance, deltaTime);
+    }
+}
+
+internal static class CraftingGridDragPreview
+{
+    private static readonly FieldInfo InventoryField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "inventory");
+    private static readonly FieldInfo RenderedSlotsField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "renderedSlots");
+    private static readonly FieldInfo HoverSlotIdField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "hoverSlotId");
+    private static readonly FieldInfo HoverInvField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "hoverInv");
+    private static readonly FieldInfo WasMouseDownOnSlotIndexField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "wasMouseDownOnSlotIndex");
+    private static readonly FieldInfo DistributePrevField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "distributeStacksPrevStackSizeBySlotId");
+    private static readonly FieldInfo DistributeAddedField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "distributeStacksAddedStackSizeBySlotId");
+    private static readonly FieldInfo ReferenceDistributeStackField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "referenceDistributStack");
+    private static readonly MethodInfo RedistributeStacksMethod = AccessTools.Method(typeof(GuiElementItemSlotGridBase), "RedistributeStacks");
+    private static readonly Dictionary<GuiElementItemSlotGridBase, PreviewState> Active = new();
+
+    public static bool TryBegin(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
+    {
+        if (!CanUsePreview(elem, api, args) || !TryGetInventory(elem, out InventoryCraftingGrid inv))
+        {
+            return false;
+        }
+
+        bool shift = IsDown(api, GlKeys.ShiftLeft) || IsDown(api, GlKeys.ShiftRight);
+        bool ctrl = IsDown(api, GlKeys.ControlLeft) || IsDown(api, GlKeys.ControlRight);
+        bool alt = IsDown(api, GlKeys.AltLeft) || IsDown(api, GlKeys.AltRight);
+        if (shift || ctrl || alt)
+        {
+            return false;
+        }
+
+        ItemStack mouseStack = api.World?.Player?.InventoryManager?.MouseItemSlot?.Itemstack;
+        if (mouseStack == null)
+        {
+            return false;
+        }
+
+        if (!TryGetHoveredSlot(elem, args.X, args.Y, out int slotIndex, out int slotId))
+        {
+            return false;
+        }
+
+        if (!CanPreviewSlot(api, inv, slotId, mouseStack))
+        {
+            return false;
+        }
+
+        Active[elem] = new PreviewState(api, inv, args.Button, mouseStack.Clone());
+        AddSlot(elem, Active[elem], slotIndex, slotId);
+        args.Handled = true;
+
+        SyncDiagnostics.Log(api, "CLIENT crafting drag preview begin {0}[{1}] button={2}", inv.InventoryID ?? "?", slotId, args.Button);
+        return true;
+    }
+
+    public static bool TryMove(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
+    {
+        if (!Active.TryGetValue(elem, out PreviewState state))
+        {
+            return false;
+        }
+
+        if (api?.Side != EnumAppSide.Client)
+        {
+            Active.Remove(elem);
+            return false;
+        }
+
+        if (TryGetHoveredSlot(elem, args.X, args.Y, out int slotIndex, out int slotId))
+        {
+            ItemSlot hoverSlot = state.Inventory[slotId];
+            if (!state.SlotIds.Contains(slotId) && CanPreviewSlot(api, state.Inventory, slotId, state.ReferenceStack))
+            {
+                AddSlot(elem, state, slotIndex, slotId);
+                SyncDiagnostics.Log(api, "CLIENT crafting drag preview add {0}[{1}] count={2}", state.Inventory.InventoryID ?? "?", slotId, state.SlotIds.Count);
+            }
+
+            SetHover(elem, hoverSlot, slotId);
+        }
+        else
+        {
+            SetHover(elem, null, -1);
+        }
+
+        args.Handled = true;
+        return true;
+    }
+
+    public static bool TryEnd(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
+    {
+        if (!Active.TryGetValue(elem, out PreviewState state))
+        {
+            return false;
+        }
+
+        Active.Remove(elem);
+        args.Handled = true;
+
+        int applied = state.Button == EnumMouseButton.Left
+            ? ApplyLeftDrag(elem, api, state)
+            : ApplySimpleDrag(elem, api, state);
+
+        SetHover(elem, null, -1);
+        state.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
+        api.World.Player.InventoryManager.MouseItemSlot.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
+
+        SyncDiagnostics.Log(api, "CLIENT crafting drag preview apply {0} slots button={1}", applied, state.Button);
+        return true;
+    }
+
+    public static void Render(GuiElementItemSlotGridBase elem, float deltaTime)
+    {
+        if (!Active.TryGetValue(elem, out PreviewState state) || state.SlotIndices.Count == 0)
+        {
+            return;
+        }
+
+        LoadedTexture highlight = elem.HighlightSlotTexture;
+        if (highlight == null || highlight.TextureId == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < state.SlotIndices.Count; i++)
+        {
+            int slotIndex = state.SlotIndices[i];
+            if (slotIndex < 0 || slotIndex >= elem.SlotBounds.Length)
+            {
+                continue;
+            }
+
+            ElementBounds bounds = elem.SlotBounds[slotIndex];
+            state.Api.Render.Render2DTexturePremultipliedAlpha(
+                highlight.TextureId,
+                (int)(bounds.renderX - 2.0),
+                (int)(bounds.renderY - 2.0),
+                bounds.OuterWidthInt + 4,
+                bounds.OuterHeightInt + 4);
+
+            if (!TryBuildPreviewSlot(state, i, out ItemSlot previewSlot))
+            {
+                continue;
+            }
+
+            state.Api.Render.RenderItemstackToGui(
+                previewSlot,
+                bounds.renderX + bounds.OuterWidth / 2.0,
+                bounds.renderY + bounds.OuterHeight / 2.0,
+                500.0,
+                (float)GuiElement.scaled(GuiElementPassiveItemSlot.unscaledItemSize),
+                ColorUtil.WhiteArgb,
+                deltaTime,
+                true,
+                false,
+                true);
+        }
+    }
+
+    private static bool TryBuildPreviewSlot(PreviewState state, int previewIndex, out ItemSlot previewSlot)
+    {
+        previewSlot = null;
+        if (previewIndex < 0 || previewIndex >= state.SlotIds.Count)
+        {
+            return false;
+        }
+
+        int slotId = state.SlotIds[previewIndex];
+        ItemStack existingStack = state.Inventory[slotId]?.Itemstack;
+        ItemStack previewStack = (existingStack ?? state.ReferenceStack).Clone();
+        int existingSize = existingStack?.StackSize ?? 0;
+        int addedSize = state.Button == EnumMouseButton.Right
+            ? RightDragPreviewAddedSize(state, previewIndex)
+            : LeftDragPreviewAddedSize(state, previewIndex);
+
+        if (addedSize <= 0)
+        {
+            return false;
+        }
+
+        previewStack.StackSize = existingSize + addedSize;
+        previewSlot = new ItemSlot(state.Inventory)
+        {
+            Itemstack = previewStack
+        };
+        return true;
+    }
+
+    private static int RightDragPreviewAddedSize(PreviewState state, int previewIndex)
+    {
+        return previewIndex < state.ReferenceStack.StackSize ? 1 : 0;
+    }
+
+    private static int LeftDragPreviewAddedSize(PreviewState state, int previewIndex)
+    {
+        int slotCount = Math.Max(1, state.SlotIds.Count);
+        int evenShare = state.ReferenceStack.StackSize / slotCount;
+        if (previewIndex < slotCount - 1)
+        {
+            return evenShare;
+        }
+
+        return state.ReferenceStack.StackSize - evenShare * (slotCount - 1);
+    }
+
+    private static int ApplySimpleDrag(GuiElementItemSlotGridBase elem, ICoreClientAPI api, PreviewState state)
+    {
+        int applied = 0;
+        foreach (int slotId in state.SlotIds)
+        {
+            if (slotId < 0 || slotId >= state.Inventory.Count)
+            {
+                continue;
+            }
+
+            if (!CanPreviewSlot(api, state.Inventory, slotId, state.ReferenceStack))
+            {
+                continue;
+            }
+
+            elem.SlotClick(api, slotId, state.Button, false, false, false);
+            applied++;
+        }
+
+        return applied;
+    }
+
+    private static int ApplyLeftDrag(GuiElementItemSlotGridBase elem, ICoreClientAPI api, PreviewState state)
+    {
+        if (state.SlotIds.Count == 0 || RedistributeStacksMethod == null)
+        {
+            return 0;
+        }
+
+        var wasMouseDownOnSlotIndex = WasMouseDownOnSlotIndexField.GetValue(elem) as HashSet<int>;
+        var distributePrev = DistributePrevField.GetValue(elem) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>;
+        var distributeAdded = DistributeAddedField.GetValue(elem) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>;
+        if (wasMouseDownOnSlotIndex == null || distributePrev == null || distributeAdded == null)
+        {
+            return ApplySimpleDrag(elem, api, state);
+        }
+
+        wasMouseDownOnSlotIndex.Clear();
+        distributePrev.Clear();
+        distributeAdded.Clear();
+        ReferenceDistributeStackField.SetValue(elem, state.ReferenceStack.Clone());
+
+        int applied = 0;
+        for (int i = 0; i < state.SlotIds.Count; i++)
+        {
+            int slotId = state.SlotIds[i];
+            int slotIndex = state.SlotIndices[i];
+            if (slotId < 0 || slotId >= state.Inventory.Count || slotIndex < 0)
+            {
+                continue;
+            }
+
+            ItemStack stack = state.Inventory[slotId]?.Itemstack;
+            if (stack != null && !stack.Equals(api.World, state.ReferenceStack, GlobalConstants.IgnoredStackAttributes))
+            {
+                continue;
+            }
+
+            wasMouseDownOnSlotIndex.Add(slotIndex);
+            distributePrev[slotId] = state.Inventory[slotId].StackSize;
+
+            int previousStackSize = state.Inventory[slotId].StackSize;
+            if (api.World.Player.InventoryManager.MouseItemSlot.StackSize > 0)
+            {
+                elem.SlotClick(api, slotId, EnumMouseButton.Left, false, false, false);
+                distributeAdded[slotId] = state.Inventory[slotId].StackSize - previousStackSize;
+            }
+
+            if (api.World.Player.InventoryManager.MouseItemSlot.StackSize <= 0)
+            {
+                RedistributeStacksMethod.Invoke(elem, new object[] { slotId });
+            }
+
+            applied++;
+        }
+
+        wasMouseDownOnSlotIndex.Clear();
+        distributePrev.Clear();
+        distributeAdded.Clear();
+        return applied;
+    }
+
+    private static bool CanUsePreview(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
+    {
+        if (api?.Side != EnumAppSide.Client || elem == null || args == null)
+        {
+            return false;
+        }
+
+        if (args.Button != EnumMouseButton.Left && args.Button != EnumMouseButton.Right)
+        {
+            return false;
+        }
+
+        return elem.Bounds?.ParentBounds != null && elem.Bounds.ParentBounds.PointInside(args.X, args.Y);
+    }
+
+    private static bool TryGetInventory(GuiElementItemSlotGridBase elem, out InventoryCraftingGrid inv)
+    {
+        inv = InventoryField.GetValue(elem) as InventoryCraftingGrid;
+        return inv != null;
+    }
+
+    private static bool TryGetHoveredSlot(GuiElementItemSlotGridBase elem, double x, double y, out int slotIndex, out int slotId)
+    {
+        slotIndex = -1;
+        slotId = -1;
+
+        if (elem.SlotBounds == null)
+        {
+            return false;
+        }
+
+        var renderedSlots = RenderedSlotsField.GetValue(elem) as Vintagestory.API.Datastructures.OrderedDictionary<int, ItemSlot>;
+        if (renderedSlots == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < elem.SlotBounds.Length && i < renderedSlots.Count; i++)
+        {
+            if (!elem.SlotBounds[i].PointInside(x, y))
+            {
+                continue;
+            }
+
+            if (elem.CanClickSlot?.Invoke(i) == false)
+            {
+                return false;
+            }
+
+            slotIndex = i;
+            slotId = renderedSlots.GetKeyAtIndex(i);
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool CanPreviewSlot(ICoreClientAPI api, InventoryCraftingGrid inv, int slotId, ItemStack referenceStack)
+    {
+        if (api?.World == null || inv == null || referenceStack == null || slotId < 0 || slotId >= inv.Count)
+        {
+            return false;
+        }
+
+        ItemStack stack = inv[slotId]?.Itemstack;
+        return stack == null || stack.Equals(api.World, referenceStack, GlobalConstants.IgnoredStackAttributes);
+    }
+
+    private static void AddSlot(GuiElementItemSlotGridBase elem, PreviewState state, int slotIndex, int slotId)
+    {
+        state.SlotIndices.Add(slotIndex);
+        state.SlotIds.Add(slotId);
+        SetHover(elem, state.Inventory[slotId], slotId);
+    }
+
+    private static void SetHover(GuiElementItemSlotGridBase elem, ItemSlot slot, int slotId)
+    {
+        HoverSlotIdField?.SetValue(elem, slotId);
+        HoverInvField?.SetValue(elem, slot?.Inventory);
+    }
+
+    private static bool IsDown(ICoreClientAPI api, GlKeys key)
+    {
+        return api?.Input?.KeyboardKeyState != null && api.Input.KeyboardKeyState[(int)key];
+    }
+
+    private sealed class PreviewState
+    {
+        public readonly ICoreClientAPI Api;
+        public readonly InventoryCraftingGrid Inventory;
+        public readonly EnumMouseButton Button;
+        public readonly ItemStack ReferenceStack;
+        public readonly List<int> SlotIndices = new();
+        public readonly List<int> SlotIds = new();
+
+        public PreviewState(ICoreClientAPI api, InventoryCraftingGrid inventory, EnumMouseButton button, ItemStack referenceStack)
+        {
+            Api = api;
+            Inventory = inventory;
+            Button = button;
+            ReferenceStack = referenceStack;
+        }
     }
 }
 

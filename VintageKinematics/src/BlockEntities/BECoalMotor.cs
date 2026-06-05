@@ -45,7 +45,7 @@ namespace VintageKinematics.BlockEntities
 
             if (api.Side == EnumAppSide.Server)
             {
-                RegisterGameTickListener(OnFuelTick, 500);
+                RegisterGameTickListener(OnFuelTick, KineticGeneratorAttributes.TickMs(Block, 500));
             }
         }
 
@@ -142,7 +142,7 @@ namespace VintageKinematics.BlockEntities
             BEBehaviorKineticSource src = GetBehavior<BEBehaviorKineticSource>();
             if (src == null) return;
 
-            if (src.DecaySeconds > 1f) return;
+            if (src.DecaySeconds > KineticGeneratorAttributes.SourceRefreshThresholdSeconds(Block, 1f)) return;
 
             ItemSlot slot = inventory[SlotFuel];
             if (slot.Empty) return;
@@ -154,7 +154,7 @@ namespace VintageKinematics.BlockEntities
             slot.TakeOut(1);
             slot.MarkDirty();
             float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveCoalMotorFuelUsageSpeed() ?? 1f;
-            src.Wind(props.BurnDuration / fuelUsageSpeed);
+            src.Wind(props.BurnDuration / fuelUsageSpeed, KineticSourceDirection.ForHorizontalSide(Block, "n"));
         }
     }
 }

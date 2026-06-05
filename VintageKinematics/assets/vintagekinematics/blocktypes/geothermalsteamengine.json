@@ -6,6 +6,13 @@
         { "code": "side", "states": [ "n", "e", "s", "w" ] },
         { "code": "state", "states": [ "cool", "glow" ] }
     ],
+    "attributes": {
+        "vkGenerator": {
+            "tickMs": 1000,
+            "windSeconds": 1.25,
+            "waterLitresPerSecond": 0.05
+        }
+    },
     "behaviorsByType": {
         "*-n-*": [ { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } } ],
         "*-e-*": [ { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } } ],

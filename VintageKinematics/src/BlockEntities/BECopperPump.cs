@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Blocks;
-using VintageKinematics.Gui;
 using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
@@ -44,24 +40,31 @@ namespace VintageKinematics.BlockEntities
         private int nextSourceIndex;
         private string status = "idle";
         private float lastMovedLitres;
-        private InventoryLiquidFilter filterInv;
-        private bool whitelist;
-        private bool fuzzy;
-        private bool suppressClientSync;
-        private GuiDialogFunnelFilter invDialog;
+        private readonly FilterDialogController filter;
 
         public BECopperPump()
         {
-            filterInv = new InventoryLiquidFilter(FilterSlotCount, "copperpumpfilter", null);
+            filter = new FilterDialogController(
+                this,
+                new InventoryLiquidFilter(FilterSlotCount, "copperpumpfilter", null),
+                "copperpumpfilter",
+                "vintagekinematics:copperpump-filter-title",
+                "Pump Filter",
+                "copper pump",
+                PacketIdOpenDialog,
+                PacketIdToggleMode,
+                PacketIdSetFilter,
+                PacketIdToggleFuzzy,
+                () => FilterSlotCount,
+                centerSingleSlot: () => true,
+                validateFilterStack: stack => BlockLiquidContainerBase.GetContainableProps(stack) != null);
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            filterInv.LateInitialize("copperpumpfilter-" + Pos, api);
-            filterInv.ResolveBlocksOrItems();
+            filter.Initialize(api);
             if (api.Side == EnumAppSide.Server) RegisterGameTickListener(OnServerTick, (int)(TickSeconds * 1000));
-            if (api.Side == EnumAppSide.Client) filterInv.SlotModified += OnClientFilterSlotModified;
         }
 
         private void OnServerTick(float dt)
@@ -159,28 +162,7 @@ namespace VintageKinematics.BlockEntities
 
         private bool MatchesFilter(ItemStack stack)
         {
-            return ItemFilterMatcher.Matches(stack, filterInv, FilterSlotCount, whitelist, fuzzy);
-        }
-
-        private void OnClientFilterSlotModified(int slotId)
-        {
-            if (Api?.Side != EnumAppSide.Client || suppressClientSync) return;
-
-            using var ms = new MemoryStream();
-            using var bw = new BinaryWriter(ms);
-            bw.Write(slotId);
-            ItemSlot slot = filterInv[slotId];
-            if (slot.Empty)
-            {
-                bw.Write(false);
-            }
-            else
-            {
-                bw.Write(true);
-                slot.Itemstack.ToBytes(bw);
-            }
-
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSetFilter, ms.ToArray());
+            return filter.Matches(stack);
         }
 
         private int TryRoundRobinPut(List<PumpSink> sinks, ItemStack transferStack, float desiredLitres)
@@ -452,9 +434,7 @@ namespace VintageKinematics.BlockEntities
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            filterInv?.ToTreeAttributes(tree);
-            tree.SetBool("whitelist", whitelist);
-            tree.SetBool("fuzzy", fuzzy);
+            filter.WriteToTree(tree);
             tree.SetFloat("litreBudget", litreBudget);
             tree.SetInt("nextSinkIndex", nextSinkIndex);
             tree.SetInt("nextSourceIndex", nextSourceIndex);
@@ -465,26 +445,12 @@ namespace VintageKinematics.BlockEntities
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
-            filterInv ??= new InventoryLiquidFilter(FilterSlotCount, "copperpumpfilter", null);
-            suppressClientSync = true;
-            try
-            {
-                filterInv.FromTreeAttributes(tree);
-            }
-            finally
-            {
-                suppressClientSync = false;
-            }
-            whitelist = tree.GetBool("whitelist", false);
-            fuzzy = tree.GetBool("fuzzy", false);
+            filter.ReadFromTree(tree);
             litreBudget = tree.GetFloat("litreBudget", 0f);
             nextSinkIndex = tree.GetInt("nextSinkIndex", 0);
             nextSourceIndex = tree.GetInt("nextSourceIndex", 0);
             status = tree.GetString("status", "idle");
             lastMovedLitres = tree.GetFloat("lastMovedLitres", 0f);
-
-            if (Api != null) filterInv.ResolveBlocksOrItems();
-            invDialog?.OnFilterStateUpdated();
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
@@ -499,161 +465,32 @@ namespace VintageKinematics.BlockEntities
 
         public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
-            if (Api.World is IServerWorldAccessor)
-            {
-                string title = Lang.Get("vintagekinematics:copperpump-filter-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:copperpump-filter-title") title = "Pump Filter";
-
-                using var ms = new MemoryStream();
-                using var bw = new BinaryWriter(ms);
-                bw.Write(title);
-                bw.Write(whitelist);
-                bw.Write(fuzzy);
-                var tree = new TreeAttribute();
-                filterInv.ToTreeAttributes(tree);
-                tree.ToBytes(bw);
-
-                ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
-                byPlayer.InventoryManager.OpenInventory(filterInv);
-            }
-
-            return true;
+            return filter.Open(byPlayer);
         }
 
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
-            if (packetid == 1001)
-            {
-                player.InventoryManager?.CloseInventory(filterInv);
-                return;
-            }
-            if (packetid == PacketIdToggleMode)
-            {
-                if (!CheckClaim(player)) return;
-                whitelist = !whitelist;
-                MarkDirty(true);
-                return;
-            }
-            if (packetid == PacketIdToggleFuzzy)
-            {
-                if (!CheckClaim(player)) return;
-                fuzzy = !fuzzy;
-                MarkDirty(true);
-                return;
-            }
-            if (packetid == PacketIdSetFilter)
-            {
-                if (!CheckClaim(player)) return;
-                using var ms = new MemoryStream(data);
-                using var br = new BinaryReader(ms);
-                int slotId = br.ReadInt32();
-                if (slotId != 0) return;
-
-                bool hasStack = br.ReadBoolean();
-                ItemStack stack = null;
-                if (hasStack)
-                {
-                    stack = new ItemStack();
-                    stack.FromBytes(br);
-                    stack.ResolveBlockOrItem(Api.World);
-                    stack.StackSize = 1;
-                    if (BlockLiquidContainerBase.GetContainableProps(stack) == null) return;
-                }
-
-                filterInv[0].Itemstack = stack;
-                filterInv[0].MarkDirty();
-                MarkDirty(true);
-                return;
-            }
-            if (packetid < 1000)
-            {
-                if (!CheckClaim(player)) return;
-                filterInv.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-            }
-        }
-
-        private bool CheckClaim(IPlayer player)
-        {
-            if (Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) return true;
-            Api.World.Logger.Audit("Player {0} sent copper pump filter packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
-            return false;
+            if (filter.OnReceivedClientPacket(player, packetid, data)) return;
+            base.OnReceivedClientPacket(player, packetid, data);
         }
 
         public override void OnReceivedServerPacket(int packetid, byte[] data)
         {
-            if (packetid != PacketIdOpenDialog) return;
-
-            ICoreClientAPI capi = Api as ICoreClientAPI;
-            if (capi == null) return;
-
-            using var ms = new MemoryStream(data);
-            using var br = new BinaryReader(ms);
-            string title = br.ReadString();
-            whitelist = br.ReadBoolean();
-            fuzzy = br.ReadBoolean();
-            var tree = new TreeAttribute();
-            tree.FromBytes(br);
-
-            suppressClientSync = true;
-            try
-            {
-                filterInv.FromTreeAttributes(tree);
-                filterInv.ResolveBlocksOrItems();
-            }
-            finally
-            {
-                suppressClientSync = false;
-            }
-
-            if (invDialog == null)
-            {
-                invDialog = new GuiDialogFunnelFilter(
-                    title, filterInv, Pos, FilterSlotCount,
-                    () => whitelist, () => fuzzy,
-                    OnClientToggleMode, OnClientToggleFuzzy, capi,
-                    centerSingleSlot: true);
-                invDialog.OnClosed += OnDialogClosed;
-                invDialog.TryOpen();
-            }
-            else
-            {
-                invDialog.OnFilterStateUpdated();
-            }
-        }
-
-        private void OnClientToggleMode()
-        {
-            whitelist = !whitelist;
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleMode);
-            invDialog?.OnFilterStateUpdated();
-        }
-
-        private void OnClientToggleFuzzy()
-        {
-            fuzzy = !fuzzy;
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleFuzzy);
-            invDialog?.OnFilterStateUpdated();
-        }
-
-        private void OnDialogClosed()
-        {
-            invDialog = null;
+            if (filter.OnReceivedServerPacket(packetid, data)) return;
+            base.OnReceivedServerPacket(packetid, data);
         }
 
         public override void OnBlockUnloaded()
         {
             base.OnBlockUnloaded();
-            DisposeDialog();
+            filter.DisposeDialog();
         }
 
         public override void OnBlockRemoved()
         {
             base.OnBlockRemoved();
-            DisposeDialog();
+            filter.DisposeDialog();
         }
-
-        private void DisposeDialog() => GuiDialogUtil.SafeDispose(ref invDialog);
 
         private readonly struct PumpInput
         {

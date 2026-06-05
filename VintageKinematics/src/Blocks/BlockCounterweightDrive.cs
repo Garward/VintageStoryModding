@@ -134,7 +134,7 @@ namespace VintageKinematics.Blocks
 
             if (byPlayer?.Entity?.Controls?.ShiftKey == true)
             {
-                be.Release(1);
+                be.Release(ReleaseDirectionFor(be));
                 return;
             }
 
@@ -145,6 +145,11 @@ namespace VintageKinematics.Blocks
             }
 
             be.ContinueWinding(secondsUsed);
+        }
+
+        private static int ReleaseDirectionFor(BECounterweightDrive be)
+        {
+            return KineticSourceDirection.ForHorizontalSide(be?.Block, "w");
         }
 
         private static void EndWinding(IWorldAccessor world, BlockSelection blockSel)

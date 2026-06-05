@@ -246,7 +246,52 @@ the same IO schema without being full JSON processors. Put it at top-level
 }
 ```
 
-## 5. When You Need C#
+## 5. JSON-Backed Generators
+
+Generators should put their common kinetic source tuning in JSON:
+
+```json
+"entityBehaviorsByType": {
+  "*-n": [
+    { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -1024, "axis": "X" } },
+    { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } }
+  ]
+},
+"attributes": {
+  "vkGenerator": {
+    "tickMs": 500,
+    "windSeconds": 1.25,
+    "sourceRefreshThresholdSeconds": 1,
+    "waterLitresPerSecond": 0.05
+  }
+}
+```
+
+Use `Kinetic` / `KineticSource` for the universal source facts: shaft role,
+axis, SU capacity, target RPM, decay tick, and whether the source is always
+active. Use `attributes.vkGenerator` for common timing and resource-rate
+knobs. Current built-in examples:
+
+- Coal Motor: `tickMs` and `sourceRefreshThresholdSeconds` are JSON; C# only
+  decides whether the fuel slot contains burnable fuel and how long that item
+  burns.
+- Geothermal Steam Engine: `tickMs`, `windSeconds`, and
+  `waterLitresPerSecond` are JSON; C# only checks for tapped geothermal heat
+  and consumes adjacent water.
+- Hand Crank: `windSeconds` is JSON; C# only handles player/activator
+  direction.
+- Treadwheel: `tickMs` and `windSeconds` are JSON; C# only checks mounted
+  player movement and direction.
+- Counterweight Drive: `maxChargeSeconds`, `windSecondsPerSecond`, and
+  `clickWindSeconds` are JSON; C# only tracks winding and release state.
+- Flywheels: charge/discharge stress, output RPM, storage time, burst cap,
+  leak rate, efficiency, discharge refresh, idle spin decay, and `tickMs`
+  live under `attributes.flywheel`; C# only handles charge/discharge state.
+- Placed Backpack Flywheel: `tickMs`, `chargeStress`, `chargeEfficiency`, and
+  `maxOutputRPM` are JSON; C# only bridges world kinetic charge into the item
+  stack's stored charge.
+
+## 6. When You Need C#
 
 If the generic JSON processor is not enough, do not start from an empty
 `BlockEntity`. Extend the same primitives instead:
@@ -310,7 +355,7 @@ Fields:
 - `requiredTemperature`: chamber temperature required before work can run.
 - `pressTicks`: intended recipe cost in press cycles.
 
-## 6. Driving keyframe animations from RPM
+## 7. Driving keyframe animations from RPM
 
 If your model has a keyframe animation (the kind exported by VS Model
 Creator with bones / joints), add `KineticAnimationDriver` to wire its
@@ -334,7 +379,7 @@ translated by `KineticPiston`, stretched by `KineticStretch`, or solved as a
 pleat strip by `KineticLinkedPleat`. Don't drive the same element from more
 than one movement behavior.
 
-## 7. Pistons (linear oscillating or extending elements)
+## 8. Pistons (linear oscillating or extending elements)
 
 For elements that should reciprocate (hammer, pump, saw) or extend in one
 direction with the network's rotation (lift, gate, drill), use
@@ -367,7 +412,7 @@ Vec3f offset = piston?.GetOffsetFor("hammer") ?? new Vec3f();
 // translate the "hammer" element by `offset` in your mesh assembly
 ```
 
-## 8. Wire it all up: the OnTesselation override
+## 9. Wire it all up: the OnTesselation override
 
 `KineticAnimator`, `KineticPiston`, `KineticStretch`, and
 `KineticLinkedPleat` render their managed elements through their own
@@ -395,7 +440,7 @@ If you also need to render custom static decorations (item-on-pedestal
 style), tesselate them and call `mesher.AddMeshData` on each before
 returning.
 
-## 9. Linked pleats (accordion / bellows folds)
+## 10. Linked pleats (accordion / bellows folds)
 
 For accordion-like geometry where a row of flat strips should stay snapped
 between a fixed bottom edge and a moving top edge, use `KineticLinkedPleat`.
@@ -471,7 +516,7 @@ caps centered on an eight-fold chain use `translateTOffset: 0.125` and
 `translateTStep: 0.25`, placing them at `1/8`, `3/8`, `5/8`, and `7/8` of
 the moving height.
 
-## 10. Multiblocks (footprint larger than 1x1x1)
+## 11. Multiblocks (footprint larger than 1x1x1)
 
 If your machine occupies more than one block (the Kinetic Sieve is a 1×1×3
 drum, for example), use vanilla's `Multiblock` block behavior to declare the
@@ -577,7 +622,7 @@ Rules that came out of the Treadwheel and Counterweight Drive pass:
   `KineticPiston` for moving parts like a falling weight, and
   `KineticStretch` for length-changing parts like a rope.
 
-## 11. Restricting kinetic input to specific cells (`KineticMultiblock`)
+## 12. Restricting kinetic input to specific cells (`KineticMultiblock`)
 
 By default, every filler cell of a multiblock is treated as a coaxial
 shaft passthrough: a shaft against any face of any cell will join the
@@ -643,7 +688,7 @@ When to use it:
 - Multiblocks where the input cell isn't on a face of the controller and
   the default coaxial rule wouldn't form the edge.
 
-## 12. Placement previews and non-standard placement
+## 13. Placement previews and non-standard placement
 
 When placement depends on the clicked block, the clicked face, or the
 player's yaw, implement `IPlacementPreviewProvider` on the block class.
@@ -689,7 +734,7 @@ Rules:
   so the block code remains data-driven instead of hard-coded string
   concatenation.
 
-## 13. Kinetic Activator support (`IKineticActivatable`)
+## 14. Kinetic Activator support (`IKineticActivatable`)
 
 The Kinetic Activator normally tries three paths:
 
@@ -735,7 +780,7 @@ Guidelines:
   `KineticActivatorTargetBlacklist` in `ModConfig/vintagekinematics.json`.
   The default blacklist blocks command/ticker/conditional block families.
 
-## 14. Gantry contraptions
+## 15. Gantry contraptions
 
 Gantry contraptions are the current constrained moving-block prototype.
 They are intentionally narrower than a full Create-style contraption:
@@ -847,7 +892,7 @@ Controller responsibilities:
 - Call `EntityVKContraption.MoveBy(dx, dy, dz)` for straight translation
   so carried entities move with the contraption.
 
-## 15. What the API does for free
+## 16. What the API does for free
 
 - Network membership and stress accounting on placement / removal.
 - Tooltip lines: status, stress, idle/active source labels.
@@ -875,7 +920,7 @@ Controller responsibilities:
 - Contraption snapshot capture, disconnected-block pruning, entity spawn,
   world block removal, and binder assignment through `IContraptionController`.
 
-## 16. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
+## 17. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
 
 If your block entity opens a `GuiDialogBlockEntity` on the client, **always**
 dispose it through `VintageKinematics.Api.GuiDialogUtil.SafeDispose` from
@@ -918,7 +963,7 @@ The helper takes any `GuiDialogBlockEntity` subclass by `ref`:
 public static void SafeDispose<T>(ref T dialog) where T : GuiDialogBlockEntity
 ```
 
-## 17. What's still your responsibility
+## 18. What's still your responsibility
 
 - For pure JSON machines: blocktype JSON, shape JSON, process recipe JSON,
   textures, and optional lang entries.

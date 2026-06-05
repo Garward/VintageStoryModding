@@ -11,7 +11,10 @@
             "maxStoredSeconds": 900,
             "maxBurstMultiplier": 16,
             "chargeEfficiency": 0.75,
-            "leakFullToEmptySeconds": 3600
+            "leakFullToEmptySeconds": 3600,
+            "dischargeWindSeconds": 1.25,
+            "spinDecayPerSecond": 0.985,
+            "tickMs": 200
         }
     },
     "entityBehaviorsByType": {
