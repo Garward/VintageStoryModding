@@ -1,62 +1,285 @@
-# Building a Kinetic Machine: End-to-End Tutorial
+# Building VK Machines: JSON First, C# Only When Needed
 
-This walkthrough builds a "Kinetic Pulper" mod that turns logs into pulp.
-Total: 1 block JSON, 1+ recipe JSONs, ~50 lines of C#.
+The recommended workflow for basic VK machines is now data driven. If your
+machine consumes item stacks, spends rotation work, and produces item stacks,
+you should start with the generic JSON processor:
+
+- 1 blocktype JSON
+- 1 shape JSON
+- 1 or more `vkrecipe/process/<machineCode>/` recipe JSON files
+- optional lang entries
+- no C#
+
+Use C# only when the machine has behavior the generic processor cannot express:
+custom world interaction, special recipe matching, fluids, heat, entities,
+non-item outputs, or unusual state.
 
 ## Prerequisites
 
 - Vintage Story 1.22.2+
-- Vintage Kinematics installed (provides `VintageKinematics.Api`)
-- A model file (`shapes/block/kineticpulper.json`) with a named element
-  `blade` you'll rotate
+- Vintage Kinematics installed
+- A model file, for example `assets/mymod/shapes/block/handlelathe.json`
 
-## 1. Block JSON
+## 1. Pure JSON Processor
 
-`assets/mymod/blockTypes/kineticpulper.json`:
+This example builds a small machine that turns one stick into one hand crank.
+It is a 1x2 multiblock: the bottom/controller block contains the shaft, and
+the top block is decorative geometry. Add `KineticPiston` or
+`KineticAnimationDriver` if that top geometry should move.
+
+`assets/mymod/blocktypes/handlelathe.json`:
 
 ```json
 {
-  "code": "kineticpulper",
-  "class": "BlockGeneric",
-  "entityClass": "KineticPulper",
-  "shape": { "base": "block/mymod/kineticpulper" },
-  "behaviors": [
-    { "name": "Kinetic",         "properties": { "role": "Custom", "stressImpact": 8 }},
-    { "name": "KineticWorker",   "properties": { "workPerCycle": 200, "minRPM": 16 }},
-    { "name": "KineticAnimator", "properties": { "rotators": [{ "element": "blade", "axis": "Y", "ratio": 1.0 }] }},
-    { "name": "KineticSound",    "properties": { "sound": "mymod:pulper-loop", "minRPM": 16, "pitchScalesWithRPM": true }}
+  "code": "handlelathe",
+  "class": "BlockKineticJsonProcessor",
+  "entityClass": "KineticJsonProcessor",
+  "variantgroups": [
+    { "code": "side", "states": [ "n", "e", "s", "w" ] }
+  ],
+  "attributes": {
+    "kineticShaftControllerCell": true,
+    "vkProcessor": {
+      "machineCode": "handlelathe",
+      "titleLangCode": "mymod:handlelathe-title",
+      "title": "Handle Lathe",
+      "inputSlots": 1,
+      "outputSlots": 1,
+      "ioScope": "multiblock",
+      "io": [
+        { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+        { "type": "input", "face": "up", "slots": "inputs", "cell": { "x": 0, "y": 1, "z": 0 } },
+        { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+        { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
+      ]
+    }
+  },
+  "behaviorsByType": {
+    "*": [
+      { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } }
+    ]
+  },
+  "entityBehaviorsByType": {
+    "*-n": [
+      { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "Z" } },
+      { "name": "KineticMultiblock" },
+      { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+      { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } }
+    ],
+    "*-s": [
+      { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "Z" } },
+      { "name": "KineticMultiblock" },
+      { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+      { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } }
+    ],
+    "*-e": [
+      { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "X" } },
+      { "name": "KineticMultiblock" },
+      { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+      { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } }
+    ],
+    "*-w": [
+      { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "X" } },
+      { "name": "KineticMultiblock" },
+      { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
+      { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } }
+    ]
+  },
+  "creativeinventory": { "general": [ "*-n" ] },
+  "blockmaterial": "Wood",
+  "drawtype": "json",
+  "textures": {
+    "wood": { "base": "game:block/wood/planks/generic" },
+    "metal": { "base": "game:block/metal/sheet/iron" }
+  },
+  "shape": { "base": "mymod:block/handlelathe" },
+  "shapeByType": {
+    "*-n": { "base": "mymod:block/handlelathe", "rotateY": 0 },
+    "*-e": { "base": "mymod:block/handlelathe", "rotateY": 90 },
+    "*-s": { "base": "mymod:block/handlelathe", "rotateY": 180 },
+    "*-w": { "base": "mymod:block/handlelathe", "rotateY": 270 }
+  },
+  "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 },
+  "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 }
+}
+```
+
+Important fields:
+
+- `class: BlockKineticJsonProcessor` and `entityClass: KineticJsonProcessor`
+  opt into the generic processor. This is the no-C# path.
+- `vkProcessor.machineCode` links this block to recipes under
+  `assets/<modid>/vkrecipe/process/<machineCode>/`.
+- `inputSlots` and `outputSlots` control the visible/active GUI buffers.
+  Internally the generic processor reserves slots `0..63` for inputs and
+  `64..127` for outputs.
+- `storageStyle` controls player interaction with those buffers. Omit it or
+  use `slots` for the normal GUI. Use `crate` for crate-style world
+  interaction: shift-right-click inserts into inputs, right-click takes from
+  outputs, and ctrl does the bulk version. You can also set
+  `inputStorageStyle` or `outputStorageStyle` separately.
+- `KineticWorker.workPerCycle` is the recipe cost in RPM-seconds.
+- `KineticAnimator` and `KineticPiston` can be added directly in JSON for
+  moving parts.
+- `vkProcessor.io` declares automation faces directly. `left` and `right`
+  rotate with the machine placement; `cell` is an exact controller-relative
+  block offset in the base/model orientation, also rotated with the machine.
+  In this example, the top input is on the decorative block one cell above
+  the controller.
+
+## 2. Recipe JSON
+
+`assets/mymod/vkrecipe/process/handlelathe/stick-to-handcrank.json`:
+
+```json
+{
+  "machine": "handlelathe",
+  "ingredient": {
+    "type": "item",
+    "code": "game:stick",
+    "quantity": 1
+  },
+  "outputs": [
+    {
+      "type": "block",
+      "code": "vintagekinematics:handcrank-y",
+      "quantity": 1
+    }
   ]
 }
 ```
 
-What each behavior does:
+Drop more files in the same folder to add recipes. No code changes needed.
+The folder name is used as the machine code if the recipe omits `"machine"`,
+but declaring it explicitly makes templates easier to read.
 
-- **Kinetic**: joins the kinetic network, accounts for stress, and drives the
-  per-block tooltip.
-- **KineticWorker**: accumulates progress while the network is running,
-  fires `OnWorkCompleted` when it hits 200 RPM·seconds.
-- **KineticAnimator**: rotates the `blade` shape element on the client.
-- **KineticSound**: plays a looping sound; deduplicated against any other
-  pulpers in the same network.
+## 3. Template Files Shipped With VK
 
-## 2. Recipe JSON
+VK ships an editable template under:
 
-`assets/mymod/recipes/pulper/log-to-pulp.json`:
+```text
+assets/vintagekinematics/templates/jsonprocessor/
+```
+
+Copy that folder into your own mod, rename `exampleprocessor` to your machine
+code, replace the shape, and add recipes under your own
+`vkrecipe/process/<machineCode>/` folder.
+
+The in-game creative-only block `JSON Machine Template` is the same workflow
+packaged as a visible example. It converts sticks into hand cranks and shows
+shaft animation, piston animation, multiblock IO, GUI slots, and output
+pushing.
+
+## 4. JSON IO
+
+Prefer explicit `vkProcessor.io` entries for new generic JSON processor
+machines:
 
 ```json
-{
-  "ingredients": [{ "type": "item", "code": "game:log-*", "quantity": 1 }],
-  "outputs":     [{ "type": "item", "code": "mymod:pulp", "quantity": 4 }],
-  "workCycles": 1
+"io": [
+  { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+  { "type": "input", "face": "up", "slots": "inputs", "cell": { "x": 0, "y": 1, "z": 0 } },
+  { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+  { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
+]
+```
+
+Each entry supports:
+
+- `type`: `input` or `output`.
+- `face`: absolute `north`, `east`, `south`, `west`, `up`, `down`; relative
+  `front`, `back`, `left`, `right`; or model-lip aliases
+  `inputLipNorth`, `inputLipEast`, `inputLipSouth`, `inputLipWest`.
+- `slots`: `inputs`, `outputs`, a single slot string like `64`, a range like
+  `64-72`, or an object `{ "first": 64, "last": 72 }`.
+- `cell`: exact controller-relative base-orientation offset, for example
+  `{ "x": 0, "y": 1, "z": 0 }`.
+- `cells`: use `"face"` to map every multiblock cell on the named face,
+  `"controller"` for only the controller, or an array of exact offsets.
+- `rotateCell`: optional `false` when an exact offset should stay in world
+  coordinates. Leave it out for normal rotatable machines.
+
+For broad multiblock face IO, use:
+
+```json
+"io": [
+  { "type": "input", "face": "left", "slots": "inputs", "cells": "face" },
+  { "type": "output", "face": "right", "slots": "outputs", "cells": "face" }
+]
+```
+
+The older `vkProcessor.ioLayout` shortcut is still supported when `io` is not
+present. Available fallback layouts:
+
+- `leftInputRightAndDownOutput`: placement-facing left/top input,
+  right/bottom output.
+- `sideInputOppositeAndDownOutput`: a named side/top input, opposite/bottom
+  output.
+- `sideInputOppositeOutput`: a named side input and opposite side output.
+- `topInputDownOutput`: top input and bottom output.
+
+For layouts that use a named side, set `vkProcessor.inputFace` to one of:
+
+- `inputLipNorth`, `inputLipEast`, `inputLipSouth`, `inputLipWest` for a
+  model-relative side that rotates with the block's `side` variant.
+- `north`, `east`, `south`, `west`, `up`, or `down` for fixed world faces.
+
+For explicit `io`, use `cell` or `cells` to decide where each entry is
+exposed. `vkProcessor.ioScope` is still used by the legacy `ioLayout` fallback:
+
+- `controller` for single-cell IO.
+- `multiblock` when funnels, belts, and output pushing should work against
+  the whole claimed multiblock footprint.
+
+Custom C# processors that extend `BEKineticItemProcessorBase<TRecipe>` can use
+the same IO schema without being full JSON processors. Put it at top-level
+`attributes.vkIo` and call `BuildJsonIOFaceMap()` from `BuildIOFaceMap()`:
+
+```json
+"attributes": {
+  "vkIo": [
+    { "type": "input", "face": "up", "slots": "inputs", "cells": "face" },
+    { "type": "input", "face": "left", "slots": "inputs", "cells": "face" },
+    { "type": "output", "face": "down", "slots": "outputs", "cells": "face" },
+    { "type": "output", "face": "right", "slots": "outputs", "cells": "face" }
+  ]
 }
 ```
 
-Drop more files in the same folder to add more recipes. No code changes
-needed.
+## 5. When You Need C#
+
+If the generic JSON processor is not enough, do not start from an empty
+`BlockEntity`. Extend the same primitives instead:
+
+```csharp
+public class BEWeirdProcessor : BEKineticJsonProcessor
+{
+    // Override only the behavior that is genuinely custom.
+}
+```
+
+For a custom recipe type or custom output behavior, extend the lower-level
+base:
+
+```csharp
+public class BEWeirdProcessor : BEKineticItemProcessorBase<MyRecipe>
+{
+    protected override IOFaceMap BuildIOFaceMap() { /* reuse MachineIoLayouts */ }
+    protected override MyRecipe FindRecipe(ItemStack input) { /* registry lookup */ }
+    protected override IEnumerable<ItemStack> GetOutputs(MyRecipe recipe) { /* outputs */ }
+    protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi) { /* GUI */ }
+}
+```
+
+`BEKineticItemProcessorBase<TRecipe>` already handles inventory save/load,
+claim-safe inventory packets, worker subscription, active input/output
+ranges, GUI packet flow, output storage, output pushing, drop fallback, and
+animated mesh splitting. Custom machines should add features on top of that
+instead of reimplementing the same boilerplate.
 
 ### Adding Forge Press operations
 
-Downstream mods can add Kinetic Forge Press operations with JSON only. Put
+Downstream mods can also add Kinetic Forge Press operations with JSON only. Put
 files under `assets/<modid>/vkrecipe/forgepress/`. Each distinct
 `operationCode` becomes one entry in the Forge Press dropdown; multiple
 recipes may share the same operation and differ by ingredient.
@@ -87,52 +310,7 @@ Fields:
 - `requiredTemperature`: chamber temperature required before work can run.
 - `pressTicks`: intended recipe cost in press cycles.
 
-## 3. The BlockEntity
-
-`src/BEKineticPulper.cs`:
-
-```csharp
-using Vintagestory.API.Common;
-using VintageKinematics.Api;
-
-public class BEKineticPulper : BlockEntity
-{
-    private InventoryGeneric inventory;
-
-    public override void Initialize(ICoreAPI api)
-    {
-        base.Initialize(api);
-        inventory = new InventoryGeneric(1, "pulper", api);
-
-        var worker = GetBehavior<BEBehaviorKineticWorker>();
-        if (worker != null) worker.OnWorkCompleted += OnPulpCycle;
-    }
-
-    private void OnPulpCycle(KineticWorkCompletedArgs args)
-    {
-        var input = inventory[0]?.Itemstack;
-        var recipe = MyModRecipeRegistry.MatchPulper(input);
-        if (recipe == null)
-        {
-            GetBehavior<BEBehaviorKineticWorker>().ResetProgress();
-            return;
-        }
-
-        // Consume input, produce output
-        inventory[0].TakeOut(1);
-        inventory[0].MarkDirty();
-        // ... emit output stack to your output slot or world drop ...
-    }
-}
-```
-
-Register the BE class in your mod's `ModSystem.Start`:
-
-```csharp
-api.RegisterBlockEntityClass("KineticPulper", typeof(BEKineticPulper));
-```
-
-## 4. Driving keyframe animations from RPM
+## 6. Driving keyframe animations from RPM
 
 If your model has a keyframe animation (the kind exported by VS Model
 Creator with bones / joints), add `KineticAnimationDriver` to wire its
@@ -156,7 +334,7 @@ translated by `KineticPiston`, stretched by `KineticStretch`, or solved as a
 pleat strip by `KineticLinkedPleat`. Don't drive the same element from more
 than one movement behavior.
 
-## 5. Pistons (linear oscillating or extending elements)
+## 7. Pistons (linear oscillating or extending elements)
 
 For elements that should reciprocate (hammer, pump, saw) or extend in one
 direction with the network's rotation (lift, gate, drill), use
@@ -189,7 +367,7 @@ Vec3f offset = piston?.GetOffsetFor("hammer") ?? new Vec3f();
 // translate the "hammer" element by `offset` in your mesh assembly
 ```
 
-## 5b. Wire it all up: the OnTesselation override
+## 8. Wire it all up: the OnTesselation override
 
 `KineticAnimator`, `KineticPiston`, `KineticStretch`, and
 `KineticLinkedPleat` render their managed elements through their own
@@ -217,7 +395,7 @@ If you also need to render custom static decorations (item-on-pedestal
 style), tesselate them and call `mesher.AddMeshData` on each before
 returning.
 
-## 5c. Linked pleats (accordion / bellows folds)
+## 9. Linked pleats (accordion / bellows folds)
 
 For accordion-like geometry where a row of flat strips should stay snapped
 between a fixed bottom edge and a moving top edge, use `KineticLinkedPleat`.
@@ -293,7 +471,7 @@ caps centered on an eight-fold chain use `translateTOffset: 0.125` and
 `translateTStep: 0.25`, placing them at `1/8`, `3/8`, `5/8`, and `7/8` of
 the moving height.
 
-## 5d. Multiblocks (footprint larger than 1×1×1)
+## 10. Multiblocks (footprint larger than 1x1x1)
 
 If your machine occupies more than one block (the Kinetic Sieve is a 1×1×3
 drum, for example), use vanilla's `Multiblock` block behavior to declare the
@@ -399,7 +577,7 @@ Rules that came out of the Treadwheel and Counterweight Drive pass:
   `KineticPiston` for moving parts like a falling weight, and
   `KineticStretch` for length-changing parts like a rope.
 
-## 5e. Restricting kinetic input to specific cells (`KineticMultiblock`)
+## 11. Restricting kinetic input to specific cells (`KineticMultiblock`)
 
 By default, every filler cell of a multiblock is treated as a coaxial
 shaft passthrough: a shaft against any face of any cell will join the
@@ -465,7 +643,7 @@ When to use it:
 - Multiblocks where the input cell isn't on a face of the controller and
   the default coaxial rule wouldn't form the edge.
 
-## 5f. Placement previews and non-standard placement
+## 12. Placement previews and non-standard placement
 
 When placement depends on the clicked block, the clicked face, or the
 player's yaw, implement `IPlacementPreviewProvider` on the block class.
@@ -511,7 +689,7 @@ Rules:
   so the block code remains data-driven instead of hard-coded string
   concatenation.
 
-## 5g. Kinetic Activator support (`IKineticActivatable`)
+## 13. Kinetic Activator support (`IKineticActivatable`)
 
 The Kinetic Activator normally tries three paths:
 
@@ -557,7 +735,7 @@ Guidelines:
   `KineticActivatorTargetBlacklist` in `ModConfig/vintagekinematics.json`.
   The default blacklist blocks command/ticker/conditional block families.
 
-## 5h. Gantry contraptions
+## 14. Gantry contraptions
 
 Gantry contraptions are the current constrained moving-block prototype.
 They are intentionally narrower than a full Create-style contraption:
@@ -669,7 +847,7 @@ Controller responsibilities:
 - Call `EntityVKContraption.MoveBy(dx, dy, dz)` for straight translation
   so carried entities move with the contraption.
 
-## 6. What the API does for free
+## 15. What the API does for free
 
 - Network membership and stress accounting on placement / removal.
 - Tooltip lines: status, stress, idle/active source labels.
@@ -680,23 +858,24 @@ Controller responsibilities:
   pistons), with directional positions persisted across save/load.
 - Per-frame linked-pleat solving for bellows / accordion-style folds,
   including translate-only filler pieces for corner caps.
-- Static body tesselation that excludes the managed elements
-  automatically; call `KineticMeshSplitter` from your `OnTesselation`.
+- Static body tesselation that excludes managed elements. The generic JSON
+  processor and `BEKineticItemProcessorBase<TRecipe>` already call the
+  splitter; custom BEs can call `KineticMeshSplitter` from `OnTesselation`.
 - RPM-scaled keyframe animation speed via `KineticAnimationDriver`.
-- Deduplicated looping sound; no ear-shattering stacking when many
-  pulpers are nearby.
+- Deduplicated looping sound; no ear-shattering stacking when many machines
+  are nearby.
 - Auto-pause when the network goes conflicted or overstressed; auto-resume
   on recovery.
 - Multiblock kinetic-input restriction via the `KineticMultiblock`
   behavior: declare shaft cells in JSON, get variant-rotation and
-  cposition math for free (see 5e).
+  cposition math for free (see section 11).
 - Placement previews for blocks that implement `IPlacementPreviewProvider`.
 - Kinetic Activator automation hooks via `IKineticActivatable`, with a
   config blacklist before fallback activation.
 - Contraption snapshot capture, disconnected-block pruning, entity spawn,
   world block removal, and binder assignment through `IContraptionController`.
 
-## 7. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
+## 16. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
 
 If your block entity opens a `GuiDialogBlockEntity` on the client, **always**
 dispose it through `VintageKinematics.Api.GuiDialogUtil.SafeDispose` from
@@ -739,12 +918,14 @@ The helper takes any `GuiDialogBlockEntity` subclass by `ref`:
 public static void SafeDispose<T>(ref T dialog) where T : GuiDialogBlockEntity
 ```
 
-## 8. What's still your responsibility
+## 17. What's still your responsibility
 
-- Recipe-matching logic (`MyModRecipeRegistry.MatchPulper`).
-- Inventory wiring and output drop / slot logic.
-- Block model and texture.
-- Sound asset (`assets/mymod/sounds/pulper-loop.ogg`).
+- For pure JSON machines: blocktype JSON, shape JSON, process recipe JSON,
+  textures, and optional lang entries.
+- For custom C# machines: the behavior that is genuinely custom, such as
+  special recipe matching, fluids, heat, world interaction, or non-item
+  outputs.
+- Sound assets referenced by JSON, if you add custom sounds.
 
 ## Diagnostic commands
 

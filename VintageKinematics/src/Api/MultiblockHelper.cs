@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -57,6 +58,65 @@ namespace VintageKinematics.Api
             baseCorner = new BlockPos(controllerPos.X - cposition.X, controllerPos.Y - cposition.Y, controllerPos.Z - cposition.Z, controllerPos.dimension);
             size = new Vec3i(sx, sy, sz);
             return true;
+        }
+
+        public static BlockPos[] CellsOnFace(Block block, BlockPos controllerPos, BlockFacing face)
+        {
+            if (!TryGetClaim(block, controllerPos, out BlockPos baseCorner, out Vec3i size))
+            {
+                return new[] { controllerPos };
+            }
+
+            var cells = new List<BlockPos>();
+            for (int x = 0; x < size.X; x++)
+            for (int y = 0; y < size.Y; y++)
+            for (int z = 0; z < size.Z; z++)
+            {
+                if (!IsOnClaimFace(face, x, y, z, size)) continue;
+                cells.Add(new BlockPos(baseCorner.X + x, baseCorner.Y + y, baseCorner.Z + z, controllerPos.dimension));
+            }
+            return cells.ToArray();
+        }
+
+        public static BlockFacing PlacementFacingFromVariant(Block block)
+        {
+            string side = block?.Variant?["side"] ?? "n";
+            return side switch
+            {
+                "e" => BlockFacing.EAST,
+                "s" => BlockFacing.SOUTH,
+                "w" => BlockFacing.WEST,
+                _ => BlockFacing.NORTH
+            };
+        }
+
+        public static BlockFacing LeftOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.EAST) return BlockFacing.NORTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.WEST) return BlockFacing.SOUTH;
+            return BlockFacing.WEST;
+        }
+
+        public static BlockFacing RightOf(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return BlockFacing.EAST;
+            if (facing == BlockFacing.EAST) return BlockFacing.SOUTH;
+            if (facing == BlockFacing.SOUTH) return BlockFacing.WEST;
+            if (facing == BlockFacing.WEST) return BlockFacing.NORTH;
+            return BlockFacing.EAST;
+        }
+
+        private static bool IsOnClaimFace(BlockFacing face, int x, int y, int z, Vec3i size)
+        {
+            if (face == BlockFacing.WEST) return x == 0;
+            if (face == BlockFacing.EAST) return x == size.X - 1;
+            if (face == BlockFacing.DOWN) return y == 0;
+            if (face == BlockFacing.UP) return y == size.Y - 1;
+            if (face == BlockFacing.NORTH) return z == 0;
+            if (face == BlockFacing.SOUTH) return z == size.Z - 1;
+            return false;
         }
     }
 }

@@ -296,6 +296,8 @@ namespace VintageKinematics.Api
                 string state = active ? "active" : "idle";
                 dsc.AppendLine($"This block: {capacity:F0} Su source ({state}, rated {ratedRPM:F0} RPM)");
             }
+
+            KineticTooltipBuilder.AppendWorkProgress(dsc, Blockentity?.GetBehavior<BEBehaviorKineticWorker>());
         }
     }
 }

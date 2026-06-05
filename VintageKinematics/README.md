@@ -116,13 +116,14 @@ Vintage Kinematics exposes API types in the `VintageKinematics.Api` namespace fo
 
 Useful docs:
 
-- [`docs/api-tutorial.md`](docs/api-tutorial.md): walkthrough for a downstream kinetic machine.
+- [`docs/api-tutorial.md`](docs/api-tutorial.md): JSON-first workflow for downstream kinetic machines, with C# extension points only where needed.
 - [`docs/modeling-guide.md`](docs/modeling-guide.md): model setup for kinetic animation and mesh splitting.
 - [`docs/piston-guide.md`](docs/piston-guide.md): piston-style animation behavior guide.
 
 The API covers:
 
 - Kinetic block entity behaviors: `Kinetic`, `KineticSource`, `KineticWorker`, `KineticAnimator`, `KineticSound`, `KineticPiston`, `KineticStretch`, `KineticLinkedPleat`, `KineticAnimationDriver`, and `KineticMultiblock`.
+- Generic JSON processors through `BlockKineticJsonProcessor` / `KineticJsonProcessor`, backed by recipes under `assets/<modid>/vkrecipe/process/<machineCode>/`.
 - Mesh splitting via `KineticMeshSplitter`.
 - Multiblock helpers and placement preview hooks.
 - Work-cycle helpers, kinetic tooltips, inventory pushing, IO face maps, item filters, machine output helpers, crusher processes, and sound/animation coordination.

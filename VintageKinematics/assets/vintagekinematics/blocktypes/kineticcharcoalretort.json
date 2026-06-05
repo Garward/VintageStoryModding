@@ -6,6 +6,12 @@
         "kineticShaftCells": [
             { "x": 1, "y": 0, "z": 0 },
             { "x": 1, "y": 0, "z": 2 }
+        ],
+        "vkIo": [
+            { "type": "input", "face": "up", "slots": "inputs", "cells": "face" },
+            { "type": "input", "face": "left", "slots": "inputs", "cells": "face" },
+            { "type": "output", "face": "down", "slots": "outputs", "cells": "face" },
+            { "type": "output", "face": "right", "slots": "outputs", "cells": "face" }
         ]
     },
     "entityBehaviorsByType": {

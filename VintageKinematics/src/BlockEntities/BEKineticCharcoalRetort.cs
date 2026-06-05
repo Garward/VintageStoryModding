@@ -12,7 +12,7 @@ using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEKineticCharcoalRetort : BlockEntityOpenableContainer, IFaceMappedContainer, IKineticWorkRateModifier
+    public class BEKineticCharcoalRetort : BEKineticItemProcessorBase<ItemStack>, IKineticWorkRateModifier
     {
         public const int SlotInputFirst = 0;
         public const int SlotInputLast = 63;
@@ -20,108 +20,102 @@ namespace VintageKinematics.BlockEntities
         public const int SlotOutputLast = 127;
         public const int InventorySize = 128;
 
-        private const float OutputPushIntervalMs = 250f;
         private const float RetortSmokeIntervalMs = 1000f;
-        private const int OutputPushBatch = 8;
         private const int MaxBellowsAssistCount = 2;
         private const float BellowsWorkRateBonusPerUnit = 0.5f;
         private static readonly Vec3d SmokeStackLocalPosition = new Vec3d(14.2f / 16f, 32.8f / 16f, -6.2f / 16f);
 
-        private readonly InventoryGeneric inventory;
-        private IOFaceMap ioFaces;
-
-        public override InventoryBase Inventory => inventory;
-        public override string InventoryClassName => "kineticcharcoalretort";
-        public IOFaceMap IOFaces => ioFaces;
-
         public BEKineticCharcoalRetort()
+            : base("kineticcharcoalretort", InventorySize, SlotInputFirst, SlotInputLast, SlotOutputFirst, SlotOutputLast, CreateRetortSlot)
         {
-            inventory = new InventoryGeneric(InventorySize, "kineticcharcoalretort-0", null, null, (slotId, self) =>
-            {
-                return slotId <= SlotInputLast
-                    ? new ItemSlotFirewoodInput(self)
-                    : new ItemSlotCrusherOutput(self);
-            });
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            inventory.LateInitialize("kineticcharcoalretort-" + Pos, api);
-            inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += _ =>
-            {
-                NormalizeStoredStacks();
-                Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
-            };
             NormalizeStoredStacks();
-
-            ConfigureIOFaceMap();
 
             if (api.Side == EnumAppSide.Server)
             {
-                RegisterGameTickListener(OnServerPushTick, (int)OutputPushIntervalMs);
                 RegisterGameTickListener(OnSmokeTick, (int)RetortSmokeIntervalMs);
             }
-
-            BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
-            if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
         }
 
-        private void ConfigureIOFaceMap()
+        private static ItemSlot CreateRetortSlot(int slotId, InventoryBase inventory)
         {
-            BlockFacing facing = PlacementFacingFromVariant();
-            BlockFacing inputFace = LeftOf(facing);
-            BlockFacing outputFace = RightOf(facing);
+            return slotId <= SlotInputLast
+                ? new ItemSlotFirewoodInput(inventory)
+                : new ItemSlotCrusherOutput(inventory);
+        }
 
-            ioFaces = new IOFaceMap(Pos);
-            foreach (BlockPos cell in CellsOnFace(BlockFacing.UP))
+        protected override IOFaceMap BuildIOFaceMap()
+        {
+            IOFaceMap jsonMap = BuildJsonIOFaceMap();
+            if (jsonMap != null) return jsonMap;
+
+            BlockFacing facing = MultiblockHelper.PlacementFacingFromVariant(Block);
+            BlockFacing inputFace = MultiblockHelper.LeftOf(facing);
+            BlockFacing outputFace = MultiblockHelper.RightOf(facing);
+
+            IOFaceMap map = new IOFaceMap(Pos);
+            foreach (BlockPos cell in MultiblockHelper.CellsOnFace(Block, Pos, BlockFacing.UP))
             {
                 for (int i = SlotInputFirst; i <= SlotInputLast; i++)
                 {
-                    ioFaces.MapInput(cell, BlockFacing.UP, i);
+                    map.MapInput(cell, BlockFacing.UP, i);
                 }
             }
-            foreach (BlockPos cell in CellsOnFace(inputFace))
+            foreach (BlockPos cell in MultiblockHelper.CellsOnFace(Block, Pos, inputFace))
             {
                 for (int i = SlotInputFirst; i <= SlotInputLast; i++)
                 {
-                    ioFaces.MapInput(cell, inputFace, i);
+                    map.MapInput(cell, inputFace, i);
                 }
             }
-            foreach (BlockPos cell in CellsOnFace(outputFace))
+            foreach (BlockPos cell in MultiblockHelper.CellsOnFace(Block, Pos, outputFace))
             {
                 for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
                 {
-                    ioFaces.MapOutput(cell, outputFace, i);
+                    map.MapOutput(cell, outputFace, i);
                 }
             }
-            foreach (BlockPos cell in CellsOnFace(BlockFacing.DOWN))
+            foreach (BlockPos cell in MultiblockHelper.CellsOnFace(Block, Pos, BlockFacing.DOWN))
             {
                 for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
                 {
-                    ioFaces.MapOutput(cell, BlockFacing.DOWN, i);
+                    map.MapOutput(cell, BlockFacing.DOWN, i);
                 }
             }
-            ioFaces.Apply(inventory);
+            return map;
         }
 
-        private void OnServerPushTick(float dt)
+        protected override ItemStack FindRecipe(ItemStack input)
         {
-            if (ioFaces == null) return;
-            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
-            {
-                foreach (int slotId in entry.SlotIds)
-                {
-                    ItemSlot slot = inventory[slotId];
-                    if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
-                    if (moved > 0) MarkDirty(true);
-                }
-            }
+            return null;
         }
 
-        private void OnWorkCycle(KineticWorkCompletedArgs args)
+        protected override System.Collections.Generic.IEnumerable<ItemStack> GetOutputs(ItemStack recipe)
+        {
+            yield break;
+        }
+
+        protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
+        {
+            return null;
+        }
+
+        protected override void OnInventorySlotModified(int slotId)
+        {
+            NormalizeStoredStacks();
+            base.OnInventorySlotModified(slotId);
+        }
+
+        protected override void ReadState(ITreeAttribute tree)
+        {
+            NormalizeStoredStacks();
+        }
+
+        protected override void OnWorkCycle(KineticWorkCompletedArgs args)
         {
             ItemSlot input = FindInputSlot();
             if (input == null) return;
@@ -185,7 +179,7 @@ namespace VintageKinematics.BlockEntities
         {
             for (int i = SlotInputFirst; i <= SlotInputLast; i++)
             {
-                ItemSlot slot = inventory[i];
+                ItemSlot slot = MachineInventory[i];
                 if (slot.Empty) continue;
                 if (IsFirewood(slot.Itemstack)) return slot;
             }
@@ -196,7 +190,7 @@ namespace VintageKinematics.BlockEntities
         {
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
-                ItemSlot slot = inventory[i];
+                ItemSlot slot = MachineInventory[i];
                 if (slot.Empty) return true;
                 if (slot.Itemstack?.Collectible == stack.Collectible
                     && slot.Itemstack.StackSize < slot.Itemstack.Collectible.MaxStackSize)
@@ -207,10 +201,10 @@ namespace VintageKinematics.BlockEntities
             return false;
         }
 
-        private void DepositOutput(ItemStack stack)
+        protected override void DepositOutput(ItemStack stack)
         {
             Vec3d at = new Vec3d(Pos.X + 0.5, Pos.Y + 0.1, Pos.Z + 0.5);
-            MachineOutputHelper.DepositOrPush(this, inventory, SlotOutputFirst, SlotOutputLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
+            MachineOutputHelper.DepositOrPush(this, MachineInventory, SlotOutputFirst, SlotOutputLast, stack, MachineIOFaces?.OutputEntries, OutputPushBatch, at);
         }
 
         private ItemStack CharcoalStack()
@@ -227,155 +221,34 @@ namespace VintageKinematics.BlockEntities
 
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
-            if (byPlayer?.InventoryManager?.ActiveHotbarSlot == null) return true;
-            if (Api?.World is IServerWorldAccessor && !Api.World.Claims.TryAccess(byPlayer, Pos, EnumBlockAccessFlags.Use))
-            {
-                Api.World.Logger.Audit("Player {0} tried to use charcoal retort at {1} but has no claim access. Rejected.", byPlayer.PlayerName, Pos);
-                return true;
-            }
-
-            bool put = byPlayer.Entity?.Controls?.ShiftKey == true;
-            bool bulk = byPlayer.Entity?.Controls?.CtrlKey == true;
-            ItemSlot hotbarSlot = byPlayer.InventoryManager.ActiveHotbarSlot;
-
-            if (put)
-            {
-                if (!hotbarSlot.Empty && IsFirewood(hotbarSlot.Itemstack))
-                {
-                    TryPutFirewood(byPlayer, hotbarSlot, bulk);
-                }
-                return true;
-            }
-
-            TryTakeCharcoal(byPlayer, bulk);
-            return true;
-        }
-
-        private void TryPutFirewood(IPlayer byPlayer, ItemSlot hotbarSlot, bool bulk)
-        {
-            int remaining = bulk ? hotbarSlot.StackSize : 1;
-            if (remaining <= 0) return;
-
-            int movedTotal = 0;
-            for (int i = SlotInputFirst; i <= SlotInputLast && remaining > 0 && !hotbarSlot.Empty; i++)
-            {
-                ItemSlot target = inventory[i];
-                if (!target.CanHold(hotbarSlot)) continue;
-
-                int moved = hotbarSlot.TryPutInto(Api.World, target, remaining);
-                if (moved <= 0) continue;
-
-                movedTotal += moved;
-                remaining -= moved;
-                target.MarkDirty();
-                if (!bulk) break;
-            }
-
-            if (movedTotal > 0)
-            {
-                hotbarSlot.MarkDirty();
-                DidMoveItems(byPlayer);
-                Api.World.Logger.Audit("{0} Put {1}xfirewood into {2} at {3}.",
-                    byPlayer.PlayerName, movedTotal, Block?.Code, Pos);
-                MarkDirty(true);
-            }
-        }
-
-        private bool TryTakeCharcoal(IPlayer byPlayer, bool bulk)
-        {
-            ItemSlot sourceSlot = FirstNonEmptySlot(SlotOutputFirst, SlotOutputLast);
-            if (sourceSlot == null || sourceSlot.Empty) return true;
-
-            int requestedQuantity = bulk ? sourceSlot.Itemstack.Collectible.MaxStackSize : 1;
-            FillSlotFromRange(sourceSlot, SlotOutputFirst, SlotOutputLast, requestedQuantity);
-
-            ItemStack stack = sourceSlot.TakeOut(requestedQuantity);
-            int originalQuantity = stack.StackSize;
-            byPlayer.InventoryManager.TryGiveItemstack(stack, true);
-
-            int remaining = stack?.StackSize ?? 0;
-            int taken = originalQuantity - remaining;
-            if (remaining > 0)
-            {
-                DepositStackDirect(stack, SlotOutputFirst, SlotOutputLast);
-            }
-
-            if (taken > 0)
-            {
-                DidMoveItems(byPlayer);
-                Api.World.Logger.Audit("{0} Took {1}xcharcoal from {2} at {3}.",
-                    byPlayer.PlayerName, taken, Block?.Code, Pos);
-                sourceSlot.MarkDirty();
-                MarkDirty(true);
-            }
-
-            return true;
-        }
-
-        private void FillSlotFromRange(ItemSlot target, int firstSlot, int lastSlot, int targetQuantity)
-        {
-            if (target == null || target.Empty) return;
-            for (int i = firstSlot; i <= lastSlot && target.StackSize < targetQuantity; i++)
-            {
-                ItemSlot source = inventory[i];
-                if (source == target || source.Empty) continue;
-                if (!source.Itemstack.Collectible.Code.Equals(target.Itemstack.Collectible.Code)) continue;
-
-                int needed = targetQuantity - target.StackSize;
-                int moved = System.Math.Min(needed, source.StackSize);
-                target.Itemstack.StackSize += moved;
-                source.Itemstack.StackSize -= moved;
-                target.MarkDirty();
-                source.MarkDirty();
-                if (source.Itemstack.StackSize <= 0) source.Itemstack = null;
-            }
-        }
-
-        public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
-        {
-            string[] excluded = KineticMeshSplitter.CollectManagedElements(this);
-            MeshData body = KineticMeshSplitter.TesselateBodyExcluding(Api as ICoreClientAPI, Block, tessThreadTesselator, excluded);
-            if (body != null) mesher.AddMeshData(body);
-            return true;
-        }
-
-        public override void ToTreeAttributes(ITreeAttribute tree)
-        {
-            base.ToTreeAttributes(tree);
-            inventory?.ToTreeAttributes(tree);
-        }
-
-        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
-        {
-            base.FromTreeAttributes(tree, worldForResolving);
-            inventory?.FromTreeAttributes(tree);
-            if (Api != null)
-            {
-                inventory?.ResolveBlocksOrItems();
-                NormalizeStoredStacks();
-                ConfigureIOFaceMap();
-            }
+            return HandleCrateStyleRightClick(byPlayer, crateInput: true, crateOutput: true, inputFilter: IsFirewood);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, System.Text.StringBuilder dsc)
         {
             base.GetBlockInfo(forPlayer, dsc);
 
-            int firewood = CountItems(SlotInputFirst, SlotInputLast);
-            int charcoal = CountItems(SlotOutputFirst, SlotOutputLast);
+            int firewood = InventoryRangeInteractionHelper.CountItems(MachineInventory, SlotInputFirst, SlotInputLast);
+            int charcoal = InventoryRangeInteractionHelper.CountItems(MachineInventory, SlotOutputFirst, SlotOutputLast);
             int bellowsCount = PoweredBellowsCount();
-            dsc.AppendLine(Lang.Get("vintagekinematics:kineticcharcoalretort-firewood", firewood, CapacityItems(SlotInputFirst)));
-            dsc.AppendLine(Lang.Get("vintagekinematics:kineticcharcoalretort-charcoal", charcoal, CapacityItems(SlotOutputFirst)));
+            dsc.AppendLine(Lang.Get(
+                "vintagekinematics:kineticcharcoalretort-firewood",
+                firewood,
+                InventoryRangeInteractionHelper.CapacityItems(FirewoodStack(), SlotInputLast - SlotInputFirst + 1)));
+            dsc.AppendLine(Lang.Get(
+                "vintagekinematics:kineticcharcoalretort-charcoal",
+                charcoal,
+                InventoryRangeInteractionHelper.CapacityItems(CharcoalStack(), SlotOutputLast - SlotOutputFirst + 1)));
             dsc.AppendLine($"Bellows assist: {bellowsCount}/{MaxBellowsAssistCount} ({1f + bellowsCount * BellowsWorkRateBonusPerUnit:0.##}x)");
         }
 
         private void NormalizeStoredStacks()
         {
-            if (inventory == null) return;
+            if (MachineInventory == null) return;
 
             for (int i = SlotInputFirst; i <= SlotInputLast; i++)
             {
-                ItemSlot slot = inventory[i];
+                ItemSlot slot = MachineInventory[i];
                 if (slot.Empty) continue;
                 if (IsFirewood(slot.Itemstack)) continue;
                 if (IsCharcoal(slot.Itemstack))
@@ -388,7 +261,7 @@ namespace VintageKinematics.BlockEntities
 
             for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
             {
-                ItemSlot slot = inventory[i];
+                ItemSlot slot = MachineInventory[i];
                 if (slot.Empty) continue;
                 if (IsCharcoal(slot.Itemstack)) continue;
                 if (IsFirewood(slot.Itemstack))
@@ -403,74 +276,13 @@ namespace VintageKinematics.BlockEntities
         private void MoveSlotContentsToRange(ItemSlot source, int firstSlot, int lastSlot)
         {
             if (source == null || source.Empty) return;
-            DepositStackDirect(source.Itemstack, firstSlot, lastSlot, source);
+            InventoryRangeInteractionHelper.DepositStackDirect(MachineInventory, source.Itemstack, firstSlot, lastSlot, source);
 
             if (!source.Empty)
             {
                 source.Itemstack = null;
                 source.MarkDirty();
             }
-        }
-
-        private void DepositStackDirect(ItemStack stack, int firstSlot, int lastSlot, ItemSlot skipSlot = null)
-        {
-            if (stack == null || stack.StackSize <= 0) return;
-            for (int i = firstSlot; i <= lastSlot && stack.StackSize > 0; i++)
-            {
-                ItemSlot target = inventory[i];
-                if (target == skipSlot) continue;
-                if (target.Empty) continue;
-                if (!target.Itemstack.Collectible.Code.Equals(stack.Collectible.Code)) continue;
-
-                int free = target.Itemstack.Collectible.MaxStackSize - target.Itemstack.StackSize;
-                if (free <= 0) continue;
-
-                int moved = System.Math.Min(free, stack.StackSize);
-                target.Itemstack.StackSize += moved;
-                stack.StackSize -= moved;
-                target.MarkDirty();
-            }
-
-            for (int i = firstSlot; i <= lastSlot && stack.StackSize > 0; i++)
-            {
-                ItemSlot target = inventory[i];
-                if (target == skipSlot) continue;
-                if (!target.Empty) continue;
-
-                int moved = System.Math.Min(stack.Collectible.MaxStackSize, stack.StackSize);
-                ItemStack placed = stack.Clone();
-                placed.StackSize = moved;
-                target.Itemstack = placed;
-                stack.StackSize -= moved;
-                target.MarkDirty();
-            }
-        }
-
-        private ItemSlot FirstNonEmptySlot(int firstSlot, int lastSlot)
-        {
-            for (int i = firstSlot; i <= lastSlot; i++)
-            {
-                ItemSlot slot = inventory[i];
-                if (!slot.Empty) return slot;
-            }
-            return null;
-        }
-
-        private int CountItems(int firstSlot, int lastSlot)
-        {
-            int count = 0;
-            for (int i = firstSlot; i <= lastSlot; i++)
-            {
-                ItemSlot slot = inventory[i];
-                if (!slot.Empty) count += slot.StackSize;
-            }
-            return count;
-        }
-
-        private int CapacityItems(int firstSlot)
-        {
-            ItemStack stack = firstSlot == SlotInputFirst ? FirewoodStack() : CharcoalStack();
-            return stack?.Collectible?.MaxStackSize * 64 ?? 0;
         }
 
         private ItemStack FirewoodStack()
@@ -486,34 +298,6 @@ namespace VintageKinematics.BlockEntities
         {
             AssetLocation code = stack?.Collectible?.Code;
             return code != null && code.Domain == "game" && code.Path == "charcoal";
-        }
-
-        private void DidMoveItems(IPlayer byPlayer)
-        {
-            byPlayer.Entity?.World?.PlaySoundAt(
-                new AssetLocation("game:sounds/player/build"),
-                byPlayer.Entity,
-                byPlayer,
-                true,
-                16);
-        }
-
-        private BlockPos[] CellsOnFace(BlockFacing face)
-        {
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size))
-            {
-                return new[] { Pos };
-            }
-
-            var cells = new System.Collections.Generic.List<BlockPos>();
-            for (int x = 0; x < size.X; x++)
-            for (int y = 0; y < size.Y; y++)
-            for (int z = 0; z < size.Z; z++)
-            {
-                if (!IsOnClaimFace(face, x, y, z, size)) continue;
-                cells.Add(new BlockPos(baseCorner.X + x, baseCorner.Y + y, baseCorner.Z + z, Pos.dimension));
-            }
-            return cells.ToArray();
         }
 
         private int PoweredBellowsCount()
@@ -532,7 +316,7 @@ namespace VintageKinematics.BlockEntities
         {
             if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size))
             {
-                return new[] { Pos.AddCopy(RightOf(PlacementFacingFromVariant())) };
+                return new[] { Pos.AddCopy(MultiblockHelper.RightOf(MultiblockHelper.PlacementFacingFromVariant(Block))) };
             }
 
             int rotateY = (int)(Block?.Shape?.rotateY ?? 0f);
@@ -568,17 +352,6 @@ namespace VintageKinematics.BlockEntities
             return kinetic != null && Math.Abs(kinetic.ActualRPM) >= KineticNetwork.MinAbsRPM;
         }
 
-        private static bool IsOnClaimFace(BlockFacing face, int x, int y, int z, Vec3i size)
-        {
-            if (face == BlockFacing.WEST) return x == 0;
-            if (face == BlockFacing.EAST) return x == size.X - 1;
-            if (face == BlockFacing.DOWN) return y == 0;
-            if (face == BlockFacing.UP) return y == size.Y - 1;
-            if (face == BlockFacing.NORTH) return z == 0;
-            if (face == BlockFacing.SOUTH) return z == size.Z - 1;
-            return false;
-        }
-
         private Vec3d LocalShapePointToWorld(Vec3d local)
         {
             double x = local.X;
@@ -593,37 +366,6 @@ namespace VintageKinematics.BlockEntities
                 z = 0.5 - dx;
             }
             return new Vec3d(Pos.X + x, Pos.Y + local.Y, Pos.Z + z);
-        }
-
-        private BlockFacing PlacementFacingFromVariant()
-        {
-            string side = Block?.Variant?["side"] ?? "n";
-            switch (side)
-            {
-                case "n": return BlockFacing.NORTH;
-                case "e": return BlockFacing.EAST;
-                case "s": return BlockFacing.SOUTH;
-                case "w": return BlockFacing.WEST;
-                default: return BlockFacing.NORTH;
-            }
-        }
-
-        private static BlockFacing LeftOf(BlockFacing facing)
-        {
-            if (facing == BlockFacing.NORTH) return BlockFacing.WEST;
-            if (facing == BlockFacing.EAST) return BlockFacing.NORTH;
-            if (facing == BlockFacing.SOUTH) return BlockFacing.EAST;
-            if (facing == BlockFacing.WEST) return BlockFacing.SOUTH;
-            return BlockFacing.EAST;
-        }
-
-        private static BlockFacing RightOf(BlockFacing facing)
-        {
-            if (facing == BlockFacing.NORTH) return BlockFacing.EAST;
-            if (facing == BlockFacing.EAST) return BlockFacing.SOUTH;
-            if (facing == BlockFacing.SOUTH) return BlockFacing.WEST;
-            if (facing == BlockFacing.WEST) return BlockFacing.NORTH;
-            return BlockFacing.WEST;
         }
 
         private static BlockFacing RotateFacingY(BlockFacing facing, int rotateY)

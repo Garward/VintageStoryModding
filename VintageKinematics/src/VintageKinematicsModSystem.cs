@@ -76,6 +76,7 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticSieve", typeof(BlockEntities.BEKineticSieve));
             api.RegisterBlockEntityClass("PrimitiveSieve", typeof(BlockEntities.BEPrimitiveSieve));
             api.RegisterBlockEntityClass("KineticSawmill", typeof(BlockEntities.BEKineticSawmill));
+            api.RegisterBlockEntityClass("KineticJsonProcessor", typeof(BlockEntities.BEKineticJsonProcessor));
             api.RegisterBlockEntityClass("KineticPress", typeof(BlockEntities.BEKineticPress));
             api.RegisterBlockEntityClass("KineticExtractor", typeof(BlockEntities.BEKineticPress));
             api.RegisterBlockEntityClass("KineticForgePress", typeof(BlockEntities.BEKineticForgePress));
@@ -117,6 +118,7 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
             api.RegisterBlockClass("BlockPrimitiveSieve", typeof(Blocks.BlockPrimitiveSieve));
             api.RegisterBlockClass("BlockKineticSawmill", typeof(Blocks.BlockKineticSawmill));
+            api.RegisterBlockClass("BlockKineticJsonProcessor", typeof(Blocks.BlockKineticJsonProcessor));
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticExtractor", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticForgePress", typeof(Blocks.BlockKineticForgePress));

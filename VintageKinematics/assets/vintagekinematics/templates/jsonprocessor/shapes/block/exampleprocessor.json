@@ -1,0 +1,67 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 16,
+    "textureHeight": 16,
+    "textures": {
+        "wood": "game:block/wood/planks/generic",
+        "metal": "game:block/metal/sheet/iron"
+    },
+    "elements": [
+        {
+            "name": "Body",
+            "from": [ 1, 0, 1 ],
+            "to": [ 15, 10, 15 ],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [ 1, 6, 15, 16 ] },
+                "east": { "texture": "#wood", "uv": [ 1, 6, 15, 16 ] },
+                "south": { "texture": "#wood", "uv": [ 1, 6, 15, 16 ] },
+                "west": { "texture": "#wood", "uv": [ 1, 6, 15, 16 ] },
+                "up": { "texture": "#wood", "uv": [ 1, 1, 15, 15 ] },
+                "down": { "texture": "#wood", "uv": [ 1, 1, 15, 15 ] }
+            }
+        },
+        {
+            "name": "Rotor",
+            "from": [ 6, 6, 0 ],
+            "to": [ 10, 10, 16 ],
+            "rotationOrigin": [ 8, 8, 8 ],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [ 6, 6, 10, 10 ] },
+                "east": { "texture": "#metal", "uv": [ 0, 6, 16, 10 ] },
+                "south": { "texture": "#metal", "uv": [ 6, 6, 10, 10 ] },
+                "west": { "texture": "#metal", "uv": [ 0, 6, 16, 10 ] },
+                "up": { "texture": "#metal", "uv": [ 0, 6, 16, 10 ] },
+                "down": { "texture": "#metal", "uv": [ 0, 6, 16, 10 ] }
+            }
+        },
+        {
+            "name": "UpperFrame",
+            "from": [ 2, 16, 2 ],
+            "to": [ 14, 31, 14 ],
+            "faces": {
+                "north": { "texture": "#wood", "uv": [ 2, 1, 14, 16 ] },
+                "east": { "texture": "#wood", "uv": [ 2, 1, 14, 16 ] },
+                "south": { "texture": "#wood", "uv": [ 2, 1, 14, 16 ] },
+                "west": { "texture": "#wood", "uv": [ 2, 1, 14, 16 ] },
+                "up": { "texture": "#wood", "uv": [ 2, 2, 14, 14 ] },
+                "down": { "texture": "#wood", "uv": [ 2, 2, 14, 14 ] }
+            }
+        },
+        {
+            "name": "PressHead",
+            "from": [ 5, 21, 5 ],
+            "to": [ 11, 27, 11 ],
+            "faces": {
+                "north": { "texture": "#metal", "uv": [ 5, 5, 11, 11 ] },
+                "east": { "texture": "#metal", "uv": [ 5, 5, 11, 11 ] },
+                "south": { "texture": "#metal", "uv": [ 5, 5, 11, 11 ] },
+                "west": { "texture": "#metal", "uv": [ 5, 5, 11, 11 ] },
+                "up": { "texture": "#metal", "uv": [ 5, 5, 11, 11 ] },
+                "down": { "texture": "#metal", "uv": [ 5, 5, 11, 11 ] }
+            }
+        }
+    ]
+}

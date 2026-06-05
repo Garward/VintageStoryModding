@@ -3,10 +3,11 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
+using VintageKinematics.Api;
 
 namespace VintageKinematics.Gui
 {
-    public class GuiDialogPrimitiveSieve : GuiDialogBlockEntity
+    public class GuiDialogPrimitiveSieve : GuiDialogBlockEntity, IWorkProgressDialog
     {
         public override double DrawOrder => 0.2;
 
