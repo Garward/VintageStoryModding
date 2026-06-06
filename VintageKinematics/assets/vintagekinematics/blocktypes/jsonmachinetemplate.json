@@ -3,7 +3,15 @@
     "class": "BlockKineticJsonProcessor",
     "entityClass": "KineticJsonProcessor",
     "variantgroups": [
-        { "code": "side", "states": [ "n", "e", "s", "w" ] }
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
+        }
     ],
     "attributes": {
         "kineticShaftControllerCell": true,
@@ -15,84 +23,380 @@
             "outputSlots": 1,
             "ioScope": "multiblock",
             "io": [
-                { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
-                { "type": "input", "face": "up", "slots": "inputs", "cell": { "x": 0, "y": 1, "z": 0 } },
-                { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
-                { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
+                {
+                    "type": "input",
+                    "face": "left",
+                    "slots": "inputs",
+                    "cell": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                {
+                    "type": "input",
+                    "face": "up",
+                    "slots": "inputs",
+                    "cell": {
+                        "x": 0,
+                        "y": 1,
+                        "z": 0
+                    }
+                },
+                {
+                    "type": "output",
+                    "face": "right",
+                    "slots": "outputs",
+                    "cell": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                {
+                    "type": "output",
+                    "face": "down",
+                    "slots": "outputs",
+                    "cell": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
             ],
-            "workSound": "sounds/block/woodchop.ogg",
+            "workSound": "survival:sounds/tool/groundcrafting/saw1",
             "workSoundVolume": 0.5
         }
     },
     "behaviorsByType": {
         "*": [
-            { "name": "Multiblock", "properties": { "sizex": 1, "sizey": 2, "sizez": 1, "cposition": { "x": 0, "y": 0, "z": 0 } } }
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 1,
+                    "sizey": 2,
+                    "sizez": 1,
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            }
         ]
     },
     "entityBehaviorsByType": {
         "*-n": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "Z" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "UpperFrame", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true },
-                { "element": "HandlePress", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 8,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 80,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Shaft",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "UpperFrame",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        },
+                        {
+                            "element": "HandlePress",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        }
+                    ]
+                }
+            }
         ],
         "*-s": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "Z" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "UpperFrame", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true },
-                { "element": "HandlePress", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 8,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 80,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Shaft",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "UpperFrame",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        },
+                        {
+                            "element": "HandlePress",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        }
+                    ]
+                }
+            }
         ],
         "*-e": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "X" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "UpperFrame", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true },
-                { "element": "HandlePress", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 8,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 80,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Shaft",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "UpperFrame",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        },
+                        {
+                            "element": "HandlePress",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        }
+                    ]
+                }
+            }
         ],
         "*-w": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 8, "axis": "X" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 80, "minRPM": 4, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "Shaft", "axis": "Z", "ratio": 1 } ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "UpperFrame", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true },
-                { "element": "HandlePress", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 4, "ratio": 0.5, "invert": true }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 8,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 80,
+                    "minRPM": 4,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "Shaft",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "UpperFrame",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        },
+                        {
+                            "element": "HandlePress",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 4,
+                            "ratio": 0.5,
+                            "invert": true
+                        }
+                    ]
+                }
+            }
         ]
     },
     "creativeinventory": {
-        "general": [ "*-n" ],
-        "vintagekinematics": [ "*-n" ]
+        "general": [
+            "*-n"
+        ],
+        "vintagekinematics": [
+            "*-n"
+        ]
     },
     "blockmaterial": "Wood",
     "resistance": 2,
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
     "drawtype": "json",
     "textures": {
-        "wood": { "base": "game:block/wood/planks/generic" },
-        "darkwood": { "base": "game:block/wood/planks/oak3" },
-        "metal": { "base": "game:block/metal/plate/iron" }
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "darkwood": {
+            "base": "game:block/wood/planks/oak3"
+        },
+        "metal": {
+            "base": "game:block/metal/plate/iron"
+        }
     },
-    "shape": { "base": "block/jsonmachinetemplate" },
+    "shape": {
+        "base": "block/jsonmachinetemplate"
+    },
     "shapeByType": {
-        "*-n": { "base": "block/jsonmachinetemplate", "rotateY": 0 },
-        "*-e": { "base": "block/jsonmachinetemplate", "rotateY": 90 },
-        "*-s": { "base": "block/jsonmachinetemplate", "rotateY": 180 },
-        "*-w": { "base": "block/jsonmachinetemplate", "rotateY": 270 }
+        "*-n": {
+            "base": "block/jsonmachinetemplate",
+            "rotateY": 0
+        },
+        "*-e": {
+            "base": "block/jsonmachinetemplate",
+            "rotateY": 90
+        },
+        "*-s": {
+            "base": "block/jsonmachinetemplate",
+            "rotateY": 180
+        },
+        "*-w": {
+            "base": "block/jsonmachinetemplate",
+            "rotateY": 270
+        }
     },
-    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 },
-    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 }
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 2,
+        "z2": 1
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 2,
+        "z2": 1
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
 }

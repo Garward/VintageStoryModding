@@ -1,0 +1,20 @@
+{
+    "ingredient": {
+        "type": "item",
+        "code": "vintagekinematics:granite-grit",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:nugget-nativecopper",
+            "quantity": 1,
+            "weight": 1
+        },
+        {
+            "nothing": true,
+            "weight": 9
+        }
+    ],
+    "sieveTicks": 4
+}

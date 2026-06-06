@@ -63,17 +63,6 @@ namespace VintageKinematics.Blocks
             return CodeWithVariant("direction", direction);
         }
 
-        public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
-        {
-            int quantity = Math.Max(1, (int)Math.Round(dropQuantityMultiplier));
-            return new[] { CanonicalStack(world, quantity) ?? new ItemStack(this, quantity) };
-        }
-
-        public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
-        {
-            return CanonicalStack(world, 1) ?? base.OnPickBlock(world, pos);
-        }
-
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
@@ -90,12 +79,6 @@ namespace VintageKinematics.Blocks
             if (string.IsNullOrEmpty(direction)) return false;
 
             return face == direction || (Opposites.TryGetValue(direction, out string opposite) && face == opposite);
-        }
-
-        private ItemStack CanonicalStack(IWorldAccessor world, int quantity)
-        {
-            Block pump = world?.GetBlock(CodeWithVariant("direction", "s"));
-            return pump == null ? null : new ItemStack(pump, quantity);
         }
 
         private static bool IsCopperPump(Block block)

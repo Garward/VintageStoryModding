@@ -20,7 +20,127 @@ non-item outputs, or unusual state.
 - Vintage Kinematics installed
 - A model file, for example `assets/mymod/shapes/block/handlelathe.json`
 
-## 1. Pure JSON Processor
+## 1. Recipe-Only Mods
+
+If you only want to add recipes to existing VK machines, make a normal
+Vintage Story content mod and add files under `assets/<yourmod>/vkrecipe/`.
+You do not need C#.
+
+VK ships copy/edit examples under:
+
+```text
+assets/vintagekinematics/templates/recipepack/
+```
+
+Supported recipe folders:
+
+```text
+assets/<yourmod>/vkrecipe/crusher/
+assets/<yourmod>/vkrecipe/extractor/
+assets/<yourmod>/vkrecipe/forgepress/
+assets/<yourmod>/vkrecipe/mixer/
+assets/<yourmod>/vkrecipe/process/<machineCode>/
+assets/<yourmod>/vkrecipe/sawmill/
+assets/<yourmod>/vkrecipe/sieve/
+```
+
+Use `vkrecipe/process/<machineCode>/` for generic JSON processors and
+JSON-backed special machines. For example, the charcoal retort's existing
+firewood-to-charcoal conversion lives at:
+
+```text
+assets/vintagekinematics/vkrecipe/process/kineticcharcoalretort/firewood-to-charcoal.json
+```
+
+Basic formats:
+
+Crusher, one input to outputs:
+
+```json
+{
+  "ingredient": { "type": "item", "code": "game:stone-granite", "quantity": 1 },
+  "outputs": [
+    { "type": "item", "code": "vintagekinematics:granite-grit", "quantity": 1 }
+  ],
+  "crushTicks": 4
+}
+```
+
+Sieve, one input to a weighted output roll:
+
+```json
+{
+  "ingredient": { "type": "item", "code": "vintagekinematics:granite-grit", "quantity": 1 },
+  "outputs": [
+    { "type": "item", "code": "game:nugget-nativecopper", "quantity": 1, "weight": 1 },
+    { "nothing": true, "weight": 9 }
+  ],
+  "sieveTicks": 4
+}
+```
+
+Extractor, one input to solid output, liquid output, or both:
+
+```json
+{
+  "ingredient": { "type": "item", "code": "game:seeds-flax", "quantity": 1 },
+  "liquid": { "code": "game:oilportion-flax", "litres": 0.1 },
+  "pressTicks": 6
+}
+```
+
+Mixer, unordered item inputs plus optional liquid:
+
+```json
+{
+  "ingredients": [
+    { "type": "item", "code": "vintagekinematics:*-grit", "quantity": 2 },
+    { "type": "item", "code": "vintagekinematics:sawdust", "quantity": 1 }
+  ],
+  "liquidCode": "game:slakedlimeportion",
+  "liquidLitres": 1,
+  "outputs": [
+    { "type": "item", "code": "game:mortar", "quantity": 4 }
+  ],
+  "mixTicks": 6
+}
+```
+
+Sawmill, one input plus selected sawmill mode:
+
+```json
+{
+  "ingredient": { "type": "block", "code": "game:log-placed-*-*", "quantity": 1 },
+  "outputs": [
+    { "type": "item", "code": "game:plank-*", "quantity": 16 },
+    { "type": "item", "code": "vintagekinematics:sawdust", "quantity": 2 }
+  ],
+  "sawTicks": 4,
+  "mode": "Plank"
+}
+```
+
+Sawmill modes are `Plank`, `Shaft`, `Stick`, `CogwheelSection`, `Firewood`,
+and `Gearbox`. The machine currently selects by mode, so do not add multiple
+recipes with the same ingredient and the same mode unless you intentionally
+want only the first matching recipe to run.
+
+Generic process recipe, one input to outputs:
+
+```json
+{
+  "machine": "exampleprocessor",
+  "ingredient": { "type": "item", "code": "game:stick", "quantity": 1 },
+  "outputs": [
+    { "type": "block", "code": "vintagekinematics:handcrank-y", "quantity": 1 }
+  ]
+}
+```
+
+Forge press recipes are covered in detail below because they also define the
+visible operation picker.
+
+## 2. Pure JSON Processor
 
 This example builds a small machine that turns one stick into one hand crank.
 It is a 1x2 multiblock: the bottom/controller block contains the shaft, and

@@ -1,5 +1,6 @@
 {
-    "ingredient": { "type": "block", "code": "game:log-placed-ebony-*", "quantity": 1 },
+    "ingredient": { "type": "block", "code": "game:log-placed-*-*", "quantity": 1 },
+    "allowedVariants": [ "ebony", "kapok", "purpleheart" ],
     "outputs": [
         { "type": "item", "code": "game:firewood", "quantity": 4 },
         { "type": "item", "code": "sawdust", "quantity": 2 }

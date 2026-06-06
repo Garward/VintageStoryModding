@@ -810,5 +810,15 @@
         "x2": 1,
         "y2": 1,
         "z2": 1
-    }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
 }

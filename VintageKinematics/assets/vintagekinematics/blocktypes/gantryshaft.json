@@ -14,7 +14,11 @@
     "variantgroups": [
         {
             "code": "axis",
-            "states": [ "x", "y", "z" ]
+            "states": [
+                "x",
+                "y",
+                "z"
+            ]
         }
     ],
     "shape": {
@@ -39,17 +43,29 @@
         }
     },
     "attributes": {
-        "handbook": { "groupBy": [ "gantryshaft" ] }
+        "handbook": {
+            "groupBy": [
+                "gantryshaft"
+            ]
+        }
     },
     "blockmaterial": "Metal",
     "resistance": 4,
     "creativeinventory": {
-        "general": [ "*-x" ],
-        "vintagekinematics": [ "*-x" ]
+        "general": [
+            "*-x"
+        ],
+        "vintagekinematics": [
+            "*-x"
+        ]
     },
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
     "collisionbox": {
         "x1": 0.375,
         "y1": 0.375,
@@ -117,5 +133,15 @@
             "y2": 0.625,
             "z2": 1
         }
-    }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "axis": "x"
+                }
+            }
+        }
+    ]
 }

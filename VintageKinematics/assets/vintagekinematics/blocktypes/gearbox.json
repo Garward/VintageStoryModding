@@ -189,5 +189,37 @@
         "x2": 0.875,
         "y2": 0.875,
         "z2": 0.875
+    },
+    "behaviorsByType": {
+        "*-x": [
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "axis": "x"
+                    }
+                }
+            }
+        ],
+        "*-y": [
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "axis": "y"
+                    }
+                }
+            }
+        ],
+        "*-z": [
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "axis": "x"
+                    }
+                }
+            }
+        ]
     }
 }

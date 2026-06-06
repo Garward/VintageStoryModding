@@ -180,5 +180,16 @@
                 "avg": 1
             }
         }
+    ],
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n",
+                    "state": "cool"
+                }
+            }
+        }
     ]
 }

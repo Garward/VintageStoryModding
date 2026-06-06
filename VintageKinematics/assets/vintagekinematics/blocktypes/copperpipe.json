@@ -3830,5 +3830,15 @@
         "place": "game:block/anvil",
         "break": "game:block/anvil",
         "hit": "game:block/anvil"
-    }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "conn": "ns"
+                }
+            }
+        }
+    ]
 }

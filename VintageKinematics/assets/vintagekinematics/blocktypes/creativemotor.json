@@ -217,5 +217,15 @@
         "x2": 0.875,
         "y2": 0.875,
         "z2": 0.875
-    }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "axis": "x"
+                }
+            }
+        }
+    ]
 }

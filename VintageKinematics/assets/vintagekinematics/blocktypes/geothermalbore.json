@@ -4,94 +4,451 @@
     "entityClass": "GeothermalBore",
     "attributes": {
         "miningTier": 5,
-        "kineticShaftCells": [ { "x": 1, "y": 1, "z": 2 } ]
+        "kineticShaftCells": [
+            {
+                "x": 1,
+                "y": 1,
+                "z": 2
+            }
+        ]
     },
     "entityBehaviors": [
-        { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 128, "axis": "Z" } },
-        { "name": "KineticMultiblock" },
-        { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 8, "autoReset": true, "tickInterval": 0.25 } },
-        { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 8, "volumeAt32RPM": 0.36, "pitchAt32RPM": 0.58, "pitchScalesWithRPM": false, "dedupKey": "geothermalbore", "maxSimultaneous": 2 } },
-        { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } }
+        {
+            "name": "Kinetic",
+            "properties": {
+                "role": "Shaft",
+                "stressImpact": 128,
+                "axis": "Z"
+            }
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticWorker",
+            "properties": {
+                "workPerCycle": 400,
+                "minRPM": 8,
+                "autoReset": true,
+                "tickInterval": 0.25
+            }
+        },
+        {
+            "name": "KineticSound",
+            "properties": {
+                "sound": "sounds/effect/gearbox_turn.ogg",
+                "minRPM": 8,
+                "volumeAt32RPM": 0.36,
+                "pitchAt32RPM": 0.58,
+                "pitchScalesWithRPM": false,
+                "dedupKey": "geothermalbore",
+                "maxSimultaneous": 2
+            }
+        },
+        {
+            "name": "KineticAnimator",
+            "properties": {
+                "rotators": [
+                    {
+                        "element": "ShaftStub",
+                        "axis": "Z",
+                        "ratio": 1
+                    }
+                ]
+            }
+        }
     ],
     "entityBehaviorsByType": {
         "*-n-*": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 128, "axis": "Z" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 8, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 8, "volumeAt32RPM": 0.36, "pitchAt32RPM": 0.58, "pitchScalesWithRPM": false, "dedupKey": "geothermalbore", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 128,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 400,
+                    "minRPM": 8,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 8,
+                    "volumeAt32RPM": 0.36,
+                    "pitchAt32RPM": 0.58,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "geothermalbore",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ],
         "*-s-*": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 128, "axis": "Z" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 8, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 8, "volumeAt32RPM": 0.36, "pitchAt32RPM": 0.58, "pitchScalesWithRPM": false, "dedupKey": "geothermalbore", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 128,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 400,
+                    "minRPM": 8,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 8,
+                    "volumeAt32RPM": 0.36,
+                    "pitchAt32RPM": 0.58,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "geothermalbore",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ],
         "*-e-*": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 128, "axis": "X" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 8, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 8, "volumeAt32RPM": 0.36, "pitchAt32RPM": 0.58, "pitchScalesWithRPM": false, "dedupKey": "geothermalbore", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 128,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 400,
+                    "minRPM": 8,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 8,
+                    "volumeAt32RPM": 0.36,
+                    "pitchAt32RPM": 0.58,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "geothermalbore",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ],
         "*-w-*": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": 128, "axis": "X" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticWorker", "properties": { "workPerCycle": 400, "minRPM": 8, "autoReset": true, "tickInterval": 0.25 } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 8, "volumeAt32RPM": 0.36, "pitchAt32RPM": 0.58, "pitchScalesWithRPM": false, "dedupKey": "geothermalbore", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [ { "element": "ShaftStub", "axis": "Z", "ratio": 1 } ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 128,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticWorker",
+                "properties": {
+                    "workPerCycle": 400,
+                    "minRPM": 8,
+                    "autoReset": true,
+                    "tickInterval": 0.25
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 8,
+                    "volumeAt32RPM": 0.36,
+                    "pitchAt32RPM": 0.58,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "geothermalbore",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            }
         ]
     },
     "variantgroups": [
-        { "code": "side", "states": [ "n", "e", "s", "w" ] },
-        { "code": "state", "states": [ "cool", "glow" ] }
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
+        },
+        {
+            "code": "state",
+            "states": [
+                "cool",
+                "glow"
+            ]
+        }
     ],
     "behaviorsByType": {
-        "*-n-*": [ { "name": "Multiblock", "properties": { "sizex": 3, "sizey": 2, "sizez": 3, "cposition": { "x": 0, "y": 0, "z": 0 } } } ],
-        "*-e-*": [ { "name": "Multiblock", "properties": { "sizex": 3, "sizey": 2, "sizez": 3, "cposition": { "x": 2, "y": 0, "z": 0 } } } ],
-        "*-s-*": [ { "name": "Multiblock", "properties": { "sizex": 3, "sizey": 2, "sizez": 3, "cposition": { "x": 2, "y": 0, "z": 2 } } } ],
-        "*-w-*": [ { "name": "Multiblock", "properties": { "sizex": 3, "sizey": 2, "sizez": 3, "cposition": { "x": 0, "y": 0, "z": 2 } } } ]
+        "*-n-*": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 2,
+                    "sizez": 3,
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            }
+        ],
+        "*-e-*": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 2,
+                    "sizez": 3,
+                    "cposition": {
+                        "x": 2,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            }
+        ],
+        "*-s-*": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 2,
+                    "sizez": 3,
+                    "cposition": {
+                        "x": 2,
+                        "y": 0,
+                        "z": 2
+                    }
+                }
+            }
+        ],
+        "*-w-*": [
+            {
+                "name": "Multiblock",
+                "properties": {
+                    "sizex": 3,
+                    "sizey": 2,
+                    "sizez": 3,
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 2
+                    }
+                }
+            }
+        ]
     },
-    "shape": { "base": "block/geothermalbore" },
+    "shape": {
+        "base": "block/geothermalbore"
+    },
     "shapeByType": {
-        "*-n-*": { "base": "block/geothermalbore", "rotateY": 0 },
-        "*-e-*": { "base": "block/geothermalbore", "rotateY": 270 },
-        "*-s-*": { "base": "block/geothermalbore", "rotateY": 180 },
-        "*-w-*": { "base": "block/geothermalbore", "rotateY": 90 }
+        "*-n-*": {
+            "base": "block/geothermalbore",
+            "rotateY": 0
+        },
+        "*-e-*": {
+            "base": "block/geothermalbore",
+            "rotateY": 270
+        },
+        "*-s-*": {
+            "base": "block/geothermalbore",
+            "rotateY": 180
+        },
+        "*-w-*": {
+            "base": "block/geothermalbore",
+            "rotateY": 90
+        }
     },
     "textures": {
-        "steel": { "base": "game:block/metal/plate/steel" },
-        "iron": { "base": "game:block/metal/plate/iron" },
-        "brass": { "base": "game:block/metal/ingot/brass" },
-        "copper": { "base": "game:block/metal/plate/copper" },
-        "dark": { "base": "game:block/coal/charcoal" },
-        "heat": { "base": "game:block/coal/charcoal" },
-        "glow": { "base": "vintagekinematics:block/kineticigniter-rod-glow" },
-        "water": { "base": "game:block/liquid/water" }
+        "steel": {
+            "base": "game:block/metal/plate/steel"
+        },
+        "iron": {
+            "base": "game:block/metal/plate/iron"
+        },
+        "brass": {
+            "base": "game:block/metal/ingot/brass"
+        },
+        "copper": {
+            "base": "game:block/metal/plate/copper"
+        },
+        "dark": {
+            "base": "game:block/coal/charcoal"
+        },
+        "heat": {
+            "base": "game:block/coal/charcoal"
+        },
+        "glow": {
+            "base": "vintagekinematics:block/kineticigniter-rod-glow"
+        },
+        "water": {
+            "base": "game:block/liquid/water"
+        }
     },
     "texturesByType": {
         "*-glow": {
-            "heat": { "base": "vintagekinematics:block/kineticigniter-rod-glow" }
+            "heat": {
+                "base": "vintagekinematics:block/kineticigniter-rod-glow"
+            }
         }
     },
-    "lightHsv": [ 0, 0, 0 ],
+    "lightHsv": [
+        0,
+        0,
+        0
+    ],
     "lightHsvByType": {
-        "*-glow": [ 5, 7, 5 ]
+        "*-glow": [
+            5,
+            7,
+            5
+        ]
     },
-    "guiTransform": { "translation": { "x": 0, "y": 15, "z": 0 }, "scale": 0.49 },
+    "guiTransform": {
+        "translation": {
+            "x": 0,
+            "y": 15,
+            "z": 0
+        },
+        "scale": 0.49
+    },
     "blockmaterial": "Metal",
     "resistance": 3,
     "creativeinventory": {
-        "general": [ "*-n-cool" ],
-        "vintagekinematics": [ "*-n-cool" ]
+        "general": [
+            "*-n-cool"
+        ],
+        "vintagekinematics": [
+            "*-n-cool"
+        ]
     },
     "drops": [
-        { "type": "block", "code": "geothermalbore-n-cool", "quantity": { "avg": 1 } }
+        {
+            "type": "block",
+            "code": "geothermalbore-n-cool",
+            "quantity": {
+                "avg": 1
+            }
+        }
     ],
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n",
+                    "state": "cool"
+                }
+            }
+        }
+    ]
 }

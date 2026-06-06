@@ -37,8 +37,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -46,8 +54,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -71,8 +95,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -80,8 +112,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -105,8 +153,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -114,8 +170,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -139,8 +211,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -148,8 +228,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -173,8 +269,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -182,8 +286,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -204,8 +324,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -213,8 +341,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -235,8 +379,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -244,8 +396,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -266,8 +434,16 @@
                 "name": "KineticAnimator",
                 "properties": {
                     "rotators": [
-                        { "element": "stubZpos", "axis": "Z", "ratio": 1 },
-                        { "element": "stubZneg", "axis": "Z", "ratio": 1 }
+                        {
+                            "element": "stubZpos",
+                            "axis": "Z",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubZneg",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
                     ]
                 }
             },
@@ -275,8 +451,24 @@
                 "name": "KineticPiston",
                 "properties": {
                     "pistons": [
-                        { "element": "head", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true },
-                        { "element": "pistonShaft", "axis": "Y", "mode": "oscillate", "waveform": "sine", "travel": 24, "ratio": 1, "invert": true }
+                        {
+                            "element": "head",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "pistonShaft",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 24,
+                            "ratio": 1,
+                            "invert": true
+                        }
                     ]
                 }
             },
@@ -288,38 +480,75 @@
     "variantgroups": [
         {
             "code": "metal",
-            "states": [ "bronze", "iron" ]
+            "states": [
+                "bronze",
+                "iron"
+            ]
         },
         {
             "code": "side",
-            "states": [ "n", "e", "s", "w" ]
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
         }
     ],
     "shapeByType": {
-        "*-n": { "base": "block/crusher" },
-        "*-e": { "base": "block/crusher", "rotateY": 270 },
-        "*-s": { "base": "block/crusher", "rotateY": 180 },
-        "*-w": { "base": "block/crusher", "rotateY": 90 }
+        "*-n": {
+            "base": "block/crusher"
+        },
+        "*-e": {
+            "base": "block/crusher",
+            "rotateY": 270
+        },
+        "*-s": {
+            "base": "block/crusher",
+            "rotateY": 180
+        },
+        "*-w": {
+            "base": "block/crusher",
+            "rotateY": 90
+        }
     },
     "textures": {
-        "iron": { "base": "game:block/metal/sheet/iron1" },
-        "wood": { "base": "game:block/wood/planks/generic" }
+        "iron": {
+            "base": "game:block/metal/sheet/iron1"
+        },
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        }
     },
     "texturesByType": {
         "*-bronze-*": {
-            "iron": { "base": "game:block/metal/sheet/tinbronze1" },
-            "wood": { "base": "game:block/wood/planks/generic" }
+            "iron": {
+                "base": "game:block/metal/sheet/tinbronze1"
+            },
+            "wood": {
+                "base": "game:block/wood/planks/generic"
+            }
         },
         "*-iron-*": {
-            "iron": { "base": "game:block/metal/sheet/iron1" },
-            "wood": { "base": "game:block/wood/planks/generic" }
+            "iron": {
+                "base": "game:block/metal/sheet/iron1"
+            },
+            "wood": {
+                "base": "game:block/wood/planks/generic"
+            }
         }
     },
     "blockmaterial": "Wood",
     "resistance": 2.5,
     "creativeinventory": {
-        "general": [ "*-bronze-n", "*-iron-n" ],
-        "vintagekinematics": [ "*-bronze-n", "*-iron-n" ]
+        "general": [
+            "*-bronze-n",
+            "*-iron-n"
+        ],
+        "vintagekinematics": [
+            "*-bronze-n",
+            "*-iron-n"
+        ]
     },
     "lightAbsorption": 0,
     "sideopaque": {
@@ -343,5 +572,15 @@
         "x2": 1,
         "y2": 1,
         "z2": 1
-    }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
 }

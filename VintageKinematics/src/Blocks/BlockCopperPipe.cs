@@ -76,23 +76,6 @@ namespace VintageKinematics.Blocks
             return CodeWithVariant("conn", mask);
         }
 
-        public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
-        {
-            int quantity = Math.Max(1, (int)Math.Round(dropQuantityMultiplier));
-            return new[] { CanonicalStack(world, quantity) ?? new ItemStack(this, quantity) };
-        }
-
-        public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
-        {
-            return CanonicalStack(world, 1) ?? base.OnPickBlock(world, pos);
-        }
-
-        private ItemStack CanonicalStack(IWorldAccessor world, int quantity)
-        {
-            Block straight = world?.GetBlock(CodeWithVariant("conn", "ns"));
-            return straight == null ? null : new ItemStack(straight, quantity);
-        }
-
         private static string InitialMask(BlockSelection blockSel)
         {
             return blockSel?.Face?.Axis switch

@@ -160,7 +160,7 @@ namespace VintageKinematics.Api
             slot.TakeOut(quantity);
             slot.MarkDirty();
 
-            IEnumerable<ItemStack> outputs = GetOutputs(recipe);
+            IEnumerable<ItemStack> outputs = GetOutputs(recipe, input);
             if (outputs != null)
             {
                 foreach (ItemStack output in outputs)
@@ -178,6 +178,11 @@ namespace VintageKinematics.Api
         {
             if (WorkSound == null) return;
             Api.World.PlaySoundAt(WorkSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, null, randomizePitch: true, range: 16, volume: WorkSoundVolume);
+        }
+
+        protected virtual IEnumerable<ItemStack> GetOutputs(TRecipe recipe, ItemStack input)
+        {
+            return GetOutputs(recipe);
         }
 
         protected virtual void DepositOutput(ItemStack stack)

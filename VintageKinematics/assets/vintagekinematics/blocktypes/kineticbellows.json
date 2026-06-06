@@ -1,1188 +1,1198 @@
 {
-	"code": "kineticbellows",
-	"class": "BlockKineticBellows",
-	"entityClass": "KineticAnimated",
-	"entityBehaviorsByType": {
-		"*-n": [
-			{
-				"name": "Kinetic",
-				"properties": {
-					"role": "Shaft",
-					"stressImpact": 12,
-					"axis": "Z"
-				}
-			},
-			{
-				"name": "KineticAnimator",
-				"properties": {
-					"rotators": [
-						{
-							"element": "ShaftStub",
-							"axis": "Z",
-							"ratio": 1
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticLinkedPleat",
-				"properties": {
-					"chains": [
-						{
-							"elements": [
-								"LeftFoldDiagLowerA",
-								"LeftFoldDiagLowerB",
-								"LeftFoldDiagMiddleA",
-								"LeftFoldDiagMiddleB",
-								"LeftFoldDiagUpperA",
-								"LeftFoldDiagUpperB",
-								"LeftFoldDiagTopA",
-								"LeftFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 1.9,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 3.05,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 1.9,
-							"xB": 3.05,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"FrontFoldLowerA",
-								"FrontFoldLowerB",
-								"FrontFoldMiddleA",
-								"FrontFoldMiddleB",
-								"FrontFoldUpperA",
-								"FrontFoldUpperB",
-								"FrontFoldTopA",
-								"FrontFoldTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 8.0,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 8.0,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldDiagLowerA",
-								"RightFoldDiagLowerB",
-								"RightFoldDiagMiddleA",
-								"RightFoldDiagMiddleB",
-								"RightFoldDiagUpperA",
-								"RightFoldDiagUpperB",
-								"RightFoldDiagTopA",
-								"RightFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 14.1,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 12.95,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 14.1,
-							"xB": 12.95,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"LeftFoldCornerLowerA",
-								"LeftFoldCornerLowerB",
-								"LeftFoldCornerMiddleA",
-								"LeftFoldCornerMiddleB",
-								"LeftFoldCornerUpperA",
-								"LeftFoldCornerUpperB",
-								"LeftFoldCornerTopA",
-								"LeftFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"LeftFoldCornerCapLower",
-								"LeftFoldCornerCapMiddleLower",
-								"LeftFoldCornerCapMiddleUpper",
-								"LeftFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerLowerA",
-								"RightFoldCornerLowerB",
-								"RightFoldCornerMiddleA",
-								"RightFoldCornerMiddleB",
-								"RightFoldCornerUpperA",
-								"RightFoldCornerUpperB",
-								"RightFoldCornerTopA",
-								"RightFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerCapLower",
-								"RightFoldCornerCapMiddleLower",
-								"RightFoldCornerCapMiddleUpper",
-								"RightFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticPiston",
-				"properties": {
-					"pistons": [
-						{
-							"element": "TopBoard",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "BagTop",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "Handle",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						}
-					]
-				}
-			},
-			{
-				"name": "BellowsPulse",
-				"properties": {
-					"minRPM": 4,
-					"soundVolume": 0.16,
-					"soundRange": 7,
-					"minSoundIntervalSeconds": 0.75
-				}
-			}
-		],
-		"*-e": [
-			{
-				"name": "Kinetic",
-				"properties": {
-					"role": "Shaft",
-					"stressImpact": 12,
-					"axis": "X"
-				}
-			},
-			{
-				"name": "KineticAnimator",
-				"properties": {
-					"rotators": [
-						{
-							"element": "ShaftStub",
-							"axis": "Z",
-							"ratio": 1
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticLinkedPleat",
-				"properties": {
-					"chains": [
-						{
-							"elements": [
-								"LeftFoldDiagLowerA",
-								"LeftFoldDiagLowerB",
-								"LeftFoldDiagMiddleA",
-								"LeftFoldDiagMiddleB",
-								"LeftFoldDiagUpperA",
-								"LeftFoldDiagUpperB",
-								"LeftFoldDiagTopA",
-								"LeftFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 1.9,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 3.05,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 1.9,
-							"xB": 3.05,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"FrontFoldLowerA",
-								"FrontFoldLowerB",
-								"FrontFoldMiddleA",
-								"FrontFoldMiddleB",
-								"FrontFoldUpperA",
-								"FrontFoldUpperB",
-								"FrontFoldTopA",
-								"FrontFoldTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 8.0,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 8.0,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldDiagLowerA",
-								"RightFoldDiagLowerB",
-								"RightFoldDiagMiddleA",
-								"RightFoldDiagMiddleB",
-								"RightFoldDiagUpperA",
-								"RightFoldDiagUpperB",
-								"RightFoldDiagTopA",
-								"RightFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 14.1,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 12.95,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 14.1,
-							"xB": 12.95,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"LeftFoldCornerLowerA",
-								"LeftFoldCornerLowerB",
-								"LeftFoldCornerMiddleA",
-								"LeftFoldCornerMiddleB",
-								"LeftFoldCornerUpperA",
-								"LeftFoldCornerUpperB",
-								"LeftFoldCornerTopA",
-								"LeftFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"LeftFoldCornerCapLower",
-								"LeftFoldCornerCapMiddleLower",
-								"LeftFoldCornerCapMiddleUpper",
-								"LeftFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerLowerA",
-								"RightFoldCornerLowerB",
-								"RightFoldCornerMiddleA",
-								"RightFoldCornerMiddleB",
-								"RightFoldCornerUpperA",
-								"RightFoldCornerUpperB",
-								"RightFoldCornerTopA",
-								"RightFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerCapLower",
-								"RightFoldCornerCapMiddleLower",
-								"RightFoldCornerCapMiddleUpper",
-								"RightFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticPiston",
-				"properties": {
-					"pistons": [
-						{
-							"element": "TopBoard",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "BagTop",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "Handle",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						}
-					]
-				}
-			},
-			{
-				"name": "BellowsPulse",
-				"properties": {
-					"minRPM": 4,
-					"soundVolume": 0.16,
-					"soundRange": 7,
-					"minSoundIntervalSeconds": 0.75
-				}
-			}
-		],
-		"*-s": [
-			{
-				"name": "Kinetic",
-				"properties": {
-					"role": "Shaft",
-					"stressImpact": 12,
-					"axis": "Z"
-				}
-			},
-			{
-				"name": "KineticAnimator",
-				"properties": {
-					"rotators": [
-						{
-							"element": "ShaftStub",
-							"axis": "Z",
-							"ratio": 1
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticLinkedPleat",
-				"properties": {
-					"chains": [
-						{
-							"elements": [
-								"LeftFoldDiagLowerA",
-								"LeftFoldDiagLowerB",
-								"LeftFoldDiagMiddleA",
-								"LeftFoldDiagMiddleB",
-								"LeftFoldDiagUpperA",
-								"LeftFoldDiagUpperB",
-								"LeftFoldDiagTopA",
-								"LeftFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 1.9,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 3.05,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 1.9,
-							"xB": 3.05,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"FrontFoldLowerA",
-								"FrontFoldLowerB",
-								"FrontFoldMiddleA",
-								"FrontFoldMiddleB",
-								"FrontFoldUpperA",
-								"FrontFoldUpperB",
-								"FrontFoldTopA",
-								"FrontFoldTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 8.0,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 8.0,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldDiagLowerA",
-								"RightFoldDiagLowerB",
-								"RightFoldDiagMiddleA",
-								"RightFoldDiagMiddleB",
-								"RightFoldDiagUpperA",
-								"RightFoldDiagUpperB",
-								"RightFoldDiagTopA",
-								"RightFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 14.1,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 12.95,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 14.1,
-							"xB": 12.95,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"LeftFoldCornerLowerA",
-								"LeftFoldCornerLowerB",
-								"LeftFoldCornerMiddleA",
-								"LeftFoldCornerMiddleB",
-								"LeftFoldCornerUpperA",
-								"LeftFoldCornerUpperB",
-								"LeftFoldCornerTopA",
-								"LeftFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"LeftFoldCornerCapLower",
-								"LeftFoldCornerCapMiddleLower",
-								"LeftFoldCornerCapMiddleUpper",
-								"LeftFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerLowerA",
-								"RightFoldCornerLowerB",
-								"RightFoldCornerMiddleA",
-								"RightFoldCornerMiddleB",
-								"RightFoldCornerUpperA",
-								"RightFoldCornerUpperB",
-								"RightFoldCornerTopA",
-								"RightFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerCapLower",
-								"RightFoldCornerCapMiddleLower",
-								"RightFoldCornerCapMiddleUpper",
-								"RightFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticPiston",
-				"properties": {
-					"pistons": [
-						{
-							"element": "TopBoard",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "BagTop",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "Handle",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						}
-					]
-				}
-			},
-			{
-				"name": "BellowsPulse",
-				"properties": {
-					"minRPM": 4,
-					"soundVolume": 0.16,
-					"soundRange": 7,
-					"minSoundIntervalSeconds": 0.75
-				}
-			}
-		],
-		"*-w": [
-			{
-				"name": "Kinetic",
-				"properties": {
-					"role": "Shaft",
-					"stressImpact": 12,
-					"axis": "X"
-				}
-			},
-			{
-				"name": "KineticAnimator",
-				"properties": {
-					"rotators": [
-						{
-							"element": "ShaftStub",
-							"axis": "Z",
-							"ratio": 1
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticLinkedPleat",
-				"properties": {
-					"chains": [
-						{
-							"elements": [
-								"LeftFoldDiagLowerA",
-								"LeftFoldDiagLowerB",
-								"LeftFoldDiagMiddleA",
-								"LeftFoldDiagMiddleB",
-								"LeftFoldDiagUpperA",
-								"LeftFoldDiagUpperB",
-								"LeftFoldDiagTopA",
-								"LeftFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 1.9,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 3.05,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 1.9,
-							"xB": 3.05,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"FrontFoldLowerA",
-								"FrontFoldLowerB",
-								"FrontFoldMiddleA",
-								"FrontFoldMiddleB",
-								"FrontFoldUpperA",
-								"FrontFoldUpperB",
-								"FrontFoldTopA",
-								"FrontFoldTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 8.0,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 8.0,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldDiagLowerA",
-								"RightFoldDiagLowerB",
-								"RightFoldDiagMiddleA",
-								"RightFoldDiagMiddleB",
-								"RightFoldDiagUpperA",
-								"RightFoldDiagUpperB",
-								"RightFoldDiagTopA",
-								"RightFoldDiagTopB"
-							],
-							"plane": "xy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 14.1,
-								"y": 5.0,
-								"z": 8.5
-							},
-							"top": {
-								"x": 12.95,
-								"y": 9.0,
-								"z": 8.5
-							},
-							"topTravelY": -2.45,
-							"xA": 14.1,
-							"xB": 12.95,
-							"startAtA": false
-						},
-						{
-							"elements": [
-								"LeftFoldCornerLowerA",
-								"LeftFoldCornerLowerB",
-								"LeftFoldCornerMiddleA",
-								"LeftFoldCornerMiddleB",
-								"LeftFoldCornerUpperA",
-								"LeftFoldCornerUpperB",
-								"LeftFoldCornerTopA",
-								"LeftFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"LeftFoldCornerCapLower",
-								"LeftFoldCornerCapMiddleLower",
-								"LeftFoldCornerCapMiddleUpper",
-								"LeftFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 2.95,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 2.95,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerLowerA",
-								"RightFoldCornerLowerB",
-								"RightFoldCornerMiddleA",
-								"RightFoldCornerMiddleB",
-								"RightFoldCornerUpperA",
-								"RightFoldCornerUpperB",
-								"RightFoldCornerTopA",
-								"RightFoldCornerTopB"
-							],
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						},
-						{
-							"elements": [
-								"RightFoldCornerCapLower",
-								"RightFoldCornerCapMiddleLower",
-								"RightFoldCornerCapMiddleUpper",
-								"RightFoldCornerCapUpper"
-							],
-							"translateOnly": true,
-							"translateTOffset": 0.125,
-							"translateTStep": 0.25,
-							"plane": "zy",
-							"waveform": "sine",
-							"ratio": 1,
-							"bottom": {
-								"x": 13.05,
-								"y": 5.0,
-								"z": 5.95
-							},
-							"top": {
-								"x": 13.05,
-								"y": 9.0,
-								"z": 5.05
-							},
-							"topTravelY": -2.45,
-							"zA": 5.95,
-							"zB": 5.05,
-							"startAtA": true
-						}
-					]
-				}
-			},
-			{
-				"name": "KineticPiston",
-				"properties": {
-					"pistons": [
-						{
-							"element": "TopBoard",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "BagTop",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						},
-						{
-							"element": "Handle",
-							"axis": "Y",
-							"mode": "oscillate",
-							"waveform": "sine",
-							"travel": 2.45,
-							"ratio": 1,
-							"invert": true
-						}
-					]
-				}
-			},
-			{
-				"name": "BellowsPulse",
-				"properties": {
-					"minRPM": 4,
-					"soundVolume": 0.16,
-					"soundRange": 7,
-					"minSoundIntervalSeconds": 0.75
-				}
-			}
-		]
-	},
-	"variantgroups": [
-		{
-			"code": "side",
-			"states": [
-				"n",
-				"e",
-				"s",
-				"w"
-			]
-		}
-	],
-	"shapeByType": {
-		"*-n": {
-			"base": "block/kineticbellows",
-			"rotateY": 0
-		},
-		"*-e": {
-			"base": "block/kineticbellows",
-			"rotateY": 270
-		},
-		"*-s": {
-			"base": "block/kineticbellows",
-			"rotateY": 180
-		},
-		"*-w": {
-			"base": "block/kineticbellows",
-			"rotateY": 90
-		}
-	},
-	"textures": {
-		"wood": {
-			"base": "game:block/wood/planks/generic"
-		},
-		"darkwood": {
-			"base": "game:block/wood/debarked/oak"
-		},
-		"leather": {
-			"base": "game:block/leather/plain"
-		},
-		"metal": {
-			"base": "game:block/metal/sheet/iron1"
-		}
-	},
-	"guiTransform": {
-		"translation": {
-			"x": 0,
-			"y": 5,
-			"z": 0
-		},
-		"rotation": {
-			"x": -23,
-			"y": -42,
-			"z": 0
-		},
-		"scale": 1.2
-	},
-	"blockmaterial": "Wood",
-	"resistance": 2,
-	"creativeinventory": {
-		"general": [
-			"*-n"
-		],
-		"vintagekinematics": [
-			"*-n"
-		]
-	},
-	"lightAbsorption": 0,
-	"sideopaque": {
-		"all": "false"
-	},
-	"sidesolid": {
-		"all": "false"
-	},
-	"selectionbox": {
-		"x1": 0,
-		"y1": 0,
-		"z1": 0,
-		"x2": 1,
-		"y2": 0.875,
-		"z2": 1
-	},
-	"collisionbox": {
-		"x1": 0,
-		"y1": 0,
-		"z1": 0,
-		"x2": 1,
-		"y2": 0.875,
-		"z2": 1
-	}
+    "code": "kineticbellows",
+    "class": "BlockKineticBellows",
+    "entityClass": "KineticAnimated",
+    "entityBehaviorsByType": {
+        "*-n": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 12,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticLinkedPleat",
+                "properties": {
+                    "chains": [
+                        {
+                            "elements": [
+                                "LeftFoldDiagLowerA",
+                                "LeftFoldDiagLowerB",
+                                "LeftFoldDiagMiddleA",
+                                "LeftFoldDiagMiddleB",
+                                "LeftFoldDiagUpperA",
+                                "LeftFoldDiagUpperB",
+                                "LeftFoldDiagTopA",
+                                "LeftFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 1.9,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 3.05,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 1.9,
+                            "xB": 3.05,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "FrontFoldLowerA",
+                                "FrontFoldLowerB",
+                                "FrontFoldMiddleA",
+                                "FrontFoldMiddleB",
+                                "FrontFoldUpperA",
+                                "FrontFoldUpperB",
+                                "FrontFoldTopA",
+                                "FrontFoldTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 8.0,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 8.0,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldDiagLowerA",
+                                "RightFoldDiagLowerB",
+                                "RightFoldDiagMiddleA",
+                                "RightFoldDiagMiddleB",
+                                "RightFoldDiagUpperA",
+                                "RightFoldDiagUpperB",
+                                "RightFoldDiagTopA",
+                                "RightFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 14.1,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 12.95,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 14.1,
+                            "xB": 12.95,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerLowerA",
+                                "LeftFoldCornerLowerB",
+                                "LeftFoldCornerMiddleA",
+                                "LeftFoldCornerMiddleB",
+                                "LeftFoldCornerUpperA",
+                                "LeftFoldCornerUpperB",
+                                "LeftFoldCornerTopA",
+                                "LeftFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerCapLower",
+                                "LeftFoldCornerCapMiddleLower",
+                                "LeftFoldCornerCapMiddleUpper",
+                                "LeftFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerLowerA",
+                                "RightFoldCornerLowerB",
+                                "RightFoldCornerMiddleA",
+                                "RightFoldCornerMiddleB",
+                                "RightFoldCornerUpperA",
+                                "RightFoldCornerUpperB",
+                                "RightFoldCornerTopA",
+                                "RightFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerCapLower",
+                                "RightFoldCornerCapMiddleLower",
+                                "RightFoldCornerCapMiddleUpper",
+                                "RightFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "TopBoard",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "BagTop",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "Handle",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "BellowsPulse",
+                "properties": {
+                    "minRPM": 4,
+                    "soundVolume": 0.16,
+                    "soundRange": 7,
+                    "minSoundIntervalSeconds": 0.75
+                }
+            }
+        ],
+        "*-e": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 12,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticLinkedPleat",
+                "properties": {
+                    "chains": [
+                        {
+                            "elements": [
+                                "LeftFoldDiagLowerA",
+                                "LeftFoldDiagLowerB",
+                                "LeftFoldDiagMiddleA",
+                                "LeftFoldDiagMiddleB",
+                                "LeftFoldDiagUpperA",
+                                "LeftFoldDiagUpperB",
+                                "LeftFoldDiagTopA",
+                                "LeftFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 1.9,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 3.05,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 1.9,
+                            "xB": 3.05,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "FrontFoldLowerA",
+                                "FrontFoldLowerB",
+                                "FrontFoldMiddleA",
+                                "FrontFoldMiddleB",
+                                "FrontFoldUpperA",
+                                "FrontFoldUpperB",
+                                "FrontFoldTopA",
+                                "FrontFoldTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 8.0,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 8.0,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldDiagLowerA",
+                                "RightFoldDiagLowerB",
+                                "RightFoldDiagMiddleA",
+                                "RightFoldDiagMiddleB",
+                                "RightFoldDiagUpperA",
+                                "RightFoldDiagUpperB",
+                                "RightFoldDiagTopA",
+                                "RightFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 14.1,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 12.95,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 14.1,
+                            "xB": 12.95,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerLowerA",
+                                "LeftFoldCornerLowerB",
+                                "LeftFoldCornerMiddleA",
+                                "LeftFoldCornerMiddleB",
+                                "LeftFoldCornerUpperA",
+                                "LeftFoldCornerUpperB",
+                                "LeftFoldCornerTopA",
+                                "LeftFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerCapLower",
+                                "LeftFoldCornerCapMiddleLower",
+                                "LeftFoldCornerCapMiddleUpper",
+                                "LeftFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerLowerA",
+                                "RightFoldCornerLowerB",
+                                "RightFoldCornerMiddleA",
+                                "RightFoldCornerMiddleB",
+                                "RightFoldCornerUpperA",
+                                "RightFoldCornerUpperB",
+                                "RightFoldCornerTopA",
+                                "RightFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerCapLower",
+                                "RightFoldCornerCapMiddleLower",
+                                "RightFoldCornerCapMiddleUpper",
+                                "RightFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "TopBoard",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "BagTop",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "Handle",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "BellowsPulse",
+                "properties": {
+                    "minRPM": 4,
+                    "soundVolume": 0.16,
+                    "soundRange": 7,
+                    "minSoundIntervalSeconds": 0.75
+                }
+            }
+        ],
+        "*-s": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 12,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticLinkedPleat",
+                "properties": {
+                    "chains": [
+                        {
+                            "elements": [
+                                "LeftFoldDiagLowerA",
+                                "LeftFoldDiagLowerB",
+                                "LeftFoldDiagMiddleA",
+                                "LeftFoldDiagMiddleB",
+                                "LeftFoldDiagUpperA",
+                                "LeftFoldDiagUpperB",
+                                "LeftFoldDiagTopA",
+                                "LeftFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 1.9,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 3.05,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 1.9,
+                            "xB": 3.05,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "FrontFoldLowerA",
+                                "FrontFoldLowerB",
+                                "FrontFoldMiddleA",
+                                "FrontFoldMiddleB",
+                                "FrontFoldUpperA",
+                                "FrontFoldUpperB",
+                                "FrontFoldTopA",
+                                "FrontFoldTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 8.0,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 8.0,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldDiagLowerA",
+                                "RightFoldDiagLowerB",
+                                "RightFoldDiagMiddleA",
+                                "RightFoldDiagMiddleB",
+                                "RightFoldDiagUpperA",
+                                "RightFoldDiagUpperB",
+                                "RightFoldDiagTopA",
+                                "RightFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 14.1,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 12.95,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 14.1,
+                            "xB": 12.95,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerLowerA",
+                                "LeftFoldCornerLowerB",
+                                "LeftFoldCornerMiddleA",
+                                "LeftFoldCornerMiddleB",
+                                "LeftFoldCornerUpperA",
+                                "LeftFoldCornerUpperB",
+                                "LeftFoldCornerTopA",
+                                "LeftFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerCapLower",
+                                "LeftFoldCornerCapMiddleLower",
+                                "LeftFoldCornerCapMiddleUpper",
+                                "LeftFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerLowerA",
+                                "RightFoldCornerLowerB",
+                                "RightFoldCornerMiddleA",
+                                "RightFoldCornerMiddleB",
+                                "RightFoldCornerUpperA",
+                                "RightFoldCornerUpperB",
+                                "RightFoldCornerTopA",
+                                "RightFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerCapLower",
+                                "RightFoldCornerCapMiddleLower",
+                                "RightFoldCornerCapMiddleUpper",
+                                "RightFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "TopBoard",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "BagTop",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "Handle",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "BellowsPulse",
+                "properties": {
+                    "minRPM": 4,
+                    "soundVolume": 0.16,
+                    "soundRange": 7,
+                    "minSoundIntervalSeconds": 0.75
+                }
+            }
+        ],
+        "*-w": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": 12,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "ShaftStub",
+                            "axis": "Z",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticLinkedPleat",
+                "properties": {
+                    "chains": [
+                        {
+                            "elements": [
+                                "LeftFoldDiagLowerA",
+                                "LeftFoldDiagLowerB",
+                                "LeftFoldDiagMiddleA",
+                                "LeftFoldDiagMiddleB",
+                                "LeftFoldDiagUpperA",
+                                "LeftFoldDiagUpperB",
+                                "LeftFoldDiagTopA",
+                                "LeftFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 1.9,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 3.05,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 1.9,
+                            "xB": 3.05,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "FrontFoldLowerA",
+                                "FrontFoldLowerB",
+                                "FrontFoldMiddleA",
+                                "FrontFoldMiddleB",
+                                "FrontFoldUpperA",
+                                "FrontFoldUpperB",
+                                "FrontFoldTopA",
+                                "FrontFoldTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 8.0,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 8.0,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldDiagLowerA",
+                                "RightFoldDiagLowerB",
+                                "RightFoldDiagMiddleA",
+                                "RightFoldDiagMiddleB",
+                                "RightFoldDiagUpperA",
+                                "RightFoldDiagUpperB",
+                                "RightFoldDiagTopA",
+                                "RightFoldDiagTopB"
+                            ],
+                            "plane": "xy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 14.1,
+                                "y": 5.0,
+                                "z": 8.5
+                            },
+                            "top": {
+                                "x": 12.95,
+                                "y": 9.0,
+                                "z": 8.5
+                            },
+                            "topTravelY": -2.45,
+                            "xA": 14.1,
+                            "xB": 12.95,
+                            "startAtA": false
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerLowerA",
+                                "LeftFoldCornerLowerB",
+                                "LeftFoldCornerMiddleA",
+                                "LeftFoldCornerMiddleB",
+                                "LeftFoldCornerUpperA",
+                                "LeftFoldCornerUpperB",
+                                "LeftFoldCornerTopA",
+                                "LeftFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "LeftFoldCornerCapLower",
+                                "LeftFoldCornerCapMiddleLower",
+                                "LeftFoldCornerCapMiddleUpper",
+                                "LeftFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 2.95,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 2.95,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerLowerA",
+                                "RightFoldCornerLowerB",
+                                "RightFoldCornerMiddleA",
+                                "RightFoldCornerMiddleB",
+                                "RightFoldCornerUpperA",
+                                "RightFoldCornerUpperB",
+                                "RightFoldCornerTopA",
+                                "RightFoldCornerTopB"
+                            ],
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        },
+                        {
+                            "elements": [
+                                "RightFoldCornerCapLower",
+                                "RightFoldCornerCapMiddleLower",
+                                "RightFoldCornerCapMiddleUpper",
+                                "RightFoldCornerCapUpper"
+                            ],
+                            "translateOnly": true,
+                            "translateTOffset": 0.125,
+                            "translateTStep": 0.25,
+                            "plane": "zy",
+                            "waveform": "sine",
+                            "ratio": 1,
+                            "bottom": {
+                                "x": 13.05,
+                                "y": 5.0,
+                                "z": 5.95
+                            },
+                            "top": {
+                                "x": 13.05,
+                                "y": 9.0,
+                                "z": 5.05
+                            },
+                            "topTravelY": -2.45,
+                            "zA": 5.95,
+                            "zB": 5.05,
+                            "startAtA": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "TopBoard",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "BagTop",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        },
+                        {
+                            "element": "Handle",
+                            "axis": "Y",
+                            "mode": "oscillate",
+                            "waveform": "sine",
+                            "travel": 2.45,
+                            "ratio": 1,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "BellowsPulse",
+                "properties": {
+                    "minRPM": 4,
+                    "soundVolume": 0.16,
+                    "soundRange": 7,
+                    "minSoundIntervalSeconds": 0.75
+                }
+            }
+        ]
+    },
+    "variantgroups": [
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
+        }
+    ],
+    "shapeByType": {
+        "*-n": {
+            "base": "block/kineticbellows",
+            "rotateY": 0
+        },
+        "*-e": {
+            "base": "block/kineticbellows",
+            "rotateY": 270
+        },
+        "*-s": {
+            "base": "block/kineticbellows",
+            "rotateY": 180
+        },
+        "*-w": {
+            "base": "block/kineticbellows",
+            "rotateY": 90
+        }
+    },
+    "textures": {
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "darkwood": {
+            "base": "game:block/wood/debarked/oak"
+        },
+        "leather": {
+            "base": "game:block/leather/plain"
+        },
+        "metal": {
+            "base": "game:block/metal/sheet/iron1"
+        }
+    },
+    "guiTransform": {
+        "translation": {
+            "x": 0,
+            "y": 5,
+            "z": 0
+        },
+        "rotation": {
+            "x": -23,
+            "y": -42,
+            "z": 0
+        },
+        "scale": 1.2
+    },
+    "blockmaterial": "Wood",
+    "resistance": 2,
+    "creativeinventory": {
+        "general": [
+            "*-n"
+        ],
+        "vintagekinematics": [
+            "*-n"
+        ]
+    },
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 0.875,
+        "z2": 1
+    },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 0.875,
+        "z2": 1
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
 }

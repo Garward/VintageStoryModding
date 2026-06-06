@@ -2,7 +2,16 @@
     "code": "shaft",
     "class": "BlockShaft",
     "entityClass": "Kinetic",
-    "behaviors": [],
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "axis": "y"
+                }
+            }
+        }
+    ],
     "behaviorsByType": {
         "*-x": [],
         "*-y": [],

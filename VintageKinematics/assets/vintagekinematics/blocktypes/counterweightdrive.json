@@ -3,7 +3,11 @@
     "class": "BlockCounterweightDrive",
     "entityClass": "CounterweightDrive",
     "attributes": {
-        "kineticShaftControllerOffset": { "x": 0, "y": 2, "z": 0 },
+        "kineticShaftControllerOffset": {
+            "x": 0,
+            "y": 2,
+            "z": 0
+        },
         "vkGenerator": {
             "maxChargeSeconds": 90,
             "windSecondsPerSecond": 8,
@@ -12,79 +16,385 @@
     },
     "entityBehaviorsByType": {
         "*-n": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -512, "axis": "Z" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 4, "volumeAt32RPM": 0.38, "pitchAt32RPM": 0.75, "pitchScalesWithRPM": false, "dedupKey": "counterweightdrive", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "drum", "axis": "X", "ratio": 1 },
-                { "element": "ropeWrap", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 }
-            ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "weight", "axis": "Y", "mode": "sourceTimed", "travel": 23, "invert": true }
-            ] } },
-            { "name": "KineticStretch", "properties": { "stretches": [
-                { "element": "ropeDrop", "axis": "Y", "mode": "sourceTimed", "minScale": 0.343, "maxScale": 1, "pivot": { "x": 8, "y": 45, "z": 10.75 } }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -512,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 4,
+                    "volumeAt32RPM": 0.38,
+                    "pitchAt32RPM": 0.75,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "counterweightdrive",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "drum",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "ropeWrap",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "weight",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "travel": 23,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticStretch",
+                "properties": {
+                    "stretches": [
+                        {
+                            "element": "ropeDrop",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "minScale": 0.343,
+                            "maxScale": 1,
+                            "pivot": {
+                                "x": 8,
+                                "y": 45,
+                                "z": 10.75
+                            }
+                        }
+                    ]
+                }
+            }
         ],
         "*-e": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -512, "axis": "X" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 4, "volumeAt32RPM": 0.38, "pitchAt32RPM": 0.75, "pitchScalesWithRPM": false, "dedupKey": "counterweightdrive", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "drum", "axis": "X", "ratio": 1 },
-                { "element": "ropeWrap", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 }
-            ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "weight", "axis": "Y", "mode": "sourceTimed", "travel": 23, "invert": true }
-            ] } },
-            { "name": "KineticStretch", "properties": { "stretches": [
-                { "element": "ropeDrop", "axis": "Y", "mode": "sourceTimed", "minScale": 0.343, "maxScale": 1, "pivot": { "x": 8, "y": 45, "z": 10.75 } }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -512,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 4,
+                    "volumeAt32RPM": 0.38,
+                    "pitchAt32RPM": 0.75,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "counterweightdrive",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "drum",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "ropeWrap",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "weight",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "travel": 23,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticStretch",
+                "properties": {
+                    "stretches": [
+                        {
+                            "element": "ropeDrop",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "minScale": 0.343,
+                            "maxScale": 1,
+                            "pivot": {
+                                "x": 8,
+                                "y": 45,
+                                "z": 10.75
+                            }
+                        }
+                    ]
+                }
+            }
         ],
         "*-s": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -512, "axis": "Z" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 4, "volumeAt32RPM": 0.38, "pitchAt32RPM": 0.75, "pitchScalesWithRPM": false, "dedupKey": "counterweightdrive", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "drum", "axis": "X", "ratio": 1 },
-                { "element": "ropeWrap", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 }
-            ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "weight", "axis": "Y", "mode": "sourceTimed", "travel": 23, "invert": true }
-            ] } },
-            { "name": "KineticStretch", "properties": { "stretches": [
-                { "element": "ropeDrop", "axis": "Y", "mode": "sourceTimed", "minScale": 0.343, "maxScale": 1, "pivot": { "x": 8, "y": 45, "z": 10.75 } }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -512,
+                    "axis": "Z"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 4,
+                    "volumeAt32RPM": 0.38,
+                    "pitchAt32RPM": 0.75,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "counterweightdrive",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "drum",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "ropeWrap",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "weight",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "travel": 23,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticStretch",
+                "properties": {
+                    "stretches": [
+                        {
+                            "element": "ropeDrop",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "minScale": 0.343,
+                            "maxScale": 1,
+                            "pivot": {
+                                "x": 8,
+                                "y": 45,
+                                "z": 10.75
+                            }
+                        }
+                    ]
+                }
+            }
         ],
         "*-w": [
-            { "name": "Kinetic", "properties": { "role": "Shaft", "stressImpact": -512, "axis": "X" } },
-            { "name": "KineticMultiblock" },
-            { "name": "KineticSource", "properties": { "targetRPM": 16, "alwaysActive": false } },
-            { "name": "KineticSound", "properties": { "sound": "sounds/effect/gearbox_turn.ogg", "minRPM": 4, "volumeAt32RPM": 0.38, "pitchAt32RPM": 0.75, "pitchScalesWithRPM": false, "dedupKey": "counterweightdrive", "maxSimultaneous": 2 } },
-            { "name": "KineticAnimator", "properties": { "rotators": [
-                { "element": "drum", "axis": "X", "ratio": 1 },
-                { "element": "ropeWrap", "axis": "X", "ratio": 1 },
-                { "element": "stubXpos", "axis": "X", "ratio": 1 },
-                { "element": "stubXneg", "axis": "X", "ratio": 1 }
-            ] } },
-            { "name": "KineticPiston", "properties": { "pistons": [
-                { "element": "weight", "axis": "Y", "mode": "sourceTimed", "travel": 23, "invert": true }
-            ] } },
-            { "name": "KineticStretch", "properties": { "stretches": [
-                { "element": "ropeDrop", "axis": "Y", "mode": "sourceTimed", "minScale": 0.343, "maxScale": 1, "pivot": { "x": 8, "y": 45, "z": 10.75 } }
-            ] } }
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Shaft",
+                    "stressImpact": -512,
+                    "axis": "X"
+                }
+            },
+            {
+                "name": "KineticMultiblock"
+            },
+            {
+                "name": "KineticSource",
+                "properties": {
+                    "targetRPM": 16,
+                    "alwaysActive": false
+                }
+            },
+            {
+                "name": "KineticSound",
+                "properties": {
+                    "sound": "sounds/effect/gearbox_turn.ogg",
+                    "minRPM": 4,
+                    "volumeAt32RPM": 0.38,
+                    "pitchAt32RPM": 0.75,
+                    "pitchScalesWithRPM": false,
+                    "dedupKey": "counterweightdrive",
+                    "maxSimultaneous": 2
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        {
+                            "element": "drum",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "ropeWrap",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXpos",
+                            "axis": "X",
+                            "ratio": 1
+                        },
+                        {
+                            "element": "stubXneg",
+                            "axis": "X",
+                            "ratio": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticPiston",
+                "properties": {
+                    "pistons": [
+                        {
+                            "element": "weight",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "travel": 23,
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "KineticStretch",
+                "properties": {
+                    "stretches": [
+                        {
+                            "element": "ropeDrop",
+                            "axis": "Y",
+                            "mode": "sourceTimed",
+                            "minScale": 0.343,
+                            "maxScale": 1,
+                            "pivot": {
+                                "x": 8,
+                                "y": 45,
+                                "z": 10.75
+                            }
+                        }
+                    ]
+                }
+            }
         ]
     },
-    "variantgroups": [{ "code": "side", "states": ["n", "e", "s", "w"] }],
+    "variantgroups": [
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
+        }
+    ],
     "behaviorsByType": {
         "*-n": [
             {
@@ -93,7 +403,11 @@
                     "sizex": 3,
                     "sizey": 3,
                     "sizez": 1,
-                    "cposition": { "x": 1, "y": 0, "z": 0 }
+                    "cposition": {
+                        "x": 1,
+                        "y": 0,
+                        "z": 0
+                    }
                 }
             }
         ],
@@ -104,7 +418,11 @@
                     "sizex": 1,
                     "sizey": 3,
                     "sizez": 3,
-                    "cposition": { "x": 0, "y": 0, "z": 1 }
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
                 }
             }
         ],
@@ -115,7 +433,11 @@
                     "sizex": 3,
                     "sizey": 3,
                     "sizez": 1,
-                    "cposition": { "x": 1, "y": 0, "z": 0 }
+                    "cposition": {
+                        "x": 1,
+                        "y": 0,
+                        "z": 0
+                    }
                 }
             }
         ],
@@ -126,33 +448,96 @@
                     "sizex": 1,
                     "sizey": 3,
                     "sizez": 3,
-                    "cposition": { "x": 0, "y": 0, "z": 1 }
+                    "cposition": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
                 }
             }
         ]
     },
     "shapeByType": {
-        "*-n": { "base": "block/counterweightdrive", "rotateY": 270 },
-        "*-e": { "base": "block/counterweightdrive", "rotateY": 180 },
-        "*-s": { "base": "block/counterweightdrive", "rotateY": 90 },
-        "*-w": { "base": "block/counterweightdrive", "rotateY": 0 }
+        "*-n": {
+            "base": "block/counterweightdrive",
+            "rotateY": 270
+        },
+        "*-e": {
+            "base": "block/counterweightdrive",
+            "rotateY": 180
+        },
+        "*-s": {
+            "base": "block/counterweightdrive",
+            "rotateY": 90
+        },
+        "*-w": {
+            "base": "block/counterweightdrive",
+            "rotateY": 0
+        }
     },
     "textures": {
-        "wood": { "base": "game:block/wood/planks/generic" },
-        "rope": { "base": "game:item/resource/rope" },
-        "stone": { "base": "game:block/stone/rock/granite1" },
-        "metal": { "base": "game:block/metal/ingot/iron" }
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "rope": {
+            "base": "game:item/resource/rope"
+        },
+        "stone": {
+            "base": "game:block/stone/rock/granite1"
+        },
+        "metal": {
+            "base": "game:block/metal/ingot/iron"
+        }
     },
     "guiTransform": {
-        "translation": { "x": 0, "y": 11, "z": 0 },
+        "translation": {
+            "x": 0,
+            "y": 11,
+            "z": 0
+        },
         "scale": 0.49
     },
     "blockmaterial": "Wood",
     "resistance": 2,
-    "creativeinventory": { "general": ["*-n"], "vintagekinematics": ["*-n"] },
+    "creativeinventory": {
+        "general": [
+            "*-n"
+        ],
+        "vintagekinematics": [
+            "*-n"
+        ]
+    },
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
 }

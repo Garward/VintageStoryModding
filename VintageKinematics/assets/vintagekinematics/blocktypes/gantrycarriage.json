@@ -5,14 +5,26 @@
     "variantgroups": [
         {
             "code": "axis",
-            "states": [ "x", "y", "z" ]
+            "states": [
+                "x",
+                "y",
+                "z"
+            ]
         },
         {
             "code": "side",
-            "states": [ "n", "e", "s", "w", "u" ]
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w",
+                "u"
+            ]
         }
     ],
-    "shape": { "base": "block/gantrycarriage" },
+    "shape": {
+        "base": "block/gantrycarriage"
+    },
     "shapeByType": {
         "gantrycarriage-x-u": {
             "base": "block/gantrycarriage"
@@ -42,22 +54,65 @@
         }
     },
     "textures": {
-        "wood": { "base": "game:block/wood/trunk/sides" },
-        "darkwood": { "base": "game:block/wood/trunk/lid" },
-        "metal": { "base": "game:block/metal/plate/iron" }
+        "wood": {
+            "base": "game:block/wood/trunk/sides"
+        },
+        "darkwood": {
+            "base": "game:block/wood/trunk/lid"
+        },
+        "metal": {
+            "base": "game:block/metal/plate/iron"
+        }
     },
     "attributes": {
-        "handbook": { "groupBy": [ "gantrycarriage" ] }
+        "handbook": {
+            "groupBy": [
+                "gantrycarriage"
+            ]
+        }
     },
     "blockmaterial": "Wood",
     "resistance": 4,
     "creativeinventory": {
-        "general": [ "*-x-u" ],
-        "vintagekinematics": [ "*-x-u" ]
+        "general": [
+            "*-x-u"
+        ],
+        "vintagekinematics": [
+            "*-x-u"
+        ]
     },
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "false" },
-    "collisionbox": { "x1": 0.06, "y1": 0, "z1": 0.06, "x2": 0.94, "y2": 0.94, "z2": 0.94 },
-    "selectionbox": { "x1": 0.06, "y1": 0, "z1": 0.06, "x2": 0.94, "y2": 0.94, "z2": 0.94 }
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0.06,
+        "y1": 0,
+        "z1": 0.06,
+        "x2": 0.94,
+        "y2": 0.94,
+        "z2": 0.94
+    },
+    "selectionbox": {
+        "x1": 0.06,
+        "y1": 0,
+        "z1": 0.06,
+        "x2": 0.94,
+        "y2": 0.94,
+        "z2": 0.94
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "axis": "x",
+                    "side": "u"
+                }
+            }
+        }
+    ]
 }

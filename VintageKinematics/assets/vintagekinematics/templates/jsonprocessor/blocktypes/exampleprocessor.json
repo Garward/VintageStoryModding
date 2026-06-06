@@ -20,7 +20,7 @@
                 { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
                 { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
             ],
-            "workSound": "sounds/block/woodchop.ogg",
+            "workSound": "survival:sounds/tool/groundcrafting/saw1",
             "workSoundVolume": 0.6
         }
     },

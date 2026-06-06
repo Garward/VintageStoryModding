@@ -1,53 +1,211 @@
 {
-  "code": "contraptiondrill",
-  "class": "BlockContraptionTool",
-  "variantgroups": [
-    { "code": "side", "states": [ "n", "e", "s", "w", "u", "d" ] }
-  ],
-  "shape": { "base": "block/contraptiondrill" },
-  "shapeByType": {
-    "*-n": { "base": "block/contraptiondrill", "rotateY": 0 },
-    "*-e": { "base": "block/contraptiondrill", "rotateY": 270 },
-    "*-s": { "base": "block/contraptiondrill", "rotateY": 180 },
-    "*-w": { "base": "block/contraptiondrill", "rotateY": 90 },
-    "*-u": { "base": "block/contraptiondrill", "rotateX": 90 },
-    "*-d": { "base": "block/contraptiondrill", "rotateX": 270 }
-  },
-  "textures": {
-    "wood": { "base": "game:block/wood/planks/generic" },
-    "iron": { "base": "game:block/metal/plate/iron" },
-    "dark": { "base": "game:block/coal/charcoal" },
-    "steel": { "base": "game:block/metal/plate/steel" }
-  },
-  "attributes": {
-    "handbook": { "groupBy": [ "contraptiondrill-*" ] },
-    "contraptionTool": "drill"
-  },
-  "blockmaterial": "Metal",
-  "resistance": 4,
-  "creativeinventory": {
-    "general": [ "*-n" ],
-    "vintagekinematics": [ "*-n" ]
-  },
-  "lightAbsorption": 0,
-  "sideopaque": { "all": "false" },
-  "sidesolid": { "all": "false" },
-  "collisionbox": { "x1": 0, "y1": 0, "z1": -0.4, "x2": 1, "y2": 1, "z2": 1 },
-  "collisionboxByType": {
-    "*-n": { "x1": 0, "y1": 0, "z1": -0.4, "x2": 1, "y2": 1, "z2": 1 },
-    "*-e": { "x1": 0, "y1": 0, "z1": 0, "x2": 1.4, "y2": 1, "z2": 1 },
-    "*-s": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1.4 },
-    "*-w": { "x1": -0.4, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-    "*-u": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1.4, "z2": 1 },
-    "*-d": { "x1": 0, "y1": -0.4, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
-  },
-  "selectionbox": { "x1": 0, "y1": 0, "z1": -0.4, "x2": 1, "y2": 1, "z2": 1 },
-  "selectionboxByType": {
-    "*-n": { "x1": 0, "y1": 0, "z1": -0.4, "x2": 1, "y2": 1, "z2": 1 },
-    "*-e": { "x1": 0, "y1": 0, "z1": 0, "x2": 1.4, "y2": 1, "z2": 1 },
-    "*-s": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1.4 },
-    "*-w": { "x1": -0.4, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-    "*-u": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1.4, "z2": 1 },
-    "*-d": { "x1": 0, "y1": -0.4, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
-  }
+    "code": "contraptiondrill",
+    "class": "BlockContraptionTool",
+    "variantgroups": [
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w",
+                "u",
+                "d"
+            ]
+        }
+    ],
+    "shape": {
+        "base": "block/contraptiondrill"
+    },
+    "shapeByType": {
+        "*-n": {
+            "base": "block/contraptiondrill",
+            "rotateY": 0
+        },
+        "*-e": {
+            "base": "block/contraptiondrill",
+            "rotateY": 270
+        },
+        "*-s": {
+            "base": "block/contraptiondrill",
+            "rotateY": 180
+        },
+        "*-w": {
+            "base": "block/contraptiondrill",
+            "rotateY": 90
+        },
+        "*-u": {
+            "base": "block/contraptiondrill",
+            "rotateX": 90
+        },
+        "*-d": {
+            "base": "block/contraptiondrill",
+            "rotateX": 270
+        }
+    },
+    "textures": {
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "iron": {
+            "base": "game:block/metal/plate/iron"
+        },
+        "dark": {
+            "base": "game:block/coal/charcoal"
+        },
+        "steel": {
+            "base": "game:block/metal/plate/steel"
+        }
+    },
+    "attributes": {
+        "handbook": {
+            "groupBy": [
+                "contraptiondrill-*"
+            ]
+        },
+        "contraptionTool": "drill"
+    },
+    "blockmaterial": "Metal",
+    "resistance": 4,
+    "creativeinventory": {
+        "general": [
+            "*-n"
+        ],
+        "vintagekinematics": [
+            "*-n"
+        ]
+    },
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": -0.4,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "collisionboxByType": {
+        "*-n": {
+            "x1": 0,
+            "y1": 0,
+            "z1": -0.4,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1
+        },
+        "*-e": {
+            "x1": 0,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1.4,
+            "y2": 1,
+            "z2": 1
+        },
+        "*-s": {
+            "x1": 0,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1.4
+        },
+        "*-w": {
+            "x1": -0.4,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1
+        },
+        "*-u": {
+            "x1": 0,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1.4,
+            "z2": 1
+        },
+        "*-d": {
+            "x1": 0,
+            "y1": -0.4,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1
+        }
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": -0.4,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "selectionboxByType": {
+        "*-n": {
+            "x1": 0,
+            "y1": 0,
+            "z1": -0.4,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1
+        },
+        "*-e": {
+            "x1": 0,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1.4,
+            "y2": 1,
+            "z2": 1
+        },
+        "*-s": {
+            "x1": 0,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1.4
+        },
+        "*-w": {
+            "x1": -0.4,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1
+        },
+        "*-u": {
+            "x1": 0,
+            "y1": 0,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1.4,
+            "z2": 1
+        },
+        "*-d": {
+            "x1": 0,
+            "y1": -0.4,
+            "z1": 0,
+            "x2": 1,
+            "y2": 1,
+            "z2": 1
+        }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
 }

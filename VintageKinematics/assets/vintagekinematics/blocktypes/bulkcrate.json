@@ -3,27 +3,64 @@
     "class": "BlockBulkCrate",
     "entityClass": "BulkCrate",
     "variantgroups": [
-        { "code": "side", "states": [ "n", "e", "s", "w" ] }
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w"
+            ]
+        }
     ],
     "shapeByType": {
-        "bulkcrate-s": { "base": "block/bulkcrate" },
-        "bulkcrate-w": { "base": "block/bulkcrate", "rotateY": 90 },
-        "bulkcrate-n": { "base": "block/bulkcrate", "rotateY": 180 },
-        "bulkcrate-e": { "base": "block/bulkcrate", "rotateY": 270 }
+        "bulkcrate-s": {
+            "base": "block/bulkcrate"
+        },
+        "bulkcrate-w": {
+            "base": "block/bulkcrate",
+            "rotateY": 90
+        },
+        "bulkcrate-n": {
+            "base": "block/bulkcrate",
+            "rotateY": 180
+        },
+        "bulkcrate-e": {
+            "base": "block/bulkcrate",
+            "rotateY": 270
+        }
     },
     "textures": {
-        "wood": { "base": "game:block/wood/planks/generic" },
-        "darkwood": { "base": "game:block/wood/oak-dark" },
-        "metal": { "base": "game:block/metal/plate/iron" },
-        "normal-generic-wood": { "base": "game:block/wood/planks/generic" },
-        "normal-generic-darkwood": { "base": "game:block/wood/oak-dark" },
-        "normal-generic-metal": { "base": "game:block/metal/plate/iron" }
+        "wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "darkwood": {
+            "base": "game:block/wood/oak-dark"
+        },
+        "metal": {
+            "base": "game:block/metal/plate/iron"
+        },
+        "normal-generic-wood": {
+            "base": "game:block/wood/planks/generic"
+        },
+        "normal-generic-darkwood": {
+            "base": "game:block/wood/oak-dark"
+        },
+        "normal-generic-metal": {
+            "base": "game:block/metal/plate/iron"
+        }
     },
     "attributes": {
-        "handbook": { "groupBy": [ "bulkcrate-*" ] },
+        "handbook": {
+            "groupBy": [
+                "bulkcrate-*"
+            ]
+        },
         "inventoryClassName": "vkbulkcrate",
         "defaultType": "normal-generic",
-        "types": [ "normal-generic" ],
+        "types": [
+            "normal-generic"
+        ],
         "quantitySlots": {
             "normal-generic": 64
         },
@@ -42,12 +79,44 @@
     "blockmaterial": "Metal",
     "resistance": 5,
     "creativeinventory": {
-        "general": [ "*-s" ],
-        "vintagekinematics": [ "*-s" ]
+        "general": [
+            "*-s"
+        ],
+        "vintagekinematics": [
+            "*-s"
+        ]
     },
     "lightAbsorption": 0,
-    "sideopaque": { "all": "false" },
-    "sidesolid": { "all": "true" },
-    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
-    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "true"
+    },
+    "collisionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "selectionbox": {
+        "x1": 0,
+        "y1": 0,
+        "z1": 0,
+        "x2": 1,
+        "y2": 1,
+        "z2": 1
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "s"
+                }
+            }
+        }
+    ]
 }

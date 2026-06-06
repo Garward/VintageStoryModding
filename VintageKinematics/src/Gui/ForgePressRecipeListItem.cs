@@ -9,7 +9,7 @@ using VintageKinematics.Crafting;
 
 namespace VintageKinematics.Gui
 {
-    internal class ForgePressRecipeListItem : IFlatListItem
+    internal class ForgePressRecipeListItem : IRecipeBrowserListItem
     {
         private readonly KineticForgePressRecipe recipe;
         private readonly DummySlot iconSlot;

@@ -2,6 +2,9 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Util;
+using System.IO;
+using System.Collections.Generic;
 using VintageKinematics.Api;
 using VintageKinematics.Crafting;
 using VintageKinematics.Gui;
@@ -19,9 +22,9 @@ namespace VintageKinematics.BlockEntities
         public const int InventorySize = 10;
 
         public const int PacketIdOpenDialog = 5400;
-        public const int PacketIdToggleMode = 5401;
+        public const int PacketIdSelectMode = 5402;
 
-        private static readonly AssetLocation SawSound = new AssetLocation("sounds/block/woodchop.ogg");
+        private static readonly AssetLocation SawSound = new AssetLocation("survival:sounds/tool/groundcrafting/saw1");
         private SawmillMode mode = SawmillMode.Plank;
 
         public BEKineticSawmill() : base("kineticsawmill", InventorySize, SlotInput, SlotOutputFirst, SlotOutputLast) { }
@@ -45,12 +48,53 @@ namespace VintageKinematics.BlockEntities
 
         protected override System.Collections.Generic.IEnumerable<ItemStack> GetOutputs(KineticSawmillRecipe recipe) => ResolvedOutputs(recipe?.Outputs);
 
+        protected override IEnumerable<ItemStack> GetOutputs(KineticSawmillRecipe recipe, ItemStack input)
+        {
+            if (recipe?.Outputs == null) yield break;
+
+            string captured = recipe.Ingredient?.Code == null || input?.Collectible?.Code == null
+                ? null
+                : WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, input.Collectible.Code);
+
+            foreach (JsonItemStack output in recipe.Outputs)
+            {
+                ItemStack stack = ResolveOutputStack(output, captured);
+                if (stack != null) yield return stack;
+            }
+        }
+
+        private ItemStack ResolveOutputStack(JsonItemStack output, string captured)
+        {
+            if (output?.Code == null) return null;
+
+            if (captured != null && output.Code.Path?.Contains('*') == true)
+            {
+                AssetLocation substituted = new AssetLocation(output.Code.Domain, output.Code.Path.Replace("*", captured));
+                ItemStack stack;
+                if (output.Type == EnumItemClass.Block)
+                {
+                    Block block = Api.World.GetBlock(substituted);
+                    stack = block == null || block.IsMissing ? null : new ItemStack(block);
+                }
+                else
+                {
+                    Item item = Api.World.GetItem(substituted);
+                    stack = item == null || item.IsMissing ? null : new ItemStack(item);
+                }
+
+                if (stack != null) stack.StackSize = System.Math.Max(1, output.StackSize);
+                return stack;
+            }
+
+            return output.ResolvedItemstack?.Clone();
+        }
+
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
-            if (packetid == PacketIdToggleMode)
+            if (packetid == PacketIdSelectMode)
             {
                 if (!CheckClaim(player)) return;
-                mode = NextMode(mode);
+                mode = ReadModePacket(data, mode);
                 MarkDirty(true);
                 return;
             }
@@ -59,7 +103,7 @@ namespace VintageKinematics.BlockEntities
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            return new GuiDialogKineticSawmill(title, MachineInventory, Pos, () => mode, OnClientToggleMode, capi);
+            return new GuiDialogKineticSawmill(title, MachineInventory, Pos, () => mode, OnClientSelectMode, capi);
         }
 
         protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog)
@@ -70,21 +114,34 @@ namespace VintageKinematics.BlockEntities
         protected override void WriteState(ITreeAttribute tree) => tree.SetInt("sawmillMode", (int)mode);
         protected override void ReadState(ITreeAttribute tree) => mode = (SawmillMode)tree.GetInt("sawmillMode", 0);
 
-        private void OnClientToggleMode()
+        private void OnClientSelectMode(SawmillMode selectedMode)
         {
-            mode = NextMode(mode);
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleMode);
+            mode = NormalizeMode(selectedMode);
+            using var ms = new MemoryStream();
+            using var bw = new BinaryWriter(ms);
+            bw.Write((int)mode);
+            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSelectMode, ms.ToArray());
             RefreshClientDialog();
         }
 
-        private static SawmillMode NextMode(SawmillMode m) => m switch
+        private static SawmillMode ReadModePacket(byte[] data, SawmillMode fallback)
         {
-            SawmillMode.Plank => SawmillMode.Shaft,
-            SawmillMode.Shaft => SawmillMode.Stick,
-            SawmillMode.Stick => SawmillMode.CogwheelSection,
-            SawmillMode.CogwheelSection => SawmillMode.Firewood,
-            _ => SawmillMode.Plank
-        };
+            try
+            {
+                using var ms = new MemoryStream(data ?? System.Array.Empty<byte>());
+                using var br = new BinaryReader(ms);
+                return NormalizeMode((SawmillMode)br.ReadInt32());
+            }
+            catch
+            {
+                return fallback;
+            }
+        }
+
+        private static SawmillMode NormalizeMode(SawmillMode selectedMode)
+        {
+            return System.Enum.IsDefined(typeof(SawmillMode), selectedMode) ? selectedMode : SawmillMode.Plank;
+        }
 
         private static BlockFacing InputLipFace(string side)
         {

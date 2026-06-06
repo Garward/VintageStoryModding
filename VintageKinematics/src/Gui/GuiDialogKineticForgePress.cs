@@ -17,21 +17,16 @@ namespace VintageKinematics.Gui
         private readonly Func<float> getProgressMax;
         private readonly Func<bool> getCanProgress;
         private readonly Action<string> onSelectOperation;
-        private bool recipeBrowserOpen;
+        private readonly MachineRecipeBrowser<ForgePressRecipeListItem> recipeBrowser;
         private bool draggingDialog;
         private Vec2i dragStartMouse;
         private Vec2i dragStartDialog;
-        private string recipeSearchText = "";
         private float drawnProgress = -1f;
         private float drawnProgressMax = -1f;
         private bool drawnProgressActive;
         private long lastProgressRedrawMs;
-        private List<ForgePressRecipeListItem> recipeListItems = new List<ForgePressRecipeListItem>();
         private const string OperationButtonKey = "forgepress-recipes";
         private const string ProgressBarKey = "forgepress-progress";
-        private const string RecipeSearchKey = "forgepress-recipe-search";
-        private const string RecipeListKey = "forgepress-recipe-list";
-        private const string RecipeScrollbarKey = "forgepress-recipe-scrollbar";
         private const double BrowserWidth = 560.0;
         private const double BrowserListHeight = 292.0;
         private const int RecipeListCellHeight = 64;
@@ -57,6 +52,16 @@ namespace VintageKinematics.Gui
             this.getProgressMax = getProgressMax;
             this.getCanProgress = getCanProgress;
             this.onSelectOperation = onSelectOperation;
+            recipeBrowser = new MachineRecipeBrowser<ForgePressRecipeListItem>(
+                "forgepress-recipe",
+                "vintagekinematics:kineticforgepress-recipes",
+                "vintagekinematics:kineticforgepress-search-recipes",
+                BuildRecipeListItems,
+                item => this.onSelectOperation?.Invoke(item.Recipe.OperationCode),
+                () => SingleComposer,
+                BrowserWidth,
+                BrowserListHeight,
+                RecipeListCellHeight);
             if (IsDuplicate) return;
             ComposeDialog(title);
         }
@@ -93,12 +98,7 @@ namespace VintageKinematics.Gui
             ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
 
             double browserX = slotPad + rowWidth + 24.0;
-            ElementBounds browserTitleBounds = ElementBounds.Fixed(browserX, slotPad + topOffset, BrowserWidth, 22.0);
-            ElementBounds browserSearchBounds = ElementBounds.Fixed(browserX, slotPad + topOffset + 26.0, BrowserWidth - 26.0, 28.0);
-            ElementBounds browserListBounds = ElementBounds.Fixed(browserX, slotPad + topOffset + 64.0, BrowserWidth - 28.0, BrowserListHeight);
-            ElementBounds browserClipBounds = browserListBounds.ForkBoundingParent();
-            ElementBounds browserInsetBounds = browserListBounds.FlatCopy().FixedGrow(6.0).WithFixedOffset(-3.0, -3.0);
-            ElementBounds browserScrollbarBounds = browserInsetBounds.CopyOffsetedSibling(browserListBounds.fixedWidth + 7.0).WithFixedWidth(20.0);
+            recipeBrowser.SetBounds(browserX, slotPad + topOffset);
 
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
@@ -116,18 +116,11 @@ namespace VintageKinematics.Gui
                 outputLabelBounds,
                 outputSlotsBounds
             };
-            if (recipeBrowserOpen)
-            {
-                childBounds.Add(browserTitleBounds);
-                childBounds.Add(browserSearchBounds);
-                childBounds.Add(browserInsetBounds);
-                childBounds.Add(browserClipBounds);
-                childBounds.Add(browserScrollbarBounds);
-            }
+            recipeBrowser.AddBounds(childBounds);
             bgBounds.WithChildren(childBounds.ToArray());
 
             string dialogName = "kineticforgepress-" + BlockEntityPosition;
-            EnsureMovableDialogPosition(dialogName, rowWidth + (recipeBrowserOpen ? BrowserWidth + 32.0 : 0.0), outputSlotsBounds.fixedY + outputSlotsBounds.fixedHeight + 40.0);
+            EnsureMovableDialogPosition(dialogName, rowWidth + (recipeBrowser.IsOpen ? recipeBrowser.Width + 32.0 : 0.0), outputSlotsBounds.fixedY + outputSlotsBounds.fixedHeight + 40.0);
 
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog
                 .WithAlignment(EnumDialogArea.RightMiddle)
@@ -152,19 +145,7 @@ namespace VintageKinematics.Gui
                     .AddSmallButton(GetOperationButtonLabel(operationNames, selectedIndex), OnToggleRecipeBrowser, operationButtonBounds, EnumButtonStyle.Normal, OperationButtonKey)
                     .AddDynamicCustomDraw(progressBounds, OnDrawProgressBar, ProgressBarKey);
 
-            if (recipeBrowserOpen)
-            {
-                recipeListItems = BuildRecipeListItems();
-                composer
-                    .AddStaticText(Lang.Get("vintagekinematics:kineticforgepress-recipes"), CairoFont.WhiteSmallText(), browserTitleBounds)
-                    .AddTextInput(browserSearchBounds, OnRecipeSearchChanged, CairoFont.WhiteSmallishText(), RecipeSearchKey)
-                    .BeginClip(browserClipBounds)
-                        .AddInset(browserInsetBounds, 3)
-                        .AddFlatList(browserListBounds, OnRecipeListClicked, AsFlatListItems(recipeListItems), RecipeListKey)
-                    .EndClip()
-                    .AddVerticalScrollbar(OnRecipeScrollbarValue, browserScrollbarBounds, RecipeScrollbarKey);
-                ConfigureRecipeListHeight(composer.GetFlatList(RecipeListKey));
-            }
+            composer = recipeBrowser.AddToComposer(composer);
 
             GuiComposer oldComposer = SingleComposer;
             SingleComposer = composer
@@ -175,13 +156,7 @@ namespace VintageKinematics.Gui
             oldComposer?.Dispose();
             RefreshProgressBar(true);
 
-            if (recipeBrowserOpen)
-            {
-                GuiElementTextInput searchInput = SingleComposer.GetTextInput(RecipeSearchKey);
-                searchInput.SetPlaceHolderText(Lang.Get("vintagekinematics:kineticforgepress-search-recipes"));
-                if (!string.IsNullOrEmpty(recipeSearchText)) searchInput.SetValue(recipeSearchText, false);
-                RefreshRecipeScrollbar();
-            }
+            recipeBrowser.AfterCompose(SingleComposer);
         }
 
         private void GetOperationOptions(out string[] operationCodes, out string[] operationNames, out int selectedIndex)
@@ -215,29 +190,13 @@ namespace VintageKinematics.Gui
 
         private bool OnToggleRecipeBrowser()
         {
-            recipeBrowserOpen = !recipeBrowserOpen;
-            ComposeDialog(DialogTitle);
-            return true;
+            return recipeBrowser.Toggle(() => ComposeDialog(DialogTitle));
         }
 
-        private void OnRecipeSearchChanged(string text)
+        public override void Dispose()
         {
-            recipeSearchText = text ?? "";
-            if (!recipeBrowserOpen || SingleComposer == null) return;
-
-            DisposeRecipeItems(recipeListItems);
-            recipeListItems = BuildRecipeListItems();
-            GuiElementFlatList list = SingleComposer.GetFlatList(RecipeListKey);
-            list.Elements = new List<IFlatListItem>(recipeListItems);
-            ConfigureRecipeListHeight(list);
-            list.CalcTotalHeight();
-            RefreshRecipeScrollbar();
-        }
-
-        private void OnRecipeListClicked(int index)
-        {
-            if (index < 0 || index >= recipeListItems.Count) return;
-            onSelectOperation?.Invoke(recipeListItems[index].Recipe.OperationCode);
+            recipeBrowser?.Dispose();
+            base.Dispose();
         }
 
         public override void OnMouseDown(MouseEvent args)
@@ -275,31 +234,6 @@ namespace VintageKinematics.Gui
             base.OnMouseUp(args);
         }
 
-        private void OnRecipeScrollbarValue(float value)
-        {
-            GuiElementFlatList list = SingleComposer?.GetFlatList(RecipeListKey);
-            if (list == null) return;
-            list.insideBounds.fixedY = -value;
-            list.insideBounds.CalcWorldBounds();
-        }
-
-        private void RefreshRecipeScrollbar()
-        {
-            GuiElementFlatList list = SingleComposer?.GetFlatList(RecipeListKey);
-            GuiElementScrollbar scrollbar = SingleComposer?.GetScrollbar(RecipeScrollbarKey);
-            if (list == null || scrollbar == null) return;
-
-            scrollbar.SetHeights((float)BrowserListHeight, (float)list.insideBounds.fixedHeight);
-            scrollbar.CurrentYPosition = 0f;
-            OnRecipeScrollbarValue(0f);
-        }
-
-        private static void ConfigureRecipeListHeight(GuiElementFlatList list)
-        {
-            if (list == null) return;
-            list.unscaledCellHeight = RecipeListCellHeight;
-        }
-
         private List<ForgePressRecipeListItem> BuildRecipeListItems()
         {
             var registry = capi.ModLoader.GetModSystem<KineticForgePressRecipeRegistry>();
@@ -308,44 +242,10 @@ namespace VintageKinematics.Gui
 
             foreach (KineticForgePressRecipe recipe in registry.Recipes)
             {
-                var item = new ForgePressRecipeListItem(recipe);
-                if (item.SearchScore(recipeSearchText) < int.MaxValue)
-                {
-                    items.Add(item);
-                }
-                else
-                {
-                    item.Dispose();
-                }
+                items.Add(new ForgePressRecipeListItem(recipe));
             }
-
-            items.Sort((left, right) =>
-            {
-                int scoreCompare = left.SearchScore(recipeSearchText).CompareTo(right.SearchScore(recipeSearchText));
-                if (scoreCompare != 0) return scoreCompare;
-                return string.Compare(left.SortTitle, right.SortTitle, StringComparison.OrdinalIgnoreCase);
-            });
 
             return items;
-        }
-
-        private static List<IFlatListItem> AsFlatListItems(List<ForgePressRecipeListItem> items)
-        {
-            var flatItems = new List<IFlatListItem>(items.Count);
-            for (int i = 0; i < items.Count; i++)
-            {
-                flatItems.Add(items[i]);
-            }
-            return flatItems;
-        }
-
-        private static void DisposeRecipeItems(List<ForgePressRecipeListItem> items)
-        {
-            if (items == null) return;
-            for (int i = 0; i < items.Count; i++)
-            {
-                items[i]?.Dispose();
-            }
         }
 
         private void EnsureMovableDialogPosition(string dialogName, double contentWidth, double contentHeight)

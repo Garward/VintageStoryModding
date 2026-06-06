@@ -1,0 +1,9 @@
+{
+    "ingredient": { "type": "block", "code": "game:log-placed-*-*", "quantity": 1 },
+    "outputs": [
+        { "type": "item", "code": "game:plank-*", "quantity": 16 },
+        { "type": "item", "code": "sawdust", "quantity": 2 }
+    ],
+    "sawTicks": 4,
+    "mode": "Plank"
+}

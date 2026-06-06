@@ -1,0 +1,15 @@
+{
+    "machine": "exampleprocessor",
+    "ingredient": {
+        "type": "item",
+        "code": "game:stick",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "block",
+            "code": "vintagekinematics:handcrank-y",
+            "quantity": 1
+        }
+    ]
+}

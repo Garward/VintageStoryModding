@@ -1,0 +1,15 @@
+{
+    "machine": "kineticcharcoalretort",
+    "ingredient": {
+        "type": "item",
+        "code": "game:firewood",
+        "quantity": 1
+    },
+    "outputs": [
+        {
+            "type": "item",
+            "code": "game:charcoal",
+            "quantity": 1
+        }
+    ]
+}

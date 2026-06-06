@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -7,12 +8,13 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
+using VintageKinematics.Crafting;
 using VintageKinematics.Network;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEKineticCharcoalRetort : BEKineticItemProcessorBase<ItemStack>, IKineticWorkRateModifier
+    public class BEKineticCharcoalRetort : BEKineticItemProcessorBase<KineticProcessRecipe>, IKineticWorkRateModifier
     {
         public const int SlotInputFirst = 0;
         public const int SlotInputLast = 63;
@@ -89,14 +91,16 @@ namespace VintageKinematics.BlockEntities
             return map;
         }
 
-        protected override ItemStack FindRecipe(ItemStack input)
+        protected override KineticProcessRecipe FindRecipe(ItemStack input)
         {
-            return null;
+            return Api.ModLoader.GetModSystem<KineticProcessRecipeRegistry>()?.FindRecipe("kineticcharcoalretort", input);
         }
 
-        protected override System.Collections.Generic.IEnumerable<ItemStack> GetOutputs(ItemStack recipe)
+        protected override int InputQuantityPerCycle(KineticProcessRecipe recipe, ItemStack input) => recipe?.InputQuantity ?? 1;
+
+        protected override IEnumerable<ItemStack> GetOutputs(KineticProcessRecipe recipe)
         {
-            yield break;
+            return ResolvedOutputs(recipe?.Outputs);
         }
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
@@ -120,13 +124,26 @@ namespace VintageKinematics.BlockEntities
             ItemSlot input = FindInputSlot();
             if (input == null) return;
 
-            ItemStack output = CharcoalStack();
-            if (output == null) return;
-            if (!CanDepositOutput(output)) return;
+            KineticProcessRecipe recipe = FindRecipe(input.Itemstack);
+            if (recipe == null) return;
+            int quantity = InputQuantityPerCycle(recipe, input.Itemstack);
+            if (quantity <= 0 || input.Itemstack.StackSize < quantity) return;
 
-            input.TakeOut(1);
+            List<ItemStack> outputs = new List<ItemStack>();
+            foreach (ItemStack output in GetOutputs(recipe))
+            {
+                if (output == null || output.StackSize <= 0) continue;
+                if (!CanDepositOutput(output)) return;
+                outputs.Add(output);
+            }
+            if (outputs.Count == 0) return;
+
+            input.TakeOut(quantity);
             input.MarkDirty();
-            DepositOutput(output);
+            for (int i = 0; i < outputs.Count; i++)
+            {
+                DepositOutput(outputs[i]);
+            }
             MarkDirty(true);
         }
 
@@ -181,7 +198,7 @@ namespace VintageKinematics.BlockEntities
             {
                 ItemSlot slot = MachineInventory[i];
                 if (slot.Empty) continue;
-                if (IsFirewood(slot.Itemstack)) return slot;
+                if (FindRecipe(slot.Itemstack) != null) return slot;
             }
             return null;
         }
@@ -221,7 +238,7 @@ namespace VintageKinematics.BlockEntities
 
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
         {
-            return HandleCrateStyleRightClick(byPlayer, crateInput: true, crateOutput: true, inputFilter: IsFirewood);
+            return HandleCrateStyleRightClick(byPlayer, crateInput: true, crateOutput: true, inputFilter: stack => FindRecipe(stack) != null);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, System.Text.StringBuilder dsc)
