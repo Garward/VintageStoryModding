@@ -12,7 +12,7 @@ namespace VintageKinematics.Rendering
         public CrusherBasinItemRenderer(ICoreClientAPI capi, BlockPos pos)
             : base(capi, pos, new ItemStackDisplayTransform
             {
-                Translation = new Vec3f(0.5f, 4f / 16f, 0.5f),
+                Translation = new Vec3f(0.25f, 4f / 16f, 0.25f),
                 Scale = new Vec3f(0.5f, 0.5f, 0.5f)
             })
         {

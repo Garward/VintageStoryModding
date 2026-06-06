@@ -165,7 +165,7 @@ the top block is decorative geometry. Add `KineticPiston` or
       "title": "Handle Lathe",
       "inputSlots": 1,
       "outputSlots": 1,
-      "progressBar": { "enabled": true, "placement": "betweenInputOutput", "width": 144 },
+      "progressBar": { "enabled": true, "placement": "betweenInputOutput", "width": 144, "align": "center" },
       "ioScope": "multiblock",
       "io": [
         { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
@@ -240,9 +240,10 @@ Important fields:
   outputs, and ctrl does the bulk version. You can also set
   `inputStorageStyle` or `outputStorageStyle` separately.
 - `progressBar` controls the GUI work bar. Use
-  `{ "enabled": true, "placement": "betweenInputOutput", "width": 144 }` for
+  `{ "enabled": true, "placement": "betweenInputOutput", "width": 144, "align": "center" }` for
   a compact centered bar between the input and output areas. The old
-  `showProgressBar` boolean is still supported as a shortcut.
+  `showProgressBar` boolean is still supported as a shortcut. `align` can be
+  `left` or `center`.
 - `KineticWorker.workPerCycle` is the recipe cost in RPM-seconds.
 - `KineticAnimator` and `KineticPiston` can be added directly in JSON for
   moving parts.

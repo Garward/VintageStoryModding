@@ -24,7 +24,8 @@
             "progressBar": {
                 "enabled": true,
                 "placement": "betweenInputOutput",
-                "width": 144
+                "width": 144,
+                "align": "center"
             },
             "ioScope": "multiblock",
             "io": [

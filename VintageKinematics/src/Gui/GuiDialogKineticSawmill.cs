@@ -63,7 +63,8 @@ namespace VintageKinematics.Gui
 
             ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, rowWidth, 22.0);
             ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + topOffset + 24.0, 1, 1);
-            ElementBounds progressBounds = ElementBounds.Fixed(slotPad, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, rowWidth, 18.0);
+            double progressBarWidth = Math.Min(rowWidth, 144.0);
+            ElementBounds progressBounds = ElementBounds.Fixed(slotPad, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, progressBarWidth, 18.0);
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, progressBounds.fixedY + progressBounds.fixedHeight + 10.0, rowWidth, 22.0);
             ElementBounds outputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
             ElementBounds recipeButtonBounds = ElementBounds.Fixed(slotPad, outputBounds.fixedY + outputBounds.fixedHeight + 12.0, rowWidth, 28.0);

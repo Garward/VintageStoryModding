@@ -1,6 +1,6 @@
 {
     "code": "crusherbasin",
-    "class": "BlockCrusherBasin",
+    "class": "BlockKineticOpenableMachine",
     "entityClass": "CrusherBasin",
     "variantgroups": [
         {

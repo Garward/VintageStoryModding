@@ -37,6 +37,7 @@ namespace VintageKinematics.BlockEntities
         private JsonObject ProgressBarAttr => ProcessorAttr?["progressBar"];
         private bool ShowProgressBar => ProgressBarAttr?["enabled"].AsBool(ProcessorAttr?["showProgressBar"].AsBool(true) ?? true) ?? ProcessorAttr?["showProgressBar"].AsBool(true) ?? true;
         private double ProgressBarWidth => ProgressBarAttr?["width"].AsDouble(144.0) ?? 144.0;
+        private string ProgressBarAlign => ProgressBarAttr?["align"].AsString("center") ?? "center";
         private bool CrateInput => IsCrateStyle(ProcessorAttr?["inputStorageStyle"].AsString(ProcessorAttr?["storageStyle"].AsString("slots")));
         private bool CrateOutput => IsCrateStyle(ProcessorAttr?["outputStorageStyle"].AsString(ProcessorAttr?["storageStyle"].AsString("slots")));
 
@@ -98,6 +99,7 @@ namespace VintageKinematics.BlockEntities
                 ActiveOutputLast,
                 ShowProgressBar,
                 ProgressBarWidth,
+                ProgressBarAlign,
                 CurrentWorkerProgress,
                 CurrentWorkerProgressMax,
                 CanProgressCurrentRecipe,

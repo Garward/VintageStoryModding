@@ -169,6 +169,26 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
+        private BEBehaviorCrusherProcess CrusherProcess()
+        {
+            return Api?.World?.BlockAccessor.GetBlockEntity(Pos.UpCopy())?.GetBehavior<BEBehaviorCrusherProcess>();
+        }
+
+        private float CurrentCrushProgress()
+        {
+            return CrusherProcess()?.CurrentCrushProgress ?? 0f;
+        }
+
+        private float CurrentCrushProgressMax()
+        {
+            return CrusherProcess()?.CurrentCrushProgressMax ?? 1f;
+        }
+
+        private bool CanCrushCurrentInput()
+        {
+            return CrusherProcess()?.CanProcessCurrentBasin() == true;
+        }
+
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
             if (packetid == 1001)
@@ -210,7 +230,7 @@ namespace VintageKinematics.BlockEntities
 
             if (clientDialog == null)
             {
-                clientDialog = new GuiDialogCrusherBasin(title, inventory, Pos, capi);
+                clientDialog = new GuiDialogCrusherBasin(title, inventory, Pos, CurrentCrushProgress, CurrentCrushProgressMax, CanCrushCurrentInput, capi);
                 clientDialog.OnClosed += () => clientDialog = null;
                 clientDialog.TryOpen();
             }

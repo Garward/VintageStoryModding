@@ -14,6 +14,7 @@ namespace VintageKinematics.Gui
         private readonly int outputLast;
         private readonly bool showProgressBar;
         private readonly double progressBarWidth;
+        private readonly string progressBarAlign;
         private readonly MachineProgressBar progressBar;
 
         public override double DrawOrder => 0.2;
@@ -28,6 +29,7 @@ namespace VintageKinematics.Gui
             int outputLast,
             bool showProgressBar,
             double progressBarWidth,
+            string progressBarAlign,
             Func<float> getProgress,
             Func<float> getProgressMax,
             Func<bool> getCanProgress,
@@ -40,6 +42,7 @@ namespace VintageKinematics.Gui
             this.outputLast = outputLast;
             this.showProgressBar = showProgressBar;
             this.progressBarWidth = progressBarWidth;
+            this.progressBarAlign = progressBarAlign;
             progressBar = new MachineProgressBar(capi, "jsonprocessor-progress", getProgress, getProgressMax, getCanProgress);
             if (IsDuplicate) return;
             ComposeDialog(title);
@@ -67,7 +70,7 @@ namespace VintageKinematics.Gui
             ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, rowWidth, 22.0);
             ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + topOffset + 24.0, inputColumns, inputRows);
             double barWidth = Math.Min(rowWidth, Math.Max(48.0, progressBarWidth));
-            double barX = slotPad + (rowWidth - barWidth) / 2.0;
+            double barX = ProgressBarX(slotPad, rowWidth, barWidth, progressBarAlign);
             ElementBounds progressBounds = ElementBounds.Fixed(barX, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, barWidth, 18.0);
             double outputLabelY = showProgressBar ? progressBounds.fixedY + progressBounds.fixedHeight + 10.0 : inputBounds.fixedY + inputBounds.fixedHeight + 8.0;
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, outputLabelY, rowWidth, 22.0);
@@ -116,6 +119,11 @@ namespace VintageKinematics.Gui
             int[] slots = new int[last - first + 1];
             for (int i = 0; i < slots.Length; i++) slots[i] = first + i;
             return slots;
+        }
+
+        private static double ProgressBarX(double left, double rowWidth, double barWidth, string align)
+        {
+            return align == "left" ? left : left + (rowWidth - barWidth) / 2.0;
         }
     }
 }

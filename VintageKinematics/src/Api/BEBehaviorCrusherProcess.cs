@@ -24,6 +24,26 @@ namespace VintageKinematics.Api
 
         public BEBehaviorCrusherProcess(BlockEntity be) : base(be) { }
 
+        public float CurrentCrushProgress => Math.Max(0, crushTicksAccumulated);
+
+        public float CurrentCrushProgressMax
+        {
+            get
+            {
+                return TryResolveCurrentWork(out _, out _, out _, out _, out _, out int effectiveTicks)
+                    ? Math.Max(1, effectiveTicks)
+                    : 1;
+            }
+        }
+
+        public bool CanProcessCurrentBasin()
+        {
+            if (!TryResolveCurrentWork(out _, out _, out _, out _, out _, out _)) return false;
+
+            var kin = Blockentity.GetBehavior<BEBehaviorKinetic>();
+            return kin != null && MathF.Abs(kin.ActualRPM) >= 0.01f;
+        }
+
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
@@ -47,17 +67,33 @@ namespace VintageKinematics.Api
 
             BlockPos basinPos = Pos.DownCopy();
             BECrusherBasin basin = Api.World.BlockAccessor.GetBlockEntity(basinPos) as BECrusherBasin;
-            if (basin == null) return;
+            if (basin == null)
+            {
+                ResetProgressIfNeeded();
+                return;
+            }
 
             ItemSlot inputSlot = basin.Inventory[BECrusherBasin.SlotInput];
-            if (inputSlot.Empty) return;
+            if (inputSlot.Empty)
+            {
+                ResetProgressIfNeeded();
+                return;
+            }
 
             var recipe = GetUsableCustomRecipe(inputSlot.Itemstack);
             CrushingProperties vanillaProps = recipe == null ? GetUsableVanillaCrushingProps(inputSlot.Itemstack) : null;
-            if (recipe == null && vanillaProps == null) return;
+            if (recipe == null && vanillaProps == null)
+            {
+                ResetProgressIfNeeded();
+                return;
+            }
 
             int requiredQty = recipe == null ? 1 : Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
-            if (inputSlot.StackSize < requiredQty) return;
+            if (inputSlot.StackSize < requiredQty)
+            {
+                ResetProgressIfNeeded();
+                return;
+            }
 
             if (Api.Side == EnumAppSide.Client)
             {
@@ -84,6 +120,46 @@ namespace VintageKinematics.Api
                 crushTicksAccumulated = 0;
                 if (inputSlot.Empty) crushingItemCode = null;
             }
+
+            Blockentity.MarkDirty(true);
+        }
+
+        private bool TryResolveCurrentWork(
+            out BECrusherBasin basin,
+            out ItemSlot inputSlot,
+            out KineticCrusherRecipe recipe,
+            out CrushingProperties vanillaProps,
+            out int requiredQty,
+            out int effectiveTicks)
+        {
+            basin = Api?.World?.BlockAccessor.GetBlockEntity(Pos.DownCopy()) as BECrusherBasin;
+            inputSlot = basin?.Inventory?[BECrusherBasin.SlotInput];
+            recipe = null;
+            vanillaProps = null;
+            requiredQty = 0;
+            effectiveTicks = 1;
+
+            if (inputSlot == null || inputSlot.Empty) return false;
+
+            recipe = GetUsableCustomRecipe(inputSlot.Itemstack);
+            vanillaProps = recipe == null ? GetUsableVanillaCrushingProps(inputSlot.Itemstack) : null;
+            if (recipe == null && vanillaProps == null) return false;
+
+            requiredQty = recipe == null ? 1 : Math.Max(1, recipe.Ingredient?.StackSize ?? 1);
+            if (inputSlot.StackSize < requiredQty) return false;
+
+            int baseCrushTicks = recipe?.CrushTicks ?? DefaultVanillaCrushTicks;
+            effectiveTicks = (int)Math.Ceiling(baseCrushTicks * crushTickMultiplier);
+            if (effectiveTicks < 1) effectiveTicks = 1;
+            return true;
+        }
+
+        private void ResetProgressIfNeeded()
+        {
+            if (crushTicksAccumulated == 0 && crushingItemCode == null) return;
+            crushTicksAccumulated = 0;
+            crushingItemCode = null;
+            if (Api?.Side == EnumAppSide.Server) Blockentity.MarkDirty(true);
         }
 
         private void CompleteCustomRecipe(ItemSlot inputSlot, BECrusherBasin basin, KineticCrusherRecipe recipe, int requiredQty)

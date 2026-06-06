@@ -21,8 +21,9 @@ Default behavior:
   inputs and 64-127 for outputs so larger machines can expose bigger buffers with JSON.
 - Set vkProcessor.inputSlots and vkProcessor.outputSlots to change the visible/active buffer.
 - Set vkProcessor.progressBar to control the GUI work bar. The template uses
-  { "enabled": true, "placement": "betweenInputOutput", "width": 144 } for a compact
-  centered bar between input and output. The older showProgressBar boolean still works.
+  { "enabled": true, "placement": "betweenInputOutput", "width": 144, "align": "center" }
+  for a compact centered bar between input and output. align can be "left" or "center".
+  The older showProgressBar boolean still works.
 - Storage interaction defaults to regular GUI slots. Set vkProcessor.storageStyle to "crate"
   for crate-style shift/right-click input and right-click output. You can also set
   inputStorageStyle or outputStorageStyle separately.

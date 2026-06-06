@@ -13,7 +13,7 @@
             "title": "Example Processor",
             "inputSlots": 1,
             "outputSlots": 9,
-            "progressBar": { "enabled": true, "placement": "betweenInputOutput", "width": 144 },
+            "progressBar": { "enabled": true, "placement": "betweenInputOutput", "width": 144, "align": "center" },
             "ioScope": "multiblock",
             "io": [
                 { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },

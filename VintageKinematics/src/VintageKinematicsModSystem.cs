@@ -119,6 +119,7 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticSieve", typeof(Blocks.BlockKineticSieve));
             api.RegisterBlockClass("BlockPrimitiveSieve", typeof(Blocks.BlockPrimitiveSieve));
             api.RegisterBlockClass("BlockKineticSawmill", typeof(Blocks.BlockKineticSawmill));
+            api.RegisterBlockClass("BlockKineticOpenableMachine", typeof(Blocks.BlockKineticOpenableMachine));
             api.RegisterBlockClass("BlockKineticJsonProcessor", typeof(Blocks.BlockKineticJsonProcessor));
             api.RegisterBlockClass("BlockKineticPress", typeof(Blocks.BlockKineticPress));
             api.RegisterBlockClass("BlockKineticExtractor", typeof(Blocks.BlockKineticPress));
