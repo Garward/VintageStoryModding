@@ -2,6 +2,48 @@
     "code": "crusherbasin",
     "class": "BlockKineticOpenableMachine",
     "entityClass": "CrusherBasin",
+    "attributes": {
+        "vkExternalProcessor": {
+            "titleLangCode": "vintagekinematics:basin-title",
+            "title": "Crusher Basin",
+            "inputColumns": 1,
+            "outputColumns": 3,
+            "inputLabelLangCode": "vintagekinematics:basin-input",
+            "outputLabelLangCode": "vintagekinematics:basin-outputs",
+            "dialogKey": "crusherbasin",
+            "progressBar": {
+                "enabled": true,
+                "width": 144,
+                "align": "left"
+            },
+            "progressSource": {
+                "offset": [0, 1, 0],
+                "behavior": "CrusherProcess"
+            },
+            "io": [
+                {
+                    "type": "input",
+                    "face": "left",
+                    "slots": "inputs"
+                },
+                {
+                    "type": "input",
+                    "face": "up",
+                    "slots": "inputs"
+                },
+                {
+                    "type": "output",
+                    "face": "right",
+                    "slots": "outputs"
+                },
+                {
+                    "type": "output",
+                    "face": "down",
+                    "slots": "outputs"
+                }
+            ]
+        }
+    },
     "variantgroups": [
         {
             "code": "side",

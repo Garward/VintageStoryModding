@@ -15,6 +15,11 @@ namespace VintageKinematics.Gui
         private readonly bool showProgressBar;
         private readonly double progressBarWidth;
         private readonly string progressBarAlign;
+        private readonly int inputColumnsOverride;
+        private readonly int outputColumnsOverride;
+        private readonly string inputLabelLangCode;
+        private readonly string outputLabelLangCode;
+        private readonly string dialogKeyPrefix;
         private readonly MachineProgressBar progressBar;
 
         public override double DrawOrder => 0.2;
@@ -33,7 +38,12 @@ namespace VintageKinematics.Gui
             Func<float> getProgress,
             Func<float> getProgressMax,
             Func<bool> getCanProgress,
-            ICoreClientAPI capi)
+            ICoreClientAPI capi,
+            int inputColumnsOverride = 0,
+            int outputColumnsOverride = 0,
+            string inputLabelLangCode = null,
+            string outputLabelLangCode = null,
+            string dialogKeyPrefix = "kineticjsonprocessor")
             : base(title, inv, pos, capi)
         {
             this.inputFirst = inputFirst;
@@ -43,7 +53,12 @@ namespace VintageKinematics.Gui
             this.showProgressBar = showProgressBar;
             this.progressBarWidth = progressBarWidth;
             this.progressBarAlign = progressBarAlign;
-            progressBar = new MachineProgressBar(capi, "jsonprocessor-progress", getProgress, getProgressMax, getCanProgress);
+            this.inputColumnsOverride = inputColumnsOverride;
+            this.outputColumnsOverride = outputColumnsOverride;
+            this.inputLabelLangCode = inputLabelLangCode ?? "vintagekinematics:jsonprocessor-input";
+            this.outputLabelLangCode = outputLabelLangCode ?? "vintagekinematics:jsonprocessor-outputs";
+            this.dialogKeyPrefix = dialogKeyPrefix ?? "kineticjsonprocessor";
+            progressBar = new MachineProgressBar(capi, this.dialogKeyPrefix + "-progress", getProgress, getProgressMax, getCanProgress);
             if (IsDuplicate) return;
             ComposeDialog(title);
         }
@@ -60,8 +75,8 @@ namespace VintageKinematics.Gui
             double slotSize = GuiElementPassiveItemSlot.unscaledSlotSize;
             int inputCount = inputLast - inputFirst + 1;
             int outputCount = outputLast - outputFirst + 1;
-            int inputColumns = Math.Min(Math.Max(inputCount, 1), 8);
-            int outputColumns = Math.Min(Math.Max(outputCount, 1), 8);
+            int inputColumns = inputColumnsOverride > 0 ? Math.Min(inputColumnsOverride, inputCount) : Math.Min(Math.Max(inputCount, 1), 8);
+            int outputColumns = outputColumnsOverride > 0 ? Math.Min(outputColumnsOverride, outputCount) : Math.Min(Math.Max(outputCount, 1), 8);
             int inputRows = (inputCount + inputColumns - 1) / inputColumns;
             int outputRows = (outputCount + outputColumns - 1) / outputColumns;
             double rowWidth = Math.Max(Math.Max(inputColumns, outputColumns) * (slotSize + slotPad), 220.0);
@@ -94,11 +109,11 @@ namespace VintageKinematics.Gui
             int[] inputSel = SlotRange(inputFirst, inputLast);
             int[] outputSel = SlotRange(outputFirst, outputLast);
 
-            GuiComposer composer = capi.Gui.CreateCompo("kineticjsonprocessor-" + BlockEntityPosition, dialogBounds)
+            GuiComposer composer = capi.Gui.CreateCompo(dialogKeyPrefix + "-" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(title, CloseIconPressed)
                 .BeginChildElements(bgBounds)
-                    .AddStaticText(Lang.Get("vintagekinematics:jsonprocessor-input"), CairoFont.WhiteSmallText(), inputLabelBounds)
+                    .AddStaticText(Lang.Get(inputLabelLangCode), CairoFont.WhiteSmallText(), inputLabelBounds)
                     .AddItemSlotGrid(Inventory, DoSendPacket, inputColumns, inputSel, inputBounds, "inputslot");
 
             if (showProgressBar)
@@ -107,7 +122,7 @@ namespace VintageKinematics.Gui
             }
 
             SingleComposer = composer
-                    .AddStaticText(Lang.Get("vintagekinematics:jsonprocessor-outputs"), CairoFont.WhiteSmallText(), outputLabelBounds)
+                    .AddStaticText(Lang.Get(outputLabelLangCode), CairoFont.WhiteSmallText(), outputLabelBounds)
                     .AddItemSlotGrid(Inventory, DoSendPacket, outputColumns, outputSel, outputBounds, "outputslots")
                 .EndChildElements()
                 .Compose();

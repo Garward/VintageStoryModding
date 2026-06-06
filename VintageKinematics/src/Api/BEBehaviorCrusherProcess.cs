@@ -14,7 +14,7 @@ namespace VintageKinematics.Api
     /// instant its renderer's wave hits bottom-out (no packet round-trip — locked to visuals).
     /// Server side advances the per-recipe crush tick counter and mutates the basin inventory.
     /// </summary>
-    public class BEBehaviorCrusherProcess : BlockEntityBehavior
+    public class BEBehaviorCrusherProcess : BlockEntityBehavior, IExternalWorkProgressProvider
     {
         private const int DefaultVanillaCrushTicks = 4;
 
@@ -23,6 +23,10 @@ namespace VintageKinematics.Api
         private float crushTickMultiplier = 1f;
 
         public BEBehaviorCrusherProcess(BlockEntity be) : base(be) { }
+
+        public string ExternalProgressProviderCode => "CrusherProcess";
+        public float ExternalWorkProgress => CurrentCrushProgress;
+        public float ExternalWorkProgressMax => CurrentCrushProgressMax;
 
         public float CurrentCrushProgress => Math.Max(0, crushTicksAccumulated);
 
@@ -43,6 +47,8 @@ namespace VintageKinematics.Api
             var kin = Blockentity.GetBehavior<BEBehaviorKinetic>();
             return kin != null && MathF.Abs(kin.ActualRPM) >= 0.01f;
         }
+
+        public bool CanProgressExternalWork() => CanProcessCurrentBasin();
 
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {

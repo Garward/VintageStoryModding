@@ -37,10 +37,11 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 
 ## 4. Openable Inventory Container Base
 
-- [ ] Add a generic openable inventory base for non-recipe machines.
-- [ ] Move `InventoryGeneric` lifecycle, `LateInitialize`, slot modified chunk mark, dialog title fallback, open-dialog packet, inventory packet handling, claim checks, server packet dialog creation, save/load, and dialog disposal into the base.
+- [x] Add a generic openable inventory base for non-recipe machines.
+- [x] Move `InventoryGeneric` lifecycle, `LateInitialize`, slot modified chunk mark, dialog title fallback, open-dialog packet, inventory packet handling, claim checks, server packet dialog creation, save/load, and dialog disposal into the base.
+- [x] Add an external inventory machine base for passive inventory blocks driven by another BE/behavior.
 - [ ] Convert coal motor.
-- [ ] Convert crusher basin.
+- [x] Convert crusher basin.
 - [ ] Convert any remaining simple openable inventory blocks that do not fit the item processor base.
 - [ ] Test: inventory interaction packets obey claims.
 - [ ] Test: GUIs open, close, sync, and save/load correctly.
@@ -77,7 +78,7 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 
 - [ ] Prefer `MachineIoLayouts` or JSON `vkIo` for all machine IO maps.
 - [ ] Remove duplicated `InputLipFace`, `LeftOf`, `RightOf`, and output-push loops where existing helpers cover them.
-- [ ] Convert crusher basin IO to framework layout or JSON IO.
+- [x] Convert crusher basin IO to framework layout or JSON IO.
 - [ ] Convert extractor IO to framework layout or JSON IO.
 - [ ] Convert mixer IO to framework layout or JSON IO.
 - [ ] Audit remaining direct `InventoryPusher.TryPush` loops and replace with `MachineOutputHelper.FlushOutputs` where possible.

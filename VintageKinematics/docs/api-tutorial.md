@@ -448,6 +448,61 @@ ranges, GUI packet flow, output storage, output pushing, drop fallback, and
 animated mesh splitting. Custom machines should add features on top of that
 instead of reimplementing the same boilerplate.
 
+For a machine whose inventory block is not the kinetic block, extend the
+external inventory base instead. This is the pattern used by the Crusher Basin:
+the basin owns slots and automation, while the crusher head above it owns the
+moving part and progress.
+
+```csharp
+public class BEMyPassiveInventory : BEExternalInventoryMachineBase
+{
+    public BEMyPassiveInventory()
+        : base("mypassiveinventory", 10, inputSlot: 0, outputFirst: 1, outputLast: 9)
+    {
+    }
+
+    // Override only the special processing hooks your external driver needs.
+}
+
+public class BEBehaviorMyDriver : BlockEntityBehavior, IExternalWorkProgressProvider
+{
+    public string ExternalProgressProviderCode => "MyDriver";
+    public float ExternalWorkProgress => progress;
+    public float ExternalWorkProgressMax => progressMax;
+    public bool CanProgressExternalWork() => true;
+}
+```
+
+The inventory block can declare its GUI, IO, and external progress source in
+blocktype JSON:
+
+```json
+"attributes": {
+  "vkExternalProcessor": {
+    "titleLangCode": "mymod:mypassiveinventory-title",
+    "inputColumns": 1,
+    "outputColumns": 3,
+    "inputLabelLangCode": "vintagekinematics:jsonprocessor-input",
+    "outputLabelLangCode": "vintagekinematics:jsonprocessor-outputs",
+    "progressBar": { "enabled": true, "width": 144, "align": "left" },
+    "progressSource": {
+      "offset": [0, 1, 0],
+      "behavior": "MyDriver"
+    },
+    "io": [
+      { "type": "input", "face": "left", "slots": "inputs" },
+      { "type": "input", "face": "up", "slots": "inputs" },
+      { "type": "output", "face": "right", "slots": "outputs" },
+      { "type": "output", "face": "down", "slots": "outputs" }
+    ]
+  }
+}
+```
+
+Use this when a machine is functionally a two-part setup and the inventory
+controller should stay passive. Use `BEKineticItemProcessorBase<TRecipe>` when
+the same block entity owns both the inventory and kinetic worker.
+
 ### Adding Forge Press operations
 
 Downstream mods can also add Kinetic Forge Press operations with JSON only. Put

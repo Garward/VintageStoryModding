@@ -84,7 +84,9 @@ namespace VintageKinematics.Api
             return side switch
             {
                 "e" => BlockFacing.EAST,
+                "x" => BlockFacing.SOUTH,
                 "s" => BlockFacing.SOUTH,
+                "z" => BlockFacing.WEST,
                 "w" => BlockFacing.WEST,
                 _ => BlockFacing.NORTH
             };
