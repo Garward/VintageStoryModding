@@ -34,6 +34,9 @@ namespace VintageKinematics.BlockEntities
         private string MachineCode => ProcessorAttr?["machineCode"].AsString(null) ?? Block?.Code?.FirstCodePart();
         private int ActiveInputSlots => GameMath.Clamp(ProcessorAttr?["inputSlots"].AsInt(1) ?? 1, 1, SlotInputLast - SlotInputFirst + 1);
         private int ActiveOutputSlots => GameMath.Clamp(ProcessorAttr?["outputSlots"].AsInt(9) ?? 9, 1, SlotOutputLast - SlotOutputFirst + 1);
+        private JsonObject ProgressBarAttr => ProcessorAttr?["progressBar"];
+        private bool ShowProgressBar => ProgressBarAttr?["enabled"].AsBool(ProcessorAttr?["showProgressBar"].AsBool(true) ?? true) ?? ProcessorAttr?["showProgressBar"].AsBool(true) ?? true;
+        private double ProgressBarWidth => ProgressBarAttr?["width"].AsDouble(144.0) ?? 144.0;
         private bool CrateInput => IsCrateStyle(ProcessorAttr?["inputStorageStyle"].AsString(ProcessorAttr?["storageStyle"].AsString("slots")));
         private bool CrateOutput => IsCrateStyle(ProcessorAttr?["outputStorageStyle"].AsString(ProcessorAttr?["storageStyle"].AsString("slots")));
 
@@ -85,7 +88,20 @@ namespace VintageKinematics.BlockEntities
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            return new GuiDialogKineticJsonProcessor(title, MachineInventory, Pos, ActiveInputFirst, ActiveInputLast, ActiveOutputFirst, ActiveOutputLast, capi);
+            return new GuiDialogKineticJsonProcessor(
+                title,
+                MachineInventory,
+                Pos,
+                ActiveInputFirst,
+                ActiveInputLast,
+                ActiveOutputFirst,
+                ActiveOutputLast,
+                ShowProgressBar,
+                ProgressBarWidth,
+                CurrentWorkerProgress,
+                CurrentWorkerProgressMax,
+                CanProgressCurrentRecipe,
+                capi);
         }
 
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)

@@ -16,6 +16,7 @@ namespace VintageKinematics.Gui
         private readonly Func<SawmillMode> getMode;
         private readonly Action<SawmillMode> onSelectMode;
         private readonly MachineRecipeBrowser<SawmillRecipeListItem> recipeBrowser;
+        private readonly MachineProgressBar progressBar;
         private const string RecipeButtonKey = "sawmillRecipeBrowser";
 
         public override double DrawOrder => 0.2;
@@ -23,11 +24,13 @@ namespace VintageKinematics.Gui
         public GuiDialogKineticSawmill(
             string title, InventoryBase inv, BlockPos pos,
             Func<SawmillMode> getMode, Action<SawmillMode> onSelectMode,
+            Func<float> getProgress, Func<float> getProgressMax, Func<bool> getCanProgress,
             ICoreClientAPI capi)
             : base(title, inv, pos, capi)
         {
             this.getMode = getMode;
             this.onSelectMode = onSelectMode;
+            progressBar = new MachineProgressBar(capi, "sawmill-progress", getProgress, getProgressMax, getCanProgress);
             recipeBrowser = new MachineRecipeBrowser<SawmillRecipeListItem>(
                 "sawmill-recipe",
                 "vintagekinematics:kineticsawmill-recipes",
@@ -45,6 +48,12 @@ namespace VintageKinematics.Gui
             ComposeDialog(title);
         }
 
+        public override void OnRenderGUI(float deltaTime)
+        {
+            progressBar.Refresh(SingleComposer, false);
+            base.OnRenderGUI(deltaTime);
+        }
+
         private void ComposeDialog(string title)
         {
             double slotPad = GuiElementItemSlotGridBase.unscaledSlotPadding;
@@ -54,7 +63,8 @@ namespace VintageKinematics.Gui
 
             ElementBounds inputLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset, rowWidth, 22.0);
             ElementBounds inputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, slotPad + topOffset + 24.0, 1, 1);
-            ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, rowWidth, 22.0);
+            ElementBounds progressBounds = ElementBounds.Fixed(slotPad, inputBounds.fixedY + inputBounds.fixedHeight + 8.0, rowWidth, 18.0);
+            ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, progressBounds.fixedY + progressBounds.fixedHeight + 10.0, rowWidth, 22.0);
             ElementBounds outputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
             ElementBounds recipeButtonBounds = ElementBounds.Fixed(slotPad, outputBounds.fixedY + outputBounds.fixedHeight + 12.0, rowWidth, 28.0);
             recipeBrowser.SetBounds(slotPad + rowWidth + 24.0, slotPad + topOffset);
@@ -65,6 +75,7 @@ namespace VintageKinematics.Gui
             {
                 inputLabelBounds,
                 inputBounds,
+                progressBounds,
                 outputLabelBounds,
                 outputBounds,
                 recipeButtonBounds
@@ -86,7 +97,9 @@ namespace VintageKinematics.Gui
                 .AddDialogTitleBar(title, CloseIconPressed)
                 .BeginChildElements(bgBounds)
                     .AddStaticText(inputLabel, CairoFont.WhiteSmallText(), inputLabelBounds)
-                    .AddItemSlotGrid(Inventory, DoSendPacket, 1, inputSel, inputBounds, "inputslot")
+                    .AddItemSlotGrid(Inventory, DoSendPacket, 1, inputSel, inputBounds, "inputslot");
+
+            composer = progressBar.AddToComposer(composer, progressBounds)
                     .AddStaticText(outputLabel, CairoFont.WhiteSmallText(), outputLabelBounds)
                     .AddItemSlotGrid(Inventory, DoSendPacket, 3, outputSel, outputBounds, "outputslots")
                     .AddSmallButton(GetModeLabel(), OnToggleRecipeBrowser, recipeButtonBounds, EnumButtonStyle.Normal, RecipeButtonKey);
@@ -99,6 +112,7 @@ namespace VintageKinematics.Gui
                 .Compose();
             oldComposer?.Dispose();
             recipeBrowser.AfterCompose(SingleComposer);
+            progressBar.Refresh(SingleComposer, true);
         }
 
         private string GetModeLabel()

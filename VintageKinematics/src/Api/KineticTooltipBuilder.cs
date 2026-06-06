@@ -52,4 +52,9 @@ namespace VintageKinematics.Api
             dsc.AppendLine($"Work: {worker.CurrentProgress:F0}/{worker.WorkPerCycle:F0} ({pct:F0}%)");
         }
     }
+
+    public interface IKineticWorkTooltipProvider
+    {
+        bool AppendKineticWorkTooltip(StringBuilder dsc, BEBehaviorKineticWorker worker);
+    }
 }

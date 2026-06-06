@@ -22,7 +22,7 @@ namespace VintageKinematics.BlockEntities
     /// Fueled metal press. Fuel heats the chamber, kinetic cycles form the hot input into parts,
     /// and outputs inherit the chamber temperature.
     /// </summary>
-    public class BEKineticForgePress : BEKineticForgePressBase
+    public class BEKineticForgePress : BEKineticForgePressBase, IKineticWorkTooltipProvider
     {
         public const int SlotInput = 0;
         public const int SlotFuel = 1;
@@ -774,6 +774,25 @@ namespace VintageKinematics.BlockEntities
             sb.AppendLine(hasTier3RefractoryLining
                 ? Lang.Get("vintagekinematics:kineticforgepress-lining-active")
                 : Lang.Get("vintagekinematics:kineticforgepress-lining-missing", RefractoryLiningBrickCost));
+        }
+
+        public bool AppendKineticWorkTooltip(StringBuilder dsc, BEBehaviorKineticWorker worker)
+        {
+            if (worker?.FixedWorkRPM > 0f)
+            {
+                dsc.AppendLine($"Work speed: fixed {worker.FixedWorkRPM:F0} RPM once above {worker.MinRPM:F0} RPM");
+            }
+
+            KineticForgePressRecipe recipe = CurrentRecipe();
+            if (recipe != null)
+            {
+                float total = Math.Max(1, recipe.PressTicks);
+                float current = GameMath.Clamp(pressTicksAccumulated, 0, total);
+                float pct = 100f * current / total;
+                dsc.AppendLine($"Work: {current:F0}/{total:F0} press ticks ({pct:F0}%)");
+            }
+
+            return true;
         }
 
         protected override void WriteState(ITreeAttribute tree)

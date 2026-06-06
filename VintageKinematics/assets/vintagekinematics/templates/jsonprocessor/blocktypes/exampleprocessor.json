@@ -13,6 +13,7 @@
             "title": "Example Processor",
             "inputSlots": 1,
             "outputSlots": 9,
+            "progressBar": { "enabled": true, "placement": "betweenInputOutput", "width": 144 },
             "ioScope": "multiblock",
             "io": [
                 { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
@@ -20,7 +21,7 @@
                 { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
                 { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
             ],
-            "workSound": "survival:sounds/tool/groundcrafting/saw1",
+            "workSound": "game:sounds/tool/groundcrafting/saw1",
             "workSoundVolume": 0.6
         }
     },

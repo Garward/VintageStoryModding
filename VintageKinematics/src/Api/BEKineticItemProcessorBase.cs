@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -17,7 +18,7 @@ namespace VintageKinematics.Api
     /// Shared shell for one-input kinetic item processors: inventory, IO map, output draining,
     /// worker subscription, dialog packet flow, claim-safe inventory packets, and save/load.
     /// </summary>
-    public abstract class BEKineticItemProcessorBase<TRecipe> : BlockEntityOpenableContainer, IFaceMappedContainer
+    public abstract class BEKineticItemProcessorBase<TRecipe> : BlockEntityOpenableContainer, IFaceMappedContainer, IKineticWorkTooltipProvider
     {
         private readonly string inventoryClassName;
         private readonly int inputFirst;
@@ -171,6 +172,59 @@ namespace VintageKinematics.Api
             }
 
             MarkDirty(true);
+            return true;
+        }
+
+        protected virtual bool HasProcessableInput()
+        {
+            for (int slotId = ActiveInputFirst; slotId <= ActiveInputLast; slotId++)
+            {
+                if (CanProcessInputSlot(inventory[slotId])) return true;
+            }
+
+            return false;
+        }
+
+        protected virtual bool CanProcessInputSlot(ItemSlot slot)
+        {
+            if (slot == null || slot.Empty) return false;
+
+            ItemStack input = slot.Itemstack;
+            TRecipe recipe = FindRecipe(input);
+            if (recipe == null) return false;
+
+            int quantity = InputQuantityPerCycle(recipe, input);
+            return quantity > 0 && input.StackSize >= quantity;
+        }
+
+        protected float CurrentWorkerProgress()
+        {
+            return Math.Max(0f, GetBehavior<BEBehaviorKineticWorker>()?.CurrentProgress ?? 0f);
+        }
+
+        protected float CurrentWorkerProgressMax()
+        {
+            return Math.Max(1f, GetBehavior<BEBehaviorKineticWorker>()?.WorkPerCycle ?? 1f);
+        }
+
+        protected virtual bool CanProgressCurrentRecipe()
+        {
+            if (!HasProcessableInput()) return false;
+
+            BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
+            if (kinetic == null) return false;
+            if (kinetic.IsConflicted || (kinetic.EffectiveNetwork?.IsOverstressed ?? false)) return false;
+
+            BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
+            float minRpm = Math.Max(0.01f, worker?.MinRPM ?? 0.01f);
+            return Math.Abs(kinetic.CurrentRPM) >= minRpm;
+        }
+
+        public virtual bool AppendKineticWorkTooltip(StringBuilder dsc, BEBehaviorKineticWorker worker)
+        {
+            if (!HasProcessableInput()) return true;
+
+            KineticTooltipBuilder.AppendWorkProgress(dsc, worker);
             return true;
         }
 

@@ -21,6 +21,11 @@
             "title": "JSON Machine Template",
             "inputSlots": 1,
             "outputSlots": 1,
+            "progressBar": {
+                "enabled": true,
+                "placement": "betweenInputOutput",
+                "width": 144
+            },
             "ioScope": "multiblock",
             "io": [
                 {
@@ -64,7 +69,7 @@
                     }
                 }
             ],
-            "workSound": "survival:sounds/tool/groundcrafting/saw1",
+            "workSound": "game:sounds/tool/groundcrafting/saw1",
             "workSoundVolume": 0.5
         }
     },

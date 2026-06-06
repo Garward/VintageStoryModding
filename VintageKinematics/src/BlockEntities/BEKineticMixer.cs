@@ -20,7 +20,7 @@ namespace VintageKinematics.BlockEntities
     /// transferred by bucket or consumed from an adjacent liquid container, and finished output
     /// drains to the opposite side or bottom.
     /// </summary>
-    public class BEKineticMixer : BlockEntityOpenableContainer, IFaceMappedContainer
+    public class BEKineticMixer : BlockEntityOpenableContainer, IFaceMappedContainer, IKineticWorkTooltipProvider
     {
         public const int SlotInputFirst = 0;
         public const int SlotInputLast = 8;
@@ -502,11 +502,7 @@ namespace VintageKinematics.BlockEntities
 
         private bool CanMixCurrentRecipe()
         {
-            if (mixTicksAccumulated > 0 || !string.IsNullOrEmpty(mixingRecipeKey)) return true;
-
-            var registry = Api?.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
-            KineticMixerRecipe recipe = registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres) ?? FindRecipeUsingAdjacentLiquid(registry);
-            if (recipe == null) return false;
+            if (!HasMixableRecipe()) return false;
 
             BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
             if (kinetic == null) return false;
@@ -515,6 +511,15 @@ namespace VintageKinematics.BlockEntities
             BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
             float minRpm = Math.Max(0.01f, worker?.MinRPM ?? 0.01f);
             return Math.Abs(kinetic.CurrentRPM) >= minRpm;
+        }
+
+        private bool HasMixableRecipe()
+        {
+            if (mixTicksAccumulated > 0 || !string.IsNullOrEmpty(mixingRecipeKey)) return true;
+
+            var registry = Api?.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
+            KineticMixerRecipe recipe = registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres) ?? FindRecipeUsingAdjacentLiquid(registry);
+            return recipe != null;
         }
 
         private ItemSlot FindMergeInputSlot(ItemStack stack)
@@ -585,6 +590,22 @@ namespace VintageKinematics.BlockEntities
             {
                 sb.AppendLine($"Mixing: {mixTicksAccumulated} cycle(s)");
             }
+        }
+
+        public bool AppendKineticWorkTooltip(StringBuilder dsc, BEBehaviorKineticWorker worker)
+        {
+            if (!HasMixableRecipe()) return true;
+
+            if (worker?.FixedWorkRPM > 0f)
+            {
+                dsc.AppendLine($"Work speed: fixed {worker.FixedWorkRPM:F0} RPM once above {worker.MinRPM:F0} RPM");
+            }
+
+            float total = Math.Max(1, CurrentMixProgressMax());
+            float current = GameMath.Clamp(CurrentMixProgress(), 0f, total);
+            float pct = 100f * current / total;
+            dsc.AppendLine($"Work: {current:F0}/{total:F0} mix ticks ({pct:F0}%)");
+            return true;
         }
 
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)

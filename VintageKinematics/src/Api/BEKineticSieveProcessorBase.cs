@@ -57,6 +57,18 @@ namespace VintageKinematics.Api
             yield break;
         }
 
+        protected override bool HasProcessableInput()
+        {
+            ItemSlot slot = MachineInventory[SlotInput];
+            if (base.CanProcessInputSlot(slot)) return true;
+
+            VintageKinematicsConfig cfg = Api?.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
+            return AllowVanillaPanningDrops
+                && (cfg?.UseVanillaPanningDrops ?? true)
+                && slot?.Itemstack?.Block != null
+                && PanLootRoller.IsSieveablePanningSource(slot.Itemstack.Block);
+        }
+
         protected override void OnWorkCycle(KineticWorkCompletedArgs args)
         {
             ItemSlot slot = MachineInventory[SlotInput];

@@ -297,7 +297,10 @@ namespace VintageKinematics.Api
                 dsc.AppendLine($"This block: {capacity:F0} Su source ({state}, rated {ratedRPM:F0} RPM)");
             }
 
-            KineticTooltipBuilder.AppendWorkProgress(dsc, Blockentity?.GetBehavior<BEBehaviorKineticWorker>());
+            BEBehaviorKineticWorker worker = Blockentity?.GetBehavior<BEBehaviorKineticWorker>();
+            if (Blockentity is IKineticWorkTooltipProvider tooltipProvider && tooltipProvider.AppendKineticWorkTooltip(dsc, worker)) return;
+
+            KineticTooltipBuilder.AppendWorkProgress(dsc, worker);
         }
     }
 }

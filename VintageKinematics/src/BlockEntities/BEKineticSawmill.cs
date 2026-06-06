@@ -24,7 +24,7 @@ namespace VintageKinematics.BlockEntities
         public const int PacketIdOpenDialog = 5400;
         public const int PacketIdSelectMode = 5402;
 
-        private static readonly AssetLocation SawSound = new AssetLocation("survival:sounds/tool/groundcrafting/saw1");
+        private static readonly AssetLocation SawSound = new AssetLocation("game:sounds/tool/groundcrafting/saw1");
         private SawmillMode mode = SawmillMode.Plank;
 
         public BEKineticSawmill() : base("kineticsawmill", InventorySize, SlotInput, SlotOutputFirst, SlotOutputLast) { }
@@ -103,7 +103,16 @@ namespace VintageKinematics.BlockEntities
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            return new GuiDialogKineticSawmill(title, MachineInventory, Pos, () => mode, OnClientSelectMode, capi);
+            return new GuiDialogKineticSawmill(
+                title,
+                MachineInventory,
+                Pos,
+                () => mode,
+                OnClientSelectMode,
+                CurrentWorkerProgress,
+                CurrentWorkerProgressMax,
+                CanProgressCurrentRecipe,
+                capi);
         }
 
         protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog)
