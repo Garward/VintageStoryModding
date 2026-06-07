@@ -77,52 +77,20 @@ namespace VintageKinematics.BlockEntities
 
         private void BuildIOFaceMap()
         {
-            BlockFacing inputFace = AutomationInputFace();
-            BlockFacing outputFace = inputFace.Opposite;
-
-            ioFaces = new IOFaceMap(Pos);
-            for (int i = SlotInputFirst; i <= SlotInputLast; i++)
-            {
-                ioFaces.MapInput(inputFace, i);
-            }
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ioFaces.MapOutput(outputFace, i);
-                ioFaces.MapOutput(BlockFacing.DOWN, i);
-            }
+            ioFaces = MachineIoLayouts.SideInputOppositeAndDownOutput(
+                Pos,
+                JsonMachineIoBuilder.ResolveFace(Block, "localWest"),
+                SlotInputFirst,
+                SlotInputLast,
+                SlotOutputFirst,
+                SlotOutputLast,
+                includeTopInput: false);
             ioFaces.Apply(inventory);
-        }
-
-        private BlockFacing AutomationInputFace()
-        {
-            return InputLipFace(Block?.Variant?["side"]);
-        }
-
-        private static BlockFacing InputLipFace(string side)
-        {
-            switch (side)
-            {
-                case "n": return BlockFacing.WEST;
-                case "e": return BlockFacing.SOUTH;
-                case "s": return BlockFacing.EAST;
-                case "w":
-                default: return BlockFacing.NORTH;
-            }
         }
 
         private void OnServerPushTick(float dt)
         {
-            if (ioFaces == null) return;
-            foreach (BlockFacing face in ioFaces.OutputFaces)
-            {
-                foreach (int slotId in ioFaces.OutputSlotsFor(face))
-                {
-                    ItemSlot slot = inventory[slotId];
-                    if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, Pos, face, slot, OutputPushBatch);
-                    if (moved > 0) MarkDirty(true);
-                }
-            }
+            MachineOutputHelper.FlushOutputs(this, inventory, ioFaces?.OutputEntries, OutputPushBatch);
         }
 
         private static readonly AssetLocation MixSound = new AssetLocation("sounds/player/panning.ogg");

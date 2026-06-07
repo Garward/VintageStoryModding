@@ -37,9 +37,9 @@ namespace VintageKinematics.Items
 
             if (api.Side != EnumAppSide.Server) return;
 
+            if (player?.Entity?.Controls?.Sneak == true && TryPickupKineticBlock(player, blockSel)) return;
             if (TryHandleBeltInteraction(player, blockSel)) return;
             if (TryRemoveCasing(player, blockSel)) return;
-            if (player?.Entity?.Controls?.Sneak == true && TryPickupKineticBlock(player, blockSel)) return;
 
             if (TryRotateBlock(player, blockSel))
             {
@@ -104,6 +104,7 @@ namespace VintageKinematics.Items
 
             api.World.BlockAccessor.SetBlock(0, pos);
             api.World.BlockAccessor.MarkBlockDirty(pos);
+            RefreshPipeConnectionsAround(pos);
             api.World.SpawnItemEntity(drop, pos.ToVec3d().Add(0.5, 0.5, 0.5));
             PlayRotateSound(pos);
             return true;
@@ -131,17 +132,8 @@ namespace VintageKinematics.Items
             if (block?.Code?.Domain != "vintagekinematics") return false;
 
             string path = block.Code.Path ?? "";
-            if (path.StartsWith("belt-") || path.StartsWith("kineticboreshaft-") || path.StartsWith("creativemotor-")) return false;
-
-            if (be?.GetBehavior<BEBehaviorKinetic>() != null) return true;
-            if (block.BlockEntityBehaviors == null) return false;
-
-            foreach (BlockEntityBehaviorType behavior in block.BlockEntityBehaviors)
-            {
-                if (behavior?.Name == "Kinetic") return true;
-            }
-
-            return false;
+            return !path.StartsWith("belt-")
+                && !path.StartsWith("kineticboreshaft-");
         }
 
         private static IInventory InventoryOf(BlockEntity be)

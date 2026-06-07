@@ -289,17 +289,7 @@ namespace VintageKinematics.BlockEntities
         // anchoring the push origin on the upper cell avoids visual conflict with the drum.
         private void OnServerPushTick(float dt)
         {
-            if (ioFaces == null) return;
-            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
-            {
-                foreach (int slotId in entry.SlotIds)
-                {
-                    ItemSlot slot = inventory[slotId];
-                    if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
-                    if (moved > 0) MarkDirty(true);
-                }
-            }
+            MachineOutputHelper.FlushOutputs(this, inventory, ioFaces?.OutputEntries, OutputPushBatch);
         }
 
         private void OnWorkCycle(KineticWorkCompletedArgs args)

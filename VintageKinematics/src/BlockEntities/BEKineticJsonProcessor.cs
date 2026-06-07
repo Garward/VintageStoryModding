@@ -35,9 +35,13 @@ namespace VintageKinematics.BlockEntities
         private int ActiveInputSlots => GameMath.Clamp(ProcessorAttr?["inputSlots"].AsInt(1) ?? 1, 1, SlotInputLast - SlotInputFirst + 1);
         private int ActiveOutputSlots => GameMath.Clamp(ProcessorAttr?["outputSlots"].AsInt(9) ?? 9, 1, SlotOutputLast - SlotOutputFirst + 1);
         private JsonObject ProgressBarAttr => ProcessorAttr?["progressBar"];
+        private JsonObject RecipeBrowserAttr => ProcessorAttr?["recipeBrowser"];
         private bool ShowProgressBar => ProgressBarAttr?["enabled"].AsBool(ProcessorAttr?["showProgressBar"].AsBool(true) ?? true) ?? ProcessorAttr?["showProgressBar"].AsBool(true) ?? true;
         private double ProgressBarWidth => ProgressBarAttr?["width"].AsDouble(144.0) ?? 144.0;
         private string ProgressBarAlign => ProgressBarAttr?["align"].AsString("center") ?? "center";
+        private bool ShowRecipeBrowser => RecipeBrowserAttr?["enabled"].AsBool(false) ?? false;
+        private double RecipeBrowserWidth => RecipeBrowserAttr?["width"].AsDouble(500.0) ?? 500.0;
+        private double RecipeBrowserListHeight => RecipeBrowserAttr?["listHeight"].AsDouble(292.0) ?? 292.0;
         private bool CrateInput => IsCrateStyle(ProcessorAttr?["inputStorageStyle"].AsString(ProcessorAttr?["storageStyle"].AsString("slots")));
         private bool CrateOutput => IsCrateStyle(ProcessorAttr?["outputStorageStyle"].AsString(ProcessorAttr?["storageStyle"].AsString("slots")));
 
@@ -103,7 +107,14 @@ namespace VintageKinematics.BlockEntities
                 CurrentWorkerProgress,
                 CurrentWorkerProgressMax,
                 CanProgressCurrentRecipe,
-                capi);
+                capi,
+                dialogKeyPrefix: MachineCode,
+                machineCode: MachineCode,
+                showRecipeBrowser: ShowRecipeBrowser,
+                recipeTitleLangCode: RecipeBrowserAttr?["titleLangCode"].AsString("vintagekinematics:jsonprocessor-recipes"),
+                recipeSearchLangCode: RecipeBrowserAttr?["searchLangCode"].AsString("vintagekinematics:jsonprocessor-search-recipes"),
+                recipeBrowserWidth: RecipeBrowserWidth,
+                recipeBrowserListHeight: RecipeBrowserListHeight);
         }
 
         public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
@@ -116,7 +127,7 @@ namespace VintageKinematics.BlockEntities
 
         private BlockFacing InputFaceFromAttr()
         {
-            return JsonMachineIoBuilder.ResolveFace(Block, ProcessorAttr?["inputFace"].AsString("inputLipWest"));
+            return JsonMachineIoBuilder.ResolveFace(Block, ProcessorAttr?["inputFace"].AsString("localWest"));
         }
 
         private static AssetLocation SoundFromAttr(string code)

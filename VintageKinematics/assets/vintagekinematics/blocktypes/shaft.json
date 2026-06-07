@@ -13,9 +13,36 @@
         }
     ],
     "behaviorsByType": {
-        "*-x": [],
-        "*-y": [],
-        "*-z": []
+        "*-x": [
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "axis": "y"
+                    }
+                }
+            }
+        ],
+        "*-y": [
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "axis": "y"
+                    }
+                }
+            }
+        ],
+        "*-z": [
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "axis": "y"
+                    }
+                }
+            }
+        ]
     },
     "entityBehaviors": [
         {

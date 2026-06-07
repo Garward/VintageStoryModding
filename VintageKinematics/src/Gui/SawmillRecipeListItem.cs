@@ -26,6 +26,15 @@ namespace VintageKinematics.Gui
         public bool Visible => true;
         public KineticSawmillRecipe Recipe => recipe;
         public string SortTitle => title ?? "";
+        public string SortKey(string sortMode)
+        {
+            switch (sortMode)
+            {
+                case "input": return IngredientLabel(recipe?.Ingredient);
+                case "work": return (recipe?.SawTicks ?? 0).ToString("D8") + "\n" + SortTitle;
+                default: return SortTitle;
+            }
+        }
 
         public SawmillRecipeListItem(KineticSawmillRecipe recipe, ICoreClientAPI capi)
         {
@@ -122,7 +131,7 @@ namespace VintageKinematics.Gui
         {
             List<string> lines = new List<string>
             {
-                "Mode: " + ModeLabel(recipe?.Mode ?? SawmillMode.Plank),
+                "Output type: " + ModeLabel(recipe?.Mode ?? SawmillMode.Plank),
                 "Input: " + IngredientLabel(recipe?.Ingredient)
             };
 

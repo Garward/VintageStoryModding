@@ -12,13 +12,18 @@ namespace VintageKinematics.Api
 
         public static IOFaceMap SideInputOppositeAndDownOutput(BlockPos pos, BlockFacing inputFace, int inputFirst, int inputLast, int outputFirst, int outputLast)
         {
+            return SideInputOppositeAndDownOutput(pos, inputFace, inputFirst, inputLast, outputFirst, outputLast, true);
+        }
+
+        public static IOFaceMap SideInputOppositeAndDownOutput(BlockPos pos, BlockFacing inputFace, int inputFirst, int inputLast, int outputFirst, int outputLast, bool includeTopInput)
+        {
             BlockFacing outputFace = inputFace.Opposite;
             IOFaceMap map = new IOFaceMap(pos);
 
             for (int i = inputFirst; i <= inputLast; i++)
             {
                 map.MapInput(inputFace, i);
-                map.MapInput(BlockFacing.UP, i);
+                if (includeTopInput) map.MapInput(BlockFacing.UP, i);
             }
 
             for (int i = outputFirst; i <= outputLast; i++)

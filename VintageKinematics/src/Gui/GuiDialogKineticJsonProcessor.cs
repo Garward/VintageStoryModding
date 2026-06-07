@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
+using VintageKinematics.Crafting;
 
 namespace VintageKinematics.Gui
 {
@@ -20,7 +22,16 @@ namespace VintageKinematics.Gui
         private readonly string inputLabelLangCode;
         private readonly string outputLabelLangCode;
         private readonly string dialogKeyPrefix;
+        private readonly string machineCode;
+        private readonly bool showRecipeBrowser;
         private readonly MachineProgressBar progressBar;
+        private readonly Func<IEnumerable<IRecipeBrowserListItem>> buildRecipeItems;
+        private readonly Action<IRecipeBrowserListItem> onRecipeClicked;
+        private readonly Func<string> recipeButtonLabel;
+        private readonly string[] recipeSortValues;
+        private readonly string[] recipeSortNames;
+        private readonly MachineRecipeBrowser<IRecipeBrowserListItem> recipeBrowser;
+        private const string RecipeButtonKey = "jsonprocessor-recipes";
 
         public override double DrawOrder => 0.2;
 
@@ -43,7 +54,18 @@ namespace VintageKinematics.Gui
             int outputColumnsOverride = 0,
             string inputLabelLangCode = null,
             string outputLabelLangCode = null,
-            string dialogKeyPrefix = "kineticjsonprocessor")
+            string dialogKeyPrefix = "kineticjsonprocessor",
+            string machineCode = null,
+            bool showRecipeBrowser = false,
+            string recipeTitleLangCode = null,
+            string recipeSearchLangCode = null,
+            double recipeBrowserWidth = 500.0,
+            double recipeBrowserListHeight = 292.0,
+            Func<IEnumerable<IRecipeBrowserListItem>> buildRecipeItems = null,
+            Action<IRecipeBrowserListItem> onRecipeClicked = null,
+            Func<string> recipeButtonLabel = null,
+            string[] recipeSortValues = null,
+            string[] recipeSortNames = null)
             : base(title, inv, pos, capi)
         {
             this.inputFirst = inputFirst;
@@ -58,7 +80,29 @@ namespace VintageKinematics.Gui
             this.inputLabelLangCode = inputLabelLangCode ?? "vintagekinematics:jsonprocessor-input";
             this.outputLabelLangCode = outputLabelLangCode ?? "vintagekinematics:jsonprocessor-outputs";
             this.dialogKeyPrefix = dialogKeyPrefix ?? "kineticjsonprocessor";
+            this.machineCode = machineCode;
+            this.showRecipeBrowser = showRecipeBrowser;
+            this.buildRecipeItems = buildRecipeItems;
+            this.onRecipeClicked = onRecipeClicked;
+            this.recipeButtonLabel = recipeButtonLabel;
+            this.recipeSortValues = recipeSortValues ?? RecipeSortValues();
+            this.recipeSortNames = recipeSortNames ?? RecipeSortNames();
             progressBar = new MachineProgressBar(capi, this.dialogKeyPrefix + "-progress", getProgress, getProgressMax, getCanProgress);
+            if (showRecipeBrowser)
+            {
+                recipeBrowser = new MachineRecipeBrowser<IRecipeBrowserListItem>(
+                    this.dialogKeyPrefix + "-recipe",
+                    recipeTitleLangCode ?? "vintagekinematics:jsonprocessor-recipes",
+                    recipeSearchLangCode ?? "vintagekinematics:jsonprocessor-search-recipes",
+                    BuildRecipeListItems,
+                    this.onRecipeClicked,
+                    () => SingleComposer,
+                    width: recipeBrowserWidth,
+                    listHeight: recipeBrowserListHeight,
+                    cellHeight: 64,
+                    sortValues: this.recipeSortValues,
+                    sortNames: this.recipeSortNames);
+            }
             if (IsDuplicate) return;
             ComposeDialog(title);
         }
@@ -90,17 +134,25 @@ namespace VintageKinematics.Gui
             double outputLabelY = showProgressBar ? progressBounds.fixedY + progressBounds.fixedHeight + 10.0 : inputBounds.fixedY + inputBounds.fixedHeight + 8.0;
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, outputLabelY, rowWidth, 22.0);
             ElementBounds outputBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, outputColumns, outputRows);
+            ElementBounds recipeButtonBounds = showRecipeBrowser
+                ? ElementBounds.Fixed(slotPad, outputBounds.fixedY + outputBounds.fixedHeight + 12.0, rowWidth, 28.0)
+                : null;
+            recipeBrowser?.SetBounds(slotPad + rowWidth + 24.0, slotPad + topOffset);
 
             ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
             bgBounds.BothSizing = ElementSizing.FitToChildren;
+            List<ElementBounds> childBounds = new List<ElementBounds>();
+            childBounds.Add(inputLabelBounds);
+            childBounds.Add(inputBounds);
             if (showProgressBar)
             {
-                bgBounds.WithChildren(inputLabelBounds, inputBounds, progressBounds, outputLabelBounds, outputBounds);
+                childBounds.Add(progressBounds);
             }
-            else
-            {
-                bgBounds.WithChildren(inputLabelBounds, inputBounds, outputLabelBounds, outputBounds);
-            }
+            childBounds.Add(outputLabelBounds);
+            childBounds.Add(outputBounds);
+            if (showRecipeBrowser) childBounds.Add(recipeButtonBounds);
+            recipeBrowser?.AddBounds(childBounds);
+            bgBounds.WithChildren(childBounds.ToArray());
 
             ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog
                 .WithAlignment(EnumDialogArea.RightMiddle)
@@ -109,6 +161,7 @@ namespace VintageKinematics.Gui
             int[] inputSel = SlotRange(inputFirst, inputLast);
             int[] outputSel = SlotRange(outputFirst, outputLast);
 
+            GuiComposer oldComposer = SingleComposer;
             GuiComposer composer = capi.Gui.CreateCompo(dialogKeyPrefix + "-" + BlockEntityPosition, dialogBounds)
                 .AddShadedDialogBG(bgBounds)
                 .AddDialogTitleBar(title, CloseIconPressed)
@@ -121,12 +174,69 @@ namespace VintageKinematics.Gui
                 composer = progressBar.AddToComposer(composer, progressBounds);
             }
 
+            composer = composer
+                .AddStaticText(Lang.Get(outputLabelLangCode), CairoFont.WhiteSmallText(), outputLabelBounds)
+                .AddItemSlotGrid(Inventory, DoSendPacket, outputColumns, outputSel, outputBounds, "outputslots");
+            if (showRecipeBrowser)
+            {
+                composer = composer.AddSmallButton(GetRecipeButtonLabel(), OnToggleRecipeBrowser, recipeButtonBounds, EnumButtonStyle.Normal, RecipeButtonKey);
+                composer = recipeBrowser.AddToComposer(composer);
+            }
+
             SingleComposer = composer
-                    .AddStaticText(Lang.Get(outputLabelLangCode), CairoFont.WhiteSmallText(), outputLabelBounds)
-                    .AddItemSlotGrid(Inventory, DoSendPacket, outputColumns, outputSel, outputBounds, "outputslots")
-                .EndChildElements()
-                .Compose();
+                    .EndChildElements()
+                    .Compose();
+            oldComposer?.Dispose();
+            recipeBrowser?.AfterCompose(SingleComposer);
             if (showProgressBar) progressBar.Refresh(SingleComposer, true);
+        }
+
+        private bool OnToggleRecipeBrowser()
+        {
+            return recipeBrowser?.Toggle(() => ComposeDialog(DialogTitle)) == true;
+        }
+
+        public void RefreshRecipeButtonLabel()
+        {
+            if (SingleComposer == null || !showRecipeBrowser) return;
+            GuiElementTextButton button = SingleComposer.GetButton(RecipeButtonKey);
+            if (button == null) return;
+            button.Text = GetRecipeButtonLabel();
+            SingleComposer.ReCompose();
+        }
+
+        private string GetRecipeButtonLabel()
+        {
+            string selected = recipeButtonLabel?.Invoke();
+            return string.IsNullOrEmpty(selected)
+                ? Lang.Get("vintagekinematics:jsonprocessor-recipes-button")
+                : Lang.Get("vintagekinematics:recipebrowser-selected", selected);
+        }
+
+        private List<IRecipeBrowserListItem> BuildRecipeListItems()
+        {
+            if (buildRecipeItems != null)
+            {
+                List<IRecipeBrowserListItem> customItems = new List<IRecipeBrowserListItem>();
+                IEnumerable<IRecipeBrowserListItem> built = buildRecipeItems();
+                if (built == null) return customItems;
+                foreach (IRecipeBrowserListItem item in built)
+                {
+                    if (item != null) customItems.Add(item);
+                }
+                return customItems;
+            }
+
+            var registry = capi.ModLoader.GetModSystem<KineticProcessRecipeRegistry>();
+            List<IRecipeBrowserListItem> items = new List<IRecipeBrowserListItem>();
+            if (registry == null || string.IsNullOrEmpty(machineCode)) return items;
+
+            foreach (KineticProcessRecipe recipe in registry.Recipes)
+            {
+                if (recipe?.Machine != machineCode) continue;
+                items.Add(new ProcessRecipeListItem(recipe));
+            }
+            return items;
         }
 
         private static int[] SlotRange(int first, int last)
@@ -139,6 +249,26 @@ namespace VintageKinematics.Gui
         private static double ProgressBarX(double left, double rowWidth, double barWidth, string align)
         {
             return align == "left" ? left : left + (rowWidth - barWidth) / 2.0;
+        }
+
+        private static string[] RecipeSortValues()
+        {
+            return new[] { "output", "input" };
+        }
+
+        private static string[] RecipeSortNames()
+        {
+            return new[]
+            {
+                Lang.Get("vintagekinematics:recipebrowser-sort-output"),
+                Lang.Get("vintagekinematics:recipebrowser-sort-input")
+            };
+        }
+
+        public override void Dispose()
+        {
+            recipeBrowser?.Dispose();
+            base.Dispose();
         }
     }
 }

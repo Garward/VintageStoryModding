@@ -74,14 +74,9 @@ namespace VintageKinematics.BlockEntities
         private void BuildIOFaceMap()
         {
             BlockFacing facing = FaceFromCode(placementFacingCode) ?? BlockFacing.SOUTH;
-            BlockFacing inputFace = LeftOf(facing);
-            BlockFacing outputFace = RightOf(facing);
+            BlockFacing inputFace = MultiblockHelper.LeftOf(facing);
 
-            ioFaces = new IOFaceMap(Pos)
-                .MapInput(BlockFacing.UP, SlotInput)
-                .MapInput(inputFace, SlotInput)
-                .MapOutput(outputFace, SlotOutput)
-                .MapOutput(BlockFacing.DOWN, SlotOutput);
+            ioFaces = MachineIoLayouts.SideInputOppositeAndDownOutput(Pos, inputFace, SlotInput, SlotOutput, SlotOutput);
         }
 
         public void SetPlacementFacing(BlockFacing facing)
@@ -90,24 +85,6 @@ namespace VintageKinematics.BlockEntities
             placementFacingCode = facing.Code;
             BuildIOFaceMap();
             MarkDirty(true);
-        }
-
-        private static BlockFacing LeftOf(BlockFacing facing)
-        {
-            if (facing == BlockFacing.NORTH) return BlockFacing.WEST;
-            if (facing == BlockFacing.EAST) return BlockFacing.NORTH;
-            if (facing == BlockFacing.SOUTH) return BlockFacing.EAST;
-            if (facing == BlockFacing.WEST) return BlockFacing.SOUTH;
-            return BlockFacing.EAST;
-        }
-
-        private static BlockFacing RightOf(BlockFacing facing)
-        {
-            if (facing == BlockFacing.NORTH) return BlockFacing.EAST;
-            if (facing == BlockFacing.EAST) return BlockFacing.SOUTH;
-            if (facing == BlockFacing.SOUTH) return BlockFacing.WEST;
-            if (facing == BlockFacing.WEST) return BlockFacing.NORTH;
-            return BlockFacing.WEST;
         }
 
         private static BlockFacing FaceFromCode(string code)
@@ -133,15 +110,7 @@ namespace VintageKinematics.BlockEntities
             ItemSlot slot = Inventory[SlotOutput];
             if (slot == null || slot.Empty) return;
 
-            foreach (FaceMapEntry entry in ioFaces.OutputEntries)
-            {
-                int moved = InventoryPusher.TryPush(Api.World, entry.Cell, entry.Face, slot, OutputPushBatch);
-                if (moved > 0)
-                {
-                    MarkDirty(true);
-                    if (slot.Empty) return;
-                }
-            }
+            MachineOutputHelper.FlushOutputs(this, Inventory, ioFaces.OutputEntries, OutputPushBatch);
         }
 
         private void OnKineticTick(float dt)

@@ -15,18 +15,17 @@ namespace VintageKinematics.Gui
         private readonly Func<GuiComposer> getComposer;
         private readonly string titleKey;
         private readonly string searchKey;
-        private readonly string filterKey;
+        private readonly string sortKey;
         private readonly string listKey;
         private readonly string scrollbarKey;
         private readonly int cellHeight;
-        private readonly string[] filterValues;
-        private readonly string[] filterNames;
-        private readonly Func<T, string, bool> filterMatches;
+        private readonly string[] sortValues;
+        private readonly string[] sortNames;
 
         private List<T> items = new List<T>();
         private ElementBounds titleBounds;
         private ElementBounds searchBounds;
-        private ElementBounds filterBounds;
+        private ElementBounds sortBounds;
         private ElementBounds listBounds;
         private ElementBounds clipBounds;
         private ElementBounds insetBounds;
@@ -34,7 +33,7 @@ namespace VintageKinematics.Gui
 
         public bool IsOpen { get; private set; }
         public string SearchText { get; private set; } = "";
-        public string FilterValue { get; private set; } = "";
+        public string SortValue { get; private set; } = "";
         public double Width { get; }
         public double ListHeight { get; }
 
@@ -48,9 +47,8 @@ namespace VintageKinematics.Gui
             double width = 560.0,
             double listHeight = 292.0,
             int cellHeight = 64,
-            string[] filterValues = null,
-            string[] filterNames = null,
-            Func<T, string, bool> filterMatches = null)
+            string[] sortValues = null,
+            string[] sortNames = null)
         {
             this.titleLangCode = titleLangCode;
             this.searchPlaceholderLangCode = searchPlaceholderLangCode;
@@ -58,14 +56,13 @@ namespace VintageKinematics.Gui
             this.onClicked = onClicked;
             this.getComposer = getComposer;
             this.cellHeight = cellHeight;
-            this.filterValues = filterValues;
-            this.filterNames = filterNames;
-            this.filterMatches = filterMatches;
+            this.sortValues = sortValues;
+            this.sortNames = sortNames;
             Width = width;
             ListHeight = listHeight;
             titleKey = keyPrefix + "-title";
             searchKey = keyPrefix + "-search";
-            filterKey = keyPrefix + "-filter";
+            sortKey = keyPrefix + "-sort";
             listKey = keyPrefix + "-list";
             scrollbarKey = keyPrefix + "-scrollbar";
         }
@@ -81,11 +78,11 @@ namespace VintageKinematics.Gui
         public void SetBounds(double x, double y)
         {
             titleBounds = ElementBounds.Fixed(x, y, Width, 22.0);
-            if (HasFilter)
+            if (HasSort)
             {
-                double filterWidth = 158.0;
-                searchBounds = ElementBounds.Fixed(x, y + 26.0, Width - filterWidth - 34.0, 28.0);
-                filterBounds = ElementBounds.Fixed(x + Width - filterWidth - 26.0, y + 26.0, filterWidth, 28.0);
+                double sortWidth = 158.0;
+                searchBounds = ElementBounds.Fixed(x, y + 26.0, Width - sortWidth - 34.0, 28.0);
+                sortBounds = ElementBounds.Fixed(x + Width - sortWidth - 26.0, y + 26.0, sortWidth, 28.0);
             }
             else
             {
@@ -102,7 +99,7 @@ namespace VintageKinematics.Gui
             if (!IsOpen) return;
             childBounds.Add(titleBounds);
             childBounds.Add(searchBounds);
-            if (HasFilter) childBounds.Add(filterBounds);
+            if (HasSort) childBounds.Add(sortBounds);
             childBounds.Add(insetBounds);
             childBounds.Add(clipBounds);
             childBounds.Add(scrollbarBounds);
@@ -118,9 +115,9 @@ namespace VintageKinematics.Gui
                 .AddStaticText(Lang.Get(titleLangCode), CairoFont.WhiteSmallText(), titleBounds, titleKey)
                 .AddTextInput(searchBounds, OnSearchChanged, CairoFont.WhiteSmallishText(), searchKey);
 
-            if (HasFilter)
+            if (HasSort)
             {
-                composer = composer.AddDropDown(filterValues, filterNames, CurrentFilterIndex(), OnFilterChanged, filterBounds, filterKey);
+                composer = composer.AddDropDown(sortValues, sortNames, CurrentSortIndex(), OnSortChanged, sortBounds, sortKey);
             }
 
             return composer
@@ -147,10 +144,10 @@ namespace VintageKinematics.Gui
             RefreshItems();
         }
 
-        private void OnFilterChanged(string code, bool selected)
+        private void OnSortChanged(string code, bool selected)
         {
             if (!selected) return;
-            FilterValue = code ?? "";
+            SortValue = code ?? "";
             RefreshItems();
         }
 
@@ -210,7 +207,7 @@ namespace VintageKinematics.Gui
             foreach (T item in built)
             {
                 if (item == null) continue;
-                if (MatchesFilter(item) && item.SearchScore(SearchText) < int.MaxValue)
+                if (item.SearchScore(SearchText) < int.MaxValue)
                 {
                     result.Add(item);
                 }
@@ -224,28 +221,34 @@ namespace VintageKinematics.Gui
             {
                 int scoreCompare = left.SearchScore(SearchText).CompareTo(right.SearchScore(SearchText));
                 if (scoreCompare != 0) return scoreCompare;
+                string sortMode = CurrentSortValue();
+                int keyCompare = string.Compare(left.SortKey(sortMode), right.SortKey(sortMode), StringComparison.OrdinalIgnoreCase);
+                if (keyCompare != 0) return keyCompare;
                 return string.Compare(left.SortTitle, right.SortTitle, StringComparison.OrdinalIgnoreCase);
             });
 
             return result;
         }
 
-        private bool MatchesFilter(T item)
+        private int CurrentSortIndex()
         {
-            return !HasFilter || string.IsNullOrEmpty(FilterValue) || filterMatches == null || filterMatches(item, FilterValue);
-        }
-
-        private int CurrentFilterIndex()
-        {
-            if (!HasFilter) return 0;
-            for (int i = 0; i < filterValues.Length; i++)
+            if (!HasSort) return 0;
+            for (int i = 0; i < sortValues.Length; i++)
             {
-                if (string.Equals(filterValues[i], FilterValue, StringComparison.Ordinal)) return i;
+                if (string.Equals(sortValues[i], SortValue, StringComparison.Ordinal)) return i;
             }
             return 0;
         }
 
-        private bool HasFilter => filterValues != null && filterNames != null && filterMatches != null && filterValues.Length == filterNames.Length && filterValues.Length > 0;
+        private string CurrentSortValue()
+        {
+            if (!HasSort) return "";
+            string value = SortValue;
+            if (string.IsNullOrEmpty(value)) value = sortValues[0];
+            return value ?? "";
+        }
+
+        private bool HasSort => sortValues != null && sortNames != null && sortValues.Length == sortNames.Length && sortValues.Length > 0;
 
         private static List<IFlatListItem> AsFlatListItems(List<T> source)
         {

@@ -276,6 +276,15 @@
                         "z": 0
                     }
                 }
+            },
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "side": "n",
+                        "state": "cool"
+                    }
+                }
             }
         ],
         "*-e-*": [
@@ -289,6 +298,15 @@
                         "x": 2,
                         "y": 0,
                         "z": 0
+                    }
+                }
+            },
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "side": "n",
+                        "state": "cool"
                     }
                 }
             }
@@ -306,6 +324,15 @@
                         "z": 2
                     }
                 }
+            },
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "side": "n",
+                        "state": "cool"
+                    }
+                }
             }
         ],
         "*-w-*": [
@@ -319,6 +346,15 @@
                         "x": 0,
                         "y": 0,
                         "z": 2
+                    }
+                }
+            },
+            {
+                "name": "CanonicalDrop",
+                "properties": {
+                    "variants": {
+                        "side": "n",
+                        "state": "cool"
                     }
                 }
             }

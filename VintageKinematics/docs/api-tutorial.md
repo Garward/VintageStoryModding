@@ -225,6 +225,11 @@ the top block is decorative geometry. Add `KineticPiston` or
 }
 ```
 
+Set `vkProcessor.recipeBrowser.enabled` to `true` to add a Recipes button to
+the machine GUI. The browser lists recipes for that machine's `machineCode`
+from `vkrecipe/process/<machineCode>/`, and its dropdown sorts the list by
+output or input.
+
 Important fields:
 
 - `class: BlockKineticJsonProcessor` and `entityClass: KineticJsonProcessor`
@@ -314,8 +319,8 @@ Each entry supports:
 
 - `type`: `input` or `output`.
 - `face`: absolute `north`, `east`, `south`, `west`, `up`, `down`; relative
-  `front`, `back`, `left`, `right`; or model-lip aliases
-  `inputLipNorth`, `inputLipEast`, `inputLipSouth`, `inputLipWest`.
+  `front`, `back`, `left`, `right`; or model-local rotating aliases
+  `localNorth`, `localEast`, `localSouth`, `localWest`.
 - `slots`: `inputs`, `outputs`, a single slot string like `64`, a range like
   `64-72`, or an object `{ "first": 64, "last": 72 }`.
 - `cell`: exact controller-relative base-orientation offset, for example
@@ -346,8 +351,10 @@ present. Available fallback layouts:
 
 For layouts that use a named side, set `vkProcessor.inputFace` to one of:
 
-- `inputLipNorth`, `inputLipEast`, `inputLipSouth`, `inputLipWest` for a
-  model-relative side that rotates with the block's `side` variant.
+- `localNorth`, `localEast`, `localSouth`, `localWest` for a model-relative
+  side that rotates with the block's `side` variant. The older `inputLip*`
+  names still work as compatibility aliases, but they do not read shape
+  element names.
 - `north`, `east`, `south`, `west`, `up`, or `down` for fixed world faces.
 
 For explicit `io`, use `cell` or `cells` to decide where each entry is

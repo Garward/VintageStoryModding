@@ -6,7 +6,7 @@ Vintage Kinematics is a separate kinetic power system from vanilla mechanical po
 
 ## Current Scope
 
-- Version: `1.3.8`
+- Version: `1.3.9`
 - Side: universal, required on both client and server
 - Vintage Story: targets the local game assemblies referenced by `VSPath`; currently developed against the 1.22 line
 - Dependencies: none beyond the base game assemblies

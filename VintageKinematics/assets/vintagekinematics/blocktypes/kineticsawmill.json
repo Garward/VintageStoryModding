@@ -2,6 +2,30 @@
     "code": "kineticsawmill",
     "class": "BlockKineticSawmill",
     "entityClass": "KineticSawmill",
+    "attributes": {
+        "vkIo": [
+            {
+                "type": "input",
+                "face": "localWest",
+                "slots": "0"
+            },
+            {
+                "type": "input",
+                "face": "up",
+                "slots": "0"
+            },
+            {
+                "type": "output",
+                "face": "localEast",
+                "slots": "1-9"
+            },
+            {
+                "type": "output",
+                "face": "down",
+                "slots": "1-9"
+            }
+        ]
+    },
     "entityBehaviors": [
         {
             "name": "Kinetic",
@@ -236,11 +260,12 @@
     },
     "shapeByType": {
         "*-n": {
-            "base": "block/kineticsawmill"
+            "base": "block/kineticsawmill",
+            "rotateY": 0
         },
         "*-e": {
             "base": "block/kineticsawmill",
-            "rotateY": 270
+            "rotateY": 90
         },
         "*-s": {
             "base": "block/kineticsawmill",
@@ -248,7 +273,7 @@
         },
         "*-w": {
             "base": "block/kineticsawmill",
-            "rotateY": 90
+            "rotateY": 270
         }
     },
     "blockmaterial": "Wood",

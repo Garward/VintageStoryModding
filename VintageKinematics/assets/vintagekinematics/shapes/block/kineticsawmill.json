@@ -1,508 +1,2978 @@
 {
-	"editor": {
-		"allAngles": false,
-		"entityTextureMode": false
-	},
-	"textureWidth": 16,
-	"textureHeight": 16,
-	"textureSizes": {
-	},
-	"textures": {
-	},
-	"elements": [
-		{
-			"name": "Base",
-			"from": [ 2.0, 0.0, 3.0 ],
-			"to": [ 14.0, 5.5, 13.0 ],
-			"rotationOrigin": [ 0.0, 0.0, 14.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.5 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 5.5 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 5.5 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 5.5 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 12.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 10.0, 12.0 ] }
-			}
-		},
-		{
-			"name": "SouthFoot",
-			"from": [ 1.0, 0.0, 12.75 ],
-			"to": [ 15.0, 7.5, 15.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] }
-			}
-		},
-		{
-			"name": "NorthFoot",
-			"from": [ 1.0, 0.0, 1.0 ],
-			"to": [ 15.0, 7.5, 3.25 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 14.0, 8.0 ] }
-			}
-		},
-		{
-			"name": "OutfeedDeck",
-			"from": [ 9.25, 8.25, 2.0 ],
-			"to": [ 16.0, 10.25, 14.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] }
-			}
-		},
-		{
-			"name": "InfeedDeck",
-			"from": [ 0.0, 8.25, 2.0 ],
-			"to": [ 6.75, 10.25, 14.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 12.0, 7.0 ] }
-			}
-		},
-		{
-			"name": "CutSlot",
-			"from": [ 6.75, 9.9, 4.9 ],
-			"to": [ 9.25, 10.15, 11.1 ],
-			"rotationOrigin": [ 2.0, 0.0, 18.0 ],
-			"faces": {
-				"north": { "texture": "#dark", "uv": [ 0.0, 0.0, 2.5, 0.5 ] },
-				"east": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 0.5 ] },
-				"south": { "texture": "#dark", "uv": [ 0.0, 0.0, 2.5, 0.5 ] },
-				"west": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 0.5 ] },
-				"up": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 2.5 ] },
-				"down": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 2.5 ] }
-			}
-		},
-		{
-			"name": "OutfeedRailSouth",
-			"from": [ 9.25, 10.25, 14.0 ],
-			"to": [ 16.0, 11.5, 14.75 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] }
-			}
-		},
-		{
-			"name": "OutfeedRailNorth",
-			"from": [ 9.25, 10.25, 1.25 ],
-			"to": [ 16.0, 11.5, 2.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] }
-			}
-		},
-		{
-			"name": "InfeedRailSouth",
-			"from": [ 0.0, 10.25, 14.0 ],
-			"to": [ 6.75, 11.5, 14.75 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] }
-			}
-		},
-		{
-			"name": "InfeedRailNorth",
-			"from": [ 0.0, 10.25, 1.25 ],
-			"to": [ 6.75, 11.5, 2.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 7.0, 1.0 ] }
-			}
-		},
-		{
-			"name": "InputLipWest",
-			"from": [ -0.05, 8.75, 1.9 ],
-			"to": [ 0.71, 10.27, 14.1 ],
-			"faces": {
-				"north": { "texture": "#iron", "uv": [ 0.0, 0.0, 0.5, 1.5 ] },
-				"east": { "texture": "#iron", "uv": [ 0.0, 0.0, 12.0, 1.5 ] },
-				"south": { "texture": "#iron", "uv": [ 0.0, 0.0, 0.5, 1.5 ] },
-				"west": { "texture": "#iron", "uv": [ 0.0, 0.0, 12.0, 1.5 ] },
-				"up": { "texture": "#iron", "uv": [ 0.0, 0.0, 12.0, 0.5 ] },
-				"down": { "texture": "#iron", "uv": [ 0.0, 0.0, 12.0, 0.5 ] }
-			}
-		},
-		{
-			"name": "InputMouth",
-			"from": [ 1.45, 6.75, 5.25 ],
-			"to": [ 2.05, 9.75, 10.75 ],
-			"faces": {
-				"north": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-				"east": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-				"south": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-				"west": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-				"up": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 3.0 ] },
-				"down": { "texture": "#dark", "uv": [ 0.0, 0.0, 6.0, 3.0 ] }
-			}
-		},
-		{
-			"name": "SouthBearing",
-			"from": [ 5.75, 6.25, 13.0 ],
-			"to": [ 10.25, 9.75, 15.25 ],
-			"rotationOrigin": [ 0.0, 0.0, 15.0 ],
-			"faces": {
-				"north": { "texture": "#iron", "uv": [ 0.0, 0.0, 4.5, 3.5 ] },
-				"east": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 3.5 ] },
-				"south": { "texture": "#iron", "uv": [ 0.0, 0.0, 4.5, 3.5 ] },
-				"west": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 3.5 ] },
-				"up": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 4.5 ] },
-				"down": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 4.5 ] }
-			}
-		},
-		{
-			"name": "NorthBearing",
-			"from": [ 5.75, 6.25, 0.75 ],
-			"to": [ 10.25, 9.75, 3.0 ],
-			"faces": {
-				"north": { "texture": "#iron", "uv": [ 0.0, 0.0, 4.5, 3.5 ] },
-				"east": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 3.5 ] },
-				"south": { "texture": "#iron", "uv": [ 0.0, 0.0, 4.5, 3.5 ] },
-				"west": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 3.5 ] },
-				"up": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 4.5 ] },
-				"down": { "texture": "#iron", "uv": [ 0.0, 0.0, 2.0, 4.5 ] }
-			}
-		},
-		{
-			"name": "Blade",
-			"from": [ 7.0, 7.0, 7.625 ],
-			"to": [ 9.0, 9.0, 8.375 ],
-			"rotationOrigin": [ 8.0, 8.0, 8.0 ],
-			"faces": {
-				"north": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-				"east": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-				"south": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-				"west": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-				"up": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-				"down": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] }
-			},
-			"children": [
-				{
-					"name": "bladeStrip00",
-					"from": [ 0.425, -4.15, 0.42 ],
-					"to": [ 1.575, 6.15, 0.48 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip01",
-					"from": [ 0.425, -4.15, 0.41 ],
-					"to": [ 1.575, 6.15, 0.47 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -11.25,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip02",
-					"from": [ 0.425, -4.15, 0.4 ],
-					"to": [ 1.575, 6.15, 0.46 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -22.5,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip03",
-					"from": [ 0.425, -4.15, 0.39 ],
-					"to": [ 1.575, 6.15, 0.45 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -33.75,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip04",
-					"from": [ 0.425, -4.15, 0.38 ],
-					"to": [ 1.575, 6.15, 0.44 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -45.0,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip05",
-					"from": [ 0.425, -4.15, 0.37 ],
-					"to": [ 1.575, 6.15, 0.43 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -56.25,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip06",
-					"from": [ 0.425, -4.15, 0.36 ],
-					"to": [ 1.575, 6.15, 0.42 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -67.5,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip07",
-					"from": [ 0.425, -4.15, 0.35 ],
-					"to": [ 1.575, 6.15, 0.41 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -78.75,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip08",
-					"from": [ 0.425, -4.15, 0.34 ],
-					"to": [ 1.575, 6.15, 0.4 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -90.0,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip09",
-					"from": [ 0.425, -4.15, 0.33 ],
-					"to": [ 1.575, 6.15, 0.39 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -101.25,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip10",
-					"from": [ 0.425, -4.15, 0.32 ],
-					"to": [ 1.575, 6.15, 0.38 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -112.5,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip11",
-					"from": [ 0.425, -4.15, 0.31 ],
-					"to": [ 1.575, 6.15, 0.37 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -123.75,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip12",
-					"from": [ 0.425, -4.15, 0.3 ],
-					"to": [ 1.575, 6.15, 0.36 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -135.0,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip13",
-					"from": [ 0.425, -4.15, 0.29 ],
-					"to": [ 1.575, 6.15, 0.35 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -146.25,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip14",
-					"from": [ 0.425, -4.15, 0.28 ],
-					"to": [ 1.575, 6.15, 0.34 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -157.5,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeStrip15",
-					"from": [ 0.425, -4.15, 0.27 ],
-					"to": [ 1.575, 6.15, 0.33 ],
-					"rotationOrigin": [ 1.0, 1.0, 0.375 ],
-					"rotationZ": -168.75,
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"east": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"south": { "texture": "#iron", "uv": [ 3.0, 7.0, 13.0, 9.0 ] },
-						"west": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"up": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] },
-						"down": { "texture": "#iron", "uv": [ 0.0, 7.0, 1.0, 9.0 ] }
-					}
-				},
-				{
-					"name": "bladeHub",
-					"from": [ 0.05, 0.05, 0.05 ],
-					"to": [ 1.95, 1.95, 0.7 ],
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-						"east": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-						"south": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-						"west": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-						"up": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] },
-						"down": { "texture": "#iron", "uv": [ 6.0, 6.0, 10.0, 10.0 ] }
-					}
-				},
-				{
-					"name": "bladeAxle",
-					"from": [ 0.35, 0.35, -4.65 ],
-					"to": [ 1.65, 1.65, 5.35 ],
-					"rotationOrigin": [ 0.0, 0.0, 3.75 ],
-					"faces": {
-						"north": { "texture": "#iron", "uv": [ 5.0, 5.0, 6.0, 6.0 ] },
-						"east": { "texture": "#iron", "uv": [ 5.0, 5.0, 15.0, 6.0 ] },
-						"south": { "texture": "#iron", "uv": [ 5.0, 5.0, 6.0, 6.0 ] },
-						"west": { "texture": "#iron", "uv": [ 5.0, 5.0, 15.0, 6.0 ] },
-						"up": { "texture": "#iron", "uv": [ 5.0, 5.0, 15.0, 6.0 ] },
-						"down": { "texture": "#iron", "uv": [ 5.0, 5.0, 15.0, 6.0 ] }
-					}
-				}
-			]
-		},
-		{
-			"name": "StubZneg",
-			"from": [ 6.35, 6.35, 0.0 ],
-			"to": [ 9.65, 9.65, 0.75 ],
-			"rotationOrigin": [ 8.0, 8.0, 7.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] }
-			}
-		},
-		{
-			"name": "StubZpos",
-			"from": [ 6.35, 6.35, 15.25 ],
-			"to": [ 9.65, 9.65, 16.0 ],
-			"rotationOrigin": [ 8.0, 8.0, 8.0 ],
-			"faces": {
-				"north": { "texture": "#wood", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-				"east": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] },
-				"south": { "texture": "#wood", "uv": [ 0.0, 0.0, 3.0, 3.0 ] },
-				"west": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] },
-				"up": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] },
-				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 0.5, 3.0 ] }
-			}
-		}
-	]}
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "wood": "game:block/wood/planks/generic",
+    "iron": "game:block/metal/sheet/iron1",
+    "dark": "game:block/coal/charcoal"
+  },
+  "elements": [
+    {
+      "name": "Base",
+      "from": [
+        2.0,
+        0.0,
+        3.0
+      ],
+      "to": [
+        14.0,
+        5.5,
+        13.0
+      ],
+      "rotationOrigin": [
+        0.0,
+        0.0,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            5.5
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            5.5
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            5.5
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            5.5
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            12.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            10.0,
+            12.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "Northfoot",
+      "from": [
+        1.0,
+        0.0,
+        12.75
+      ],
+      "to": [
+        15.0,
+        7.5,
+        15.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "SouthFoot",
+      "from": [
+        1.0,
+        0.0,
+        1.0
+      ],
+      "to": [
+        15.0,
+        7.5,
+        3.25
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            14.0,
+            8.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "InfeedDeck",
+      "from": [
+        9.25,
+        8.25,
+        2.0
+      ],
+      "to": [
+        16.0,
+        10.25,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "OutfeedDeck",
+      "from": [
+        0.0,
+        8.25,
+        2.0
+      ],
+      "to": [
+        6.75,
+        10.25,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            7.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "CutSlot",
+      "from": [
+        6.75,
+        9.9,
+        4.9
+      ],
+      "to": [
+        9.25,
+        10.15,
+        11.1
+      ],
+      "rotationOrigin": [
+        2.0,
+        0.0,
+        18.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            2.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            2.5,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            2.5
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            2.5
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "InfeedRailNorth",
+      "from": [
+        9.25,
+        10.25,
+        14.0
+      ],
+      "to": [
+        16.0,
+        11.5,
+        14.75
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "InfeedRailSouth",
+      "from": [
+        9.25,
+        10.25,
+        1.25
+      ],
+      "to": [
+        16.0,
+        11.5,
+        2.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "OutfeedRailNorth",
+      "from": [
+        0.0,
+        10.25,
+        14.0
+      ],
+      "to": [
+        6.75,
+        11.5,
+        14.75
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "OutfeedRailSouth",
+      "from": [
+        0.0,
+        10.25,
+        1.25
+      ],
+      "to": [
+        6.75,
+        11.5,
+        2.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "InputLipWest",
+      "from": [
+        15.5,
+        8.75,
+        1.9
+      ],
+      "to": [
+        16.26,
+        10.27,
+        14.1
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            1.5
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            1.5
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            1.5
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            1.5
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            0.5
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            12.0,
+            0.5
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "InputMouth",
+      "from": [
+        13.45,
+        6.75,
+        5.25
+      ],
+      "to": [
+        14.05,
+        9.75,
+        10.75
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#dark",
+          "uv": [
+            0.0,
+            0.0,
+            6.0,
+            3.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "NorthBearing",
+      "from": [
+        5.75,
+        6.25,
+        13.0
+      ],
+      "to": [
+        10.25,
+        9.75,
+        15.25
+      ],
+      "rotationOrigin": [
+        0.0,
+        0.0,
+        15.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            4.5,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            4.5,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            4.5
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            4.5
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "SouthBearing",
+      "from": [
+        5.75,
+        6.25,
+        0.75
+      ],
+      "to": [
+        10.25,
+        9.75,
+        3.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            4.5,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            4.5,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            3.5
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            4.5
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            4.5
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "Blade",
+      "from": [
+        7.0,
+        7.0,
+        7.625
+      ],
+      "to": [
+        9.0,
+        9.0,
+        8.375
+      ],
+      "rotationOrigin": [
+        8.0,
+        8.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            6.0,
+            6.0,
+            10.0,
+            10.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            6.0,
+            6.0,
+            10.0,
+            10.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            6.0,
+            6.0,
+            10.0,
+            10.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            6.0,
+            6.0,
+            10.0,
+            10.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            6.0,
+            6.0,
+            10.0,
+            10.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#iron",
+          "uv": [
+            6.0,
+            6.0,
+            10.0,
+            10.0
+          ],
+          "autoUv": false
+        }
+      },
+      "children": [
+        {
+          "name": "bladeStrip00",
+          "from": [
+            0.425,
+            -4.15,
+            0.42
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.48
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip01",
+          "from": [
+            0.425,
+            -4.15,
+            0.41
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.47
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -11.25,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip02",
+          "from": [
+            0.425,
+            -4.15,
+            0.4
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.46
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -22.5,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip03",
+          "from": [
+            0.425,
+            -4.15,
+            0.39
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.45
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -33.75,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip04",
+          "from": [
+            0.425,
+            -4.15,
+            0.38
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.44
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -45.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip05",
+          "from": [
+            0.425,
+            -4.15,
+            0.37
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.43
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -56.25,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip06",
+          "from": [
+            0.425,
+            -4.15,
+            0.36
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.42
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -67.5,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip07",
+          "from": [
+            0.425,
+            -4.15,
+            0.35
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.41
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -78.75,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip08",
+          "from": [
+            0.425,
+            -4.15,
+            0.34
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.4
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -90.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip09",
+          "from": [
+            0.425,
+            -4.15,
+            0.33
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.39
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -101.25,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip10",
+          "from": [
+            0.425,
+            -4.15,
+            0.32
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.38
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -112.5,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip11",
+          "from": [
+            0.425,
+            -4.15,
+            0.31
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.37
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -123.75,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip12",
+          "from": [
+            0.425,
+            -4.15,
+            0.3
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.36
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -135.0,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip13",
+          "from": [
+            0.425,
+            -4.15,
+            0.29
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.35
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -146.25,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip14",
+          "from": [
+            0.425,
+            -4.15,
+            0.28
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.34
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -157.5,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeStrip15",
+          "from": [
+            0.425,
+            -4.15,
+            0.27
+          ],
+          "to": [
+            1.575,
+            6.15,
+            0.33
+          ],
+          "rotationOrigin": [
+            1.0,
+            1.0,
+            0.375
+          ],
+          "rotationZ": -168.75,
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                3.0,
+                7.0,
+                13.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                0.0,
+                7.0,
+                1.0,
+                9.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeHub",
+          "from": [
+            0.05,
+            0.05,
+            0.05
+          ],
+          "to": [
+            1.95,
+            1.95,
+            0.7
+          ],
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                6.0,
+                6.0,
+                10.0,
+                10.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                6.0,
+                6.0,
+                10.0,
+                10.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                6.0,
+                6.0,
+                10.0,
+                10.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                6.0,
+                6.0,
+                10.0,
+                10.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                6.0,
+                6.0,
+                10.0,
+                10.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                6.0,
+                6.0,
+                10.0,
+                10.0
+              ],
+              "autoUv": false
+            }
+          }
+        },
+        {
+          "name": "bladeAxle",
+          "from": [
+            0.35,
+            0.35,
+            -4.65
+          ],
+          "to": [
+            1.65,
+            1.65,
+            5.35
+          ],
+          "rotationOrigin": [
+            0.0,
+            0.0,
+            3.75
+          ],
+          "faces": {
+            "north": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                5.0,
+                5.0,
+                6.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "east": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                5.0,
+                5.0,
+                15.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "south": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                5.0,
+                5.0,
+                6.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "west": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                5.0,
+                5.0,
+                15.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "up": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                5.0,
+                5.0,
+                15.0,
+                6.0
+              ],
+              "autoUv": false
+            },
+            "down": {
+              "enabled": true,
+              "texture": "#iron",
+              "uv": [
+                5.0,
+                5.0,
+                15.0,
+                6.0
+              ],
+              "autoUv": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "StubZneg",
+      "from": [
+        6.35,
+        6.35,
+        0.0
+      ],
+      "to": [
+        9.65,
+        9.65,
+        0.75
+      ],
+      "rotationOrigin": [
+        8.0,
+        8.0,
+        7.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "StubZpos",
+      "from": [
+        6.35,
+        6.35,
+        15.25
+      ],
+      "to": [
+        9.65,
+        9.65,
+        16.0
+      ],
+      "rotationOrigin": [
+        8.0,
+        8.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            3.0,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            3.0
+          ],
+          "autoUv": false
+        }
+      }
+    }
+  ]
+}

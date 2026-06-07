@@ -1,5 +1,6 @@
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
@@ -38,7 +39,15 @@ namespace VintageKinematics.BlockEntities
 
         protected override IOFaceMap BuildIOFaceMap()
         {
-            return MachineIoLayouts.SideInputOppositeAndDownOutput(Pos, InputLipFace(Block?.Variant?["side"]), SlotInput, SlotOutputFirst, SlotOutputLast);
+            IOFaceMap explicitMap = BuildJsonIOFaceMap();
+            if (explicitMap != null) return explicitMap;
+
+            return MachineIoLayouts.SideInputOppositeAndDownOutput(
+                Pos,
+                JsonMachineIoBuilder.ResolveFace(Block, "localWest"),
+                SlotInput,
+                SlotOutputFirst,
+                SlotOutputLast);
         }
 
         protected override KineticSawmillRecipe FindRecipe(ItemStack input)
@@ -103,21 +112,92 @@ namespace VintageKinematics.BlockEntities
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            return new GuiDialogKineticSawmill(
+            return new GuiDialogKineticJsonProcessor(
                 title,
                 MachineInventory,
                 Pos,
-                () => mode,
-                OnClientSelectMode,
+                SlotInput,
+                SlotInput,
+                SlotOutputFirst,
+                SlotOutputLast,
+                true,
+                144.0,
+                "left",
                 CurrentWorkerProgress,
                 CurrentWorkerProgressMax,
                 CanProgressCurrentRecipe,
-                capi);
+                capi,
+                inputColumnsOverride: 1,
+                outputColumnsOverride: 3,
+                inputLabelLangCode: "vintagekinematics:kineticsawmill-input",
+                outputLabelLangCode: "vintagekinematics:kineticsawmill-outputs",
+                dialogKeyPrefix: "kineticsawmill",
+                machineCode: "kineticsawmill",
+                showRecipeBrowser: true,
+                recipeTitleLangCode: "vintagekinematics:kineticsawmill-recipes",
+                recipeSearchLangCode: "vintagekinematics:kineticsawmill-search-recipes",
+                recipeBrowserWidth: 500.0,
+                recipeBrowserListHeight: 292.0,
+                buildRecipeItems: () => BuildRecipeListItems(capi),
+                onRecipeClicked: OnRecipeClicked,
+                recipeButtonLabel: () => SawmillModeLabel(mode),
+                recipeSortValues: SawmillSortValues(),
+                recipeSortNames: SawmillSortNames());
         }
 
         protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog)
         {
-            (dialog as GuiDialogKineticSawmill)?.OnModeUpdated();
+            (dialog as GuiDialogKineticJsonProcessor)?.RefreshRecipeButtonLabel();
+        }
+
+        private List<IRecipeBrowserListItem> BuildRecipeListItems(ICoreClientAPI capi)
+        {
+            var registry = capi.ModLoader.GetModSystem<KineticSawmillRecipeRegistry>();
+            List<IRecipeBrowserListItem> items = new List<IRecipeBrowserListItem>();
+            if (registry == null) return items;
+
+            foreach (KineticSawmillRecipe recipe in registry.Recipes)
+            {
+                items.Add(new SawmillRecipeListItem(recipe, capi));
+            }
+
+            return items;
+        }
+
+        private void OnRecipeClicked(IRecipeBrowserListItem item)
+        {
+            if (item is SawmillRecipeListItem sawmillItem && sawmillItem.Recipe != null)
+            {
+                OnClientSelectMode(sawmillItem.Recipe.Mode);
+            }
+        }
+
+        private static string[] SawmillSortValues()
+        {
+            return new[] { "output", "input", "work" };
+        }
+
+        private static string[] SawmillSortNames()
+        {
+            return new[]
+            {
+                Lang.Get("vintagekinematics:recipebrowser-sort-output"),
+                Lang.Get("vintagekinematics:recipebrowser-sort-input"),
+                Lang.Get("vintagekinematics:recipebrowser-sort-work")
+            };
+        }
+
+        private static string SawmillModeLabel(SawmillMode selectedMode)
+        {
+            return selectedMode switch
+            {
+                SawmillMode.Shaft => Lang.Get("vintagekinematics:kineticsawmill-mode-shaft"),
+                SawmillMode.Stick => Lang.Get("vintagekinematics:kineticsawmill-mode-stick"),
+                SawmillMode.CogwheelSection => Lang.Get("vintagekinematics:kineticsawmill-mode-cogsection"),
+                SawmillMode.Firewood => Lang.Get("vintagekinematics:kineticsawmill-mode-firewood"),
+                SawmillMode.Gearbox => Lang.Get("vintagekinematics:kineticsawmill-mode-gearbox"),
+                _ => Lang.Get("vintagekinematics:kineticsawmill-mode-plank")
+            };
         }
 
         protected override void WriteState(ITreeAttribute tree) => tree.SetInt("sawmillMode", (int)mode);
@@ -150,17 +230,6 @@ namespace VintageKinematics.BlockEntities
         private static SawmillMode NormalizeMode(SawmillMode selectedMode)
         {
             return System.Enum.IsDefined(typeof(SawmillMode), selectedMode) ? selectedMode : SawmillMode.Plank;
-        }
-
-        private static BlockFacing InputLipFace(string side)
-        {
-            return side switch
-            {
-                "n" => BlockFacing.WEST,
-                "e" => BlockFacing.SOUTH,
-                "s" => BlockFacing.EAST,
-                _ => BlockFacing.NORTH
-            };
         }
     }
 }

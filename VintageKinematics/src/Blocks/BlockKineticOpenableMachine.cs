@@ -50,9 +50,9 @@ namespace VintageKinematics.Blocks
         {
             if (byPlayer?.Entity == null) return null;
             BlockFacing toward = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
-            if (toward == BlockFacing.NORTH) return "n";
+            if (toward == BlockFacing.NORTH) return "s";
             if (toward == BlockFacing.EAST) return "e";
-            if (toward == BlockFacing.SOUTH) return "s";
+            if (toward == BlockFacing.SOUTH) return "n";
             if (toward == BlockFacing.WEST) return "w";
             return null;
         }

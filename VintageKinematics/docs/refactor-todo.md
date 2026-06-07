@@ -2,7 +2,50 @@
 
 Goal: keep moving VK machines toward reusable public API primitives, with machine-specific code limited to actual unique behavior.
 
-## 1. Filter Dialog Framework
+## 1. JSON Machine Platform
+
+- [x] Add a public JSON-defined kinetic processor.
+- [x] Support JSON recipe loading for generic process machines.
+- [x] Support JSON-configured input/output slot counts.
+- [x] Support JSON-configured machine IO faces and exact cells.
+- [x] Support multiblock JSON IO cells for simple machine templates.
+- [x] Support crate-style/range storage behavior for JSON processors.
+- [x] Support JSON-configured GUI progress bars.
+- [x] Support JSON-configured kinetic animation/moving parts through existing behavior primitives.
+- [x] Add a creative-only JSON machine template block.
+- [x] Add template recipe showing a JSON-only machine converting sticks to hand cranks.
+- [x] Update API guide with the JSON machine workflow.
+- [ ] Keep the release/template files aligned whenever new JSON API options are added.
+- [ ] Add more example templates if a second common machine shape emerges.
+
+## 2. Shared GUI And Progress Primitives
+
+- [x] Add reusable Cairo machine progress bar.
+- [x] Convert JSON processor progress display.
+- [x] Convert sawmill progress display.
+- [x] Convert forge press progress display.
+- [x] Convert mixer progress display.
+- [x] Convert crusher basin progress display.
+- [x] Make the generic slot/progress GUI configurable enough for non-JSON-processor machines.
+- [x] Convert crusher basin to the shared slot/progress GUI.
+- [ ] Convert remaining simple slot-only GUIs where the shared dialog is a clean fit.
+- [ ] Consider splitting recipe-browser UI into a reusable component for sawmill/forge-press-style machines.
+
+## 3. Openable And External Inventory Framework
+
+- [x] Add `BEOpenableInventoryMachineBase` for non-recipe/openable inventory machines.
+- [x] Move inventory lifecycle, `LateInitialize`, slot modified chunk marking, title fallback, open-dialog packet flow, inventory packet handling, claim checks, server packet dialog creation, save/load, and dialog disposal into the base.
+- [x] Add `BEExternalInventoryMachineBase` for passive inventory blocks driven by another BE/behavior.
+- [x] Add `IExternalWorkProgressProvider`.
+- [x] Convert crusher basin to the external inventory base.
+- [x] Convert crusher basin IO to JSON.
+- [x] Convert crusher basin GUI/progress source to JSON.
+- [x] Keep crusher-specific piston/vanilla-crushing/tier/effects logic isolated in `BEBehaviorCrusherProcess`.
+- [ ] Convert coal motor if it fits the openable inventory base cleanly.
+- [ ] Convert any remaining simple openable inventory blocks that do not fit the item processor base.
+- [ ] Test: all converted GUIs open, close, sync, and save/load correctly in-game.
+
+## 4. Filter Dialog Framework
 
 - [x] Add a shared base/helper for filter inventories.
 - [x] Move filter inventory init, save/load, client ghost-slot sync, whitelist toggle, fuzzy toggle, open-dialog packet, close packet, claim checks, and dialog disposal into the framework.
@@ -11,22 +54,83 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Convert `BECopperPump` to the shared filter dialog framework.
 - [x] Keep pump-specific liquid-container filter validation as a hook.
 - [x] Keep iron funnel pulse mode as a funnel-specific custom action hook.
+- [x] Add pump fluid filters.
+- [x] Add trashcan 6-slot filters.
+- [x] Add funnel activator pulse modes.
+- [x] Fix filter default behavior so empty filters allow normal machine behavior while populated filters apply whitelist/blacklist/fuzzy rules.
 - [ ] Test: trashcan filter slots save/load and whitelist/blacklist still work.
 - [ ] Test: copper and iron funnel filters save/load, sync, and pulse mode still work.
 - [ ] Test: pump filter only accepts valid fluid containers and still filters fluid transfer.
 
-## 2. Side-Oriented Placement Framework
+## 5. Canonical Drops And Wrench Pickup
 
-- [ ] Add a shared block base/helper for horizontal `side` variant placement.
-- [ ] Support player-facing and opposite-player-facing conventions.
+- [x] Add shared `CanonicalDrop` block behavior.
+- [x] Apply `CanonicalDrop` broadly to rotated VK blocks.
+- [x] Fix blocks with `behaviorsByType` so generated variants also receive `CanonicalDrop`.
+- [x] Add `CanonicalDropJsonTests` to catch missing per-type canonical drop coverage.
+- [x] Make wrench shift-right-click pickup work on normal VK blocks, not only blocks with kinetic behavior.
+- [x] Keep belts excluded from generic wrench pickup so belt-chain behavior is preserved.
+- [x] Keep technical deployed bore shafts excluded from generic wrench pickup.
+- [ ] In-game audit: report/fix any remaining VK block that drops as a rotated variant.
+- [ ] In-game audit: report/fix any remaining normal VK block that cannot be picked up with shift-wrench.
+
+## 6. Automation, Claims, And IO
+
+- [x] Barrels accept recipe inputs from belts/funnels.
+- [x] Barrels output to funnels.
+- [x] Activators can trigger barrel seal.
+- [x] Funnel tops count as solid support blocks for physics.
+- [x] Funnel canonical drops fixed.
+- [x] Automation and inventory packets respect claims for converted systems.
+- [x] Contraptions stop/restore when hitting protected claims.
+- [x] Crusher basin outputs use shared output/deposit helpers.
+- [x] Prefer JSON IO for crusher basin.
+- [x] Prefer `MachineIoLayouts` or JSON `vkIo` for simple remaining machine IO maps.
+- [x] Remove duplicated `InputLipFace`, `LeftOf`, `RightOf`, and output-push loops where existing helpers cover them.
+- [x] Convert extractor IO to framework layout or JSON IO.
+- [x] Convert mixer IO to framework layout or JSON IO.
+- [x] Audit remaining direct `InventoryPusher.TryPush` loops and replace output-buffer flushes with `MachineOutputHelper.FlushOutputs`.
+- [ ] Review complex/custom IO maps, such as forge press and bores, for later framework hooks.
+- [ ] Test: belts, funnels, and barrels can still insert/extract from the intended faces.
+
+## 7. Item Processor Base Refactors
+
+- [x] Convert sawmill onto `BEKineticItemProcessorBase`.
+- [x] Convert both sieves onto shared sieve/item processor base.
+- [x] Convert charcoal retort onto shared item processor primitives where practical.
+- [x] Add reusable crate-style interaction/range inventory behavior.
+- [x] Move most charcoal retort IO into JSON.
+- [x] Keep charcoal retort bellows/firewood/charcoal-specific logic as custom hooks.
+- [x] Convert forge press progress/tooltip work tracking onto shared primitives where practical.
+- [ ] Move more forge press boilerplate into framework where it does not obscure unique die/heat/operation behavior.
+- [ ] Convert generator boilerplate where practical while keeping generation requirements custom.
+- [ ] Continue converting simple 1-input/1-output machines toward the public API primitives.
+
+## 8. Sawmill And Recipe Browser
+
+- [x] Overhaul sawmill UI to forge-press-style recipe browser.
+- [x] Collapse wildcard board/log recipes so variants do not spam the recipe list.
+- [x] Fix sawmill button hitboxes/icon alignment.
+- [x] Add sawmill progress bar.
+- [x] Fix sawmill work tooltip/progress noise.
+- [x] Fix sawmill sound path.
+- [ ] Consider recipe-category/search helpers if sawmill recipe count grows much larger.
+
+## 9. Side-Oriented Placement Framework
+
+- [x] Add `BlockKineticOpenableMachine` for generic side placement plus openable right-click forwarding.
+- [x] Use generic openable block class for JSON machine template.
+- [x] Use generic openable block class for crusher basin.
+- [x] Support multiblock-aware right-click forwarding to controller block entities in the generic openable block.
+- [ ] Add a shared side-placement helper/base for non-openable side-oriented blocks.
+- [ ] Support both player-facing and opposite-player-facing conventions in one helper.
 - [ ] Support extra fixed variant keys, such as `state=cool`.
-- [ ] Support multiblock-aware right-click forwarding to controller block entities.
-- [ ] Convert straightforward side-oriented blocks first: sawmill, mixer, extractor, forge press, coal motor, sieves, crusher, retort, bellows, treadwheel, trebuchet, activator, clutch, reverser, json processor.
+- [ ] Convert straightforward side-oriented blocks still using custom placement code: sawmill, mixer, extractor, forge press, coal motor, sieves, crusher, retort, bellows, treadwheel, trebuchet, activator, clutch, reverser.
 - [ ] Test: each converted block chooses the same side variant as before.
 - [ ] Test: wrench interactions still bypass normal GUI/open behavior.
 - [ ] Test: placement preview matches final placement.
 
-## 3. Centered Multiblock Placement
+## 10. Centered Multiblock Placement
 
 - [ ] Add a reusable centered-footprint placement helper.
 - [ ] Support 3x3 controller offset by side variant.
@@ -35,18 +139,7 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Test: placing while facing north/east/south/west centers the footprint on the clicked cell.
 - [ ] Test: placement preview and actual placement match.
 
-## 4. Openable Inventory Container Base
-
-- [x] Add a generic openable inventory base for non-recipe machines.
-- [x] Move `InventoryGeneric` lifecycle, `LateInitialize`, slot modified chunk mark, dialog title fallback, open-dialog packet, inventory packet handling, claim checks, server packet dialog creation, save/load, and dialog disposal into the base.
-- [x] Add an external inventory machine base for passive inventory blocks driven by another BE/behavior.
-- [ ] Convert coal motor.
-- [x] Convert crusher basin.
-- [ ] Convert any remaining simple openable inventory blocks that do not fit the item processor base.
-- [ ] Test: inventory interaction packets obey claims.
-- [ ] Test: GUIs open, close, sync, and save/load correctly.
-
-## 5. Liquid Processor Framework
+## 11. Liquid Processor Framework
 
 - [ ] Add reusable liquid buffer state: stack, litres, capacity, save/load, resolution after load, and tooltip/status helpers.
 - [ ] Add reusable liquid container transfer helpers for adjacent containers and bucket-style interactions where applicable.
@@ -56,7 +149,7 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Test: extractor solid outputs, liquid outputs, and downward draining still work.
 - [ ] Test: mixer multi-input mapping, liquid consumption, adjacent liquid source use, and progress reset still work.
 
-## 6. Bore Framework
+## 12. Bore Framework
 
 - [ ] Add a shared bore base for drill depth, halted/retracting/paused state, toggle packet, dialog packet, claim checks, inventory lifecycle, save/load, and dialog disposal.
 - [ ] Add reusable deployed-column tracking for placed shaft/pipe visuals.
@@ -66,7 +159,7 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Keep geothermal bore pipe/tapped/heat-provider logic as its unique hook.
 - [ ] Test: drilling, halting, retracting, pausing, resuming, save/load, and block removal cleanup for both bores.
 
-## 7. Config Dialog Framework
+## 13. Config Dialog Framework
 
 - [ ] Add a small base/helper for non-inventory config dialogs.
 - [ ] Move open-dialog packet, state serialization/deserialization, set/action packet routing, client dialog update, and disposal into the framework.
@@ -74,17 +167,7 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Convert flywheel.
 - [ ] Test: settings persist and client optimistic updates reconcile with server state.
 
-## 8. IO And Output Push Cleanup
-
-- [ ] Prefer `MachineIoLayouts` or JSON `vkIo` for all machine IO maps.
-- [ ] Remove duplicated `InputLipFace`, `LeftOf`, `RightOf`, and output-push loops where existing helpers cover them.
-- [x] Convert crusher basin IO to framework layout or JSON IO.
-- [ ] Convert extractor IO to framework layout or JSON IO.
-- [ ] Convert mixer IO to framework layout or JSON IO.
-- [ ] Audit remaining direct `InventoryPusher.TryPush` loops and replace with `MachineOutputHelper.FlushOutputs` where possible.
-- [ ] Test: belts, funnels, and barrels can still insert/extract from the intended faces.
-
-## 9. Tesselation Shell Cleanup
+## 14. Tesselation Shell Cleanup
 
 - [ ] Add helper/base support for `KineticMeshSplitter.CollectManagedElements` plus optional extra excluded shape elements.
 - [ ] Convert coal motor.
@@ -92,17 +175,20 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Convert geothermal bore.
 - [ ] Test: animated and static meshes do not double-render.
 
-## 10. Packet Id Cleanup
+## 15. Packet Id Cleanup
 
 - [ ] Remove open-dialog packet constants from machines already using framework defaults unless a custom packet is truly needed.
 - [ ] Keep machine-specific action packet ids local to the machine or framework feature that consumes them.
 - [ ] Audit all packet handlers so custom ids are separated from vanilla inventory packet ids below `1000`.
 - [ ] Test: all affected GUIs open and all buttons still route to the correct block entity.
 
-## 11. API Guide Updates
+## 16. API Guide Updates
 
-- [ ] Update the API tutorial after each framework refactor lands.
-- [ ] Add examples for the side placement helper.
-- [ ] Add examples for JSON IO and exact multiblock cells.
+- [x] Document JSON machine template workflow.
+- [x] Document JSON IO and exact multiblock cells.
+- [x] Document progress bar JSON.
+- [x] Document crate-style/range storage behavior.
+- [x] Document external inventory machine base and progress-provider pattern.
+- [ ] Add examples for the side placement helper once it exists.
 - [ ] Add examples for filter dialog extension hooks if they become public API.
 - [ ] Keep the JSON machine template aligned with the new API defaults.

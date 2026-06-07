@@ -24,6 +24,9 @@ Default behavior:
   { "enabled": true, "placement": "betweenInputOutput", "width": 144, "align": "center" }
   for a compact centered bar between input and output. align can be "left" or "center".
   The older showProgressBar boolean still works.
+- Set vkProcessor.recipeBrowser.enabled to true to add a Recipes button to the GUI. The
+  browser opens beside the inventory and lists recipes from vkrecipe/process/<machineCode>/.
+  The dropdown sorts the visible recipes by output or input; it is not a machine mode selector.
 - Storage interaction defaults to regular GUI slots. Set vkProcessor.storageStyle to "crate"
   for crate-style shift/right-click input and right-click output. You can also set
   inputStorageStyle or outputStorageStyle separately.
@@ -57,8 +60,9 @@ Overrides:
     of controller-relative offsets
   - optional rotateCell: false if the cell offset should stay in world coordinates instead of
     rotating with the block; normally leave this out
-- Use inputFace "inputLipNorth", "inputLipEast", "inputLipSouth", or "inputLipWest" when your
-  model follows a different local input side but still uses side variants and shape rotation.
+- Use "localNorth", "localEast", "localSouth", or "localWest" for a model-local side that
+  rotates with the block's side variant. The older inputLip* aliases still work, but they are
+  only compatibility names and do not read shape element names.
 - Use fixed inputFace "north", "east", "south", "west", "up", or "down" only when the IO face
   should not rotate with placement. inputFace is only used by the legacy ioLayout fallback.
 - Legacy ioLayout options:

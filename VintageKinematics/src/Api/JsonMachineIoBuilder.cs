@@ -63,6 +63,10 @@ namespace VintageKinematics.Api
                 case "back": return facing.Opposite;
                 case "left": return MultiblockHelper.LeftOf(facing);
                 case "right": return MultiblockHelper.RightOf(facing);
+                case "localNorth": return ModelLocalFace(BlockFacing.NORTH, block?.Variant?["side"]);
+                case "localEast": return ModelLocalFace(BlockFacing.WEST, block?.Variant?["side"]);
+                case "localSouth": return ModelLocalFace(BlockFacing.SOUTH, block?.Variant?["side"]);
+                case "localWest": return ModelLocalFace(BlockFacing.EAST, block?.Variant?["side"]);
                 case "inputLipNorth": return ModelLipFace(BlockFacing.NORTH, block?.Variant?["side"]);
                 case "inputLipEast": return ModelLipFace(BlockFacing.EAST, block?.Variant?["side"]);
                 case "inputLipSouth": return ModelLipFace(BlockFacing.SOUTH, block?.Variant?["side"]);
@@ -205,6 +209,11 @@ namespace VintageKinematics.Api
         }
 
         private static BlockFacing ModelLipFace(BlockFacing modelFace, string side)
+        {
+            return ModelLocalFace(modelFace, side);
+        }
+
+        private static BlockFacing ModelLocalFace(BlockFacing modelFace, string side)
         {
             if (modelFace == BlockFacing.UP || modelFace == BlockFacing.DOWN) return modelFace;
 

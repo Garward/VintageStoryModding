@@ -79,19 +79,12 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            // Automation input follows the model's west infeed deck in the base shape.
-            // Solid output can leave through the opposite side for inline belts or downward
-            // for compact barrel/funnel setups.
-            BlockFacing inputFace = AutomationInputFace();
-            BlockFacing outputFace = inputFace.Opposite;
-            ioFaces = new IOFaceMap(Pos)
-                .MapInput(inputFace, SlotInput)
-                .MapInput(BlockFacing.UP, SlotInput);
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                ioFaces.MapOutput(BlockFacing.DOWN, i);
-                ioFaces.MapOutput(outputFace, i);
-            }
+            ioFaces = MachineIoLayouts.SideInputOppositeAndDownOutput(
+                Pos,
+                JsonMachineIoBuilder.ResolveFace(Block, "localWest"),
+                SlotInput,
+                SlotOutputFirst,
+                SlotOutputLast);
             ioFaces.Apply(inventory);
 
             if (api.Side == EnumAppSide.Server)
@@ -104,36 +97,9 @@ namespace VintageKinematics.BlockEntities
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
         }
 
-        private BlockFacing AutomationInputFace()
-        {
-            return InputLipFace(Block?.Variant?["side"]);
-        }
-
-        private static BlockFacing InputLipFace(string side)
-        {
-            switch (side)
-            {
-                case "n": return BlockFacing.WEST;
-                case "e": return BlockFacing.SOUTH;
-                case "s": return BlockFacing.EAST;
-                case "w":
-                default: return BlockFacing.NORTH;
-            }
-        }
-
         private void OnServerPushTick(float dt)
         {
-            if (ioFaces == null) return;
-            foreach (BlockFacing face in ioFaces.OutputFaces)
-            {
-                foreach (int slotId in ioFaces.OutputSlotsFor(face))
-                {
-                    ItemSlot slot = inventory[slotId];
-                    if (slot.Empty) continue;
-                    int moved = InventoryPusher.TryPush(Api.World, Pos, face, slot, OutputPushBatch);
-                    if (moved > 0) MarkDirty(true);
-                }
-            }
+            MachineOutputHelper.FlushOutputs(this, inventory, ioFaces?.OutputEntries, OutputPushBatch);
         }
 
         private void OnServerDrainTick(float dt)
