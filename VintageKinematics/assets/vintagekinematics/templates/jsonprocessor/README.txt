@@ -37,9 +37,9 @@ Default behavior:
   - east side is item output
   - bottom is also item output
 - The template uses explicit vkProcessor.io entries:
-  - left side of the controller cell accepts input
+  - local west side of the controller cell accepts input
   - top face of the upper decorative cell accepts input
-  - right side of the controller cell exposes output
+  - local east side of the controller cell exposes output
   - bottom face of the controller cell exposes output
   Exact cells are controller-relative offsets in the base/model orientation, then rotate with the
   block's side variant. For this 1x2 template, { "x": 0, "y": 1, "z": 0 } means the block
@@ -52,8 +52,8 @@ Default behavior:
 Overrides:
 - Prefer vkProcessor.io for new machines. Each entry has:
   - type: "input" or "output"
-  - face: "up", "down", "north", "east", "south", "west", or relative "front", "back",
-    "left", "right"
+  - face: "up", "down", "north", "east", "south", "west", relative "front", "back",
+    "left", "right", or model-local "localNorth", "localEast", "localSouth", "localWest"
   - slots: "inputs", "outputs", a single slot like "64", or a range like "64-72"
   - optional cell: controller-relative base-orientation offset, for example { "x": 0, "y": 1, "z": 0 }
   - optional cells: "face" to expose IO across every multiblock cell on that face, or an array
@@ -61,7 +61,8 @@ Overrides:
   - optional rotateCell: false if the cell offset should stay in world coordinates instead of
     rotating with the block; normally leave this out
 - Use "localNorth", "localEast", "localSouth", or "localWest" for a model-local side that
-  rotates with the block's side variant. The older inputLip* aliases still work, but they are
+  rotates with the block's side variant. For normal VK item flow, use localWest for side
+  input and localEast for side output. The older inputLip* aliases still work, but they are
   only compatibility names and do not read shape element names.
 - Use fixed inputFace "north", "east", "south", "west", "up", or "down" only when the IO face
   should not rotate with placement. inputFace is only used by the legacy ioLayout fallback.
@@ -85,9 +86,9 @@ Multiblock simple machines:
     "outputSlots": 16,
     "ioScope": "multiblock",
     "io": [
-      { "type": "input", "face": "left", "slots": "inputs", "cells": "face" },
+      { "type": "input", "face": "localWest", "slots": "inputs", "cells": "face" },
       { "type": "input", "face": "up", "slots": "inputs", "cells": "face" },
-      { "type": "output", "face": "right", "slots": "outputs", "cells": "face" },
+      { "type": "output", "face": "localEast", "slots": "outputs", "cells": "face" },
       { "type": "output", "face": "down", "slots": "outputs", "cells": "face" }
     ]
   }

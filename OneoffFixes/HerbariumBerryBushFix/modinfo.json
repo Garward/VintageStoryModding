@@ -1,0 +1,13 @@
+{
+  "type": "code",
+  "side": "universal",
+  "modid": "herbariumberrybushfix",
+  "name": "Herbarium Berry Bush Fix",
+  "authors": ["garward"],
+  "description": "Temporary compatibility patch for Herbarium Fixed Mojo tall berry bushes with missing growthBlock attributes and unresolved pie filling stacks.",
+  "version": "1.0.5",
+  "dependencies": {
+    "game": "",
+    "herbariumfixedmojo": "1.4.3"
+  }
+}

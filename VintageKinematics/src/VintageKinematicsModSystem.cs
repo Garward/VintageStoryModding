@@ -2,6 +2,7 @@ using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using VintageKinematics.Api;
+using VintageKinematics.Compatibility;
 using VintageKinematics.Crafting;
 using VintageKinematics.Network;
 using VintageKinematics.Rendering;
@@ -35,6 +36,7 @@ namespace VintageKinematics
 
             harmony = new Harmony(HarmonyId);
             harmony.PatchAll();
+            ImmersiveMiningPoweredToolCompat.Patch(api, harmony);
         }
 
         private void RegisterContentClasses(ICoreAPI api)

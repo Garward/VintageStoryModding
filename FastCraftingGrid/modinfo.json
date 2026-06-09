@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "side": "universal",
+  "modid": "fastcraftinggrid",
+  "name": "Fast Crafting Grid",
+  "authors": ["garward"],
+  "description": "Speeds up crafting-grid recipe matching by using a pre-expanded recipe index instead of scanning every ingredient on each grid change.",
+  "version": "1.0.0",
+  "requiredOnClient": false,
+  "requiredOnServer": false,
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

@@ -4,7 +4,7 @@
   "modid": "clientfixes",
   "description": "Configurable client-side sanity fixes and quality-of-life patches.",
   "authors": [ "garward" ],
-  "version": "0.1.0",
+  "version": "0.1.4",
   "dependencies": {
     "game": "1.21.0"
   },

@@ -11,10 +11,12 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Support multiblock JSON IO cells for simple machine templates.
 - [x] Support crate-style/range storage behavior for JSON processors.
 - [x] Support JSON-configured GUI progress bars.
+- [x] Support JSON-configured recipe browser button for generic process machines.
 - [x] Support JSON-configured kinetic animation/moving parts through existing behavior primitives.
 - [x] Add a creative-only JSON machine template block.
 - [x] Add template recipe showing a JSON-only machine converting sticks to hand cranks.
 - [x] Update API guide with the JSON machine workflow.
+- [x] Keep the shipped JSON processor template aligned with the current recipe-browser/progress/IO API.
 - [ ] Keep the release/template files aligned whenever new JSON API options are added.
 - [ ] Add more example templates if a second common machine shape emerges.
 
@@ -28,8 +30,11 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Convert crusher basin progress display.
 - [x] Make the generic slot/progress GUI configurable enough for non-JSON-processor machines.
 - [x] Convert crusher basin to the shared slot/progress GUI.
+- [x] Convert sawmill to the shared slot/progress/recipe-browser dialog.
+- [x] Make recipe-browser dropdown act as sorting instead of mode/category filtering.
+- [x] Add selected-recipe/state label support to the shared recipe-browser button.
 - [ ] Convert remaining simple slot-only GUIs where the shared dialog is a clean fit.
-- [ ] Consider splitting recipe-browser UI into a reusable component for sawmill/forge-press-style machines.
+- [x] Split recipe-browser UI into a reusable component for sawmill/forge-press/json-machine-style machines.
 
 ## 3. Openable And External Inventory Framework
 
@@ -96,6 +101,7 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 ## 7. Item Processor Base Refactors
 
 - [x] Convert sawmill onto `BEKineticItemProcessorBase`.
+- [x] Remove the dedicated sawmill GUI and use the shared processor dialog.
 - [x] Convert both sieves onto shared sieve/item processor base.
 - [x] Convert charcoal retort onto shared item processor primitives where practical.
 - [x] Add reusable crate-style interaction/range inventory behavior.
@@ -114,6 +120,10 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Add sawmill progress bar.
 - [x] Fix sawmill work tooltip/progress noise.
 - [x] Fix sawmill sound path.
+- [x] Make sawmill recipe browser use the shared dialog abstraction.
+- [x] Show currently selected sawmill output type on the recipe button.
+- [x] Move sawmill IO to JSON `vkIo` using standard local west/top input and local east/bottom output.
+- [x] Replace misleading `inputLip*` internal defaults with `local*` face aliases while keeping compatibility.
 - [ ] Consider recipe-category/search helpers if sawmill recipe count grows much larger.
 
 ## 9. Side-Oriented Placement Framework
@@ -121,11 +131,13 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Add `BlockKineticOpenableMachine` for generic side placement plus openable right-click forwarding.
 - [x] Use generic openable block class for JSON machine template.
 - [x] Use generic openable block class for crusher basin.
+- [x] Use generic openable block class for sawmill.
 - [x] Support multiblock-aware right-click forwarding to controller block entities in the generic openable block.
+- [x] Fix shared openable N/S player-facing placement convention for template-style rotations.
 - [ ] Add a shared side-placement helper/base for non-openable side-oriented blocks.
 - [ ] Support both player-facing and opposite-player-facing conventions in one helper.
 - [ ] Support extra fixed variant keys, such as `state=cool`.
-- [ ] Convert straightforward side-oriented blocks still using custom placement code: sawmill, mixer, extractor, forge press, coal motor, sieves, crusher, retort, bellows, treadwheel, trebuchet, activator, clutch, reverser.
+- [ ] Convert straightforward side-oriented blocks still using custom placement code: mixer, extractor, forge press, coal motor, sieves, crusher, retort, bellows, treadwheel, trebuchet, activator, clutch, reverser.
 - [ ] Test: each converted block chooses the same side variant as before.
 - [ ] Test: wrench interactions still bypass normal GUI/open behavior.
 - [ ] Test: placement preview matches final placement.
@@ -187,8 +199,10 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Document JSON machine template workflow.
 - [x] Document JSON IO and exact multiblock cells.
 - [x] Document progress bar JSON.
+- [x] Document JSON recipe browser option.
+- [x] Document `localNorth/East/South/West` model-local IO aliases.
 - [x] Document crate-style/range storage behavior.
 - [x] Document external inventory machine base and progress-provider pattern.
 - [ ] Add examples for the side placement helper once it exists.
 - [ ] Add examples for filter dialog extension hooks if they become public API.
-- [ ] Keep the JSON machine template aligned with the new API defaults.
+- [x] Keep the JSON machine template aligned with the new API defaults.

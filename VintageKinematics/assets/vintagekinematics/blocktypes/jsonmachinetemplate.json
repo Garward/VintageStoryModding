@@ -34,7 +34,7 @@
             "io": [
                 {
                     "type": "input",
-                    "face": "left",
+                    "face": "localWest",
                     "slots": "inputs",
                     "cell": {
                         "x": 0,
@@ -54,7 +54,7 @@
                 },
                 {
                     "type": "output",
-                    "face": "right",
+                    "face": "localEast",
                     "slots": "outputs",
                     "cell": {
                         "x": 0,

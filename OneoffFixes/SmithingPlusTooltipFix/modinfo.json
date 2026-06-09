@@ -1,0 +1,13 @@
+{
+  "type": "code",
+  "side": "client",
+  "modid": "smithingplustooltipfix",
+  "name": "SmithingPlus Tooltip Fix",
+  "authors": ["garward"],
+  "description": "Temporary client-side guard for SmithingPlus repair tooltip nulls during item and handbook description generation.",
+  "version": "1.0.0",
+  "dependencies": {
+    "game": "",
+    "smithingplus": "1.9.0-rc.1"
+  }
+}

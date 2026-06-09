@@ -8,12 +8,12 @@
         {
             "type": "item",
             "code": "game:nugget-nativesilver",
-            "quantity": 3
+            "quantity": 1
         },
         {
             "type": "item",
             "code": "game:nugget-galena",
-            "quantity": 2
+            "quantity": 3
         }
     ],
     "crushTicks": 4

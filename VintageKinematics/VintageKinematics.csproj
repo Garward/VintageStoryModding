@@ -20,6 +20,7 @@
     <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/VintageKinematics</ModOutputPath>
     <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
     <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
+    <PythonExe Condition="'$(PythonExe)' == ''">python3</PythonExe>
   </PropertyGroup>
 
   <ItemGroup>
@@ -61,6 +62,10 @@
 
   <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(VSPath)' == ''">
     <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
+  </Target>
+
+  <Target Name="GenerateLang" BeforeTargets="BeforeBuild">
+    <Exec Command="&quot;$(PythonExe)&quot; &quot;$(MSBuildProjectDirectory)/scripts/merge_lang.py&quot; --project &quot;$(MSBuildProjectDirectory)&quot; --locale en merge" />
   </Target>
 
   <Target Name="DeployToVS" AfterTargets="Build" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">

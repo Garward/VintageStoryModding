@@ -5,12 +5,16 @@ namespace ClientFixes.Config
         public MovableWindowsConfig MovableWindows { get; set; } = new MovableWindowsConfig();
         public DeltaTimeSafetyConfig DeltaTimeSafety { get; set; } = new DeltaTimeSafetyConfig();
         public PositionSafetyConfig PositionSafety { get; set; } = new PositionSafetyConfig();
+        public TextureAtlasSafetyConfig TextureAtlasSafety { get; set; } = new TextureAtlasSafetyConfig();
+        public PieSafetyConfig PieSafety { get; set; } = new PieSafetyConfig();
 
         public void Sanitize()
         {
             MovableWindows ??= new MovableWindowsConfig();
             DeltaTimeSafety ??= new DeltaTimeSafetyConfig();
             PositionSafety ??= new PositionSafetyConfig();
+            TextureAtlasSafety ??= new TextureAtlasSafetyConfig();
+            PieSafety ??= new PieSafetyConfig();
 
             DeltaTimeSafety.MaxDeltaTime = Clamp(DeltaTimeSafety.MaxDeltaTime, 0.01f, 1f);
             DeltaTimeSafety.MinimumDeltaTime = Clamp(DeltaTimeSafety.MinimumDeltaTime, 0.0001f, 0.05f);
@@ -88,5 +92,25 @@ namespace ClientFixes.Config
         public double MaximumY { get; set; } = 10000;
 
         public double FallbackY { get; set; } = 100;
+    }
+
+    public sealed class TextureAtlasSafetyConfig
+    {
+        public bool Enabled { get; set; } = true;
+
+        public bool SuppressRegenMipMapsIndexCrash { get; set; } = true;
+
+        public bool LogSuppressedCrashes { get; set; } = true;
+    }
+
+    public sealed class PieSafetyConfig
+    {
+        public bool Enabled { get; set; } = true;
+
+        public bool GuardFillingFoodCategoryNulls { get; set; } = true;
+
+        public bool GuardPieNames { get; set; } = true;
+
+        public bool LogSuppressedCrashes { get; set; } = true;
     }
 }

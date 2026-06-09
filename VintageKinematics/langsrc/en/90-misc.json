@@ -1,0 +1,20 @@
+{
+    "vintagekinematics:gantrycarriage-selection": "Contraption selection: {0} blocks",
+    "vintagekinematics:gantrycarriage-assembled": "Contraption is assembled",
+    "vintagekinematics:bulkcrate-contents": "{0} x{1}",
+    "vintagekinematics:funnel-pulse-continuous": "Continuous",
+    "vintagekinematics:funnel-pulse-one": "Pulse 1",
+    "vintagekinematics:funnel-pulse-half": "Pulse Half",
+    "vintagekinematics:funnel-pulse-full": "Pulse Stack",
+    "vintagekinematics:kineticsawmill-matching-planks": "Matching Boards",
+    "vintagekinematics:recipebrowser-selected": "Recipes: {0}",
+    "vintagekinematics:kineticcharcoalretort-firewood": "Firewood: {0}/{1}",
+    "vintagekinematics:kineticcharcoalretort-charcoal": "Charcoal: {0}/{1}",
+    "vintagekinematics:kineticforgepress-lining-already": "The Forge Press already has a tier 3 refractory lining.",
+    "vintagekinematics:bore-retract": "Retract Drill",
+    "vintagekinematics:bore-stop-retract": "Stop Retracting",
+    "vintagekinematics:bore-start-drilling": "Start Drilling",
+    "vintagekinematics:geothermalbore-tapped": "Tapped geothermal heat source.",
+    "vintagekinematics:kineticboots-sprint-bonus": "+25% sprint speed",
+    "vintagekinematics:flywheel-burst-label": "Burst output setting"
+}

@@ -166,11 +166,12 @@ the top block is decorative geometry. Add `KineticPiston` or
       "inputSlots": 1,
       "outputSlots": 1,
       "progressBar": { "enabled": true, "placement": "betweenInputOutput", "width": 144, "align": "center" },
+      "recipeBrowser": { "enabled": true },
       "ioScope": "multiblock",
       "io": [
-        { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+        { "type": "input", "face": "localWest", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
         { "type": "input", "face": "up", "slots": "inputs", "cell": { "x": 0, "y": 1, "z": 0 } },
-        { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+        { "type": "output", "face": "localEast", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
         { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
       ]
     }
@@ -252,11 +253,12 @@ Important fields:
 - `KineticWorker.workPerCycle` is the recipe cost in RPM-seconds.
 - `KineticAnimator` and `KineticPiston` can be added directly in JSON for
   moving parts.
-- `vkProcessor.io` declares automation faces directly. `left` and `right`
-  rotate with the machine placement; `cell` is an exact controller-relative
-  block offset in the base/model orientation, also rotated with the machine.
-  In this example, the top input is on the decorative block one cell above
-  the controller.
+- `vkProcessor.io` declares automation faces directly. For standard VK
+  machines, use `localWest`/`localEast` for model-local side IO that rotates
+  with the block: west/top input and east/bottom output. `cell` is an exact
+  controller-relative block offset in the base/model orientation, also rotated
+  with the machine. In this example, the top input is on the decorative block
+  one cell above the controller.
 
 ## 2. Recipe JSON
 
@@ -308,9 +310,9 @@ machines:
 
 ```json
 "io": [
-  { "type": "input", "face": "left", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+  { "type": "input", "face": "localWest", "slots": "inputs", "cell": { "x": 0, "y": 0, "z": 0 } },
   { "type": "input", "face": "up", "slots": "inputs", "cell": { "x": 0, "y": 1, "z": 0 } },
-  { "type": "output", "face": "right", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
+  { "type": "output", "face": "localEast", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } },
   { "type": "output", "face": "down", "slots": "outputs", "cell": { "x": 0, "y": 0, "z": 0 } }
 ]
 ```
@@ -320,7 +322,8 @@ Each entry supports:
 - `type`: `input` or `output`.
 - `face`: absolute `north`, `east`, `south`, `west`, `up`, `down`; relative
   `front`, `back`, `left`, `right`; or model-local rotating aliases
-  `localNorth`, `localEast`, `localSouth`, `localWest`.
+  `localNorth`, `localEast`, `localSouth`, `localWest`. Prefer
+  `localWest`/`localEast` for standard machine side input/output.
 - `slots`: `inputs`, `outputs`, a single slot string like `64`, a range like
   `64-72`, or an object `{ "first": 64, "last": 72 }`.
 - `cell`: exact controller-relative base-orientation offset, for example
@@ -334,8 +337,8 @@ For broad multiblock face IO, use:
 
 ```json
 "io": [
-  { "type": "input", "face": "left", "slots": "inputs", "cells": "face" },
-  { "type": "output", "face": "right", "slots": "outputs", "cells": "face" }
+  { "type": "input", "face": "localWest", "slots": "inputs", "cells": "face" },
+  { "type": "output", "face": "localEast", "slots": "outputs", "cells": "face" }
 ]
 ```
 
@@ -343,7 +346,8 @@ The older `vkProcessor.ioLayout` shortcut is still supported when `io` is not
 present. Available fallback layouts:
 
 - `leftInputRightAndDownOutput`: placement-facing left/top input,
-  right/bottom output.
+  right/bottom output. Prefer explicit `localWest`/`localEast` entries for
+  new standard machines.
 - `sideInputOppositeAndDownOutput`: a named side/top input, opposite/bottom
   output.
 - `sideInputOppositeOutput`: a named side input and opposite side output.
@@ -372,9 +376,9 @@ the same IO schema without being full JSON processors. Put it at top-level
 "attributes": {
   "vkIo": [
     { "type": "input", "face": "up", "slots": "inputs", "cells": "face" },
-    { "type": "input", "face": "left", "slots": "inputs", "cells": "face" },
+    { "type": "input", "face": "localWest", "slots": "inputs", "cells": "face" },
     { "type": "output", "face": "down", "slots": "outputs", "cells": "face" },
-    { "type": "output", "face": "right", "slots": "outputs", "cells": "face" }
+    { "type": "output", "face": "localEast", "slots": "outputs", "cells": "face" }
   ]
 }
 ```
@@ -497,9 +501,9 @@ blocktype JSON:
       "behavior": "MyDriver"
     },
     "io": [
-      { "type": "input", "face": "left", "slots": "inputs" },
+      { "type": "input", "face": "localWest", "slots": "inputs" },
       { "type": "input", "face": "up", "slots": "inputs" },
-      { "type": "output", "face": "right", "slots": "outputs" },
+      { "type": "output", "face": "localEast", "slots": "outputs" },
       { "type": "output", "face": "down", "slots": "outputs" }
     ]
   }

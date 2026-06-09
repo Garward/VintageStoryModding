@@ -53,7 +53,9 @@ The current pass also preserves pending external slots during client side `Inven
 
 Vanilla mutates real client inventory slots during click drag through the crafting grid, then catches up with server corrections later. In multiplayer this can create visible stack growth or fake items while the drag is still in progress.
 
-This mod changes crafting grid drag into a preview. The client records the selected slots while dragging and applies the real slot clicks on mouse up. Right drag previews one item per slot. Left drag previews vanilla redistribution, including the leftover amount on the final selected slot.
+This mod changes crafting grid drag into a preview. The client records the selected slots while dragging and applies the real slot clicks after mouse up. Right drag previews one item per slot. Left drag previews vanilla redistribution, including the leftover amount on the final selected slot.
+
+Large drag commits are paced over small client callbacks instead of applying every real slot click inside the mouse-up handler. This avoids moving the whole cost of a drag gesture into one release frame.
 
 ## Boundaries
 
@@ -126,6 +128,29 @@ Server install enables hotbar and backpack exact self echo suppression.
 
 The two pieces are technically independent, but the published package is intentionally not optional because one side gives only half of the intended behavior.
 
+## Config
+
+The mod creates this config file:
+
+```text
+ModConfig/itemsyncfixes.json
+```
+
+Available settings:
+
+```json
+{
+  "EnableCraftingGridDragPreview": true,
+  "EnablePacedCraftingGridDragCommit": true,
+  "CraftingGridDragCommitSlotsPerStep": 3,
+  "CraftingGridDragCommitStepDelayMs": 1
+}
+```
+
+Set `EnableCraftingGridDragPreview` to `false` to disable the crafting grid drag preview and let vanilla handle click drag again. The rest of the sync fixes stay enabled.
+
+Set `EnablePacedCraftingGridDragCommit` to `false` to apply all previewed slot clicks immediately on mouse up. `CraftingGridDragCommitSlotsPerStep` controls how many real slot clicks are applied per commit callback. `CraftingGridDragCommitStepDelayMs` controls the delay between commit callbacks.
+
 ## Test Notes
 
 In testing, the client coalescer dropped large numbers of stale queued crafting grid corrections while preserving the latest server state. The separate probe build reported no inventory packet pollution and no UI to packet inventory mismatch during successful test runs.
@@ -197,6 +222,6 @@ Item Sync Fixes is my attempt to fix specific inventory desync symptoms in Vinta
 
 It targets crafting output ghosts, stale queued client corrections during rapid crafting grid and cursor interaction, delayed hotbar and backpack self confirmations from the server, external storage flicker, and crafting grid drag prediction.
 
-It does this by making targeted crafting output moves all or resync, coalescing queued client corrections to the latest correction per slot, applying mouse slot corrections authoritatively, preserving pending external slots across shared inventory tree restores, suppressing only exact matching hotbar and backpack echoes on the server, and changing crafting grid click drag into a preview that commits on mouse up.
+It does this by making targeted crafting output moves all or resync, coalescing queued client corrections to the latest correction per slot, applying mouse slot corrections authoritatively, preserving pending external slots across shared inventory tree restores, suppressing only exact matching hotbar and backpack echoes on the server, and changing crafting grid click drag into a preview that commits real slot clicks after mouse up.
 
 It does not make the client authoritative.

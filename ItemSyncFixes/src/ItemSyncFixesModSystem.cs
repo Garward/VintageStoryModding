@@ -24,6 +24,7 @@ public sealed class ItemSyncClientFixModSystem : ModSystem
 
     public override void StartClientSide(ICoreClientAPI api)
     {
+        ItemSyncFixesConfigSystem.Load(api);
         SyncDiagnostics.RegisterCommand(api);
 
         harmony = new Harmony(HarmonyId);
@@ -66,7 +67,9 @@ public sealed class ItemSyncClientFixModSystem : ModSystem
         ClientDoubleUpdatePatchInstaller.Patch(harmony);
         CraftingPatchInstaller.Patch(harmony);
 
-        api.Logger.Notification("[ItemSyncFixes] Client stale queued inventory update coalescing active.");
+        api.Logger.Notification(
+            "[ItemSyncFixes] Client stale queued inventory update coalescing active. Crafting grid drag preview: {0}.",
+            ItemSyncFixesConfigSystem.Config.EnableCraftingGridDragPreview ? "enabled" : "disabled");
     }
 
     public override void Dispose()
@@ -110,6 +113,35 @@ public sealed class ItemSyncServerFixModSystem : ModSystem
 
 }
 
+public sealed class ItemSyncFixesConfig
+{
+    public bool EnableCraftingGridDragPreview { get; set; } = true;
+    public bool EnablePacedCraftingGridDragCommit { get; set; } = true;
+    public int CraftingGridDragCommitSlotsPerStep { get; set; } = 3;
+    public int CraftingGridDragCommitStepDelayMs { get; set; } = 1;
+}
+
+internal static class ItemSyncFixesConfigSystem
+{
+    private const string ConfigFileName = "itemsyncfixes.json";
+
+    public static ItemSyncFixesConfig Config { get; private set; } = new();
+
+    public static void Load(ICoreAPI api)
+    {
+        try
+        {
+            Config = api.LoadModConfig<ItemSyncFixesConfig>(ConfigFileName) ?? new ItemSyncFixesConfig();
+            api.StoreModConfig(Config, ConfigFileName);
+        }
+        catch (Exception ex)
+        {
+            Config = new ItemSyncFixesConfig();
+            api.Logger.Error("[ItemSyncFixes] Failed to load config, using defaults: {0}", ex);
+        }
+    }
+}
+
 internal static class CraftingPatchInstaller
 {
     public static void Patch(Harmony harmony)
@@ -129,6 +161,7 @@ internal static class CraftingPatchInstaller
         PatchIfFound(
             harmony,
             AccessTools.Method(typeof(InventoryCraftingGrid), "FindMatchingRecipe"),
+            prefix: new HarmonyMethod(typeof(Patch_InventoryCraftingGrid_FindMatchingRecipe), nameof(Patch_InventoryCraftingGrid_FindMatchingRecipe.Prefix)),
             postfix: new HarmonyMethod(typeof(Patch_InventoryCraftingGrid_FindMatchingRecipe), nameof(Patch_InventoryCraftingGrid_FindMatchingRecipe.Postfix)));
     }
 
@@ -159,7 +192,7 @@ internal static class ClientDoubleUpdatePatchInstaller
 
 internal readonly record struct QueuedSlotUpdate(Packet_InventoryUpdate Packet, int LastIndex);
 
-internal readonly record struct ClientPredictionState(bool Track, string TargetBefore, string MouseBefore, long DiagnosticClickId);
+internal readonly record struct ClientPredictionState(bool Track, string TargetBefore, string MouseBefore, long DiagnosticClickId, long StartedMs);
 
 internal enum ClientPredictionDirection
 {
@@ -460,6 +493,15 @@ internal static class SyncDiagnostics
     {
         if (!Enabled) return;
         api?.Logger.Notification("[ISFDiag] " + message, args);
+    }
+
+    public static void Slow(ICoreAPI api, long startedMs, string label, string detail)
+    {
+        if (!Enabled) return;
+        if (startedMs <= 0) return;
+        long elapsedMs = Environment.TickCount64 - startedMs;
+        if (elapsedMs < 50) return;
+        api?.Logger.Notification("[ISFDiag] SLOW {0} {1}ms {2}", label, elapsedMs, detail ?? "");
     }
 
     private static void Remember(DiagnosticClickTrace trace)
@@ -1097,7 +1139,8 @@ internal static class Patch_GuiElementItemSlotGridBase_SlotClick
             altPressed,
             targetBefore,
             mouseBefore);
-        __state = new ClientPredictionState(false, targetBefore, mouseBefore, diagnosticClickId);
+        long startedMs = Environment.TickCount64;
+        __state = new ClientPredictionState(false, targetBefore, mouseBefore, diagnosticClickId, startedMs);
         bool canTrackPrediction = !shiftPressed
             && (mouseButton == EnumMouseButton.Left
                 || (mouseButton == EnumMouseButton.Right && !mouseEmpty));
@@ -1121,7 +1164,7 @@ internal static class Patch_GuiElementItemSlotGridBase_SlotClick
         {
             ClientPredictionSuppressor.Clear(targetInv, slotId);
             ClientPredictionSuppressor.Clear(mouseInv, 0);
-            __state = new ClientPredictionState(false, targetBefore, mouseBefore, diagnosticClickId);
+            __state = new ClientPredictionState(false, targetBefore, mouseBefore, diagnosticClickId, startedMs);
             return true;
         }
 
@@ -1129,7 +1172,8 @@ internal static class Patch_GuiElementItemSlotGridBase_SlotClick
             true,
             targetBefore,
             mouseBefore,
-            diagnosticClickId);
+            diagnosticClickId,
+            startedMs);
         return true;
     }
 
@@ -1149,6 +1193,18 @@ internal static class Patch_GuiElementItemSlotGridBase_SlotClick
 
         string mouseAfter = ClientPredictionSuppressor.Fingerprint(mouseInv[0]?.Itemstack);
         string targetAfter = ClientPredictionSuppressor.Fingerprint(targetInv[slotId]?.Itemstack);
+        SyncDiagnostics.Slow(
+            api,
+            __state.StartedMs,
+            "SlotClick",
+            string.Format(
+                "{0}[{1}] target {2}->{3} mouse {4}->{5}",
+                targetInv.InventoryID ?? "?",
+                slotId,
+                __state.TargetBefore,
+                targetAfter,
+                __state.MouseBefore,
+                mouseAfter));
         SyncDiagnostics.EndClick(
             api,
             __state.DiagnosticClickId,
@@ -1250,6 +1306,9 @@ internal static class Patch_GuiElementItemSlotGridBase_RenderInteractiveElements
 
 internal static class CraftingGridDragPreview
 {
+    private const int DefaultCommitSlotsPerStep = 3;
+    private const int DefaultCommitStepDelayMs = 1;
+
     private static readonly FieldInfo InventoryField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "inventory");
     private static readonly FieldInfo RenderedSlotsField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "renderedSlots");
     private static readonly FieldInfo HoverSlotIdField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "hoverSlotId");
@@ -1263,6 +1322,11 @@ internal static class CraftingGridDragPreview
 
     public static bool TryBegin(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
     {
+        if (!ItemSyncFixesConfigSystem.Config.EnableCraftingGridDragPreview)
+        {
+            return false;
+        }
+
         if (!CanUsePreview(elem, api, args) || !TryGetInventory(elem, out InventoryCraftingGrid inv))
         {
             return false;
@@ -1302,6 +1366,12 @@ internal static class CraftingGridDragPreview
 
     public static bool TryMove(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
     {
+        if (!ItemSyncFixesConfigSystem.Config.EnableCraftingGridDragPreview)
+        {
+            Active.Remove(elem);
+            return false;
+        }
+
         if (!Active.TryGetValue(elem, out PreviewState state))
         {
             return false;
@@ -1335,6 +1405,12 @@ internal static class CraftingGridDragPreview
 
     public static bool TryEnd(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
     {
+        if (!ItemSyncFixesConfigSystem.Config.EnableCraftingGridDragPreview)
+        {
+            Active.Remove(elem);
+            return false;
+        }
+
         if (!Active.TryGetValue(elem, out PreviewState state))
         {
             return false;
@@ -1343,13 +1419,20 @@ internal static class CraftingGridDragPreview
         Active.Remove(elem);
         args.Handled = true;
 
-        int applied = state.Button == EnumMouseButton.Left
-            ? ApplyLeftDrag(elem, api, state)
-            : ApplySimpleDrag(elem, api, state);
-
         SetHover(elem, null, -1);
         state.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
         api.World.Player.InventoryManager.MouseItemSlot.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
+
+        if (ShouldPaceCommit(state))
+        {
+            BeginPacedCommit(elem, api, state);
+            SyncDiagnostics.Log(api, "CLIENT crafting drag preview queued paced apply {0} slots button={1}", state.SlotIds.Count, state.Button);
+            return true;
+        }
+
+        int applied = state.Button == EnumMouseButton.Left
+            ? ApplyLeftDrag(elem, api, state)
+            : ApplySimpleDrag(elem, api, state);
 
         SyncDiagnostics.Log(api, "CLIENT crafting drag preview apply {0} slots button={1}", applied, state.Button);
         return true;
@@ -1357,6 +1440,11 @@ internal static class CraftingGridDragPreview
 
     public static void Render(GuiElementItemSlotGridBase elem, float deltaTime)
     {
+        if (!ItemSyncFixesConfigSystem.Config.EnableCraftingGridDragPreview)
+        {
+            return;
+        }
+
         if (!Active.TryGetValue(elem, out PreviewState state) || state.SlotIndices.Count == 0)
         {
             return;
@@ -1469,6 +1557,77 @@ internal static class CraftingGridDragPreview
         }
 
         return applied;
+    }
+
+    private static bool ShouldPaceCommit(PreviewState state)
+    {
+        if (!ItemSyncFixesConfigSystem.Config.EnablePacedCraftingGridDragCommit)
+        {
+            return false;
+        }
+
+        return state.SlotIds.Count > CommitSlotsPerStep();
+    }
+
+    private static void BeginPacedCommit(GuiElementItemSlotGridBase elem, ICoreClientAPI api, PreviewState state)
+    {
+        PendingDragCommit commit = PendingDragCommit.Create(elem, api, state);
+        ScheduleCommitStep(api, commit);
+    }
+
+    private static void ScheduleCommitStep(ICoreClientAPI api, PendingDragCommit commit)
+    {
+        api.Event.RegisterCallback(_ => ContinuePacedCommit(commit), CommitStepDelayMs(), true);
+    }
+
+    private static void ContinuePacedCommit(PendingDragCommit commit)
+    {
+        if (commit == null || commit.Api?.Side != EnumAppSide.Client)
+        {
+            return;
+        }
+
+        long startedMs = Environment.TickCount64;
+        int appliedBefore = commit.Applied;
+        int stepBudget = CommitSlotsPerStep();
+
+        for (int i = 0; i < stepBudget && !commit.Done; i++)
+        {
+            commit.ApplyNext();
+        }
+
+        SyncDiagnostics.Slow(
+            commit.Api,
+            startedMs,
+            "CraftingDragCommitStep",
+            string.Format(
+                "{0} applied {1}/{2} button={3}",
+                commit.InventoryId,
+                commit.Applied - appliedBefore,
+                commit.TotalSlots,
+                commit.Button));
+
+        if (!commit.Done)
+        {
+            ScheduleCommitStep(commit.Api, commit);
+            return;
+        }
+
+        commit.Finish();
+    }
+
+    private static int CommitSlotsPerStep()
+    {
+        return Math.Max(1, ItemSyncFixesConfigSystem.Config.CraftingGridDragCommitSlotsPerStep <= 0
+            ? DefaultCommitSlotsPerStep
+            : ItemSyncFixesConfigSystem.Config.CraftingGridDragCommitSlotsPerStep);
+    }
+
+    private static int CommitStepDelayMs()
+    {
+        return Math.Max(1, ItemSyncFixesConfigSystem.Config.CraftingGridDragCommitStepDelayMs <= 0
+            ? DefaultCommitStepDelayMs
+            : ItemSyncFixesConfigSystem.Config.CraftingGridDragCommitStepDelayMs);
     }
 
     private static int ApplyLeftDrag(GuiElementItemSlotGridBase elem, ICoreClientAPI api, PreviewState state)
@@ -1632,6 +1791,157 @@ internal static class CraftingGridDragPreview
             Inventory = inventory;
             Button = button;
             ReferenceStack = referenceStack;
+        }
+    }
+
+    private sealed class PendingDragCommit
+    {
+        public readonly GuiElementItemSlotGridBase Element;
+        public readonly ICoreClientAPI Api;
+        public readonly PreviewState State;
+        public readonly EnumMouseButton Button;
+        public readonly int TotalSlots;
+        public readonly string InventoryId;
+        public readonly long CreatedMs;
+
+        private HashSet<int> wasMouseDownOnSlotIndex;
+        private Vintagestory.API.Datastructures.OrderedDictionary<int, int> distributePrev;
+        private Vintagestory.API.Datastructures.OrderedDictionary<int, int> distributeAdded;
+        private bool useLeftRedistribution;
+        private int nextIndex;
+
+        public int Applied { get; private set; }
+        public bool Done => nextIndex >= State.SlotIds.Count;
+
+        private PendingDragCommit(GuiElementItemSlotGridBase element, ICoreClientAPI api, PreviewState state)
+        {
+            Element = element;
+            Api = api;
+            State = state;
+            Button = state.Button;
+            TotalSlots = state.SlotIds.Count;
+            InventoryId = state.Inventory.InventoryID ?? "?";
+            CreatedMs = Environment.TickCount64;
+        }
+
+        public static PendingDragCommit Create(GuiElementItemSlotGridBase element, ICoreClientAPI api, PreviewState state)
+        {
+            PendingDragCommit commit = new(element, api, state);
+            if (state.Button == EnumMouseButton.Left)
+            {
+                commit.BeginLeftRedistribution();
+            }
+
+            return commit;
+        }
+
+        public void ApplyNext()
+        {
+            if (Done)
+            {
+                return;
+            }
+
+            if (Button == EnumMouseButton.Left && useLeftRedistribution)
+            {
+                ApplyLeftNext();
+            }
+            else
+            {
+                ApplySimpleNext();
+            }
+        }
+
+        public void Finish()
+        {
+            if (useLeftRedistribution)
+            {
+                wasMouseDownOnSlotIndex?.Clear();
+                distributePrev?.Clear();
+                distributeAdded?.Clear();
+            }
+
+            State.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
+            Api.World.Player.InventoryManager.MouseItemSlot.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
+
+            SyncDiagnostics.Log(
+                Api,
+                "CLIENT crafting drag preview paced apply finished {0}/{1} slots button={2} elapsed={3}ms",
+                Applied,
+                TotalSlots,
+                Button,
+                Environment.TickCount64 - CreatedMs);
+        }
+
+        private void BeginLeftRedistribution()
+        {
+            wasMouseDownOnSlotIndex = WasMouseDownOnSlotIndexField.GetValue(Element) as HashSet<int>;
+            distributePrev = DistributePrevField.GetValue(Element) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>;
+            distributeAdded = DistributeAddedField.GetValue(Element) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>;
+
+            if (wasMouseDownOnSlotIndex == null || distributePrev == null || distributeAdded == null || RedistributeStacksMethod == null)
+            {
+                useLeftRedistribution = false;
+                return;
+            }
+
+            wasMouseDownOnSlotIndex.Clear();
+            distributePrev.Clear();
+            distributeAdded.Clear();
+            ReferenceDistributeStackField.SetValue(Element, State.ReferenceStack.Clone());
+            useLeftRedistribution = true;
+        }
+
+        private void ApplySimpleNext()
+        {
+            int slotId = State.SlotIds[nextIndex++];
+            if (slotId < 0 || slotId >= State.Inventory.Count)
+            {
+                return;
+            }
+
+            if (!CanPreviewSlot(Api, State.Inventory, slotId, State.ReferenceStack))
+            {
+                return;
+            }
+
+            Element.SlotClick(Api, slotId, Button, false, false, false);
+            Applied++;
+        }
+
+        private void ApplyLeftNext()
+        {
+            int stateIndex = nextIndex++;
+            int slotId = State.SlotIds[stateIndex];
+            int slotIndex = State.SlotIndices[stateIndex];
+            if (slotId < 0 || slotId >= State.Inventory.Count || slotIndex < 0)
+            {
+                return;
+            }
+
+            ItemStack stack = State.Inventory[slotId]?.Itemstack;
+            if (stack != null && !stack.Equals(Api.World, State.ReferenceStack, GlobalConstants.IgnoredStackAttributes))
+            {
+                return;
+            }
+
+            wasMouseDownOnSlotIndex.Add(slotIndex);
+            distributePrev[slotId] = State.Inventory[slotId].StackSize;
+
+            int previousStackSize = State.Inventory[slotId].StackSize;
+            ItemSlot mouseSlot = Api.World.Player.InventoryManager.MouseItemSlot;
+            if (mouseSlot?.StackSize > 0)
+            {
+                Element.SlotClick(Api, slotId, EnumMouseButton.Left, false, false, false);
+                distributeAdded[slotId] = State.Inventory[slotId].StackSize - previousStackSize;
+            }
+
+            if (mouseSlot?.StackSize <= 0)
+            {
+                RedistributeStacksMethod.Invoke(Element, new object[] { slotId });
+            }
+
+            Applied++;
         }
     }
 }
@@ -2401,12 +2711,29 @@ internal static class Patch_ItemSlotCraftingOutput_FlipWith
 
 internal static class Patch_InventoryCraftingGrid_FindMatchingRecipe
 {
-    public static void Postfix(InventoryCraftingGrid __instance)
+    public static void Prefix(out long __state)
+    {
+        __state = Environment.TickCount64;
+    }
+
+    public static void Postfix(InventoryCraftingGrid __instance, long __state)
     {
         if (__instance[__instance.Count - 1] is ItemSlotCraftingOutput outputSlot)
         {
             CraftingOutputGuard.ResetLeftoverState(outputSlot);
         }
+
+        SyncDiagnostics.Slow(
+            __instance.Api,
+            __state,
+            "FindMatchingRecipe",
+            string.Format(
+                "{0} side={1} recipe={2} output={3} inputs={4}",
+                __instance.InventoryID ?? "?",
+                __instance.Api?.Side,
+                __instance.MatchingRecipe?.Name?.ToString() ?? "none",
+                ClientPredictionSuppressor.Fingerprint(__instance[__instance.Count - 1]?.Itemstack),
+                CraftingOutputGuard.InputSummary(__instance)));
     }
 }
 
@@ -2437,15 +2764,55 @@ internal static class CraftingOutputGuard
             return false;
         }
 
+        long startedMs = Environment.TickCount64;
         BeginCraftMethod.Invoke(inv, Array.Empty<object>());
+        SyncDiagnostics.Slow(
+            inv.Api,
+            startedMs,
+            "BeginCraft",
+            inv.InventoryID ?? "?");
         return true;
     }
 
     public static void EndCraftIfNeeded(InventoryCraftingGrid inv, bool beganCraft)
     {
-        if (beganCraft)
+        if (!beganCraft)
         {
+            return;
+        }
+
+        try
+        {
+            long startedMs = Environment.TickCount64;
             EndCraftMethod.Invoke(inv, Array.Empty<object>());
+            SyncDiagnostics.Slow(
+                inv.Api,
+                startedMs,
+                "EndCraft",
+                string.Format(
+                    "{0} recipe={1} output={2} inputs={3}",
+                    inv.InventoryID ?? "?",
+                    inv.MatchingRecipe?.Name?.ToString() ?? "none",
+                    ClientPredictionSuppressor.Fingerprint(inv[inv.Count - 1]?.Itemstack),
+                    InputSummary(inv)));
+        }
+        catch (TargetInvocationException ex) when (ex.InnerException is InvalidOperationException invalid
+            && invalid.Message.StartsWith("Missing or errored output result for recipe", StringComparison.Ordinal))
+        {
+            ItemSlotCraftingOutput outputSlot = inv[inv.Count - 1] as ItemSlotCraftingOutput;
+            if (outputSlot != null)
+            {
+                outputSlot.Itemstack = null;
+                ResetLeftoverState(outputSlot);
+                outputSlot.MarkDirty();
+                inv.MarkSlotDirty(inv.Count - 1);
+            }
+
+            inv.MatchingRecipe = null;
+            inv.Api?.Logger.Warning(
+                "[ItemSyncFixes] Suppressed crafting output generation error during EndCraft for {0}: {1}",
+                inv.InventoryID ?? "?",
+                invalid.Message);
         }
     }
 
@@ -2460,6 +2827,29 @@ internal static class CraftingOutputGuard
         PrevStackField.SetValue(outputSlot, null);
     }
 
+    public static string InputSummary(InventoryCraftingGrid inv)
+    {
+        if (inv == null)
+        {
+            return "?";
+        }
+
+        List<string> parts = new();
+        int lastInputSlot = Math.Max(0, inv.Count - 1);
+        for (int slotId = 0; slotId < lastInputSlot; slotId++)
+        {
+            ItemStack stack = inv[slotId]?.Itemstack;
+            if (stack == null)
+            {
+                continue;
+            }
+
+            parts.Add(slotId + ":" + ClientPredictionSuppressor.Fingerprint(stack));
+        }
+
+        return parts.Count == 0 ? "empty" : string.Join(",", parts);
+    }
+
     public static int CraftManyFullOutputsOnly(
         ItemSlotCraftingOutput outputSlot,
         ItemSlot sinkSlot,
@@ -2472,11 +2862,16 @@ internal static class CraftingOutputGuard
         }
 
         InventoryCraftingGrid inv = (InventoryCraftingGrid)outputSlot.Inventory;
+        long startedMs = Environment.TickCount64;
         int movedTotal = 0;
+        int iterations = 0;
+        ItemStack craftedEventStack = null;
 
         while (!outputSlot.Empty)
         {
+            iterations++;
             ItemStack craftedStack = outputSlot.Itemstack.Clone();
+            craftedEventStack ??= craftedStack.Clone();
             int recipeOutputSize = outputSlot.StackSize;
 
             if (!FullOutputFits(outputSlot, sinkSlot, op))
@@ -2497,7 +2892,6 @@ internal static class CraftingOutputGuard
 
             movedTotal += moved;
             ConsumeIngredients(inv, sinkSlot);
-            TriggerCrafted(craftedStack, moved, op.ActingPlayer ?? inv.Player);
 
             if (!inv.CanStillCraftCurrent())
             {
@@ -2511,9 +2905,21 @@ internal static class CraftingOutputGuard
 
         if (movedTotal > 0)
         {
+            TriggerCrafted(craftedEventStack, movedTotal, op.ActingPlayer ?? inv.Player);
             sinkSlot.OnItemSlotModified(sinkSlot.Itemstack);
             outputSlot.OnItemSlotModified(sinkSlot.Itemstack);
         }
+
+        SyncDiagnostics.Slow(
+            inv.Api,
+            startedMs,
+            "CraftManyFullOutputsOnly",
+            string.Format(
+                "{0} moved={1} iterations={2} sink={3}",
+                inv.InventoryID ?? "?",
+                movedTotal,
+                iterations,
+                ClientPredictionSuppressor.Fingerprint(sinkSlot?.Itemstack)));
 
         return movedTotal;
     }
