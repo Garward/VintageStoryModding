@@ -162,14 +162,15 @@ internal static class CraftingPatchInstaller
             harmony,
             AccessTools.Method(typeof(InventoryCraftingGrid), "FindMatchingRecipe"),
             prefix: new HarmonyMethod(typeof(Patch_InventoryCraftingGrid_FindMatchingRecipe), nameof(Patch_InventoryCraftingGrid_FindMatchingRecipe.Prefix)),
-            postfix: new HarmonyMethod(typeof(Patch_InventoryCraftingGrid_FindMatchingRecipe), nameof(Patch_InventoryCraftingGrid_FindMatchingRecipe.Postfix)));
+            postfix: new HarmonyMethod(typeof(Patch_InventoryCraftingGrid_FindMatchingRecipe), nameof(Patch_InventoryCraftingGrid_FindMatchingRecipe.Postfix)),
+            finalizer: new HarmonyMethod(typeof(Patch_InventoryCraftingGrid_FindMatchingRecipe), nameof(Patch_InventoryCraftingGrid_FindMatchingRecipe.Finalizer)));
     }
 
-    private static void PatchIfFound(Harmony harmony, MethodBase target, HarmonyMethod prefix = null, HarmonyMethod postfix = null)
+    private static void PatchIfFound(Harmony harmony, MethodBase target, HarmonyMethod prefix = null, HarmonyMethod postfix = null, HarmonyMethod finalizer = null)
     {
         if (target != null)
         {
-            harmony.Patch(target, prefix: prefix, postfix: postfix);
+            harmony.Patch(target, prefix: prefix, postfix: postfix, finalizer: finalizer);
         }
     }
 }
@@ -2735,6 +2736,26 @@ internal static class Patch_InventoryCraftingGrid_FindMatchingRecipe
                 ClientPredictionSuppressor.Fingerprint(__instance[__instance.Count - 1]?.Itemstack),
                 CraftingOutputGuard.InputSummary(__instance)));
     }
+
+    public static Exception Finalizer(InventoryCraftingGrid __instance, Exception __exception)
+    {
+        if (__exception == null)
+        {
+            return null;
+        }
+
+        if (!CraftingOutputGuard.IsMissingOutputResultException(__exception, out string message))
+        {
+            return __exception;
+        }
+
+        CraftingOutputGuard.ClearErroredOutput(__instance);
+        __instance?.Api?.Logger.Warning(
+            "[ItemSyncFixes] Suppressed crafting output generation error during FindMatchingRecipe for {0}: {1}",
+            __instance?.InventoryID ?? "?",
+            message);
+        return null;
+    }
 }
 
 internal static class CraftingOutputGuard
@@ -2796,23 +2817,14 @@ internal static class CraftingOutputGuard
                     ClientPredictionSuppressor.Fingerprint(inv[inv.Count - 1]?.Itemstack),
                     InputSummary(inv)));
         }
-        catch (TargetInvocationException ex) when (ex.InnerException is InvalidOperationException invalid
-            && invalid.Message.StartsWith("Missing or errored output result for recipe", StringComparison.Ordinal))
+        catch (TargetInvocationException ex) when (IsMissingOutputResultException(ex, out _))
         {
-            ItemSlotCraftingOutput outputSlot = inv[inv.Count - 1] as ItemSlotCraftingOutput;
-            if (outputSlot != null)
-            {
-                outputSlot.Itemstack = null;
-                ResetLeftoverState(outputSlot);
-                outputSlot.MarkDirty();
-                inv.MarkSlotDirty(inv.Count - 1);
-            }
-
-            inv.MatchingRecipe = null;
+            IsMissingOutputResultException(ex, out string message);
+            ClearErroredOutput(inv);
             inv.Api?.Logger.Warning(
                 "[ItemSyncFixes] Suppressed crafting output generation error during EndCraft for {0}: {1}",
                 inv.InventoryID ?? "?",
-                invalid.Message);
+                message);
         }
     }
 
@@ -2825,6 +2837,42 @@ internal static class CraftingOutputGuard
     {
         HasLeftOversField.SetValue(outputSlot, false);
         PrevStackField.SetValue(outputSlot, null);
+    }
+
+    public static bool IsMissingOutputResultException(Exception exception, out string message)
+    {
+        Exception unwrapped = exception is TargetInvocationException targetException && targetException.InnerException != null
+            ? targetException.InnerException
+            : exception;
+
+        if (unwrapped is InvalidOperationException invalid
+            && invalid.Message.StartsWith("Missing or errored output result for recipe", StringComparison.Ordinal))
+        {
+            message = invalid.Message;
+            return true;
+        }
+
+        message = null;
+        return false;
+    }
+
+    public static void ClearErroredOutput(InventoryCraftingGrid inv)
+    {
+        if (inv == null || inv.Count == 0)
+        {
+            return;
+        }
+
+        ItemSlotCraftingOutput outputSlot = inv[inv.Count - 1] as ItemSlotCraftingOutput;
+        if (outputSlot != null)
+        {
+            outputSlot.Itemstack = null;
+            ResetLeftoverState(outputSlot);
+            outputSlot.MarkDirty();
+            inv.MarkSlotDirty(inv.Count - 1);
+        }
+
+        inv.MatchingRecipe = null;
     }
 
     public static string InputSummary(InventoryCraftingGrid inv)

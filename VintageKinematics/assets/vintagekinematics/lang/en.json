@@ -101,6 +101,8 @@
     "vintagekinematics:kineticsawmill-mode-cogsection": "Cutting Cogwheel Sections",
     "vintagekinematics:kineticsawmill-mode-firewood": "Cutting Firewood",
     "vintagekinematics:kineticsawmill-mode-gearbox": "Cutting Gearboxes",
+    "vintagekinematics:kineticsawmill-mode-axle": "Cutting Axles",
+    "vintagekinematics:kineticsawmill-mode-angledgear": "Cutting Angled Gears",
     "vintagekinematics:kineticsawmill-recipes": "Recipes",
     "vintagekinematics:kineticsawmill-search-recipes": "Search sawmill recipes",
     "vintagekinematics:kineticsawmill-filter-all": "All modes",
@@ -644,5 +646,10 @@
     "vintagekinematics:block-handbooktext-vintagekinematics:jsonmachinetemplate-*": "This creative-only block is a working example of the generic JSON kinetic processor. It is a 1x2 multiblock machine using the standard VK modeling convention: shaft north-south, west/top input, east/bottom output.<br><br>Its process recipe lives at <strong>vkrecipe/process/jsonmachinetemplate/stick-to-handcrank.json</strong> and converts one stick into one hand crank while the machine has rotation power.<br><br>Modders can copy the shipped template files under <strong>assets/vintagekinematics/templates/jsonprocessor/</strong>, rename the machine code, replace the shape, and add recipes under their own mod's <strong>vkrecipe/process/&lt;machineCode&gt;/</strong> folder.",
     "vintagekinematics:jsonprocessor-title": "Kinetic Processor",
     "vintagekinematics:jsonprocessor-input": "Input",
-    "vintagekinematics:jsonprocessor-outputs": "Outputs"
+    "vintagekinematics:jsonprocessor-outputs": "Outputs",
+    "vintagekinematics:powereddrill-mode-1x1": "Mine 1x1",
+    "vintagekinematics:powereddrill-mode-3x3": "Mine 3x3",
+    "vintagekinematics:powereddrill-mode-5x5": "Mine 5x5",
+    "heldhelp-powereddrill-mode": "Select mining area",
+    "vintagekinematics:heldhelp-powereddrill-mode": "Select mining area"
 }

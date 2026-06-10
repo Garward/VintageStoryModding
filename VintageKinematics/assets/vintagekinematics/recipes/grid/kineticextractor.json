@@ -1,7 +1,7 @@
 {
 	"ingredientPattern": "PMP,SCS,PMP",
 	"ingredients": {
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"P": { "type": "item", "code": "*:plank-*", "quantity": 2 },
 		"M": { "type": "item", "code": "game:metalplate-*", "name": "metal", "allowedVariants": [ "tinbronze", "bismuthbronze", "blackbronze", "iron", "meteoriciron", "steel" ] },
 		"S": { "type": "block", "code": "shaft-y" },
 		"C": { "type": "block", "code": "cogwheel-y" }

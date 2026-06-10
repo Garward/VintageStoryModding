@@ -2,7 +2,6 @@ using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
 using VintageKinematics.BlockEntities;
 using VintageKinematics.Crafting;
 
@@ -175,7 +174,7 @@ namespace VintageKinematics.Api
             string captured = null;
             if (recipe.Ingredient?.Code?.Path?.Contains('*') == true)
             {
-                captured = WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, inputSlot.Itemstack.Collectible.Code);
+                captured = RecipeWildcardUtil.GetWildcardValue(recipe.Ingredient.Code, inputSlot.Itemstack.Collectible.Code);
             }
 
             inputSlot.TakeOut(requiredQty);
@@ -185,7 +184,7 @@ namespace VintageKinematics.Api
             foreach (var o in recipe.Outputs)
             {
                 if (o == null) continue;
-                ItemStack outStack = ResolveOutputStack(o, captured);
+                ItemStack outStack = RecipeWildcardUtil.ResolveOutputStack(Api.World, o, captured, inputSlot.Itemstack?.Collectible?.Code);
                 if (outStack == null) continue;
                 outStack.StackSize = o.StackSize;
                 basin.DepositOutput(outStack);
@@ -289,25 +288,6 @@ namespace VintageKinematics.Api
                     default: return 1;
                 }
             }
-        }
-
-        private ItemStack ResolveOutputStack(JsonItemStack o, string captured)
-        {
-            if (captured != null && o.Code?.Path?.Contains('*') == true)
-            {
-                AssetLocation substituted = new AssetLocation(o.Code.Domain, o.Code.Path.Replace("*", captured));
-                if (o.Type == EnumItemClass.Block)
-                {
-                    Block b = Api.World.GetBlock(substituted);
-                    return b == null ? null : new ItemStack(b, 1);
-                }
-                else
-                {
-                    Item it = Api.World.GetItem(substituted);
-                    return it == null ? null : new ItemStack(it, 1);
-                }
-            }
-            return o.ResolvedItemstack?.Clone();
         }
 
         private void SpawnImpactEffects(BlockPos basinPos)

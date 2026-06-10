@@ -156,19 +156,26 @@ namespace VintageKinematics.Api
             int quantity = InputQuantityPerCycle(recipe, input);
             if (quantity <= 0 || input.StackSize < quantity) return false;
 
+            List<ItemStack> outputs = new List<ItemStack>();
+            IEnumerable<ItemStack> resolvedOutputs = GetOutputs(recipe, input);
+            if (resolvedOutputs != null)
+            {
+                foreach (ItemStack output in resolvedOutputs)
+                {
+                    if (output == null || output.StackSize <= 0) continue;
+                    outputs.Add(output);
+                }
+            }
+            if (outputs.Count == 0) return false;
+
             PlayWorkEffects(recipe, input);
 
             slot.TakeOut(quantity);
             slot.MarkDirty();
 
-            IEnumerable<ItemStack> outputs = GetOutputs(recipe, input);
-            if (outputs != null)
+            foreach (ItemStack output in outputs)
             {
-                foreach (ItemStack output in outputs)
-                {
-                    if (output == null || output.StackSize <= 0) continue;
-                    DepositOutput(output);
-                }
+                DepositOutput(output);
             }
 
             MarkDirty(true);
@@ -194,7 +201,15 @@ namespace VintageKinematics.Api
             if (recipe == null) return false;
 
             int quantity = InputQuantityPerCycle(recipe, input);
-            return quantity > 0 && input.StackSize >= quantity;
+            if (quantity <= 0 || input.StackSize < quantity) return false;
+
+            IEnumerable<ItemStack> outputs = GetOutputs(recipe, input);
+            if (outputs == null) return false;
+            foreach (ItemStack output in outputs)
+            {
+                if (output != null && output.StackSize > 0) return true;
+            }
+            return false;
         }
 
         protected float CurrentWorkerProgress()

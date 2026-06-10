@@ -120,12 +120,15 @@ namespace VintageKinematics.Gui
                 composer = composer.AddDropDown(sortValues, sortNames, CurrentSortIndex(), OnSortChanged, sortBounds, sortKey);
             }
 
-            return composer
+            composer = composer
                 .BeginClip(clipBounds)
                     .AddInset(insetBounds, 3)
                     .AddFlatList(listBounds, OnListClicked, AsFlatListItems(items), listKey)
                 .EndClip()
                 .AddVerticalScrollbar(OnScrollbarValue, scrollbarBounds, scrollbarKey);
+
+            ConfigureListHeight(composer.GetFlatList(listKey));
+            return composer;
         }
 
         public void AfterCompose(GuiComposer composer)
@@ -187,6 +190,7 @@ namespace VintageKinematics.Gui
             if (list == null || scrollbar == null) return;
 
             ConfigureListHeight(list);
+            list.CalcTotalHeight();
             scrollbar.SetHeights((float)ListHeight, (float)list.insideBounds.fixedHeight);
             scrollbar.CurrentYPosition = 0f;
             OnScrollbarValue(0f);

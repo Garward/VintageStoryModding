@@ -2,6 +2,7 @@ using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
+using Vintagestory.GameContent.Mechanics;
 using VintageKinematics.Api;
 
 namespace VintageKinematics.Network
@@ -163,7 +164,8 @@ namespace VintageKinematics.Network
                     if (Math.Abs(offset.X) != Math.Abs(axisVec.X)) return null;
                     if (Math.Abs(offset.Y) != Math.Abs(axisVec.Y)) return null;
                     if (Math.Abs(offset.Z) != Math.Abs(axisVec.Z)) return null;
-                    return new KineticConnection(1f, VanillaBridgeDirection(fromVanilla, offset, from.Axis), 0f);
+                    int direction = VanillaBridgeConnectionDirection(fromVanilla, from.Pos, to.Pos);
+                    return new KineticConnection(1f, direction, 0f);
                 }
             }
 
@@ -222,18 +224,27 @@ namespace VintageKinematics.Network
         private static KineticConnection Translate(KineticConnectionResult r) =>
             new KineticConnection(r.Ratio, r.Direction, r.PhaseOffset);
 
-        private static int VanillaBridgeDirection(bool fromVanilla, Vec3i offsetFromFromToTo, EnumKineticAxis axis)
+        private int VanillaBridgeConnectionDirection(bool fromVanilla, BlockPos fromPos, BlockPos toPos)
         {
-            Vec3i offsetFromVanilla = fromVanilla
-                ? offsetFromFromToTo
-                : new Vec3i(-offsetFromFromToTo.X, -offsetFromFromToTo.Y, -offsetFromFromToTo.Z);
+            BlockPos vanillaPos = fromVanilla ? fromPos : toPos;
+            BlockPos vkPos = fromVanilla ? toPos : fromPos;
 
-            int sign = 0;
-            if (axis == EnumKineticAxis.X) sign = Math.Sign(offsetFromVanilla.X);
-            else if (axis == EnumKineticAxis.Y) sign = Math.Sign(offsetFromVanilla.Y);
-            else if (axis == EnumKineticAxis.Z) sign = Math.Sign(offsetFromVanilla.Z);
+            BlockEntity be = world.BlockAccessor.GetBlockEntity(vanillaPos);
+            BEBehaviorMPBase mp = be?.GetBehavior<BEBehaviorMPBase>();
+            if (mp == null) return 1;
 
-            return sign > 0 ? -1 : 1;
+            Vec3i fromVanillaToVk = new Vec3i(vkPos.X - vanillaPos.X, vkPos.Y - vanillaPos.Y, vkPos.Z - vanillaPos.Z);
+            BlockFacing vkFace = BlockFacing.FromNormal(fromVanillaToVk);
+            if (vkFace == null) return 1;
+
+            int propagationDirection = mp.IsPropagationDirection(vkPos, vkFace) ? 1 : -1;
+
+            // VK shaft meshes use world-axis rotation. Vanilla axle visual handedness differs
+            // on the positive horizontal ends, so bridge by the world face from vanilla -> VK:
+            // +X/+Z keep vanilla's propagation-derived sign, -X/-Z use the opposite.
+            return vkFace == BlockFacing.EAST || vkFace == BlockFacing.SOUTH
+                ? propagationDirection
+                : -propagationDirection;
         }
 
         private bool HasKineticConnector(BlockPos pos)

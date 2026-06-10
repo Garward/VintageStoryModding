@@ -1,8 +1,8 @@
 {
     "ingredient": { "type": "block", "code": "*:log-placed-*", "quantity": 1 },
     "outputs": [
-        { "type": "block", "code": "gearbox-y", "quantity": 1 }
+        { "type": "block", "code": "game:woodenaxle-ud", "quantity": 4 }
     ],
     "sawTicks": 4,
-    "mode": "Gearbox"
+    "mode": "Axle"
 }

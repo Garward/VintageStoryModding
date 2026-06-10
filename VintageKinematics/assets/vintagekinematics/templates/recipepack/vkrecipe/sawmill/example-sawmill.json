@@ -1,13 +1,13 @@
 {
     "ingredient": {
         "type": "block",
-        "code": "game:log-placed-*-*",
+        "code": "*:log-placed-*-*",
         "quantity": 1
     },
     "outputs": [
         {
             "type": "item",
-            "code": "game:plank-*",
+            "code": "*:plank-*",
             "quantity": 16
         },
         {

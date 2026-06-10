@@ -30,6 +30,7 @@ namespace VintageKinematics.Gui
         private readonly Func<string> recipeButtonLabel;
         private readonly string[] recipeSortValues;
         private readonly string[] recipeSortNames;
+        private readonly int recipeBrowserCellHeight;
         private readonly MachineRecipeBrowser<IRecipeBrowserListItem> recipeBrowser;
         private const string RecipeButtonKey = "jsonprocessor-recipes";
 
@@ -65,7 +66,8 @@ namespace VintageKinematics.Gui
             Action<IRecipeBrowserListItem> onRecipeClicked = null,
             Func<string> recipeButtonLabel = null,
             string[] recipeSortValues = null,
-            string[] recipeSortNames = null)
+            string[] recipeSortNames = null,
+            int recipeBrowserCellHeight = 64)
             : base(title, inv, pos, capi)
         {
             this.inputFirst = inputFirst;
@@ -87,6 +89,7 @@ namespace VintageKinematics.Gui
             this.recipeButtonLabel = recipeButtonLabel;
             this.recipeSortValues = recipeSortValues ?? RecipeSortValues();
             this.recipeSortNames = recipeSortNames ?? RecipeSortNames();
+            this.recipeBrowserCellHeight = recipeBrowserCellHeight;
             progressBar = new MachineProgressBar(capi, this.dialogKeyPrefix + "-progress", getProgress, getProgressMax, getCanProgress);
             if (showRecipeBrowser)
             {
@@ -99,7 +102,7 @@ namespace VintageKinematics.Gui
                     () => SingleComposer,
                     width: recipeBrowserWidth,
                     listHeight: recipeBrowserListHeight,
-                    cellHeight: 64,
+                    cellHeight: this.recipeBrowserCellHeight,
                     sortValues: this.recipeSortValues,
                     sortNames: this.recipeSortNames);
             }

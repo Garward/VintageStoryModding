@@ -166,7 +166,7 @@ namespace VintageKinematics.Gui
         {
             if (stack?.Code?.Path != "plank-*") return null;
 
-            string domain = string.IsNullOrEmpty(stack.Code.Domain) ? "game" : stack.Code.Domain;
+            string domain = string.IsNullOrEmpty(stack.Code.Domain) || stack.Code.Domain == "*" ? "game" : stack.Code.Domain;
             Item item = capi?.World?.GetItem(new AssetLocation(domain, "plank-oak"));
             if (item == null || item.IsMissing) return null;
 
@@ -204,6 +204,8 @@ namespace VintageKinematics.Gui
                 SawmillMode.CogwheelSection => Lang.Get("vintagekinematics:kineticsawmill-mode-cogsection"),
                 SawmillMode.Firewood => Lang.Get("vintagekinematics:kineticsawmill-mode-firewood"),
                 SawmillMode.Gearbox => Lang.Get("vintagekinematics:kineticsawmill-mode-gearbox"),
+                SawmillMode.Axle => Lang.Get("vintagekinematics:kineticsawmill-mode-axle"),
+                SawmillMode.AngledGear => Lang.Get("vintagekinematics:kineticsawmill-mode-angledgear"),
                 _ => Lang.Get("vintagekinematics:kineticsawmill-mode-plank")
             };
         }

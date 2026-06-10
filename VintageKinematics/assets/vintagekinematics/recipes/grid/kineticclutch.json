@@ -2,7 +2,7 @@
   "ingredientPattern": "_L_,PSP,_R_",
   "ingredients": {
     "L": { "type": "item", "code": "game:metalplate-copper" },
-    "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+    "P": { "type": "item", "code": "*:plank-*", "quantity": 2 },
     "S": { "type": "block", "code": "shaft-y" },
     "R": { "type": "item", "code": "game:resin" }
   },

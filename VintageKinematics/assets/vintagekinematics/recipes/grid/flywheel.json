@@ -2,7 +2,7 @@
 	"ingredientPattern": "RPR,PCP,RPR",
 	"ingredients": {
 		"R": { "type": "item", "code": "game:resin" },
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"P": { "type": "item", "code": "*:plank-*", "quantity": 2 },
 		"C": { "type": "block", "code": "largecogwheel-y" }
 	},
 	"width": 3,

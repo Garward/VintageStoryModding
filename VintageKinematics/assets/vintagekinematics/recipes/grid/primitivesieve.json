@@ -1,7 +1,7 @@
 {
 	"ingredientPattern": "BRB,RSR,BCB",
 	"ingredients": {
-		"B": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
+		"B": { "type": "item", "code": "*:plank-*", "quantity": 4 },
 		"R": { "type": "block", "code": "game:rushmat", "quantity": 4 },
 		"S": { "type": "block", "code": "shaft-y" },
 		"C": { "type": "block", "code": "cogwheel-y" }

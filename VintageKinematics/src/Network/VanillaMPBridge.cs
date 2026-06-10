@@ -61,6 +61,7 @@ namespace VintageKinematics.Network
             public bool IsRotor;
         }
         private static readonly System.Collections.Generic.Dictionary<System.Type, RotorPropPair> rotorPropCache = new System.Collections.Generic.Dictionary<System.Type, RotorPropPair>();
+        private static readonly System.Collections.Generic.Dictionary<System.Type, MethodInfo> rotationReversedMethodCache = new System.Collections.Generic.Dictionary<System.Type, MethodInfo>();
 
         /// <summary>Lower bound on |torque| used when computing StressImpact. Stops the very
         /// first network tick (TotalAvailableTorque still 0) from showing flat-zero capacity
@@ -109,7 +110,10 @@ namespace VintageKinematics.Network
                     break;
             }
 
-            float vanillaSpeed = mp.Network?.Speed ?? 0f;
+            // VK's signed RPM convention is opposite vanilla's local MP angle convention.
+            // Normalize once at the source boundary so every coaxial axle/shaft bridge can
+            // pass direction through unchanged.
+            float vanillaSpeed = -ReadLocalSignedSpeed(mp, axis);
             if (System.MathF.Abs(vanillaSpeed) < StoppedThreshold)
             {
                 signedRPM = 0f;
@@ -129,6 +133,54 @@ namespace VintageKinematics.Network
             networkTorque = potential != 0f ? potential : (mp.Network?.TotalAvailableTorque ?? 0f);
             vanillaNetworkId = mp.Network?.networkId ?? 0L;
             return true;
+        }
+
+        private static float ReadLocalSignedSpeed(BEBehaviorMPBase mp, EnumKineticAxis axis)
+        {
+            float speed = (mp.Network?.Speed ?? 0f) * mp.GearedRatio;
+
+            // Vanilla renders each MP device from its local AngleRad, which applies this
+            // reversal before the renderer multiplies by AxisSign. Mirror that public API
+            // path so VK bridge direction matches the vanilla axle's actual visual rotation.
+            if (IsRotationReversed(mp))
+            {
+                speed = -speed;
+            }
+
+            int axisSign = AxisSignFor(axis, mp.AxisSign);
+            return axisSign == 0 ? speed : speed * axisSign;
+        }
+
+        private static int AxisSignFor(EnumKineticAxis axis, int[] signs)
+        {
+            if (signs == null || signs.Length < 3) return 0;
+            return axis switch
+            {
+                EnumKineticAxis.X => signs[0],
+                EnumKineticAxis.Y => signs[1],
+                EnumKineticAxis.Z => signs[2],
+                _ => 0
+            };
+        }
+
+        private static bool IsRotationReversed(BEBehaviorMPBase mp)
+        {
+            if (mp == null) return false;
+            System.Type type = mp.GetType();
+            if (!rotationReversedMethodCache.TryGetValue(type, out MethodInfo method))
+            {
+                method = type.GetMethod("isRotationReversed", RotorPropFlags);
+                rotationReversedMethodCache[type] = method;
+            }
+            if (method == null || method.ReturnType != typeof(bool)) return false;
+            try
+            {
+                return (bool)method.Invoke(mp, null);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static float ComputeSourcePotentialTorque(MechanicalNetwork network)

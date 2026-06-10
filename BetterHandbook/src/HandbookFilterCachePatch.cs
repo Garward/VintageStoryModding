@@ -34,8 +34,8 @@ namespace HandbookCache
     [HarmonyPatch(typeof(GuiDialogHandbook), nameof(GuiDialogHandbook.FilterItems))]
     internal static class HandbookFilterCachePatch
     {
-        private const int InitialResultBatchSize = 750;
-        private const int AdditionalResultBatchSize = 750;
+        private const int InitialResultBatchSize = 160;
+        private const int AdditionalResultBatchSize = 160;
 
         private static readonly ConditionalWeakTable<GuiDialogHandbook, CacheState> CacheByDialog = new ConditionalWeakTable<GuiDialogHandbook, CacheState>();
 
@@ -140,11 +140,22 @@ namespace HandbookCache
             }
 
             bool cacheHit = state.ResultsByKey.ContainsKey(cacheKey);
+            List<IFlatListItem> candidateResults = null;
+            string candidateSearchText = null;
             if (!state.ResultsByKey.TryGetValue(cacheKey, out List<IFlatListItem> cachedResults))
             {
                 try
                 {
-                    cachedResults = BuildResults(displayPages, effectiveCategoryCode, searchText);
+                    TryGetPrefixCandidateResults(state, effectiveCategoryCode, searchText, out candidateResults, out candidateSearchText);
+                    cachedResults = BuildResults(state, displayPages, effectiveCategoryCode, searchText, candidateResults, out int scannedPages);
+                    HandbookCacheDiagnostics.Log(
+                        ClientApi(dialog),
+                        "Filter search built text='{0}' category={1} source={2} scanned={3} found={4}",
+                        searchText,
+                        effectiveCategoryCode ?? "<all>",
+                        candidateSearchText ?? "<all>",
+                        scannedPages,
+                        cachedResults.Count);
                 }
                 catch (Exception ex)
                 {
@@ -183,6 +194,25 @@ namespace HandbookCache
                 displayPages.Count,
                 stopwatch.ElapsedMilliseconds);
             return;
+        }
+
+        private static bool TryGetPrefixCandidateResults(CacheState state, string categoryCode, string searchText, out List<IFlatListItem> candidateResults, out string candidateSearchText)
+        {
+            candidateResults = null;
+            candidateSearchText = null;
+
+            for (int length = searchText.Length - 1; length > 0; length--)
+            {
+                string prefix = searchText.Substring(0, length);
+                string prefixKey = MakeCacheKey(categoryCode, prefix);
+                if (!state.ResultsByKey.TryGetValue(prefixKey, out List<IFlatListItem> results)) continue;
+
+                candidateResults = results;
+                candidateSearchText = prefix;
+                return true;
+            }
+
+            return false;
         }
 
         internal static void Clear(GuiDialogHandbook dialog)
@@ -326,36 +356,31 @@ namespace HandbookCache
             }
         }
 
-        private static List<IFlatListItem> BuildResults(List<GuiHandbookPage> allPages, string categoryCode, string searchText)
+        private static List<IFlatListItem> BuildResults(CacheState state, List<GuiHandbookPage> allPages, string categoryCode, string searchText, List<IFlatListItem> candidateResults, out int scannedPages)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
             List<WeightedPage> foundPages = new List<WeightedPage>();
             Regex regex = GuiDialogHandbook.RegexFromSearchText(searchText);
             Regex strictRegex = GuiDialogHandbook.RegexFromSearchText(searchText, true);
+            scannedPages = 0;
 
-            for (int i = 0; i < allPages.Count; i++)
+            if (candidateResults != null)
             {
-                GuiHandbookPage page = allPages[i];
-                if (!HandbookModCategories.PageMatchesCategory(page, categoryCode)) continue;
-                if (page.IsDuplicate) continue;
-
-                PageText pageText = page.GetPageText();
-                int titleMatches = CountMatches(pageText.Title ?? "", regex);
-                int strictTitleMatches = CountMatches(pageText.Title ?? "", strictRegex);
-                int textMatches = CountMatches(pageText.Text ?? "", regex);
-                int extraMatches = CountMatches(ExtraSearchText(page, categoryCode), regex);
-
-                if (titleMatches > 0 || textMatches > 0 || extraMatches > 0)
+                for (int i = 0; i < candidateResults.Count; i++)
                 {
-                    foundPages.Add(new WeightedPage(new WeightedHandbookPage
+                    if (candidateResults[i] is GuiHandbookPage page)
                     {
-                        Page = page,
-                        TitleMatches = titleMatches,
-                        StrictTitleMatches = strictTitleMatches,
-                        TitleLength = pageText.Title?.Length ?? 0,
-                        TextMatches = textMatches + extraMatches,
-                        SearchWeight = 1f + page.SearchWeightOffset
-                    }));
+                        scannedPages++;
+                        AddWeightedMatch(state, foundPages, page, categoryCode, regex, strictRegex);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < allPages.Count; i++)
+                {
+                    scannedPages++;
+                    AddWeightedMatch(state, foundPages, allPages[i], categoryCode, regex, strictRegex);
                 }
             }
 
@@ -364,6 +389,64 @@ namespace HandbookCache
             return foundPages
                 .Select(page => (IFlatListItem)page.Value.Page)
                 .ToList();
+        }
+
+        private static void AddWeightedMatch(CacheState state, List<WeightedPage> foundPages, GuiHandbookPage page, string categoryCode, Regex regex, Regex strictRegex)
+        {
+            if (!HandbookModCategories.PageMatchesCategory(page, categoryCode)) return;
+            if (page.IsDuplicate) return;
+
+            PageText pageText = GetCachedPageText(state, page);
+            int titleMatches = CountMatches(pageText.Title ?? "", regex);
+            int strictTitleMatches = CountMatches(pageText.Title ?? "", strictRegex);
+            int textMatches = CountMatches(pageText.Text ?? "", regex);
+            int extraMatches = CountMatches(GetCachedExtraSearchText(state, page, categoryCode), regex);
+
+            if (titleMatches == 0 && textMatches == 0 && extraMatches == 0) return;
+
+            foundPages.Add(new WeightedPage(new WeightedHandbookPage
+            {
+                Page = page,
+                TitleMatches = titleMatches,
+                StrictTitleMatches = strictTitleMatches,
+                TitleLength = pageText.Title?.Length ?? 0,
+                TextMatches = textMatches + extraMatches,
+                SearchWeight = 1f + page.SearchWeightOffset
+            }));
+        }
+
+        private static PageText GetCachedPageText(CacheState state, GuiHandbookPage page)
+        {
+            if (!state.PageTextByPage.TryGetValue(page, out PageText pageText))
+            {
+                pageText = page.GetPageText();
+                state.PageTextByPage[page] = pageText;
+            }
+
+            return pageText;
+        }
+
+        private static string GetCachedExtraSearchText(CacheState state, GuiHandbookPage page, string categoryCode)
+        {
+            if (!HandbookModCategories.IsModDomainCategory(categoryCode))
+            {
+                return "";
+            }
+
+            string key = categoryCode ?? "";
+            if (!state.ExtraTextByCategory.TryGetValue(key, out Dictionary<GuiHandbookPage, string> textByPage))
+            {
+                textByPage = new Dictionary<GuiHandbookPage, string>();
+                state.ExtraTextByCategory[key] = textByPage;
+            }
+
+            if (!textByPage.TryGetValue(page, out string text))
+            {
+                text = ExtraSearchText(page, categoryCode);
+                textByPage[page] = text;
+            }
+
+            return text;
         }
 
         private static string ExtraSearchText(GuiHandbookPage page, string categoryCode)
@@ -454,8 +537,8 @@ namespace HandbookCache
 
         internal static bool ShouldHandleFilter(GuiDialogHandbook dialog)
         {
-            if (RecipeExplorer.BetterHandbookFeatures.HandbookPerformance || RecipeExplorer.BetterHandbookFeatures.VariantGrouping) return true;
             if (dialog == null) return false;
+            if (RecipeExplorer.BetterHandbookFeatures.HandbookPerformance || RecipeExplorer.BetterHandbookFeatures.VariantGrouping) return true;
 
             string categoryCode = dialog.currentCatgoryCode;
             return HandbookModCategories.IsManagedCategory(categoryCode)
@@ -475,6 +558,8 @@ namespace HandbookCache
             public int LastLazyScannedPages;
             public readonly List<IFlatListItem> LazyEmptyResults = new List<IFlatListItem>();
             public readonly Dictionary<string, List<IFlatListItem>> ResultsByKey = new Dictionary<string, List<IFlatListItem>>();
+            public readonly Dictionary<GuiHandbookPage, PageText> PageTextByPage = new Dictionary<GuiHandbookPage, PageText>();
+            public readonly Dictionary<string, Dictionary<GuiHandbookPage, string>> ExtraTextByCategory = new Dictionary<string, Dictionary<GuiHandbookPage, string>>();
 
             public void Clear(int pageCount)
             {
@@ -489,6 +574,8 @@ namespace HandbookCache
                 LastLazyScannedPages = 0;
                 LazyEmptyResults.Clear();
                 ResultsByKey.Clear();
+                PageTextByPage.Clear();
+                ExtraTextByCategory.Clear();
             }
 
             public void StartLazyEmpty(string activeKey, string categoryCode)

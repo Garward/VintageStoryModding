@@ -1,8 +1,7 @@
 {
-    "ingredient": { "type": "block", "code": "game:log-placed-*-*", "quantity": 1 },
-    "allowedVariants": [ "acacia", "baldcypress", "birch", "larch", "maple", "oak", "pine", "redwood", "walnut" ],
+    "ingredient": { "type": "block", "code": "*:log-placed-*-*", "quantity": 1 },
     "outputs": [
-        { "type": "item", "code": "game:firewood", "quantity": 5 },
+        { "type": "item", "code": "game:firewood", "quantity": 6 },
         { "type": "item", "code": "sawdust", "quantity": 2 }
     ],
     "sawTicks": 4,

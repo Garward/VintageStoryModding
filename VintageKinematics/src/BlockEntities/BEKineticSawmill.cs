@@ -3,7 +3,6 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
 using System.IO;
 using System.Collections.Generic;
 using VintageKinematics.Api;
@@ -61,41 +60,11 @@ namespace VintageKinematics.BlockEntities
         {
             if (recipe?.Outputs == null) yield break;
 
-            string captured = recipe.Ingredient?.Code == null || input?.Collectible?.Code == null
-                ? null
-                : WildcardUtil.GetWildcardValue(recipe.Ingredient.Code, input.Collectible.Code);
-
             foreach (JsonItemStack output in recipe.Outputs)
             {
-                ItemStack stack = ResolveOutputStack(output, captured);
+                ItemStack stack = RecipeWildcardUtil.ResolveOutputStack(Api.World, output, recipe.Ingredient?.Code, input?.Collectible?.Code);
                 if (stack != null) yield return stack;
             }
-        }
-
-        private ItemStack ResolveOutputStack(JsonItemStack output, string captured)
-        {
-            if (output?.Code == null) return null;
-
-            if (captured != null && output.Code.Path?.Contains('*') == true)
-            {
-                AssetLocation substituted = new AssetLocation(output.Code.Domain, output.Code.Path.Replace("*", captured));
-                ItemStack stack;
-                if (output.Type == EnumItemClass.Block)
-                {
-                    Block block = Api.World.GetBlock(substituted);
-                    stack = block == null || block.IsMissing ? null : new ItemStack(block);
-                }
-                else
-                {
-                    Item item = Api.World.GetItem(substituted);
-                    stack = item == null || item.IsMissing ? null : new ItemStack(item);
-                }
-
-                if (stack != null) stack.StackSize = System.Math.Max(1, output.StackSize);
-                return stack;
-            }
-
-            return output.ResolvedItemstack?.Clone();
         }
 
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
@@ -137,12 +106,13 @@ namespace VintageKinematics.BlockEntities
                 recipeTitleLangCode: "vintagekinematics:kineticsawmill-recipes",
                 recipeSearchLangCode: "vintagekinematics:kineticsawmill-search-recipes",
                 recipeBrowserWidth: 500.0,
-                recipeBrowserListHeight: 292.0,
+                recipeBrowserListHeight: 360.0,
                 buildRecipeItems: () => BuildRecipeListItems(capi),
                 onRecipeClicked: OnRecipeClicked,
                 recipeButtonLabel: () => SawmillModeLabel(mode),
                 recipeSortValues: SawmillSortValues(),
-                recipeSortNames: SawmillSortNames());
+                recipeSortNames: SawmillSortNames(),
+                recipeBrowserCellHeight: 72);
         }
 
         protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog)
@@ -196,6 +166,8 @@ namespace VintageKinematics.BlockEntities
                 SawmillMode.CogwheelSection => Lang.Get("vintagekinematics:kineticsawmill-mode-cogsection"),
                 SawmillMode.Firewood => Lang.Get("vintagekinematics:kineticsawmill-mode-firewood"),
                 SawmillMode.Gearbox => Lang.Get("vintagekinematics:kineticsawmill-mode-gearbox"),
+                SawmillMode.Axle => Lang.Get("vintagekinematics:kineticsawmill-mode-axle"),
+                SawmillMode.AngledGear => Lang.Get("vintagekinematics:kineticsawmill-mode-angledgear"),
                 _ => Lang.Get("vintagekinematics:kineticsawmill-mode-plank")
             };
         }

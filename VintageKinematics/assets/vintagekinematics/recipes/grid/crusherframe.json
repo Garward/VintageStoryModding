@@ -1,7 +1,7 @@
 {
 	"ingredientPattern": "PNP,PSP,PNP",
 	"ingredients": {
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 4 },
+		"P": { "type": "item", "code": "*:plank-*", "quantity": 4 },
 		"N": { "type": "item", "code": "game:metalnailsandstrips-*", "name": "metal", "quantity": 2 },
 		"S": { "type": "block", "code": "shaft-y" }
 	},

@@ -1,5 +1,5 @@
 {
-    "ingredient": { "type": "block", "code": "game:log-placed-*", "quantity": 1 },
+    "ingredient": { "type": "block", "code": "*:log-placed-*", "quantity": 1 },
     "outputs": [
         { "type": "block", "code": "shaft-y", "quantity": 2 },
         { "type": "item", "code": "sawdust", "quantity": 2 }

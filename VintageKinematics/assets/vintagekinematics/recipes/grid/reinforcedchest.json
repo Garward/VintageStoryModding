@@ -3,7 +3,7 @@
     "ingredients": {
         "B": { "type": "item", "code": "pressedband-iron" },
         "K": { "type": "item", "code": "kineticalloyplate" },
-        "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+        "P": { "type": "item", "code": "*:plank-*", "quantity": 2 },
         "C": { "type": "block", "code": "game:chest-east", "attributes": { "type": "normal-generic" } },
         "R": { "type": "item", "code": "shaftcollar-iron" }
     },

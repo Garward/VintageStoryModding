@@ -1,9 +1,0 @@
-{
-    "ingredient": { "type": "block", "code": "game:log-placed-aged-*", "quantity": 1 },
-    "outputs": [
-        { "type": "item", "code": "game:agedfirewood", "quantity": 5 },
-        { "type": "item", "code": "sawdust", "quantity": 2 }
-    ],
-    "sawTicks": 4,
-    "mode": "Firewood"
-}

@@ -3,7 +3,7 @@
   "ingredients": {
     "R": { "type": "item", "code": "game:resin" },
     "C": { "type": "item", "code": "game:metalplate-copper" },
-    "P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+    "P": { "type": "item", "code": "*:plank-*", "quantity": 2 },
     "G": { "type": "block", "code": "gearbox-y" }
   },
   "width": 3,

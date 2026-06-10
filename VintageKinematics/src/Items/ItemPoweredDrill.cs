@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Cairo;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -18,15 +19,95 @@ namespace VintageKinematics.Items
         private const string BurnUpdatedMsAttribute = "drillBurnUpdatedMs";
         private const string NoFuelMessageAttribute = "lastNoFuelMessageMs";
         private const string VisualSpinUntilMsAttribute = "drillVisualSpinUntilMs";
+        private const string MiningModeAttribute = "vkDrillMiningMode";
         private const int SpinFrameCount = 32;
         private const double SpinRevolutionsPerSecond = 3.0;
 
         private MultiTextureMeshRef[] spinFrameMeshes;
+        private SkillItem[] titaniumMiningModes;
 
         protected virtual string FuelDialogTitleLangCode => "vintagekinematics:powereddrill-title";
         protected virtual string NoFuelLangCode => "vintagekinematics:powereddrill-no-fuel";
         protected virtual string FlywheelPowerStatusLangCode => "vintagekinematics:poweredtool-flywheel-status";
         protected virtual string SpinningElementName => "cog-hub";
+
+        public override void OnLoaded(ICoreAPI api)
+        {
+            base.OnLoaded(api);
+
+            if (api is not ICoreClientAPI capi) return;
+
+            titaniumMiningModes = new[]
+            {
+                new SkillItem
+                {
+                    Code = new AssetLocation("vintagekinematics", "drill-1x1"),
+                    Name = Lang.Get("vintagekinematics:powereddrill-mode-1x1")
+                }.WithIcon(capi, (cr, x, y, w, h, c) => DrawMiningGridIcon(cr, x, y, w, h, c, 1)),
+                new SkillItem
+                {
+                    Code = new AssetLocation("vintagekinematics", "drill-3x3"),
+                    Name = Lang.Get("vintagekinematics:powereddrill-mode-3x3")
+                }.WithIcon(capi, (cr, x, y, w, h, c) => DrawMiningGridIcon(cr, x, y, w, h, c, 3)),
+                new SkillItem
+                {
+                    Code = new AssetLocation("vintagekinematics", "drill-5x5"),
+                    Name = Lang.Get("vintagekinematics:powereddrill-mode-5x5")
+                }.WithIcon(capi, (cr, x, y, w, h, c) => DrawMiningGridIcon(cr, x, y, w, h, c, 5))
+            };
+        }
+
+        private static void DrawMiningGridIcon(Context cr, int x, int y, float width, float height, double[] rgba, int gridSize)
+        {
+            gridSize = Math.Max(1, Math.Min(5, gridSize));
+
+            double r = rgba != null && rgba.Length > 0 ? rgba[0] : 1.0;
+            double g = rgba != null && rgba.Length > 1 ? rgba[1] : 1.0;
+            double b = rgba != null && rgba.Length > 2 ? rgba[2] : 1.0;
+
+            double margin = gridSize == 1 ? 7.0 : 2.0;
+            double gap = gridSize == 1 ? 0.0 : 1.15;
+            double size = Math.Min(width, height) - margin * 2.0;
+            double cell = (size - gap * (gridSize - 1)) / gridSize;
+            double startX = x + (width - size) / 2.0;
+            double startY = y + (height - size) / 2.0;
+            int center = gridSize / 2;
+
+            cr.Save();
+            cr.LineWidth = 1.15;
+
+            for (int row = 0; row < gridSize; row++)
+            {
+                for (int col = 0; col < gridSize; col++)
+                {
+                    bool isCenter = row == center && col == center;
+                    double cellX = startX + col * (cell + gap);
+                    double cellY = startY + row * (cell + gap);
+
+                    cr.Rectangle(cellX, cellY, cell, cell);
+                    if (isCenter)
+                    {
+                        cr.SetSourceRGBA(r, g, b, 0.92);
+                    }
+                    else
+                    {
+                        cr.SetSourceRGBA(r, g, b, 0.34);
+                    }
+                    cr.FillPreserve();
+
+                    cr.SetSourceRGBA(r, g, b, isCenter ? 0.95 : 0.62);
+                    cr.Stroke();
+                }
+            }
+
+            double markSize = Math.Max(2.5, cell * 0.34);
+            double centerX = startX + center * (cell + gap) + cell / 2.0;
+            double centerY = startY + center * (cell + gap) + cell / 2.0;
+            cr.Arc(centerX, centerY, markSize / 2.0, 0, GameMath.TWOPI);
+            cr.SetSourceRGBA(0.1, 0.08, 0.05, 0.78);
+            cr.Fill();
+            cr.Restore();
+        }
 
         public override string GetHeldTpHitAnimation(ItemSlot slot, Entity byEntity)
         {
@@ -126,6 +207,16 @@ namespace VintageKinematics.Items
         {
             base.OnUnloaded(api);
 
+            if (titaniumMiningModes != null)
+            {
+                for (int i = 0; i < titaniumMiningModes.Length; i++)
+                {
+                    titaniumMiningModes[i]?.Dispose();
+                    titaniumMiningModes[i] = null;
+                }
+                titaniumMiningModes = null;
+            }
+
             if (spinFrameMeshes == null) return;
             for (int i = 0; i < spinFrameMeshes.Length; i++)
             {
@@ -139,6 +230,51 @@ namespace VintageKinematics.Items
         {
             if (!HasUsablePower(forPlayer, itemstack as ItemStack)) return 0;
             return base.GetMiningSpeed(itemstack, blockSel, block, forPlayer);
+        }
+
+        public override bool OnBlockBrokenWith(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, BlockSelection blockSel, float dropQuantityMultiplier = 1f)
+        {
+            bool result = base.OnBlockBrokenWith(world, byEntity, itemslot, blockSel, dropQuantityMultiplier);
+
+            if (world.Side != EnumAppSide.Server
+                || blockSel?.Position == null
+                || itemslot?.Itemstack == null
+                || !IsTitaniumDrill(itemslot.Itemstack)
+                || GetMiningModeRadius(itemslot) <= 0
+                || byEntity is not EntityPlayer entityPlayer)
+            {
+                return result;
+            }
+
+            IPlayer player = world.PlayerByUid(entityPlayer.PlayerUID);
+            if (player == null || !HasUsablePower(player, itemslot.Itemstack)) return result;
+
+            BreakExtraMiningModeBlocks(world, player, itemslot, blockSel, dropQuantityMultiplier);
+            return result;
+        }
+
+        public override SkillItem[] GetToolModes(ItemSlot slot, IClientPlayer forPlayer, BlockSelection blockSel)
+        {
+            if (IsTitaniumDrill(slot?.Itemstack)) return titaniumMiningModes;
+            return base.GetToolModes(slot, forPlayer, blockSel);
+        }
+
+        public override int GetToolMode(ItemSlot slot, IPlayer byPlayer, BlockSelection blockSel)
+        {
+            if (!IsTitaniumDrill(slot?.Itemstack)) return base.GetToolMode(slot, byPlayer, blockSel);
+            return GameMath.Clamp(slot.Itemstack.Attributes.GetInt(MiningModeAttribute, 0), 0, 2);
+        }
+
+        public override void SetToolMode(ItemSlot slot, IPlayer byPlayer, BlockSelection blockSel, int toolMode)
+        {
+            if (!IsTitaniumDrill(slot?.Itemstack))
+            {
+                base.SetToolMode(slot, byPlayer, blockSel, toolMode);
+                return;
+            }
+
+            slot.Itemstack.Attributes.SetInt(MiningModeAttribute, GameMath.Clamp(toolMode, 0, 2));
+            slot.MarkDirty();
         }
 
         public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
@@ -173,7 +309,7 @@ namespace VintageKinematics.Items
 
         public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot)
         {
-            return new[]
+            WorldInteraction[] interactions = new[]
             {
                 new WorldInteraction
                 {
@@ -181,6 +317,17 @@ namespace VintageKinematics.Items
                     MouseButton = EnumMouseButton.Right
                 }
             }.Append(base.GetHeldInteractionHelp(inSlot));
+
+            if (IsTitaniumDrill(inSlot?.Itemstack))
+            {
+                interactions = interactions.Append(new WorldInteraction
+                {
+                    ActionLangCode = "vintagekinematics:heldhelp-powereddrill-mode",
+                    HotKeyCode = "toolmodeselect"
+                });
+            }
+
+            return interactions;
         }
 
         public static bool IsValidFuel(ItemStack stack)
@@ -224,6 +371,67 @@ namespace VintageKinematics.Items
                 && (UpdateBurnTimer(stack) > 0
                     || ItemBackpackFlywheel.HasUsableCharge(player)
                     || GetStoredFuel(stack, api?.World) != null);
+        }
+
+        private void BreakExtraMiningModeBlocks(IWorldAccessor world, IPlayer player, ItemSlot itemslot, BlockSelection centerSel, float dropQuantityMultiplier)
+        {
+            int radius = GetMiningModeRadius(itemslot);
+            BlockFacing face = centerSel.Face ?? BlockFacing.UP;
+
+            for (int a = -radius; a <= radius; a++)
+            {
+                for (int b = -radius; b <= radius; b++)
+                {
+                    if (a == 0 && b == 0) continue;
+
+                    BlockPos pos = OffsetInPlane(centerSel.Position, face.Axis, a, b);
+                    if (!CanBreakAsExtraMiningModeBlock(world, player, itemslot, centerSel, pos)) continue;
+
+                    world.BlockAccessor.BreakBlock(pos, player, dropQuantityMultiplier);
+                    world.BlockAccessor.MarkBlockDirty(pos);
+                }
+            }
+        }
+
+        private bool CanBreakAsExtraMiningModeBlock(IWorldAccessor world, IPlayer player, ItemSlot itemslot, BlockSelection centerSel, BlockPos pos)
+        {
+            if (!world.Claims.TryAccess(player, pos, EnumBlockAccessFlags.BuildOrBreak)) return false;
+
+            Block block = world.BlockAccessor.GetBlock(pos);
+            if (block == null || block.Id == 0) return false;
+            if (itemslot.Itemstack?.Collectible == null) return false;
+
+            EnumBlockMaterial material = block.GetBlockMaterial(world.BlockAccessor, pos);
+            if (MiningSpeed == null || !MiningSpeed.ContainsKey(material)) return false;
+            if (block.RequiredMiningTier > 0 && ToolTier < block.RequiredMiningTier) return false;
+
+            BlockSelection blockSel = new BlockSelection(pos, centerSel.Face ?? BlockFacing.UP, block);
+            return base.GetMiningSpeed(itemslot.Itemstack, blockSel, block, player) > 0;
+        }
+
+        private static BlockPos OffsetInPlane(BlockPos origin, EnumAxis axis, int a, int b)
+        {
+            return axis switch
+            {
+                EnumAxis.X => origin.AddCopy(0, b, a),
+                EnumAxis.Y => origin.AddCopy(a, 0, b),
+                _ => origin.AddCopy(a, b, 0)
+            };
+        }
+
+        private int GetMiningModeRadius(ItemSlot slot)
+        {
+            return GetToolMode(slot, null, null) switch
+            {
+                1 => 1,
+                2 => 2,
+                _ => 0
+            };
+        }
+
+        private static bool IsTitaniumDrill(ItemStack stack)
+        {
+            return stack?.Collectible?.Code?.Path == "powereddrill-titanium";
         }
 
         private void MarkVisualSpinActive(ItemStack stack)

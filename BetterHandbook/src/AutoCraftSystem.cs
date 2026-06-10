@@ -17,7 +17,13 @@ namespace RecipeExplorer
     /// </summary>
     public class AutoCraftSystem
     {
+        private const int AutoFillTransfersPerStep = 1;
+        private const int AutoFillStepDelayMs = 1;
+
         private static ICoreClientAPI capi;
+        private static bool autoFillInProgress;
+        private static int indexedGridRecipeCount = -1;
+        private static Dictionary<int, List<GridRecipe>> craftingRecipesByOutputId = new Dictionary<int, List<GridRecipe>>();
 
         // Reflection fields to access private handbook data (initialized dynamically)
         private static FieldInfo BrowseHistoryField = null;
@@ -355,24 +361,50 @@ namespace RecipeExplorer
 
         private static List<GridRecipe> FindCraftingRecipes(ItemStack output)
         {
-            var recipes = new List<GridRecipe>();
-            int total = 0, nullOutput = 0, nullResolved = 0;
+            if (output?.Collectible == null) return new List<GridRecipe>();
 
-            foreach (var recipe in capi.World.GridRecipes)
+            EnsureCraftingRecipeOutputIndex();
+            if (!craftingRecipesByOutputId.TryGetValue(output.Collectible.Id, out List<GridRecipe> recipes))
             {
-                total++;
-                if (recipe?.Output == null) { nullOutput++; continue; }
-                if (recipe.Output.ResolvedItemStack == null) { nullResolved++; continue; }
+                recipes = new List<GridRecipe>();
+            }
 
-                if (recipe.Output.ResolvedItemStack.Collectible.Code.Equals(output.Collectible.Code))
+            BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Find] target={0} indexedRecipes={1} matched={2}",
+                output.Collectible.Code, indexedGridRecipeCount, recipes.Count);
+            return recipes;
+        }
+
+        private static void EnsureCraftingRecipeOutputIndex()
+        {
+            int recipeCount = capi?.World?.GridRecipes?.Count ?? 0;
+            if (indexedGridRecipeCount == recipeCount)
+            {
+                return;
+            }
+
+            var index = new Dictionary<int, List<GridRecipe>>();
+            if (capi?.World?.GridRecipes != null)
+            {
+                foreach (GridRecipe recipe in capi.World.GridRecipes)
                 {
+                    ItemStack outputStack = recipe?.Output?.ResolvedItemStack;
+                    if (outputStack?.Collectible == null) continue;
+
+                    int id = outputStack.Collectible.Id;
+                    if (!index.TryGetValue(id, out List<GridRecipe> recipes))
+                    {
+                        recipes = new List<GridRecipe>(2);
+                        index[id] = recipes;
+                    }
+
                     recipes.Add(recipe);
                 }
             }
 
-            BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Find] target={0} totalRecipes={1} nullOutput={2} nullResolved={3} matched={4}",
-                output.Collectible?.Code, total, nullOutput, nullResolved, recipes.Count);
-            return recipes;
+            craftingRecipesByOutputId = index;
+            indexedGridRecipeCount = recipeCount;
+            BetterHandbookLog.Diagnostic(capi, "[BetterHandbook/RecipeExplorer/Find] indexed grid recipe outputs recipes={0} outputs={1}",
+                recipeCount, index.Count);
         }
 
         private static bool OnAutoCraftClicked(List<GridRecipe> recipes)
@@ -382,6 +414,13 @@ namespace RecipeExplorer
             {
                 if (RecipeExplorerMod.Config.ShowAutoFillMessages)
                     capi.ShowChatMessage("No recipes found");
+                return true;
+            }
+
+            if (autoFillInProgress)
+            {
+                if (RecipeExplorerMod.Config.ShowAutoFillMessages)
+                    capi.ShowChatMessage("Auto-Fill is already moving items");
                 return true;
             }
 
@@ -400,27 +439,17 @@ namespace RecipeExplorer
             bool shiftHeld = capi.Input.KeyboardKeyStateRaw[(int)GlKeys.ShiftLeft] ||
                              capi.Input.KeyboardKeyStateRaw[(int)GlKeys.ShiftRight];
 
-            bool success = false;
+            foreach (GridRecipe recipe in recipes)
+            {
+                if (!TryCreatePacedFillPlan(recipe, craftingGrid, shiftHeld, out PacedAutoFillPlan plan)) continue;
 
-            foreach (var recipe in recipes)
-            {
-                success = TryFillCraftingGrid(recipe, craftingGrid, shiftHeld);
-                if (success) break;
+                BeginPacedAutoFill(plan, recipes);
+                return true;
             }
 
-            if (success)
-            {
-                HandbookRecipeOverlays.ClearFailedFill();
-                if (RecipeExplorerMod.Config.ShowAutoFillMessages)
-                    capi.ShowChatMessage(shiftHeld ? "Crafting grid filled (max)!" : "Crafting grid filled!");
-                capi.Gui.PlaySound("menubutton_press");
-            }
-            else
-            {
-                HandbookRecipeOverlays.ReportFailedFill(recipes);
-                if (RecipeExplorerMod.Config.ShowAutoFillMessages)
-                    capi.ShowChatMessage("Missing ingredients or crafting grid is too small");
-            }
+            HandbookRecipeOverlays.ReportFailedFill(recipes);
+            if (RecipeExplorerMod.Config.ShowAutoFillMessages)
+                capi.ShowChatMessage("Missing ingredients or crafting grid is too small");
 
             return true;
         }
@@ -450,6 +479,341 @@ namespace RecipeExplorer
 
             var charInv = player.InventoryManager.GetOwnInventory("character") as InventoryBase;
             return charInv;
+        }
+
+        private static bool TryCreatePacedFillPlan(GridRecipe recipe, InventoryBase craftingGrid, bool fillMax, out PacedAutoFillPlan plan)
+        {
+            plan = null;
+            if (recipe == null || craftingGrid == null) return false;
+
+            CraftingRecipeIngredient[] resolvedIngredients = recipe.ResolvedIngredients;
+            if (resolvedIngredients == null) return false;
+
+            int recipeWidth = recipe.Width;
+            int recipeHeight = recipe.Height;
+            int gridWidth = (int)Math.Sqrt(craftingGrid.Count);
+            int gridHeight = gridWidth;
+            int craftingInputSlotCount = gridWidth * gridHeight;
+
+            if (recipeWidth > gridWidth || recipeHeight > gridHeight) return false;
+
+            IPlayer player = capi.World.Player;
+            if (player == null) return false;
+
+            InventoryBase playerInv = player.InventoryManager?.GetOwnInventory("backpack") as InventoryBase;
+            InventoryBase hotbarInv = player.InventoryManager?.GetOwnInventory("hotbar") as InventoryBase;
+            if (playerInv == null && hotbarInv == null) return false;
+
+            CraftingRecipeIngredient[] originalIngredients = BuildOriginalIngredients(recipe, resolvedIngredients);
+            int[] quantitiesPerSlot = fillMax
+                ? CalculateFillMaxQuantities(resolvedIngredients, originalIngredients, playerInv, hotbarInv, craftingGrid, craftingInputSlotCount)
+                : new int[resolvedIngredients.Length];
+            bool[] keepCraftingSlot = CalculateKeptCraftingSlots(fillMax, recipe, craftingGrid, resolvedIngredients, originalIngredients, gridWidth, craftingInputSlotCount);
+
+            var actions = new List<IPacedAutoFillAction>();
+            for (int i = 0; i < craftingInputSlotCount; i++)
+            {
+                if (keepCraftingSlot[i] || craftingGrid[i].Empty) continue;
+                actions.Add(new ClearCraftingSlotAction(i, craftingGrid[i], craftingGrid[i].StackSize));
+            }
+
+            int ingredientIndex = 0;
+            for (int row = 0; row < recipeHeight; row++)
+            {
+                for (int col = 0; col < recipeWidth; col++)
+                {
+                    if (ingredientIndex >= resolvedIngredients.Length) break;
+
+                    CraftingRecipeIngredient ingredient = resolvedIngredients[ingredientIndex];
+                    int currentIndex = ingredientIndex;
+                    ingredientIndex++;
+                    if (ingredient == null) continue;
+
+                    int gridSlot = row * gridWidth + col;
+                    if (gridSlot >= craftingInputSlotCount) continue;
+
+                    int quantity = ingredient.IsTool ? 1 : ingredient.Quantity;
+                    if (!ingredient.IsTool && fillMax && quantitiesPerSlot[currentIndex] > 0)
+                    {
+                        quantity = quantitiesPerSlot[currentIndex];
+                    }
+
+                    CraftingRecipeIngredient originalIngredient = originalIngredients[currentIndex];
+                    int alreadyPresent = fillMax ? 0 : CountMatchingItemsInSlot(craftingGrid[gridSlot], originalIngredient);
+                    int remaining = Math.Max(0, quantity - alreadyPresent);
+                    int minRequired = ingredient.IsTool ? 1 : ingredient.Quantity;
+                    int totalAvailable = CountTotalMatchingItems(originalIngredient, playerInv, hotbarInv, craftingGrid, craftingInputSlotCount);
+                    if (totalAvailable < minRequired)
+                    {
+                        return false;
+                    }
+
+                    if (remaining > 0)
+                    {
+                        actions.Add(new FillCraftingSlotAction(currentIndex, gridSlot, originalIngredient, craftingGrid[gridSlot], quantity, minRequired));
+                    }
+                }
+            }
+
+            plan = new PacedAutoFillPlan(recipe, craftingGrid, player, playerInv, hotbarInv, fillMax, craftingInputSlotCount, actions);
+            return true;
+        }
+
+        private static CraftingRecipeIngredient[] BuildOriginalIngredients(GridRecipe recipe, CraftingRecipeIngredient[] resolvedIngredients)
+        {
+            var originalIngredients = new CraftingRecipeIngredient[resolvedIngredients.Length];
+            string flatPattern = recipe.IngredientPattern?
+                .Replace(",", "")
+                .Replace("\t", "")
+                .Replace("\r", "")
+                .Replace("\n", "") ?? "";
+
+            for (int i = 0; i < resolvedIngredients.Length; i++)
+            {
+                CraftingRecipeIngredient ingredient = resolvedIngredients[i];
+                if (ingredient == null)
+                {
+                    originalIngredients[i] = null;
+                    continue;
+                }
+
+                CraftingRecipeIngredient originalIngredient = ingredient;
+                if (recipe.Ingredients != null && i < flatPattern.Length && flatPattern[i] != '_')
+                {
+                    string patternChar = flatPattern[i].ToString();
+                    if (recipe.Ingredients.TryGetValue(patternChar, out CraftingRecipeIngredient origIng) && origIng != null)
+                    {
+                        originalIngredient = origIng;
+                    }
+                }
+
+                originalIngredients[i] = originalIngredient;
+            }
+
+            return originalIngredients;
+        }
+
+        private static int[] CalculateFillMaxQuantities(
+            CraftingRecipeIngredient[] resolvedIngredients,
+            CraftingRecipeIngredient[] originalIngredients,
+            InventoryBase playerInv,
+            InventoryBase hotbarInv,
+            InventoryBase craftingGrid,
+            int craftingInputSlotCount)
+        {
+            var quantitiesPerSlot = new int[resolvedIngredients.Length];
+            var ingredientGroups = new Dictionary<string, List<int>>();
+            for (int i = 0; i < resolvedIngredients.Length; i++)
+            {
+                if (resolvedIngredients[i] == null) continue;
+
+                string ingredientKey = GetIngredientGroupKey(originalIngredients[i]);
+                if (!ingredientGroups.ContainsKey(ingredientKey))
+                    ingredientGroups[ingredientKey] = new List<int>();
+                ingredientGroups[ingredientKey].Add(i);
+            }
+
+            foreach (var group in ingredientGroups)
+            {
+                List<int> positions = group.Value;
+                if (positions.Count == 0) continue;
+
+                CraftingRecipeIngredient firstOriginal = originalIngredients[positions[0]];
+                int totalAvailable = CountTotalMatchingItems(firstOriginal, playerInv, hotbarInv, craftingGrid, craftingInputSlotCount);
+                int maxStack = MaxStackSizeForIngredient(firstOriginal, playerInv, hotbarInv, craftingGrid, craftingInputSlotCount);
+                int budget = Math.Min(totalAvailable, maxStack * positions.Count);
+                int basePerSlot = budget / positions.Count;
+                int remainder = budget - basePerSlot * positions.Count;
+
+                for (int p = 0; p < positions.Count; p++)
+                {
+                    int extra = p < remainder ? 1 : 0;
+                    int q = Math.Min(maxStack, basePerSlot + extra);
+                    quantitiesPerSlot[positions[p]] = Math.Max(q, resolvedIngredients[positions[p]].Quantity);
+                }
+            }
+
+            return quantitiesPerSlot;
+        }
+
+        private static bool[] CalculateKeptCraftingSlots(
+            bool fillMax,
+            GridRecipe recipe,
+            InventoryBase craftingGrid,
+            CraftingRecipeIngredient[] resolvedIngredients,
+            CraftingRecipeIngredient[] originalIngredients,
+            int gridWidth,
+            int craftingInputSlotCount)
+        {
+            bool[] keepCraftingSlot = new bool[craftingGrid.Count];
+            if (fillMax)
+            {
+                return keepCraftingSlot;
+            }
+
+            int preserveIndex = 0;
+            for (int row = 0; row < recipe.Height; row++)
+            {
+                for (int col = 0; col < recipe.Width; col++)
+                {
+                    if (preserveIndex >= resolvedIngredients.Length) break;
+
+                    CraftingRecipeIngredient ingredient = resolvedIngredients[preserveIndex];
+                    int currentIndex = preserveIndex;
+                    preserveIndex++;
+                    if (ingredient == null) continue;
+
+                    int gridSlot = row * gridWidth + col;
+                    if (gridSlot >= craftingInputSlotCount) continue;
+
+                    if (DoesSlotMatchIngredient(craftingGrid[gridSlot], originalIngredients[currentIndex]))
+                    {
+                        keepCraftingSlot[gridSlot] = true;
+                    }
+                }
+            }
+
+            return keepCraftingSlot;
+        }
+
+        private static void BeginPacedAutoFill(PacedAutoFillPlan plan, List<GridRecipe> triedRecipes)
+        {
+            autoFillInProgress = true;
+            TraceAutoFill("PACED-BEGIN actions={0} fillMax={1} output={2}",
+                plan.Actions.Count,
+                plan.FillMax,
+                plan.Recipe.Output?.ResolvedItemStack?.Collectible?.Code);
+
+            ContinuePacedAutoFill(plan, triedRecipes);
+        }
+
+        private static void SchedulePacedAutoFill(PacedAutoFillPlan plan, List<GridRecipe> triedRecipes)
+        {
+            capi.Event.RegisterCallback(_ => ContinuePacedAutoFill(plan, triedRecipes), AutoFillStepDelayMs, true);
+        }
+
+        private static void ContinuePacedAutoFill(PacedAutoFillPlan plan, List<GridRecipe> triedRecipes)
+        {
+            if (plan == null)
+            {
+                autoFillInProgress = false;
+                return;
+            }
+
+            try
+            {
+                int transfers = 0;
+                while (transfers < AutoFillTransfersPerStep)
+                {
+                    IPacedAutoFillAction action = plan.CurrentAction;
+                    if (action == null)
+                    {
+                        FinishPacedAutoFill(plan);
+                        return;
+                    }
+
+                    if (action.Done)
+                    {
+                        plan.Advance();
+                        continue;
+                    }
+
+                    if (!action.Step(plan))
+                    {
+                        FailPacedAutoFill(plan, triedRecipes);
+                        return;
+                    }
+
+                    transfers++;
+                }
+
+                SchedulePacedAutoFill(plan, triedRecipes);
+            }
+            catch (Exception ex)
+            {
+                autoFillInProgress = false;
+                HandbookRecipeOverlays.ReportFailedFill(triedRecipes);
+                capi.Logger.Warning("[BetterHandbook/RecipeExplorer] Paced Auto-Fill failed: {0}", ex);
+            }
+        }
+
+        private static void FinishPacedAutoFill(PacedAutoFillPlan plan)
+        {
+            autoFillInProgress = false;
+            HandbookRecipeOverlays.ClearFailedFill();
+            if (RecipeExplorerMod.Config.ShowAutoFillMessages)
+                capi.ShowChatMessage(plan.FillMax ? "Crafting grid filled (max)!" : "Crafting grid filled!");
+            capi.Gui.PlaySound("menubutton_press");
+            TraceAutoFill("PACED-END success actions={0} elapsed={1}ms", plan.Actions.Count, Environment.TickCount64 - plan.StartedMs);
+        }
+
+        private static void FailPacedAutoFill(PacedAutoFillPlan plan, List<GridRecipe> triedRecipes)
+        {
+            autoFillInProgress = false;
+            HandbookRecipeOverlays.ReportFailedFill(triedRecipes);
+            if (RecipeExplorerMod.Config.ShowAutoFillMessages)
+                capi.ShowChatMessage("Missing ingredients or no inventory space");
+            TraceAutoFill("PACED-END failed action={0}/{1} elapsed={2}ms", plan.ActionIndex, plan.Actions.Count, Environment.TickCount64 - plan.StartedMs);
+        }
+
+        private static int TransferFromAnySourceOneStep(CraftingRecipeIngredient ingredient, ItemSlot targetSlot, int desired, IPlayer player, InventoryBase backpack, InventoryBase hotbar)
+        {
+            if (desired <= 0) return 0;
+
+            foreach (ItemSlot slot in EnumerateUniqueSlots(backpack, hotbar))
+            {
+                if (slot == null || slot.Empty) continue;
+                if (!DoesSlotMatchIngredient(slot, ingredient)) continue;
+
+                int want = Math.Min(desired, slot.StackSize);
+                var op = new ItemStackMoveOperation(capi.World, EnumMouseButton.Left, 0, EnumMergePriority.AutoMerge, want);
+                op.ActingPlayer = player;
+
+                string sourceBefore = DescribeSlot(slot);
+                string targetBefore = DescribeSlot(targetSlot);
+                object packet = player.InventoryManager.TryTransferTo(slot, targetSlot, ref op);
+                if (packet != null) capi.Network.SendPacketClient(packet);
+                TraceAutoFill("PACED-MOVE-IN sourceBefore={0} targetBefore={1} want={2} moved={3} sourceAfter={4} targetAfter={5}",
+                    sourceBefore,
+                    targetBefore,
+                    want,
+                    op.MovedQuantity,
+                    DescribeSlot(slot),
+                    DescribeSlot(targetSlot));
+                return op.MovedQuantity;
+            }
+
+            return 0;
+        }
+
+        private static int TransferAwayOneStep(ItemSlot sourceSlot, int desired, IPlayer player, InventoryBase backpack, InventoryBase hotbar)
+        {
+            if (sourceSlot == null || sourceSlot.Empty || desired <= 0) return 0;
+
+            foreach (ItemSlot targetSlot in EnumerateUniqueSlots(backpack, hotbar))
+            {
+                if (targetSlot == null || targetSlot == sourceSlot) continue;
+                if (!targetSlot.Empty && !targetSlot.CanHold(sourceSlot)) continue;
+
+                int want = Math.Min(desired, sourceSlot.StackSize);
+                var op = new ItemStackMoveOperation(capi.World, EnumMouseButton.Left, 0, EnumMergePriority.AutoMerge, want);
+                op.ActingPlayer = player;
+
+                string sourceBefore = DescribeSlot(sourceSlot);
+                string targetBefore = DescribeSlot(targetSlot);
+                object packet = player.InventoryManager.TryTransferTo(sourceSlot, targetSlot, ref op);
+                if (packet != null) capi.Network.SendPacketClient(packet);
+                TraceAutoFill("PACED-MOVE-OUT sourceBefore={0} targetBefore={1} want={2} moved={3} sourceAfter={4} targetAfter={5}",
+                    sourceBefore,
+                    targetBefore,
+                    want,
+                    op.MovedQuantity,
+                    DescribeSlot(sourceSlot),
+                    DescribeSlot(targetSlot));
+                return op.MovedQuantity;
+            }
+
+            return 0;
         }
 
         internal static bool TryFillCraftingGrid(GridRecipe recipe, InventoryBase craftingGrid, bool fillMax = false)
@@ -994,6 +1358,133 @@ namespace RecipeExplorer
                 }
             }
             return false;
+        }
+
+        private interface IPacedAutoFillAction
+        {
+            bool Done { get; }
+            bool Step(PacedAutoFillPlan plan);
+        }
+
+        private sealed class PacedAutoFillPlan
+        {
+            public readonly GridRecipe Recipe;
+            public readonly InventoryBase CraftingGrid;
+            public readonly IPlayer Player;
+            public readonly InventoryBase Backpack;
+            public readonly InventoryBase Hotbar;
+            public readonly bool FillMax;
+            public readonly int CraftingInputSlotCount;
+            public readonly List<IPacedAutoFillAction> Actions;
+            public readonly long StartedMs = Environment.TickCount64;
+
+            public int ActionIndex;
+
+            public IPacedAutoFillAction CurrentAction => ActionIndex < Actions.Count ? Actions[ActionIndex] : null;
+
+            public PacedAutoFillPlan(
+                GridRecipe recipe,
+                InventoryBase craftingGrid,
+                IPlayer player,
+                InventoryBase backpack,
+                InventoryBase hotbar,
+                bool fillMax,
+                int craftingInputSlotCount,
+                List<IPacedAutoFillAction> actions)
+            {
+                Recipe = recipe;
+                CraftingGrid = craftingGrid;
+                Player = player;
+                Backpack = backpack;
+                Hotbar = hotbar;
+                FillMax = fillMax;
+                CraftingInputSlotCount = craftingInputSlotCount;
+                Actions = actions ?? new List<IPacedAutoFillAction>();
+            }
+
+            public void Advance()
+            {
+                ActionIndex++;
+            }
+        }
+
+        private sealed class ClearCraftingSlotAction : IPacedAutoFillAction
+        {
+            private readonly int slotId;
+            private readonly ItemSlot sourceSlot;
+            private readonly int requested;
+            private int moved;
+
+            public bool Done => sourceSlot == null || sourceSlot.Empty || moved >= requested;
+
+            public ClearCraftingSlotAction(int slotId, ItemSlot sourceSlot, int requested)
+            {
+                this.slotId = slotId;
+                this.sourceSlot = sourceSlot;
+                this.requested = requested;
+            }
+
+            public bool Step(PacedAutoFillPlan plan)
+            {
+                int quantity = Math.Max(0, requested - moved);
+                int stepMoved = TransferAwayOneStep(sourceSlot, quantity, plan.Player, plan.Backpack, plan.Hotbar);
+                if (stepMoved <= 0)
+                {
+                    TraceAutoFill("PACED-CLEAR failed slot={0} requested={1} moved={2} now={3}", slotId, requested, moved, DescribeSlot(sourceSlot));
+                    return false;
+                }
+
+                moved += stepMoved;
+                return true;
+            }
+        }
+
+        private sealed class FillCraftingSlotAction : IPacedAutoFillAction
+        {
+            private readonly int ingredientIndex;
+            private readonly int slotId;
+            private readonly CraftingRecipeIngredient ingredient;
+            private readonly ItemSlot targetSlot;
+            private readonly int targetQuantity;
+            private readonly int minRequired;
+
+            public bool Done => CountMatchingItemsInSlot(targetSlot, ingredient) >= targetQuantity;
+
+            public FillCraftingSlotAction(int ingredientIndex, int slotId, CraftingRecipeIngredient ingredient, ItemSlot targetSlot, int targetQuantity, int minRequired)
+            {
+                this.ingredientIndex = ingredientIndex;
+                this.slotId = slotId;
+                this.ingredient = ingredient;
+                this.targetSlot = targetSlot;
+                this.targetQuantity = targetQuantity;
+                this.minRequired = minRequired;
+            }
+
+            public bool Step(PacedAutoFillPlan plan)
+            {
+                int current = CountMatchingItemsInSlot(targetSlot, ingredient);
+                int remaining = Math.Max(0, targetQuantity - current);
+                if (remaining <= 0)
+                {
+                    return true;
+                }
+
+                int stepMoved = TransferFromAnySourceOneStep(ingredient, targetSlot, remaining, plan.Player, plan.Backpack, plan.Hotbar);
+                int after = CountMatchingItemsInSlot(targetSlot, ingredient);
+                if (stepMoved <= 0)
+                {
+                    TraceAutoFill("PACED-FILL failed idx={0} slot={1} target={2} min={3} after={4} now={5}",
+                        ingredientIndex,
+                        slotId,
+                        targetQuantity,
+                        minRequired,
+                        after,
+                        DescribeSlot(targetSlot));
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         private class IngredientInfo

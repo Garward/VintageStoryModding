@@ -2,7 +2,7 @@
 	"ingredientPattern": "X_,PP,PP",
 	"ingredients": {
 		"X": { "type": "item", "tags": ["tool-saw"], "isTool": true, "toolDurabilityCost": 10 },
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood" }
+		"P": { "type": "item", "code": "*:plank-*" }
 	},
 	"width": 2,
 	"height": 3,

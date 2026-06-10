@@ -1,7 +1,7 @@
 {
 	"ingredientPattern": "SPS,PAP,SPS",
 	"ingredients": {
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood" },
+		"P": { "type": "item", "code": "*:plank-*" },
 		"S": { "type": "item", "code": "largecogwheelsection" },
 		"A": { "type": "block", "code": "shaft-y", "quantity": 1 }
 	},

@@ -206,3 +206,16 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Add examples for the side placement helper once it exists.
 - [ ] Add examples for filter dialog extension hooks if they become public API.
 - [x] Keep the JSON machine template aligned with the new API defaults.
+
+## 17. Contraption Rideability
+
+- [ ] Improve free-standing passenger carry so players on moving contraption floors are carried immediately, including near horizontal edges.
+- [ ] Revisit contraption restore timing so moving entities are positioned before restored blocks can clip or drop them.
+- [ ] Add explicit support/contact tracking for entities that were on a contraption during the previous tick, not only entities that still overlap the top surface cleanly this tick.
+- [ ] Test vertical gantry elevators without artificial delay between entity movement and block restore.
+- [ ] Test horizontal platforms at center, edges, and corners while walking, sneaking, and standing still.
+- [ ] Investigate `IMountable`/`IMountableSeat` support on `EntityVKContraption` for guaranteed-safe contraption seats.
+- [ ] Add a simple contraption seat block or captured seat marker that becomes a seat on the assembled contraption.
+- [ ] Serialize contraption seat ids/local offsets into the contraption snapshot so mounted players reconnect to the moving entity after save/load.
+- [ ] Ensure mounted passengers are unmounted or safely moved before contraptions restore back into world blocks.
+- [ ] Document free-standing platforms as best-effort and seats as the safe riding method once seat support exists.

@@ -1,7 +1,7 @@
 {
 	"ingredientPattern": "_P_,SCS,_P_",
 	"ingredients": {
-		"P": { "type": "item", "code": "game:plank-*", "name": "wood", "quantity": 2 },
+		"P": { "type": "item", "code": "*:plank-*", "quantity": 2 },
 		"S": { "type": "block", "code": "shaft-y" },
 		"C": { "type": "item", "code": "shaftcollar-iron" }
 	},
