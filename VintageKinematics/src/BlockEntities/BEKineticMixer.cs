@@ -606,7 +606,6 @@ namespace VintageKinematics.BlockEntities
             inventory.FromTreeAttributes(tree);
             liquidLitres = tree.GetFloat("liquidLitres", 0f);
             liquidStack = tree.GetItemstack("liquidStack");
-            ReadMixingState(tree);
 
             if (Api != null)
             {
@@ -614,6 +613,8 @@ namespace VintageKinematics.BlockEntities
                 liquidStack?.ResolveBlockOrItem(Api.World);
                 BuildIOFaceMap();
             }
+
+            ReadMixingState(tree);
         }
 
         private void WriteMixingState(ITreeAttribute tree)

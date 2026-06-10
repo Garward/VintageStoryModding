@@ -193,13 +193,13 @@ namespace VintageKinematics.Api
         {
             base.FromTreeAttributes(tree, worldForResolving);
             inventory?.FromTreeAttributes(tree);
-            ReadState(tree);
             if (Api != null)
             {
                 inventory?.ResolveBlocksOrItems();
                 OnAfterInventoryInitialized();
                 RebuildIOFaceMap();
             }
+            ReadState(tree);
             OnAfterStateRead();
             RefreshClientDialog();
         }

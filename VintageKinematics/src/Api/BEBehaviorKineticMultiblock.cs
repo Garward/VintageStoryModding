@@ -81,6 +81,7 @@ namespace VintageKinematics.Api
             int sx = (int?)MbSizeX?.GetValue(mb) ?? 1;
             int sy = (int?)MbSizeY?.GetValue(mb) ?? 1;
             int sz = (int?)MbSizeZ?.GetValue(mb) ?? 1;
+            Vec3i baseSize = BaseClaimSizeForRotation(new Vec3i(sx, sy, sz), rotateY);
 
             var baseCells = new List<Vec3i>();
 
@@ -121,7 +122,7 @@ namespace VintageKinematics.Api
                 {
                     foreach (string name in names)
                     {
-                        Vec3i cell = ResolveElementToCell(api, block, shape, name, sx, sy, sz);
+                        Vec3i cell = ResolveElementToCell(api, block, shape, name, baseSize.X, baseSize.Y, baseSize.Z);
                         if (cell != null && !baseCells.Contains(cell)) baseCells.Add(cell);
                     }
                 }
@@ -129,7 +130,7 @@ namespace VintageKinematics.Api
 
             foreach (var baseCell in baseCells)
             {
-                Vec3i rotated = RotateCellY(baseCell, rotateY, sx, sz);
+                Vec3i rotated = RotateCellY(baseCell, rotateY, baseSize.X, baseSize.Z);
                 int ox = rotated.X - cposition.X;
                 int oy = rotated.Y - cposition.Y;
                 int oz = rotated.Z - cposition.Z;
@@ -185,6 +186,14 @@ namespace VintageKinematics.Api
                 (sx, sz) = (sz, sx);
             }
             return new Vec3i(cx, cy, cz);
+        }
+
+        public static Vec3i BaseClaimSizeForRotation(Vec3i rotatedSize, int rotateYDeg)
+        {
+            int steps = (((rotateYDeg / 90) % 4) + 4) % 4;
+            return (steps & 1) == 0
+                ? new Vec3i(rotatedSize.X, rotatedSize.Y, rotatedSize.Z)
+                : new Vec3i(rotatedSize.Z, rotatedSize.Y, rotatedSize.X);
         }
 
         private static long PackOffset(int x, int y, int z)

@@ -18,6 +18,7 @@ namespace VintageKinematics.Gui
         private float angle;
         private float requiredSu;
         private string status;
+        private bool suppressRefresh;
 
         public override double DrawOrder => 0.2;
 
@@ -78,8 +79,7 @@ namespace VintageKinematics.Gui
                 .EndChildElements()
                 .Compose();
 
-            SingleComposer.GetNumberInput(DistanceKey)?.SetValue(distance);
-            SingleComposer.GetNumberInput(AngleKey)?.SetValue(angle);
+            SetInputValues(distance, angle);
             RefreshStatus();
         }
 
@@ -91,14 +91,17 @@ namespace VintageKinematics.Gui
             this.status = status;
             if (SingleComposer == null) return;
 
-            SingleComposer.GetNumberInput(DistanceKey)?.SetValue(distance);
-            SingleComposer.GetNumberInput(AngleKey)?.SetValue(angle);
+            SetInputValues(distance, angle);
             SingleComposer.GetDynamicText(StatusKey)?.SetNewText(GetStatusText());
         }
 
         private bool OnApplyClicked()
         {
             ReadInputs(out float newDistance, out float newAngle);
+            distance = newDistance;
+            angle = newAngle;
+            requiredSu = EstimateRequiredSu(distance, angle);
+            SingleComposer?.GetDynamicText(StatusKey)?.SetNewText(GetStatusText());
             onApply?.Invoke(newDistance, newAngle);
             return true;
         }
@@ -106,15 +109,35 @@ namespace VintageKinematics.Gui
         private bool OnLaunchClicked()
         {
             ReadInputs(out float newDistance, out float newAngle);
+            distance = newDistance;
+            angle = newAngle;
+            requiredSu = EstimateRequiredSu(distance, angle);
+            SingleComposer?.GetDynamicText(StatusKey)?.SetNewText(GetStatusText());
             onLaunch?.Invoke(newDistance, newAngle);
             return true;
         }
 
         private void RefreshStatus()
         {
+            if (suppressRefresh) return;
+
             ReadInputs(out distance, out angle);
             requiredSu = EstimateRequiredSu(distance, angle);
             SingleComposer?.GetDynamicText(StatusKey)?.SetNewText(GetStatusText());
+        }
+
+        private void SetInputValues(float newDistance, float newAngle)
+        {
+            suppressRefresh = true;
+            try
+            {
+                SingleComposer.GetNumberInput(DistanceKey)?.SetValue(newDistance);
+                SingleComposer.GetNumberInput(AngleKey)?.SetValue(newAngle);
+            }
+            finally
+            {
+                suppressRefresh = false;
+            }
         }
 
         private void ReadInputs(out float readDistance, out float readAngle)

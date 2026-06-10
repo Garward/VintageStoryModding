@@ -116,6 +116,7 @@ namespace VintageKinematics.BlockEntities
 
         protected override void ReadState(ITreeAttribute tree)
         {
+            if (Api == null) return;
             NormalizeStoredStacks();
         }
 

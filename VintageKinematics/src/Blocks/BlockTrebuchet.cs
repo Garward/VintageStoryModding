@@ -1,12 +1,14 @@
+using System;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
-    public class BlockTrebuchet : Block, IPlacementPreviewProvider
+    public class BlockTrebuchet : Block, IPlacementPreviewProvider, IMultiBlockColSelBoxes
     {
         private WorldInteraction[] interactions;
 
@@ -57,6 +59,24 @@ namespace VintageKinematics.Blocks
             return interactions ?? base.GetPlacedBlockInteractionHelp(world, selection, forPlayer);
         }
 
+        public override Cuboidf[] GetCollisionBoxes(IBlockAccessor blockAccessor, BlockPos pos)
+        {
+            if (IsLaunchCollisionSuppressed(blockAccessor, pos)) return Array.Empty<Cuboidf>();
+            return base.GetCollisionBoxes(blockAccessor, pos);
+        }
+
+        public Cuboidf[] MBGetCollisionBoxes(IBlockAccessor blockAccessor, BlockPos pos, Vec3i offset)
+        {
+            BlockPos controllerPos = pos.AddCopy(offset);
+            if (IsLaunchCollisionSuppressed(blockAccessor, controllerPos)) return Array.Empty<Cuboidf>();
+            return base.GetCollisionBoxes(blockAccessor, controllerPos);
+        }
+
+        public Cuboidf[] MBGetSelectionBoxes(IBlockAccessor blockAccessor, BlockPos pos, Vec3i offset)
+        {
+            return base.GetSelectionBoxes(blockAccessor, pos.AddCopy(offset));
+        }
+
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (byPlayer?.Entity == null || blockSel == null) return false;
@@ -77,11 +97,16 @@ namespace VintageKinematics.Blocks
         {
             if (byPlayer?.Entity == null) return "n";
             BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
-            if (facing == BlockFacing.NORTH) return "n";
+            if (facing == BlockFacing.NORTH) return "s";
             if (facing == BlockFacing.EAST) return "e";
-            if (facing == BlockFacing.SOUTH) return "s";
+            if (facing == BlockFacing.SOUTH) return "n";
             if (facing == BlockFacing.WEST) return "w";
             return "n";
+        }
+
+        private static bool IsLaunchCollisionSuppressed(IBlockAccessor blockAccessor, BlockPos pos)
+        {
+            return blockAccessor?.GetBlockEntity(pos) is BETrebuchet { LaunchCollisionSuppressed: true };
         }
     }
 }

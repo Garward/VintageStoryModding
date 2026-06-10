@@ -26,6 +26,10 @@ namespace VintageKinematics.BlockEntities
         private const float MinAngle = 15f;
         private const float MaxAngle = 75f;
         private const float RatedRpm = 16f;
+        private const int LaunchCollisionGraceMs = 2000;
+        private const string TreeDistanceKey = "trebuchetDistance";
+        private const string TreeAngleKey = "trebuchetAngle";
+        private const string TreeLaunchCollisionRemainingKey = "trebuchetLaunchCollisionRemainingMs";
         private readonly EntityControls controls = new EntityControls();
         private readonly EntityPos seatPos = new EntityPos();
         private readonly Vec3f eyePos = new Vec3f(0f, 1.35f, 0f);
@@ -39,10 +43,12 @@ namespace VintageKinematics.BlockEntities
         private float distance = 64f;
         private float angle = 45f;
         private string lastStatus = "Ready";
+        private long launchCollisionDisabledUntilMs;
 
         private GuiDialogTrebuchet clientDialog;
 
         public float RequiredSu => ComputeRequiredSu(distance, angle);
+        public bool LaunchCollisionSuppressed => Api?.World != null && launchCollisionDisabledUntilMs > Api.World.ElapsedMilliseconds;
 
         public override void Initialize(ICoreAPI api)
         {
@@ -87,6 +93,7 @@ namespace VintageKinematics.BlockEntities
                 ReadSettingsPacket(data, out float newDistance, out float newAngle);
                 SetSettings(newDistance, newAngle, true);
                 lastStatus = Lang.Get("vintagekinematics:trebuchet-status-ready");
+                MarkDirty(true);
                 SendDialogState(player);
                 return;
             }
@@ -106,7 +113,11 @@ namespace VintageKinematics.BlockEntities
             {
                 ReadLaunchPacket(data, out Vec3d launchPos, out Vec3d motion);
                 EntityPlayer player = (Api as ICoreClientAPI)?.World.Player?.Entity;
-                if (player != null) ApplyLaunch(player, launchPos, motion);
+                if (player != null)
+                {
+                    SuppressLaunchCollision();
+                    ApplyLaunch(player, launchPos, motion);
+                }
                 return;
             }
 
@@ -230,6 +241,7 @@ namespace VintageKinematics.BlockEntities
             {
                 lastStatus = Lang.Get("vintagekinematics:trebuchet-status-no-passenger");
                 Notify(byPlayer, lastStatus);
+                MarkDirty(true);
                 return;
             }
 
@@ -240,6 +252,7 @@ namespace VintageKinematics.BlockEntities
             {
                 lastStatus = Lang.Get("vintagekinematics:trebuchet-status-need-power", RequiredSu);
                 Notify(byPlayer, lastStatus);
+                MarkDirty(true);
                 return;
             }
 
@@ -256,7 +269,7 @@ namespace VintageKinematics.BlockEntities
 
         private void StartLaunch(EntityAgent entity, IServerPlayer serverPlayer)
         {
-            BlockFacing facing = OutputFacing();
+            BlockFacing facing = LaunchFacing().Opposite;
             ComputeLaunchMotion(out double horizontal, out double vertical);
             double x = facing.Normali.X * horizontal;
             double z = facing.Normali.Z * horizontal;
@@ -266,7 +279,20 @@ namespace VintageKinematics.BlockEntities
             launchPos.Z += facing.Normali.Z * 2.6;
             Vec3d motion = new Vec3d(x, vertical, z);
 
+            SuppressLaunchCollision();
             Api.Event.RegisterCallback(_ => PlaceAndLaunch(entity, serverPlayer, launchPos, motion), 50);
+        }
+
+        private void SuppressLaunchCollision()
+        {
+            if (Api?.World == null) return;
+
+            launchCollisionDisabledUntilMs = Api.World.ElapsedMilliseconds + LaunchCollisionGraceMs;
+            MarkDirty(true);
+            Api.Event.RegisterCallback(_ =>
+            {
+                if (!LaunchCollisionSuppressed) MarkDirty(true);
+            }, LaunchCollisionGraceMs + 50);
         }
 
         private void ComputeLaunchMotion(out double horizontal, out double vertical)
@@ -379,6 +405,9 @@ namespace VintageKinematics.BlockEntities
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
+            tree.SetFloat(TreeDistanceKey, distance);
+            tree.SetFloat(TreeAngleKey, angle);
+            tree.SetLong(TreeLaunchCollisionRemainingKey, LaunchCollisionSuppressed ? launchCollisionDisabledUntilMs - Api.World.ElapsedMilliseconds : 0L);
             tree.SetFloat("distance", distance);
             tree.SetFloat("angle", angle);
             tree.SetString("lastStatus", lastStatus);
@@ -389,8 +418,12 @@ namespace VintageKinematics.BlockEntities
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
         {
             base.FromTreeAttributes(tree, worldForResolving);
-            distance = tree.GetFloat("distance", distance);
-            angle = tree.GetFloat("angle", angle);
+            distance = tree.GetFloat(TreeDistanceKey, tree.GetFloat("distance", distance));
+            angle = tree.GetFloat(TreeAngleKey, tree.GetFloat("angle", angle));
+            long remainingCollisionMs = tree.GetLong(TreeLaunchCollisionRemainingKey);
+            launchCollisionDisabledUntilMs = remainingCollisionMs > 0 && Api?.World != null
+                ? Api.World.ElapsedMilliseconds + remainingCollisionMs
+                : 0L;
             lastStatus = tree.GetString("lastStatus", lastStatus);
             mountedByEntityId = tree.GetLong("mountedByEntityId");
             mountedByPlayerUid = tree.GetString("mountedByPlayerUid");
@@ -450,7 +483,7 @@ namespace VintageKinematics.BlockEntities
         private void TeleportToExit(EntityAgent entityAgent)
         {
             Vec3d exit = Pos.ToVec3d().Add(0.5, 0.01, 0.5);
-            BlockFacing back = OutputFacing().Opposite;
+            BlockFacing back = LaunchFacing().Opposite;
             exit.X += back.Normali.X * 2.8;
             exit.Z += back.Normali.Z * 2.8;
 
@@ -460,15 +493,15 @@ namespace VintageKinematics.BlockEntities
             }
         }
 
-        private BlockFacing OutputFacing()
+        private BlockFacing LaunchFacing()
         {
-            string side = Block?.Variant?["side"];
-            return side switch
+            int rotateY = (int)(Block?.Shape?.rotateY ?? 0f);
+            int steps = (((rotateY / 90) % 4) + 4) % 4;
+            return steps switch
             {
-                "n" => BlockFacing.NORTH,
-                "e" => BlockFacing.EAST,
-                "s" => BlockFacing.SOUTH,
-                "w" => BlockFacing.WEST,
+                1 => BlockFacing.WEST,
+                2 => BlockFacing.SOUTH,
+                3 => BlockFacing.EAST,
                 _ => BlockFacing.NORTH
             };
         }
@@ -496,7 +529,7 @@ namespace VintageKinematics.BlockEntities
                 seatPos.Y += 0.35;
                 seatPos.Z += 0.5;
 
-                BlockFacing facing = OutputFacing();
+                BlockFacing facing = LaunchFacing();
                 seatPos.X += facing.Normali.X * 1.7;
                 seatPos.Z += facing.Normali.Z * 1.7;
 

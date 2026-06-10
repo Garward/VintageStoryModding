@@ -300,6 +300,9 @@
         },
         "rope": {
             "base": "game:item/resource/rope"
+        },
+        "heavy": {
+            "base": "game:block/stone/rock/basalt1"
         }
     },
     "guiTransform": {
