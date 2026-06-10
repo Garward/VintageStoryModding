@@ -3,7 +3,7 @@
   "ingredients": {
     "P": {
       "type": "item",
-      "code": "game:plank-*",
+      "code": "*:plank-*",
       "name": "wood"
     },
     "S": {

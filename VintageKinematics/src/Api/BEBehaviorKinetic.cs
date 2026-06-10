@@ -157,8 +157,8 @@ namespace VintageKinematics.Api
 
             // Networks live in RAM on the manager; chunk load / world load doesn't restore them.
             // Ask the manager to ensure we're tracked once Initialize and FromTreeAttributes have
-            // both settled. OnBlockPlaced (fresh placement) already calls OnPlaced separately —
-            // EnsureTrackedFromLoad is a no-op when the pos is already tracked, so this is safe.
+            // both settled. Fresh placement also rebuilds through a deferred callback; this load
+            // callback is still safe because EnsureTrackedFromLoad is a no-op once the pos is tracked.
             if (api.Side == EnumAppSide.Server)
             {
                 api.Event.RegisterCallback(_ =>
@@ -183,8 +183,14 @@ namespace VintageKinematics.Api
             base.OnBlockPlaced(byItemStack);
             if (Api.Side != EnumAppSide.Server) return;
 
-            var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
-            mgr?.OnPlaced(Pos);
+            // Multiblock filler cells are placed by the block placement flow after the controller
+            // BE exists. Defer the network build so offset kinetic ports, such as reinforced
+            // flywheel inputs, are present before the graph tries to connect to existing neighbors.
+            Api.Event.RegisterCallback(_ =>
+            {
+                var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
+                mgr?.OnPlaced(Pos);
+            }, 0);
         }
 
         public override void OnBlockBroken(IPlayer byPlayer = null)

@@ -266,11 +266,11 @@
         },
         "reinforcedflywheel-s": {
             "base": "block/reinforcedflywheel",
-            "rotateY": 90
+            "rotateY": 270
         },
         "reinforcedflywheel-n": {
             "base": "block/reinforcedflywheel",
-            "rotateY": 270
+            "rotateY": 90
         }
     },
     "textures": {

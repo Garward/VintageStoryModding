@@ -155,11 +155,11 @@
         },
         "flywheel-s": {
             "base": "block/flywheel",
-            "rotateY": 90
+            "rotateY": 270
         },
         "flywheel-n": {
             "base": "block/flywheel",
-            "rotateY": 270
+            "rotateY": 90
         }
     },
     "textures": {
