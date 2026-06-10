@@ -286,7 +286,95 @@ Drop more files in the same folder to add recipes. No code changes needed.
 The folder name is used as the machine code if the recipe omits `"machine"`,
 but declaring it explicitly makes templates easier to read.
 
-## 3. Template Files Shipped With VK
+## 3. Recipe Browser API
+
+For JSON processors, prefer the no-code path:
+
+```json
+"vkProcessor": {
+  "machineCode": "handlelathe",
+  "recipeBrowser": {
+    "enabled": true,
+    "width": 500,
+    "listHeight": 292,
+    "titleLangCode": "mymod:handlelathe-recipes",
+    "searchLangCode": "mymod:handlelathe-search-recipes"
+  }
+}
+```
+
+For custom C# machine GUIs, VK exposes the same browser widget publicly:
+
+- `VintageKinematics.Gui.IRecipeBrowserListItem`
+- `VintageKinematics.Gui.MachineRecipeBrowser<T>`
+- `VintageKinematics.Gui.SimpleRecipeBrowserListItem`
+
+Use `SimpleRecipeBrowserListItem` when each recipe can be shown as an icon,
+title, and detail lines. Implement `IRecipeBrowserListItem` directly only
+when a machine needs custom rendering or special search scoring.
+
+Minimal dialog pattern:
+
+```csharp
+private readonly MachineRecipeBrowser<IRecipeBrowserListItem> recipeBrowser;
+
+recipeBrowser = new MachineRecipeBrowser<IRecipeBrowserListItem>(
+    "mymachine-recipe",
+    "mymod:mymachine-recipes",
+    "mymod:mymachine-search-recipes",
+    BuildRecipeRows,
+    OnRecipeClicked,
+    () => SingleComposer,
+    width: 520,
+    listHeight: 330,
+    cellHeight: 72,
+    sortValues: new[] { "output", "input", "work" },
+    sortNames: new[] { "Sort: Output", "Sort: Input", "Sort: Work" });
+```
+
+During compose:
+
+```csharp
+recipeBrowser.SetBounds(slotPad + rowWidth + 24, slotPad + topOffset);
+recipeBrowser.AddBounds(childBounds);
+
+composer = composer.AddSmallButton(
+    "Recipes",
+    () => recipeBrowser.Toggle(() => ComposeDialog(DialogTitle)),
+    buttonBounds);
+
+composer = recipeBrowser.AddToComposer(composer);
+SingleComposer = composer.EndChildElements().Compose();
+recipeBrowser.AfterCompose(SingleComposer);
+```
+
+Example row builder:
+
+```csharp
+private IEnumerable<IRecipeBrowserListItem> BuildRecipeRows()
+{
+    foreach (MyRecipe recipe in recipes)
+    {
+        yield return new SimpleRecipeBrowserListItem(
+            title: recipe.OutputName,
+            iconStack: recipe.OutputStack,
+            details: new[]
+            {
+                "Input: " + recipe.InputName,
+                "Work ticks: " + recipe.WorkTicks
+            },
+            searchText: recipe.InputCode + "\n" + recipe.OutputCode,
+            sortKeys: new Dictionary<string, string>
+            {
+                ["output"] = recipe.OutputName,
+                ["input"] = recipe.InputName,
+                ["work"] = recipe.WorkTicks.ToString("D8") + "\n" + recipe.OutputName
+            });
+    }
+}
+```
+
+## 4. Template Files Shipped With VK
 
 VK ships an editable template under:
 
@@ -303,7 +391,7 @@ packaged as a visible example. It converts sticks into hand cranks and shows
 shaft animation, piston animation, multiblock IO, GUI slots, and output
 pushing.
 
-## 4. JSON IO
+## 5. JSON IO
 
 Prefer explicit `vkProcessor.io` entries for new generic JSON processor
 machines:

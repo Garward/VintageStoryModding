@@ -6,7 +6,13 @@ using Vintagestory.GameContent;
 
 namespace VintageKinematics.Gui
 {
-    internal class MachineRecipeBrowser<T> : IDisposable where T : class, IRecipeBrowserListItem
+    /// <summary>
+    /// Reusable side-panel recipe browser for machine GUIs. Compose the owning dialog normally,
+    /// call <see cref="SetBounds"/>, add its bounds to the dialog background when open, then call
+    /// <see cref="AddToComposer"/> before ending child elements and <see cref="AfterCompose"/> after
+    /// composing. Toggle from a normal button with <see cref="Toggle"/>.
+    /// </summary>
+    public class MachineRecipeBrowser<T> : IDisposable where T : class, IRecipeBrowserListItem
     {
         private readonly string titleLangCode;
         private readonly string searchPlaceholderLangCode;

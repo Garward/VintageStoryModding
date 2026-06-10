@@ -30,7 +30,7 @@ internal static class FindMatchingRecipePatch
         long start = Stopwatch.GetTimestamp();
         MatchProfile profile = DoMatch(__instance, index);
         long elapsedTicks = Stopwatch.GetTimestamp() - start;
-        Record(__instance.Api.Logger, elapsedTicks, profile);
+        Record(__instance, elapsedTicks, profile);
 
         return profile.RunVanilla;
     }
@@ -174,8 +174,20 @@ internal static class FindMatchingRecipePatch
         return Stopwatch.GetTimestamp() - start;
     }
 
-    private static void Record(ILogger logger, long ticks, MatchProfile profile)
+    private static void Record(InventoryCraftingGrid inventory, long ticks, MatchProfile profile)
     {
+        CraftingBurstDiagnostics.RecordFind(
+            inventory,
+            ticks,
+            profile.CacheHit,
+            profile.RunVanilla,
+            profile.CandidateCount,
+            profile.PlausibleCandidateCount,
+            profile.GatherTicks,
+            profile.ShapedTicks,
+            profile.ShapelessTicks,
+            profile.OutputTicks);
+
         long count = Interlocked.Increment(ref calls);
         Interlocked.Add(ref totalTicks, ticks);
         UpdateMax(ticks);
@@ -185,6 +197,7 @@ internal static class FindMatchingRecipePatch
             return;
         }
 
+        ILogger logger = inventory.Api.Logger;
         double toMicroseconds = 1_000_000.0 / Stopwatch.Frequency;
         double elapsedMs = ticks * 1000.0 / Stopwatch.Frequency;
         if (elapsedMs >= SlowMatchMilliseconds)

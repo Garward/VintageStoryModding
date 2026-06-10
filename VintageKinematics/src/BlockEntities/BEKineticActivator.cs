@@ -193,7 +193,10 @@ namespace VintageKinematics.BlockEntities
 
             BlockFacing activatedFace = front.Opposite;
             BlockEntity targetBe = Api.World.BlockAccessor.GetBlockEntity(targetPos);
-            if (IsBlacklistedTarget(targetBlock, targetBe))
+            BlockEntity activatableBe = MultiblockHelper.GetMultiblockAwareBE(Api.World, targetPos) ?? targetBe;
+            Block activatableBlock = activatableBe?.Block ?? targetBlock;
+
+            if (IsBlacklistedTarget(targetBlock, targetBe) || IsBlacklistedTarget(activatableBlock, activatableBe))
             {
                 return false;
             }
@@ -205,7 +208,7 @@ namespace VintageKinematics.BlockEntities
 
             bool handledByActivatorApi = false;
 
-            if (targetBe is IKineticActivatable beTarget)
+            if (activatableBe is IKineticActivatable beTarget)
             {
                 handledByActivatorApi = true;
                 if (beTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
@@ -214,7 +217,7 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            if (!handledByActivatorApi && targetBlock is IKineticActivatable blockTarget)
+            if (!handledByActivatorApi && activatableBlock is IKineticActivatable blockTarget)
             {
                 handledByActivatorApi = true;
                 if (blockTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))

@@ -5,7 +5,7 @@
   "name": "Fast Crafting Grid",
   "authors": ["garward"],
   "description": "Speeds up crafting grid recipe matching by using a pre expanded recipe index instead of scanning every ingredient on each grid change.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "requiredOnClient": true,
   "requiredOnServer": false,
   "dependencies": {

@@ -128,6 +128,13 @@ namespace HandbookCache
             ItemSlot[] slots = InputSlots(inventory);
             if (slots == null) return matches;
 
+            string signature = MakeInputSignature(slots);
+            SelectionState state = StateByInventory.GetOrCreateValue(inventory);
+            if (state.CachedMatches != null && string.Equals(state.CachedSignature, signature, StringComparison.Ordinal))
+            {
+                return state.CachedMatches;
+            }
+
             var candidates = new List<GridRecipe>();
             IPlayer player = inventory.Player;
             int gridSize = GridSize(inventory);
@@ -153,6 +160,9 @@ namespace HandbookCache
 
             AddMatches(matches, candidates, player, inventory.Api.World, slots, gridSize, shapeless: false);
             AddMatches(matches, candidates, player, inventory.Api.World, slots, gridSize, shapeless: true);
+
+            state.CachedSignature = signature;
+            state.CachedMatches = matches;
             return matches;
         }
 
@@ -179,6 +189,11 @@ namespace HandbookCache
             ItemSlot[] slots = InputSlots(inventory);
             if (slots == null) return "";
 
+            return MakeInputSignature(slots);
+        }
+
+        private static string MakeInputSignature(ItemSlot[] slots)
+        {
             var parts = new string[slots.Length];
             for (int i = 0; i < slots.Length; i++)
             {
@@ -200,6 +215,8 @@ namespace HandbookCache
         private sealed class SelectionState
         {
             public string Signature;
+            public string CachedSignature;
+            public List<GridRecipe> CachedMatches;
             public int SelectedIndex;
         }
     }

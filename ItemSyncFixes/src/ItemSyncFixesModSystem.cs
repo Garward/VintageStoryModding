@@ -1318,7 +1318,9 @@ internal static class CraftingGridDragPreview
     private static readonly FieldInfo DistributePrevField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "distributeStacksPrevStackSizeBySlotId");
     private static readonly FieldInfo DistributeAddedField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "distributeStacksAddedStackSizeBySlotId");
     private static readonly FieldInfo ReferenceDistributeStackField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "referenceDistributStack");
+    private static readonly FieldInfo SendPacketHandlerField = AccessTools.Field(typeof(GuiElementItemSlotGridBase), "SendPacketHandler");
     private static readonly MethodInfo RedistributeStacksMethod = AccessTools.Method(typeof(GuiElementItemSlotGridBase), "RedistributeStacks");
+    private static readonly MethodInfo FindMatchingRecipeMethod = AccessTools.Method(typeof(InventoryCraftingGrid), "FindMatchingRecipe");
     private static readonly Dictionary<GuiElementItemSlotGridBase, PreviewState> Active = new();
 
     public static bool TryBegin(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
@@ -1633,6 +1635,32 @@ internal static class CraftingGridDragPreview
 
     private static int ApplyLeftDrag(GuiElementItemSlotGridBase elem, ICoreClientAPI api, PreviewState state)
     {
+        if (state.SlotIds.Count == 0)
+        {
+            return 0;
+        }
+
+        if (TryGetSendPacketHandler(elem, out Action<object> sendPacket))
+        {
+            int applied = 0;
+            for (int i = 0; i < state.SlotIds.Count; i++)
+            {
+                if (ApplyDirectLeftDragSlot(elem, api, state, i, sendPacket))
+                {
+                    applied++;
+                }
+            }
+
+            ClearDistributionState(elem);
+            RefreshCraftingGrid(state);
+            return applied;
+        }
+
+        return ApplyLeftDragViaRedistribution(elem, api, state);
+    }
+
+    private static int ApplyLeftDragViaRedistribution(GuiElementItemSlotGridBase elem, ICoreClientAPI api, PreviewState state)
+    {
         if (state.SlotIds.Count == 0 || RedistributeStacksMethod == null)
         {
             return 0;
@@ -1688,7 +1716,113 @@ internal static class CraftingGridDragPreview
         wasMouseDownOnSlotIndex.Clear();
         distributePrev.Clear();
         distributeAdded.Clear();
+        RefreshCraftingGrid(state);
         return applied;
+    }
+
+    private static bool ApplyDirectLeftDragSlot(
+        GuiElementItemSlotGridBase elem,
+        ICoreClientAPI api,
+        PreviewState state,
+        int stateIndex,
+        Action<object> sendPacket)
+    {
+        int slotId = state.SlotIds[stateIndex];
+        if (slotId < 0 || slotId >= state.Inventory.Count)
+        {
+            return false;
+        }
+
+        if (!CanPreviewSlot(api, state.Inventory, slotId, state.ReferenceStack))
+        {
+            return false;
+        }
+
+        ItemSlot mouseSlot = api.World.Player.InventoryManager.MouseItemSlot;
+        ItemSlot targetSlot = state.Inventory[slotId];
+        int requested = LeftDragPreviewAddedSize(state, stateIndex);
+        if (mouseSlot?.Itemstack == null || requested <= 0)
+        {
+            return false;
+        }
+
+        requested = Math.Min(requested, mouseSlot.StackSize);
+        if (requested <= 0)
+        {
+            return false;
+        }
+
+        ItemStackMoveOperation op = new(
+            api.World,
+            EnumMouseButton.Left,
+            (EnumModifierKey)0,
+            EnumMergePriority.DirectMerge,
+            requested);
+        op.ActingPlayer = api.World.Player;
+
+        object packet = api.World.Player.InventoryManager.TryTransferTo(mouseSlot, targetSlot, ref op);
+        if (op.MovedQuantity <= 0)
+        {
+            return false;
+        }
+
+        SendPacket(sendPacket, packet);
+        return true;
+    }
+
+    private static bool TryGetSendPacketHandler(GuiElementItemSlotGridBase elem, out Action<object> sendPacket)
+    {
+        sendPacket = SendPacketHandlerField?.GetValue(elem) as Action<object>;
+        return sendPacket != null;
+    }
+
+    private static void SendPacket(Action<object> sendPacket, object packet)
+    {
+        if (sendPacket == null || packet == null)
+        {
+            return;
+        }
+
+        if (packet is object[] packets)
+        {
+            for (int i = 0; i < packets.Length; i++)
+            {
+                sendPacket(packets[i]);
+            }
+
+            return;
+        }
+
+        sendPacket(packet);
+    }
+
+    private static void ClearDistributionState(GuiElementItemSlotGridBase elem)
+    {
+        (WasMouseDownOnSlotIndexField.GetValue(elem) as HashSet<int>)?.Clear();
+        (DistributePrevField.GetValue(elem) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>)?.Clear();
+        (DistributeAddedField.GetValue(elem) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>)?.Clear();
+    }
+
+    private static void RefreshCraftingGrid(PreviewState state)
+    {
+        InventoryCraftingGrid inv = state?.Inventory;
+        if (inv == null || FindMatchingRecipeMethod == null)
+        {
+            return;
+        }
+
+        long startedMs = Environment.TickCount64;
+        FindMatchingRecipeMethod.Invoke(inv, Array.Empty<object>());
+
+        SyncDiagnostics.Slow(
+            inv.Api,
+            startedMs,
+            "CraftingDragRefresh",
+            string.Format(
+                "{0} output={1} inputs={2}",
+                inv.InventoryID ?? "?",
+                ClientPredictionSuppressor.Fingerprint(inv[inv.Count - 1]?.Itemstack),
+                CraftingOutputGuard.InputSummary(inv)));
     }
 
     private static bool CanUsePreview(GuiElementItemSlotGridBase elem, ICoreClientAPI api, MouseEvent args)
@@ -1750,7 +1884,7 @@ internal static class CraftingGridDragPreview
 
     private static bool CanPreviewSlot(ICoreClientAPI api, InventoryCraftingGrid inv, int slotId, ItemStack referenceStack)
     {
-        if (api?.World == null || inv == null || referenceStack == null || slotId < 0 || slotId >= inv.Count)
+        if (api?.World == null || inv == null || referenceStack == null || slotId < 0 || slotId >= inv.Count - 1)
         {
             return false;
         }
@@ -1809,6 +1943,7 @@ internal static class CraftingGridDragPreview
         private Vintagestory.API.Datastructures.OrderedDictionary<int, int> distributePrev;
         private Vintagestory.API.Datastructures.OrderedDictionary<int, int> distributeAdded;
         private bool useLeftRedistribution;
+        private Action<object> sendPacket;
         private int nextIndex;
 
         public int Applied { get; private set; }
@@ -1865,6 +2000,11 @@ internal static class CraftingGridDragPreview
             State.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
             Api.World.Player.InventoryManager.MouseItemSlot.Inventory.InvNetworkUtil.PauseInventoryUpdates = false;
 
+            if (Button == EnumMouseButton.Left)
+            {
+                RefreshCraftingGrid(State);
+            }
+
             SyncDiagnostics.Log(
                 Api,
                 "CLIENT crafting drag preview paced apply finished {0}/{1} slots button={2} elapsed={3}ms",
@@ -1876,6 +2016,13 @@ internal static class CraftingGridDragPreview
 
         private void BeginLeftRedistribution()
         {
+            if (TryGetSendPacketHandler(Element, out sendPacket))
+            {
+                useLeftRedistribution = false;
+                ClearDistributionState(Element);
+                return;
+            }
+
             wasMouseDownOnSlotIndex = WasMouseDownOnSlotIndexField.GetValue(Element) as HashSet<int>;
             distributePrev = DistributePrevField.GetValue(Element) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>;
             distributeAdded = DistributeAddedField.GetValue(Element) as Vintagestory.API.Datastructures.OrderedDictionary<int, int>;
@@ -1903,6 +2050,16 @@ internal static class CraftingGridDragPreview
 
             if (!CanPreviewSlot(Api, State.Inventory, slotId, State.ReferenceStack))
             {
+                return;
+            }
+
+            if (Button == EnumMouseButton.Left && sendPacket != null)
+            {
+                if (ApplyDirectLeftDragSlot(Element, Api, State, nextIndex - 1, sendPacket))
+                {
+                    Applied++;
+                }
+
                 return;
             }
 
@@ -2413,6 +2570,7 @@ internal static class EchoSuppressor
 internal static class Patch_InventoryNetworkUtil_HandleClientPacket
 {
     private static readonly FieldInfo InvField = AccessTools.Field(typeof(InventoryNetworkUtil), "inv");
+    private static readonly MethodInfo FindMatchingRecipeMethod = AccessTools.Method(typeof(InventoryCraftingGrid), "FindMatchingRecipe");
 
     public static bool Prefix(InventoryNetworkUtil __instance, IPlayer byPlayer, int packetId, Packet_Client packet, out DirtySnapshot __state)
     {
@@ -2438,8 +2596,18 @@ internal static class Patch_InventoryNetworkUtil_HandleClientPacket
         return true;
     }
 
-    public static void Postfix(IPlayer byPlayer, DirtySnapshot __state)
+    public static void Postfix(InventoryNetworkUtil __instance, IPlayer byPlayer, int packetId, Packet_Client packet, DirtySnapshot __state)
     {
+        if (__instance?.Api?.Side != EnumAppSide.Server || byPlayer == null || packetId != 8 || packet?.MoveItemstack == null)
+        {
+            return;
+        }
+
+        RefreshCraftingGridAfterMove(__instance.Api, byPlayer, packet.MoveItemstack.SourceInventoryId);
+        if (packet.MoveItemstack.TargetInventoryId != packet.MoveItemstack.SourceInventoryId)
+        {
+            RefreshCraftingGridAfterMove(__instance.Api, byPlayer, packet.MoveItemstack.TargetInventoryId);
+        }
     }
 
     private static bool TryHandleRightClickFromMouseStack(InventoryNetworkUtil util, IPlayer byPlayer, int packetId, Packet_Client packet)
@@ -2478,6 +2646,34 @@ internal static class Patch_InventoryNetworkUtil_HandleClientPacket
 
         targetInv.ActivateSlot(activate.TargetSlot, sourceSlot, ref op);
         return true;
+    }
+
+    private static void RefreshCraftingGridAfterMove(ICoreAPI api, IPlayer byPlayer, string inventoryId)
+    {
+        if (string.IsNullOrEmpty(inventoryId) || FindMatchingRecipeMethod == null)
+        {
+            return;
+        }
+
+        InventoryCraftingGrid inv = byPlayer.InventoryManager?.GetInventory(inventoryId) as InventoryCraftingGrid;
+        if (inv == null)
+        {
+            return;
+        }
+
+        long startedMs = Environment.TickCount64;
+        FindMatchingRecipeMethod.Invoke(inv, Array.Empty<object>());
+
+        SyncDiagnostics.Slow(
+            api,
+            startedMs,
+            "ServerCraftingMoveRefresh",
+            string.Format(
+                "{0} player={1} output={2} inputs={3}",
+                inv.InventoryID ?? "?",
+                byPlayer.PlayerName,
+                ClientPredictionSuppressor.Fingerprint(inv[inv.Count - 1]?.Itemstack),
+                CraftingOutputGuard.InputSummary(inv)));
     }
 }
 
@@ -2719,11 +2915,6 @@ internal static class Patch_InventoryCraftingGrid_FindMatchingRecipe
 
     public static void Postfix(InventoryCraftingGrid __instance, long __state)
     {
-        if (__instance[__instance.Count - 1] is ItemSlotCraftingOutput outputSlot)
-        {
-            CraftingOutputGuard.ResetLeftoverState(outputSlot);
-        }
-
         SyncDiagnostics.Slow(
             __instance.Api,
             __state,

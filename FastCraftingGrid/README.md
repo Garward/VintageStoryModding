@@ -173,6 +173,14 @@ Diagnostics are off by default to avoid log spam on busy servers. Set `EnableDia
 
 ## Diagnostics
 
+When diagnostics are enabled, the mod also groups crafting-grid work into short interaction bursts. A burst starts when the crafting grid receives an input/output activate, move, or recipe match, and logs after the grid has been idle for roughly 200ms:
+
+```text
+[fastcraftinggrid] burst craftinggrid-player idle side=Client wall=243.1ms active=38.4ms activate=2 inputActivate=0 outputActivate=2 leftOut=2 rightOut=0 moves=9 inputMoves=9 outputMoves=0 qty=64/64 finds=18 cache=8 fallback=0 findTotal=4.12ms maxFind=0.91ms candidates=130 plausible=18 gather=1.84ms shaped=1.72ms shapeless=0.00ms output=0.56ms
+```
+
+This is the main log to use when the UI feels slow but individual matcher calls look fine. It shows whether one user action produced too many move packets, too many recipe recalculations, server/client output clicks, or expensive output generation.
+
 When diagnostics are enabled, the mod logs indexed matcher summaries every 100 `FindMatchingRecipe` calls:
 
 ```text

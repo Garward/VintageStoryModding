@@ -7,7 +7,7 @@
     <OutputPath>./</OutputPath>
     <AssemblyName>FastCraftingGrid</AssemblyName>
     <RootNamespace>FastCraftingGrid</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <PackageFileName>$(AssemblyName)-v$(Version).zip</PackageFileName>

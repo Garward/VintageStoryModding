@@ -3,8 +3,7 @@
   "ingredients": {
     "P": {
       "type": "item",
-      "code": "game:plank-*",
-      "name": "wood"
+      "code": "*:plank-*"
     },
     "S": {
       "type": "block",
@@ -15,7 +14,7 @@
   "height": 3,
   "output": {
     "type": "item",
-    "code": "casing-{wood}",
+    "code": "casing-oak",
     "quantity": 2
   }
 }
