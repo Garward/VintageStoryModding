@@ -391,7 +391,13 @@ namespace VintageKinematics.BlockEntities
 
         private void TryAddSink(BlockPos pos, Block block, ItemStack liquidStack, List<PumpSink> sinks, HashSet<string> sinkPositions)
         {
-            if (block is not ILiquidSink sink) return;
+            ILiquidSink sink = block as ILiquidSink;
+            if (sink == null)
+            {
+                sink = MultiblockHelper.GetMultiblockAwareBE(Api.World, pos)?.Block as ILiquidSink;
+            }
+            if (sink == null) return;
+
             if (!CanAccept(sink, pos, liquidStack)) return;
 
             string key = PosKey(pos);

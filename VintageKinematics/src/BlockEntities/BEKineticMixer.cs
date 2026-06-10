@@ -384,6 +384,97 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
+        public ItemStack GetLiquidContent()
+        {
+            return liquidStack;
+        }
+
+        public float GetLiquidLitres()
+        {
+            return liquidLitres;
+        }
+
+        public WaterTightContainableProps GetLiquidContentProps()
+        {
+            return BlockLiquidContainerBase.GetContainableProps(liquidStack);
+        }
+
+        public bool IsLiquidFull()
+        {
+            if (liquidStack == null || liquidLitres <= 0f) return false;
+            WaterTightContainableProps props = BlockLiquidContainerBase.GetContainableProps(liquidStack);
+            if (props == null || props.ItemsPerLitre <= 0f) return true;
+            return liquidStack.StackSize >= MaxLiquidItems(props);
+        }
+
+        public void SetLiquidContent(ItemStack content)
+        {
+            if (content?.Collectible == null)
+            {
+                liquidStack = null;
+                liquidLitres = 0f;
+                MarkDirty(true);
+                return;
+            }
+
+            WaterTightContainableProps props = BlockLiquidContainerBase.GetContainableProps(content);
+            if (props == null || props.ItemsPerLitre <= 0f || !CanAcceptLiquid(content)) return;
+
+            liquidStack = content.Clone();
+            liquidStack.StackSize = Math.Min(liquidStack.StackSize, MaxLiquidItems(props));
+            liquidLitres = liquidStack.StackSize / props.ItemsPerLitre;
+            MarkDirty(true);
+        }
+
+        public int TryPutLiquid(ItemStack content, float desiredLitres)
+        {
+            if (content?.Collectible == null || desiredLitres <= 0f) return 0;
+            if (!CanAcceptLiquid(content)) return 0;
+
+            WaterTightContainableProps props = BlockLiquidContainerBase.GetContainableProps(content);
+            if (props == null || props.ItemsPerLitre <= 0f) return 0;
+
+            int desiredItems = (int)Math.Floor(desiredLitres * props.ItemsPerLitre + 0.0001f);
+            if (desiredItems <= 0) return 0;
+
+            int currentItems = liquidStack?.StackSize ?? 0;
+            int placeableItems = MaxLiquidItems(props) - currentItems;
+            int movedItems = Math.Min(content.StackSize, Math.Min(desiredItems, placeableItems));
+            if (movedItems <= 0) return 0;
+
+            if (liquidStack == null)
+            {
+                liquidStack = content.Clone();
+                liquidStack.StackSize = movedItems;
+            }
+            else
+            {
+                liquidStack.StackSize += movedItems;
+            }
+
+            liquidLitres = liquidStack.StackSize / props.ItemsPerLitre;
+            MarkDirty(true);
+            return movedItems;
+        }
+
+        private bool CanAcceptLiquid(ItemStack content)
+        {
+            if (content?.Collectible == null) return false;
+            if (liquidStack?.Collectible != null
+                && !liquidStack.Equals(Api.World, content, GlobalConstants.IgnoredStackAttributes))
+            {
+                return false;
+            }
+
+            var registry = Api.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
+            return registry?.FindPotentialRecipeForLiquid(content) != null;
+        }
+
+        private static int MaxLiquidItems(WaterTightContainableProps props)
+        {
+            return Math.Max(0, (int)Math.Floor(LiquidCapacityLitres * props.ItemsPerLitre + 0.0001f));
+        }
+
         private bool TryDepositHeldInput(IPlayer byPlayer, ItemSlot hotbar)
         {
             var registry = Api.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();

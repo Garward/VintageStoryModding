@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
+using VintageKinematics.Api;
 
 namespace VintageKinematics.Blocks
 {
@@ -166,6 +167,18 @@ namespace VintageKinematics.Blocks
                 || block?.GetCollectibleInterface<ILiquidInterface>() != null)
             {
                 return true;
+            }
+
+            Block controllerBlock = MultiblockHelper.GetMultiblockAwareBE(world, pos)?.Block;
+            if (controllerBlock != null && controllerBlock != block)
+            {
+                if (controllerBlock is ILiquidSource || controllerBlock is ILiquidSink || controllerBlock is ILiquidInterface) return true;
+                if (controllerBlock.GetCollectibleInterface<ILiquidSource>() != null
+                    || controllerBlock.GetCollectibleInterface<ILiquidSink>() != null
+                    || controllerBlock.GetCollectibleInterface<ILiquidInterface>() != null)
+                {
+                    return true;
+                }
             }
 
             return HasWorldLiquidFillProps(world, pos);
