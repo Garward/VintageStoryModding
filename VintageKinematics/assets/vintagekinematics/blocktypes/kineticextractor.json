@@ -1,6 +1,6 @@
 {
     "code": "kineticextractor",
-    "class": "BlockKineticExtractor",
+    "class": "BlockKineticOpenableMachine",
     "entityClass": "KineticExtractor",
     "variantgroups": [
         {
@@ -13,6 +13,30 @@
             ]
         }
     ],
+    "attributes": {
+        "vkIo": [
+            {
+                "type": "input",
+                "face": "localWest",
+                "slots": "0"
+            },
+            {
+                "type": "input",
+                "face": "up",
+                "slots": "0"
+            },
+            {
+                "type": "output",
+                "face": "localEast",
+                "slots": "1-9"
+            },
+            {
+                "type": "output",
+                "face": "down",
+                "slots": "1-9"
+            }
+        ]
+    },
     "shape": {
         "base": "block/kineticextractor"
     },

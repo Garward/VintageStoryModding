@@ -51,8 +51,11 @@ namespace VintageKinematics.Api
                 api.Logger.Warning($"[VintageKinematics] Failed to write {ConfigFilename}: {ex.Message}");
             }
 
-            Network.VanillaMPBridge.StableRPM = cfg.VanillaBridgeStableRPM;
-            Network.VanillaMPBridge.CapacityPerTorque = cfg.VanillaBridgeCapacityPerTorque;
+            Network.VanillaMPBridge.StableRPM = System.MathF.Max(0.001f, System.MathF.Abs(cfg.VanillaBridgeStableRPM));
+            Network.VanillaMPBridge.CapacityPerTorque = System.MathF.Max(0f, cfg.VanillaBridgeCapacityPerTorque);
+            Network.VanillaMPBridge.Mode = Network.VanillaMPBridge.ParseMode(cfg.VanillaBridgeMode);
+            Network.VanillaMPBridge.FixedStressCapacity = System.MathF.Max(0f, cfg.VanillaBridgeFixedSU);
+            Network.VanillaMPBridge.PollIntervalMs = System.Math.Max(50, cfg.VanillaBridgePollIntervalMs);
             // Clamp to (0,1]: 0 would freeze the smoothed value forever; >1 amplifies noise.
             Network.VanillaMPBridge.TorqueSmoothing = System.MathF.Min(1f, System.MathF.Max(0.001f, cfg.VanillaBridgeTorqueSmoothing));
 

@@ -28,21 +28,7 @@ namespace VintageKinematics.BlockEntities
         protected override IOFaceMap BuildIOFaceMap()
         {
             BlockFacing inputFace = DrumEastRailFace();
-            BlockFacing outputSideFace = DrumWestRailFace();
-            IOFaceMap map = new IOFaceMap(Pos);
-
-            foreach (BlockPos cell in AllCells())
-            {
-                map.MapInput(cell, BlockFacing.UP, SlotInput);
-                map.MapInput(cell, inputFace, SlotInput);
-                for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-                {
-                    map.MapOutput(cell, outputSideFace, i);
-                    map.MapOutput(cell, BlockFacing.DOWN, i);
-                }
-            }
-
-            return map;
+            return MachineIoLayouts.MultiblockSideInputOppositeAndDownOutput(Block, Pos, inputFace, SlotInput, SlotInput, SlotOutputFirst, SlotOutputLast);
         }
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
@@ -77,19 +63,6 @@ namespace VintageKinematics.BlockEntities
                 case "s": return BlockFacing.WEST;
                 case "w": return BlockFacing.NORTH;
                 default:  return BlockFacing.EAST;
-            }
-        }
-
-        private BlockFacing DrumWestRailFace()
-        {
-            string side = Block?.Variant?["side"] ?? "n";
-            switch (side)
-            {
-                case "n": return BlockFacing.WEST;
-                case "e": return BlockFacing.NORTH;
-                case "s": return BlockFacing.EAST;
-                case "w": return BlockFacing.SOUTH;
-                default:  return BlockFacing.WEST;
             }
         }
 

@@ -2,6 +2,11 @@
     "code": "primitivesieve",
     "class": "BlockPrimitiveSieve",
     "entityClass": "PrimitiveSieve",
+    "attributes": {
+        "vkPlacement": {
+            "side": "oppositePlayer"
+        }
+    },
     "entityBehaviors": [
         {
             "name": "Kinetic",

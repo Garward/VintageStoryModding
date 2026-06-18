@@ -112,6 +112,49 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [ ] Convert generator boilerplate where practical while keeping generation requirements custom.
 - [ ] Continue converting simple 1-input/1-output machines toward the public API primitives.
 
+## 7A. Remaining Machine Framework Upgrades
+
+These are not done until the block class, placement/open behavior, IO mapping, packet/dialog boilerplate, and tests are all using the shared framework where practical. Machine-specific code should be limited to the actual unique mechanic.
+
+- [ ] Kinetic bore
+  - [x] Move placement/open behavior to reusable centered-multiblock/framework helpers.
+  - [x] Move inventory lifecycle, dialog packets, save/load, and claim checks into a shared bore or machine base.
+  - [x] Move output-face/cell routing into JSON IO or a reusable exact-cell multiblock IO helper.
+  - [x] Keep mining/drop/descent/retract behavior as kinetic-bore-specific hooks.
+  - [ ] Test placement in all four directions, drilling, pause/halt/retract, output automation, save/load, and cleanup on break.
+- [ ] Geothermal bore
+  - [x] Share the bore placement, inventory/dialog, save/load, and claim framework with kinetic bore.
+  - [x] Move placement offset out of bespoke block code.
+  - [x] Move deployed-column tracking into a reusable bore helper.
+  - [x] Move any routable face logic out of bespoke block code.
+  - [x] Keep pipe/tapped/heat-provider behavior as geothermal-bore-specific hooks.
+  - [ ] Test placement in all four directions, pipe deployment/retraction, heat output, save/load, and cleanup on break.
+- [ ] Primitive and kinetic sieves
+  - [x] Make both block classes inherit/use `BlockKineticOpenableMachine` or a shared side-oriented openable subclass.
+  - [x] Move side placement and right-click opening out of `BlockPrimitiveSieve` and `BlockKineticSieve`.
+  - [x] Move remaining sieve IO maps to JSON IO or a reusable multiblock side/top-input and side/down-output layout.
+  - [x] Keep panning yield/effects and kinetic-vs-primitive work behavior as sieve-specific hooks.
+  - [ ] Test placement direction, GUI open, input/output automation, panning outputs, particles, progress sync, and save/load.
+- [ ] Kinetic mixer
+  - [x] Change the custom block class to inherit `BlockKineticOpenableMachine` while retaining `ILiquidSink`.
+  - [x] Move side placement and right-click opening out of `BlockKineticMixer`.
+  - [x] Move solid input/output IO to JSON `vkIo` or a reusable layout.
+  - [ ] Move liquid buffer, adjacent container transfer, pipe sink behavior, and progress/dialog sync into reusable liquid machine hooks where practical.
+  - [ ] Keep multi-input/liquid recipe matching as mixer-specific until the JSON recipe shape supports it cleanly.
+  - [ ] Test multi-input recipes, liquid insertion from pipes/containers, output automation, recipe browser, progress, and save/load.
+- [ ] Kinetic forge press
+  - [x] Change the custom block class to inherit/use `BlockKineticOpenableMachine`.
+  - [x] Move side placement and right-click opening out of `BlockKineticForgePress`.
+  - [x] Move forge press multiblock input/fuel/output face mapping to JSON IO or reusable exact-cell multiblock IO hooks.
+  - [x] Move remaining open-dialog/packet/inventory boilerplate into shared processor/dialog primitives where practical.
+  - [x] Keep die selection, heat, fuel, refractory lining, bellows heat, and forge-specific recipe behavior as custom hooks.
+  - [ ] Test placement, fuel input, die input, hot input, output automation, bellows heat, lining upgrade, selected recipe persistence, progress, and save/load.
+- [ ] Crusher head
+  - [x] Move side placement out of `BlockCrusher` into the shared side-placement helper.
+  - [x] Keep piston animation, basin dependency, crushing behavior, and tier/effect behavior isolated in crusher-specific behavior.
+  - [x] Confirm the crusher head does not need openable-machine inheritance because crusher basin owns inventory/UI.
+  - [ ] Test placement direction, piston animation, basin crafting, basin output automation, claim checks, and save/load.
+
 ## 8. Sawmill And Recipe Browser
 
 - [x] Overhaul sawmill UI to forge-press-style recipe browser.
@@ -134,9 +177,9 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 - [x] Use generic openable block class for sawmill.
 - [x] Support multiblock-aware right-click forwarding to controller block entities in the generic openable block.
 - [x] Fix shared openable N/S player-facing placement convention for template-style rotations.
-- [ ] Add a shared side-placement helper/base for non-openable side-oriented blocks.
-- [ ] Support both player-facing and opposite-player-facing conventions in one helper.
-- [ ] Support extra fixed variant keys, such as `state=cool`.
+- [x] Add a shared side-placement helper/base for non-openable side-oriented blocks.
+- [x] Support both player-facing and opposite-player-facing conventions in one helper.
+- [x] Support extra fixed variant keys, such as `state=cool`.
 - [ ] Convert straightforward side-oriented blocks still using custom placement code: mixer, extractor, forge press, coal motor, sieves, crusher, retort, bellows, treadwheel, trebuchet, activator, clutch, reverser.
 - [ ] Test: each converted block chooses the same side variant as before.
 - [ ] Test: wrench interactions still bypass normal GUI/open behavior.
@@ -144,10 +187,10 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 
 ## 10. Centered Multiblock Placement
 
-- [ ] Add a reusable centered-footprint placement helper.
-- [ ] Support 3x3 controller offset by side variant.
-- [ ] Convert kinetic bore placement.
-- [ ] Convert geothermal bore placement.
+- [x] Add a reusable centered-footprint placement helper.
+- [x] Support 3x3 controller offset by side variant.
+- [x] Convert kinetic bore placement.
+- [x] Convert geothermal bore placement.
 - [ ] Test: placing while facing north/east/south/west centers the footprint on the clicked cell.
 - [ ] Test: placement preview and actual placement match.
 
@@ -163,12 +206,12 @@ Goal: keep moving VK machines toward reusable public API primitives, with machin
 
 ## 12. Bore Framework
 
-- [ ] Add a shared bore base for drill depth, halted/retracting/paused state, toggle packet, dialog packet, claim checks, inventory lifecycle, save/load, and dialog disposal.
-- [ ] Add reusable deployed-column tracking for placed shaft/pipe visuals.
-- [ ] Convert kinetic bore.
-- [ ] Convert geothermal bore.
-- [ ] Keep kinetic bore mining/drop output logic as its unique hook.
-- [ ] Keep geothermal bore pipe/tapped/heat-provider logic as its unique hook.
+- [x] Add a shared bore base for drill depth, halted/retracting/paused state, toggle packet, dialog packet, claim checks, inventory lifecycle, save/load, and dialog disposal.
+- [x] Add reusable deployed-column tracking for placed shaft/pipe visuals.
+- [x] Convert kinetic bore to the shared bore base.
+- [x] Convert geothermal bore to the shared bore base.
+- [x] Keep kinetic bore mining/drop output logic as its unique hook.
+- [x] Keep geothermal bore pipe/tapped/heat-provider logic as its unique hook.
 - [ ] Test: drilling, halting, retracting, pausing, resuming, save/load, and block removal cleanup for both bores.
 
 ## 13. Config Dialog Framework

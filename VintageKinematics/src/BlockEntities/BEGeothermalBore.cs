@@ -5,14 +5,13 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 using VintageKinematics.Api;
 using VintageKinematics.Gui;
 using VintageKinematics.Rendering;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEGeothermalBore : BlockEntity, IGeothermalHeatProvider
+    public class BEGeothermalBore : BEBoreBase, IGeothermalHeatProvider
     {
         public const int RodSlotFirst = 0;
         public const int RodSlotLast = 2;
@@ -26,27 +25,20 @@ namespace VintageKinematics.BlockEntities
         private const float UnbreakableResistance = 50f;
         private const int DefaultMiningTier = 5;
 
-        private readonly InventoryGeneric inventory;
         private readonly List<ItemStack> deployedRods = new List<ItemStack>();
         private readonly List<ItemStack> deployedPipes = new List<ItemStack>();
-        private readonly List<BlockPos> placedPipePositions = new List<BlockPos>();
 
-        private int drillDepth;
-        private bool halted;
-        private bool retracting;
-        private bool paused;
         private bool tapped;
         private int miningTier;
 
-        private GuiDialogGeothermalBore clientDialog;
         private static int geothermalPipeBlockId = -1;
 
-        public InventoryBase Inventory => inventory;
-        public int DrillDepth => drillDepth;
-        public bool Halted => halted;
-        public bool Retracting => retracting;
-        public bool Paused => paused;
         public bool IsTapped => tapped;
+
+        protected override int OpenDialogPacketId => PacketIdOpenDialog;
+        protected override int ToggleRetractPacketId => PacketIdToggleRetract;
+        protected override string TitleLangCode => "vintagekinematics:geothermalbore-title";
+        protected override string FallbackTitle => "Geothermal Bore";
 
         public bool CanProvideHeatTo(BlockPos consumerPos)
         {
@@ -54,25 +46,22 @@ namespace VintageKinematics.BlockEntities
             if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size)) return false;
 
             BlockFacing face = HeatOutputFace();
-            BlockPos outputCell = HeatOutputCell(baseCorner, size, face);
+            BlockPos outputCell = MultiblockHelper.CellAtFaceCenter(baseCorner, size, face, baseCorner.Y, Pos.dimension);
             return outputCell != null && outputCell.AddCopy(face).Equals(consumerPos);
         }
 
         public BEGeothermalBore()
-        {
-            inventory = new InventoryGeneric(InventorySize, "geothermalbore-0", null, null, (slotId, self) =>
+            : base("geothermalbore", InventorySize, (slotId, self) =>
             {
                 if (slotId <= RodSlotLast) return new ItemSlotShaftInput(self);
                 return new ItemSlotGeothermalPipeInput(self);
-            });
+            })
+        {
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            inventory.LateInitialize("geothermalbore-" + Pos, api);
-            inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += _ => Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
 
             miningTier = Block?.Attributes?["miningTier"].AsInt(DefaultMiningTier) ?? DefaultMiningTier;
 
@@ -83,7 +72,7 @@ namespace VintageKinematics.BlockEntities
             {
                 var worker = GetBehavior<BEBehaviorKineticWorker>();
                 if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
-                if (placedPipePositions.Count == 0 && drillDepth > 0) RebuildPlacedPipePositions();
+                if (PlacedColumnPositions.Count == 0 && drillDepth > 0) RebuildPlacedColumnPositionsFromDepth();
                 if (drillDepth <= 0) AdoptExistingPipeColumn();
                 SetGlowState(tapped);
             }
@@ -97,116 +86,53 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
-        public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
+        protected override void WriteExtraDialogState(BinaryWriter writer)
         {
-            if (Api.World is IServerWorldAccessor)
-            {
-                string title = Lang.Get("vintagekinematics:geothermalbore-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:geothermalbore-title") title = "Geothermal Bore";
-
-                using var ms = new MemoryStream();
-                using var bw = new BinaryWriter(ms);
-                bw.Write(title);
-                bw.Write(drillDepth);
-                bw.Write(halted);
-                bw.Write(retracting);
-                bw.Write(paused);
-                bw.Write(tapped);
-                var tree = new TreeAttribute();
-                inventory.ToTreeAttributes(tree);
-                tree.ToBytes(bw);
-
-                ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, ms.ToArray());
-                byPlayer.InventoryManager.OpenInventory(inventory);
-            }
-            return true;
+            writer.Write(tapped);
         }
 
-        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
+        protected override void ReadExtraDialogState(BinaryReader reader)
         {
-            if (packetid == 1001)
-            {
-                player.InventoryManager?.CloseInventory(inventory);
-                return;
-            }
-            if (packetid == PacketIdToggleRetract)
-            {
-                if (!CheckClaim(player)) return;
-                if (retracting)
-                {
-                    retracting = false;
-                    paused = true;
-                }
-                else if (paused && !tapped)
-                {
-                    paused = false;
-                }
-                else
-                {
-                    retracting = true;
-                    halted = false;
-                    SetTapped(false);
-                }
-                MarkDirty(true);
-                return;
-            }
-            if (packetid < 1000)
-            {
-                if (!CheckClaim(player)) return;
-                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-            }
+            tapped = reader.ReadBoolean();
         }
 
-        private bool CheckClaim(IPlayer player)
+        protected override void OnServerToggleRetract()
         {
-            if (Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) return true;
-            Api.World.Logger.Audit("Player {0} sent geothermal bore packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
-            return false;
-        }
-
-        public override void OnReceivedServerPacket(int packetid, byte[] data)
-        {
-            if (packetid != PacketIdOpenDialog) return;
-
-            ICoreClientAPI capi = Api as ICoreClientAPI;
-            if (capi == null) return;
-
-            using var ms = new MemoryStream(data);
-            using var br = new BinaryReader(ms);
-            string title = br.ReadString();
-            drillDepth = br.ReadInt32();
-            halted = br.ReadBoolean();
-            retracting = br.ReadBoolean();
-            paused = br.ReadBoolean();
-            tapped = br.ReadBoolean();
-            var tree = new TreeAttribute();
-            tree.FromBytes(br);
-            inventory.FromTreeAttributes(tree);
-            inventory.ResolveBlocksOrItems();
-
-            if (clientDialog == null)
+            if (retracting)
             {
-                clientDialog = new GuiDialogGeothermalBore(
-                    title, inventory, Pos,
-                    () => retracting, () => halted, () => paused, () => tapped, () => drillDepth,
-                    OnClientToggleRetract, capi);
-                clientDialog.OnClosed += () => clientDialog = null;
-                clientDialog.TryOpen();
+                retracting = false;
+                paused = true;
+            }
+            else if (paused && !tapped)
+            {
+                paused = false;
             }
             else
             {
-                clientDialog.OnStateUpdated();
+                retracting = true;
+                halted = false;
+                SetTapped(false);
             }
         }
+
+        protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
+        {
+            return new GuiDialogGeothermalBore(
+                title, inventory, Pos,
+                () => retracting, () => halted, () => paused, () => tapped, () => drillDepth,
+                OnClientToggleRetract, capi);
+        }
+
+        protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog) =>
+            (dialog as GuiDialogGeothermalBore)?.OnStateUpdated();
 
         private void OnClientToggleRetract()
         {
             if (retracting) { retracting = false; paused = true; }
             else if (paused && !tapped) { paused = false; }
             else { retracting = true; halted = false; tapped = false; }
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleRetract);
-            clientDialog?.OnStateUpdated();
+            SendClientToggleRetractPacket();
+            RefreshClientDialog();
         }
 
         private void OnWorkCycle(KineticWorkCompletedArgs args)
@@ -231,7 +157,7 @@ namespace VintageKinematics.BlockEntities
                 drillDepth = 0;
                 deployedRods.Clear();
                 deployedPipes.Clear();
-                placedPipePositions.Clear();
+                ClearPlacedColumnPositions();
                 MarkDirty(true);
                 return;
             }
@@ -316,9 +242,6 @@ namespace VintageKinematics.BlockEntities
             MarkDirty(true);
         }
 
-        private BlockPos CenterColumnPos(BlockPos baseCorner, int y) =>
-            new BlockPos(baseCorner.X + 1, y, baseCorner.Z + 1, Pos.dimension);
-
         private void SetTapped(bool value)
         {
             tapped = value;
@@ -342,39 +265,14 @@ namespace VintageKinematics.BlockEntities
             return BlockFacing.FromFirstLetter(Block?.Variant?["side"] ?? "n") ?? BlockFacing.NORTH;
         }
 
-        private BlockPos HeatOutputCell(BlockPos baseCorner, Vec3i size, BlockFacing face)
-        {
-            int midX = baseCorner.X + size.X / 2;
-            int midZ = baseCorner.Z + size.Z / 2;
-            int y = baseCorner.Y;
-            if (face == BlockFacing.NORTH) return new BlockPos(midX, y, baseCorner.Z, Pos.dimension);
-            if (face == BlockFacing.SOUTH) return new BlockPos(midX, y, baseCorner.Z + size.Z - 1, Pos.dimension);
-            if (face == BlockFacing.EAST) return new BlockPos(baseCorner.X + size.X - 1, y, midZ, Pos.dimension);
-            if (face == BlockFacing.WEST) return new BlockPos(baseCorner.X, y, midZ, Pos.dimension);
-            return null;
-        }
-
         private void PlaceVisualPipe(BlockPos columnPos)
         {
-            if (geothermalPipeBlockId < 0) return;
-            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return;
-            Api.World.BlockAccessor.SetBlock(geothermalPipeBlockId, columnPos);
-            placedPipePositions.Add(columnPos.Copy());
+            TryPlaceTrackedColumnBlock(columnPos, geothermalPipeBlockId);
         }
 
         private ItemStack RemoveVisualPipe(ItemStack deployedPipe)
         {
-            if (placedPipePositions.Count == 0) return null;
-            int lastIdx = placedPipePositions.Count - 1;
-            BlockPos columnPos = placedPipePositions[lastIdx];
-            placedPipePositions.RemoveAt(lastIdx);
-            Block here = Api.World.BlockAccessor.GetBlock(columnPos);
-            if (here?.Id != geothermalPipeBlockId) return null;
-            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return null;
-
-            Api.World.BlockAccessor.SetBlock(0, columnPos);
-            if (deployedPipe != null) return deployedPipe;
-            return new ItemStack(here, 1);
+            return RemoveTrackedColumnBlock(geothermalPipeBlockId, deployedPipe, here => new ItemStack(here, 1));
         }
 
         private ItemSlot FindRodSlot()
@@ -465,14 +363,8 @@ namespace VintageKinematics.BlockEntities
             return false;
         }
 
-        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+        protected override void ReadExtraTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
-            base.FromTreeAttributes(tree, worldAccessForResolve);
-            inventory?.FromTreeAttributes(tree);
-            drillDepth = tree.GetInt("drillDepth", 0);
-            halted = tree.GetBool("halted", false);
-            retracting = tree.GetBool("retracting", false);
-            paused = tree.GetBool("paused", false);
             tapped = tree.GetBool("tapped", false);
 
             deployedRods.Clear();
@@ -507,53 +399,18 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            placedPipePositions.Clear();
-            ITreeAttribute pipesTree = tree.GetTreeAttribute("placedPipePositions");
-            if (pipesTree != null)
-            {
-                int count = pipesTree.GetInt("count", 0);
-                for (int i = 0; i < count; i++)
-                {
-                    placedPipePositions.Add(new BlockPos(
-                        pipesTree.GetInt("x" + i),
-                        pipesTree.GetInt("y" + i),
-                        pipesTree.GetInt("z" + i),
-                        pipesTree.GetInt("d" + i, Pos.dimension)));
-                }
-            }
-
-            if (Api != null) inventory?.ResolveBlocksOrItems();
-            if (Api != null && Api.Side == EnumAppSide.Server && placedPipePositions.Count == 0 && drillDepth > 0) RebuildPlacedPipePositions();
-            clientDialog?.OnStateUpdated();
+            ReadPlacedColumnPositions(tree, "placedPipePositions");
         }
 
-        private void RebuildPlacedPipePositions()
+        protected override void OnAfterTreeAttributesLoaded(IWorldAccessor worldAccessForResolve)
         {
-            placedPipePositions.Clear();
-            if (Api == null || Api.Side != EnumAppSide.Server || drillDepth <= 0) return;
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _)) return;
-            for (int d = 1; d <= drillDepth; d++)
-            {
-                placedPipePositions.Add(CenterColumnPos(baseCorner, baseCorner.Y - d));
-            }
+            if (Api != null && Api.Side == EnumAppSide.Server && PlacedColumnPositions.Count == 0 && drillDepth > 0) RebuildPlacedColumnPositionsFromDepth();
         }
 
         private void AdoptExistingPipeColumn()
         {
-            if (Api == null || Api.Side != EnumAppSide.Server || geothermalPipeBlockId < 0) return;
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _)) return;
-
-            placedPipePositions.Clear();
-            for (int y = baseCorner.Y - 1; y > 0; y--)
-            {
-                BlockPos columnPos = CenterColumnPos(baseCorner, y);
-                Block here = Api.World.BlockAccessor.GetBlock(columnPos);
-                if (here?.Id != geothermalPipeBlockId) break;
-                placedPipePositions.Add(columnPos);
-            }
-
-            if (placedPipePositions.Count <= 0) return;
-            drillDepth = placedPipePositions.Count;
+            if (!TryAdoptExistingColumn(geothermalPipeBlockId, out BlockPos baseCorner)) return;
+            drillDepth = PlacedColumnPositions.Count;
             halted = false;
             retracting = false;
             paused = false;
@@ -570,14 +427,8 @@ namespace VintageKinematics.BlockEntities
             return IsBedrock(next);
         }
 
-        public override void ToTreeAttributes(ITreeAttribute tree)
+        protected override void WriteExtraTreeAttributes(ITreeAttribute tree)
         {
-            base.ToTreeAttributes(tree);
-            inventory?.ToTreeAttributes(tree);
-            tree.SetInt("drillDepth", drillDepth);
-            tree.SetBool("halted", halted);
-            tree.SetBool("retracting", retracting);
-            tree.SetBool("paused", paused);
             tree.SetBool("tapped", tapped);
 
             ITreeAttribute rodsTree = new TreeAttribute();
@@ -596,17 +447,7 @@ namespace VintageKinematics.BlockEntities
             }
             tree["deployedPipes"] = deployedPipesTree;
 
-            ITreeAttribute pipesTree = new TreeAttribute();
-            pipesTree.SetInt("count", placedPipePositions.Count);
-            for (int i = 0; i < placedPipePositions.Count; i++)
-            {
-                BlockPos p = placedPipePositions[i];
-                pipesTree.SetInt("x" + i, p.X);
-                pipesTree.SetInt("y" + i, p.Y);
-                pipesTree.SetInt("z" + i, p.Z);
-                pipesTree.SetInt("d" + i, p.dimension);
-            }
-            tree["placedPipePositions"] = pipesTree;
+            WritePlacedColumnPositions(tree, "placedPipePositions");
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, System.Text.StringBuilder dsc)
@@ -622,7 +463,6 @@ namespace VintageKinematics.BlockEntities
         public override void OnBlockUnloaded()
         {
             base.OnBlockUnloaded();
-            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
         public override void OnBlockRemoved()
@@ -632,12 +472,11 @@ namespace VintageKinematics.BlockEntities
             // voiding the installed tap materials when the controller is broken.
             if (Api?.Side == EnumAppSide.Server)
             {
-                placedPipePositions.Clear();
+                ClearPlacedColumnPositions();
                 deployedRods.Clear();
                 deployedPipes.Clear();
             }
             base.OnBlockRemoved();
-            GuiDialogUtil.SafeDispose(ref clientDialog);
         }
     }
 }

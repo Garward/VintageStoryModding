@@ -61,7 +61,7 @@ namespace VintageKinematics.Network
                         Pos = pos,
                         Axis = vAxis,
                         Role = EnumKineticRole.Custom,
-                        StressImpact = VanillaMPBridge.ComputeStressImpact(vTorque),
+                        StressImpact = VanillaMPBridge.InitialStressImpact(vTorque),
                         RatedRPM = MathF.Abs(vRPM),
                         IsVanillaBridge = true,
                         VanillaNetworkId = vNetId,

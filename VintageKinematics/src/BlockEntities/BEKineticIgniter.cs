@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
@@ -16,6 +17,7 @@ namespace VintageKinematics.BlockEntities
 
         private static readonly AssetLocation CrackleSound = new AssetLocation("sounds/torch-ignite");
         private static readonly Random rand = new Random();
+        private static readonly MethodInfo ForgeTryIgniteMethod = typeof(BlockEntityForge).GetMethod("TryIgnite", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
         private float pulseElapsedSec;
         private float pulseTargetSec;
@@ -133,9 +135,11 @@ namespace VintageKinematics.BlockEntities
                     firepit.MarkDirty(true);
                     return true;
 
-                // BlockEntityForge.TryIgnite() is `internal void` — not callable from outside
-                // vssurvivalmod. Forge ignition is a known v1 limitation; revisit via
-                // reflection or a synthesized EntityAgent if needed later.
+                case BlockEntityForge forge:
+                    if (!forge.CanIgnite || ForgeTryIgniteMethod == null) return false;
+                    ForgeTryIgniteMethod.Invoke(forge, null);
+                    forge.MarkDirty(true);
+                    return forge.IsBurning;
 
                 case BlockEntityBloomery bloomery:
                     if (!bloomery.CanIgnite()) return false;

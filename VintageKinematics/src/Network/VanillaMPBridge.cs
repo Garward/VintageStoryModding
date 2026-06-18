@@ -17,12 +17,32 @@ namespace VintageKinematics.Network
     /// </summary>
     public static class VanillaMPBridge
     {
+        public enum BridgeMode
+        {
+            Dynamic,
+            SampledStatic,
+            Fixed,
+            Disabled
+        }
+
+        /// <summary>
+        /// Capacity update mode for vanilla MP bridge nodes. Initialized to Dynamic to preserve
+        /// existing behavior; <see cref="Api.KineticConfigSystem"/> overwrites this from config.
+        /// </summary>
+        public static BridgeMode Mode = BridgeMode.Dynamic;
+
         /// <summary>
         /// Fixed VK RPM the bridge publishes while the vanilla axle is rotating. Initialized to
         /// the default; <see cref="Api.KineticConfigSystem"/> overwrites this from the loaded
         /// config at mod start.
         /// </summary>
         public static float StableRPM = 16f;
+
+        /// <summary>Total fixed SU capacity for each rotating vanilla bridge in Fixed mode.</summary>
+        public static float FixedStressCapacity = 2000f;
+
+        /// <summary>Server poll interval for vanilla bridge source changes.</summary>
+        public static int PollIntervalMs = 250;
 
         /// <summary>Vanilla speeds with magnitude below this read as "stopped" (not rotating).</summary>
         private const float StoppedThreshold = 0.001f;
@@ -68,6 +88,24 @@ namespace VintageKinematics.Network
         /// while the rotor spins up.</summary>
         private const float MinTorqueFloor = 0.05f;
 
+        public static BridgeMode ParseMode(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return BridgeMode.Dynamic;
+            string normalized = value.Trim().Replace("-", "").Replace("_", "").ToLowerInvariant();
+            return normalized switch
+            {
+                "dynamic" => BridgeMode.Dynamic,
+                "sampledstatic" => BridgeMode.SampledStatic,
+                "sampled" => BridgeMode.SampledStatic,
+                "static" => BridgeMode.SampledStatic,
+                "fixed" => BridgeMode.Fixed,
+                "off" => BridgeMode.Disabled,
+                "disabled" => BridgeMode.Disabled,
+                "none" => BridgeMode.Disabled,
+                _ => BridgeMode.Dynamic
+            };
+        }
+
         /// <summary>True iff <paramref name="pos"/> hosts a block entity with a vanilla MP behavior.</summary>
         public static bool IsVanillaMP(IWorldAccessor world, BlockPos pos)
         {
@@ -87,6 +125,7 @@ namespace VintageKinematics.Network
             signedRPM = 0f;
             networkTorque = 0f;
             vanillaNetworkId = 0L;
+            if (Mode == BridgeMode.Disabled) return false;
 
             BlockEntity be = world.BlockAccessor.GetBlockEntity(pos);
             BEBehaviorMPBase mp = be?.GetBehavior<BEBehaviorMPBase>();
@@ -133,6 +172,19 @@ namespace VintageKinematics.Network
             networkTorque = potential != 0f ? potential : (mp.Network?.TotalAvailableTorque ?? 0f);
             vanillaNetworkId = mp.Network?.networkId ?? 0L;
             return true;
+        }
+
+        public static float InitialStressImpact(float networkTorque)
+        {
+            return Mode == BridgeMode.Fixed
+                ? ComputeFixedStressImpact()
+                : ComputeStressImpact(networkTorque);
+        }
+
+        public static float ComputeFixedStressImpact()
+        {
+            float rpm = System.MathF.Max(0.001f, System.MathF.Abs(StableRPM));
+            return -System.MathF.Max(0f, FixedStressCapacity) / rpm;
         }
 
         private static float ReadLocalSignedSpeed(BEBehaviorMPBase mp, EnumKineticAxis axis)

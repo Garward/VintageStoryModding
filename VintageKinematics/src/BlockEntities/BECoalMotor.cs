@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -137,6 +138,31 @@ namespace VintageKinematics.BlockEntities
             GuiDialogUtil.SafeDispose(ref clientDialog);
         }
 
+        public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
+        {
+            base.GetBlockInfo(forPlayer, dsc);
+
+            float activeSeconds = GetBehavior<BEBehaviorKineticSource>()?.EstimatedRemainingSeconds() ?? 0f;
+            float queuedSeconds = EstimateQueuedFuelSeconds();
+            float totalSeconds = activeSeconds + queuedSeconds;
+            if (totalSeconds <= 0f) return;
+
+            dsc.AppendLine(Lang.Get("vintagekinematics:coalmotor-fuel-time", FormatDuration(totalSeconds)));
+        }
+
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            base.ToTreeAttributes(tree);
+            inventory.ToTreeAttributes(tree);
+        }
+
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
+        {
+            base.FromTreeAttributes(tree, worldForResolving);
+            inventory.FromTreeAttributes(tree);
+            inventory.ResolveBlocksOrItems();
+        }
+
         private void OnFuelTick(float dt)
         {
             BEBehaviorKineticSource src = GetBehavior<BEBehaviorKineticSource>();
@@ -155,6 +181,33 @@ namespace VintageKinematics.BlockEntities
             slot.MarkDirty();
             float fuelUsageSpeed = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveCoalMotorFuelUsageSpeed() ?? 1f;
             src.Wind(props.BurnDuration / fuelUsageSpeed, KineticSourceDirection.ForHorizontalSide(Block, "n"));
+        }
+
+        private float EstimateQueuedFuelSeconds()
+        {
+            ItemSlot slot = inventory[SlotFuel];
+            if (slot.Empty) return 0f;
+
+            ItemStack stack = slot.Itemstack;
+            CombustibleProperties props = stack?.Collectible?.GetCombustibleProperties(Api?.World, stack, Pos);
+            if (props == null || props.BurnDuration <= 0f) return 0f;
+
+            float fuelUsageSpeed = Api?.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.ResolveCoalMotorFuelUsageSpeed() ?? 1f;
+            if (fuelUsageSpeed <= 0f) fuelUsageSpeed = 1f;
+
+            return props.BurnDuration * stack.StackSize / fuelUsageSpeed;
+        }
+
+        private static string FormatDuration(float seconds)
+        {
+            int total = System.Math.Max(0, (int)System.MathF.Ceiling(seconds));
+            int hours = total / 3600;
+            int minutes = (total % 3600) / 60;
+            int secs = total % 60;
+
+            if (hours > 0) return $"{hours}h {minutes:00}m";
+            if (minutes > 0) return $"{minutes}m {secs:00}s";
+            return $"{secs}s";
         }
     }
 }

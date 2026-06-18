@@ -15,9 +15,9 @@ using VintageKinematics.Rendering;
 namespace VintageKinematics.BlockEntities
 {
     /// <summary>
-    /// Single-block press: top face inputs items, bottom face outputs solids and drains liquids
-    /// into any <see cref="BlockLiquidContainerBase"/> directly below (e.g. a barrel). Each work
-    /// cycle consumes 1 input and produces the recipe's solid and/or liquid outputs.
+    /// Single-block press: item IO is defined by the blocktype's shared vkIo map. Liquid output
+    /// drains into any <see cref="BlockLiquidContainerBase"/> directly below (e.g. a barrel).
+    /// Each work cycle consumes 1 input and produces the recipe's solid and/or liquid outputs.
     /// </summary>
     public class BEKineticPress : BlockEntityOpenableContainer, IFaceMappedContainer
     {
@@ -79,13 +79,8 @@ namespace VintageKinematics.BlockEntities
                 }
             }
 
-            ioFaces = MachineIoLayouts.SideInputOppositeAndDownOutput(
-                Pos,
-                JsonMachineIoBuilder.ResolveFace(Block, "localWest"),
-                SlotInput,
-                SlotOutputFirst,
-                SlotOutputLast);
-            ioFaces.Apply(inventory);
+            ioFaces = BuildIOFaceMap();
+            ioFaces?.Apply(inventory);
 
             if (api.Side == EnumAppSide.Server)
             {
@@ -95,6 +90,18 @@ namespace VintageKinematics.BlockEntities
 
             BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
             if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
+        }
+
+        private IOFaceMap BuildIOFaceMap()
+        {
+            return JsonMachineIoBuilder.Build(
+                Block?.Attributes?["vkIo"],
+                Block,
+                Pos,
+                SlotInput,
+                SlotInput,
+                SlotOutputFirst,
+                SlotOutputLast);
         }
 
         private void OnServerPushTick(float dt)
@@ -212,7 +219,8 @@ namespace VintageKinematics.BlockEntities
             ItemStack resolvedLiquid = props.LiquidStack.ResolvedItemstack;
             if (resolvedLiquid?.Collectible == null) return false;
 
-            float litres = props.LitresPerItem.Value * VanillaYieldBonus;
+            float baseLitres = props.LitresPerItem.Value;
+            float litres = baseLitres * VanillaYieldBonus;
             AssetLocation liquidCode = resolvedLiquid.Collectible.Code;
             if (liquidStack?.Collectible != null && !liquidStack.Collectible.Code.Equals(liquidCode)) return false;
             if (liquidLitres + litres > CapacityLitres + 0.0001f) return false;
@@ -224,7 +232,17 @@ namespace VintageKinematics.BlockEntities
             if (liquidStack == null) liquidStack = resolvedLiquid.Clone();
             liquidLitres += litres;
 
-            if (props.PressedStack != null)
+            if (props.ReturnStack != null)
+            {
+                props.ReturnStack.Resolve(Api.World, "vintagekinematics press juiceable returnstack", input.Collectible.Code, true);
+                if (props.ReturnStack.ResolvedItemstack != null)
+                {
+                    ItemStack returned = props.ReturnStack.ResolvedItemstack.Clone();
+                    returned.StackSize = GameMath.RoundRandom(Api.World.Rand, returned.StackSize * baseLitres);
+                    if (returned.StackSize > 0) DepositOutput(returned);
+                }
+            }
+            else if (props.PressedStack != null)
             {
                 props.PressedStack.Resolve(Api.World, "vintagekinematics press juiceable", input.Collectible.Code, true);
                 if (props.PressedStack.ResolvedItemstack != null)
@@ -312,6 +330,7 @@ namespace VintageKinematics.BlockEntities
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)
         {
             base.GetBlockInfo(forPlayer, sb);
+            sb.AppendLine(Lang.Get("vintagekinematics:kineticextractor-io-tooltip"));
             if (liquidStack != null && liquidLitres > 0f)
             {
                 string name = liquidStack.GetName();

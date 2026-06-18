@@ -99,6 +99,15 @@ namespace VintageKinematics.Api
         private void ApplyAirToFrontTarget(BlockFacing facing, float rpm)
         {
             BlockPos targetPos = Pos.AddCopy(facing);
+            Block targetBlock = Api.World.BlockAccessor.GetBlock(targetPos);
+            IBellowsAirReceiver airReceiver = targetBlock?.GetInterface<IBellowsAirReceiver>(Api.World, targetPos);
+            if (airReceiver != null)
+            {
+                airReceiver.BlowAirInto(Api.World, targetPos, 0.2f, facing);
+                RecordAirPulse(targetBlock?.Code?.ToShortString());
+                return;
+            }
+
             BlockEntity be = Api.World.BlockAccessor.GetBlockEntity(targetPos);
             if (be is not BlockEntityFirepit firepit || !firepit.IsBurning) return;
             CombustibleProperties fuelProps = firepit.fuelCombustibleOpts;
@@ -113,16 +122,20 @@ namespace VintageKinematics.Api
             if (firepit.canHeatInput()) firepit.heatInput(extraSeconds);
             if (firepit.canHeatOutput()) firepit.heatOutput(extraSeconds);
 
+            RecordAirPulse(be.Block?.Code?.ToShortString());
+            firepit.MarkDirty(true);
+        }
+
+        private void RecordAirPulse(string targetCode)
+        {
             lastAirPulseSeconds = Api.World.Calendar.ElapsedSeconds;
-            lastAirTargetCode = be.Block?.Code?.ToShortString();
+            lastAirTargetCode = targetCode;
             long nowMs = Api.World.ElapsedMilliseconds;
             if (nowMs - lastStatusSyncMs >= 1000)
             {
                 lastStatusSyncMs = nowMs;
                 Blockentity.MarkDirty(true);
             }
-
-            firepit.MarkDirty(true);
         }
 
         private static float EffectiveFirepitTemperature(float fuelTemperature)
@@ -180,6 +193,11 @@ namespace VintageKinematics.Api
                 {
                     dsc.AppendLine($"Bellows firepit heat target: {EffectiveFirepitTemperature(firepit.maxTemperature):F0} C");
                 }
+            }
+            else if (Api.World.BlockAccessor.GetBlock(targetPos)?.GetInterface<IBellowsAirReceiver>(Api.World, targetPos) != null)
+            {
+                string targetName = targetBe?.Block?.Code?.ToShortString() ?? Api.World.BlockAccessor.GetBlock(targetPos)?.Code?.ToShortString() ?? "air";
+                dsc.AppendLine($"Bellows target: {facingName} {targetName}, accepts bellows air");
             }
             else if ((targetBe?.Block?.Code?.Path ?? "").Contains("kineticforgepress"))
             {

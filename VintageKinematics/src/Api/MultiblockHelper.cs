@@ -110,6 +110,21 @@ namespace VintageKinematics.Api
             return BlockFacing.EAST;
         }
 
+        public static BlockPos CellAtFaceCenter(BlockPos baseCorner, Vec3i size, BlockFacing face, int y, int dimension)
+        {
+            int midX = baseCorner.X + size.X / 2;
+            int midZ = baseCorner.Z + size.Z / 2;
+            if (face == BlockFacing.SOUTH) return new BlockPos(midX, y, baseCorner.Z + size.Z - 1, dimension);
+            if (face == BlockFacing.EAST) return new BlockPos(baseCorner.X + size.X - 1, y, midZ, dimension);
+            if (face == BlockFacing.WEST) return new BlockPos(baseCorner.X, y, midZ, dimension);
+            return new BlockPos(midX, y, baseCorner.Z, dimension);
+        }
+
+        public static BlockPos CellAtClaimCenter(BlockPos baseCorner, Vec3i size, int y, int dimension)
+        {
+            return new BlockPos(baseCorner.X + size.X / 2, y, baseCorner.Z + size.Z / 2, dimension);
+        }
+
         private static bool IsOnClaimFace(BlockFacing face, int x, int y, int z, Vec3i size)
         {
             if (face == BlockFacing.WEST) return x == 0;

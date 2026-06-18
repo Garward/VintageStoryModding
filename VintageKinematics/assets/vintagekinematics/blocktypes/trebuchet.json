@@ -277,7 +277,7 @@
         },
         "trebuchet-e": {
             "base": "block/trebuchet",
-            "rotateY": 90
+            "rotateY": 270
         },
         "trebuchet-s": {
             "base": "block/trebuchet",
@@ -285,7 +285,7 @@
         },
         "trebuchet-w": {
             "base": "block/trebuchet",
-            "rotateY": 270
+            "rotateY": 90
         }
     },
     "textures": {

@@ -379,7 +379,7 @@
         },
         "*-e": {
             "base": "block/jsonmachinetemplate",
-            "rotateY": 90
+            "rotateY": 270
         },
         "*-s": {
             "base": "block/jsonmachinetemplate",
@@ -387,7 +387,7 @@
         },
         "*-w": {
             "base": "block/jsonmachinetemplate",
-            "rotateY": 270
+            "rotateY": 90
         }
     },
     "collisionbox": {

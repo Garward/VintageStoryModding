@@ -151,8 +151,7 @@ namespace VintageKinematics.Blocks
             {
                 if (world.Side == EnumAppSide.Server)
                 {
-                    string axis = belt.InsertedShaftAxis ?? "y";
-                    AssetLocation shaftCode = new AssetLocation("vintagekinematics", "shaft-" + axis);
+                    AssetLocation shaftCode = new AssetLocation("vintagekinematics", "shaft-y");
                     Block shaftBlock = world.GetBlock(shaftCode);
                     if (shaftBlock != null)
                     {

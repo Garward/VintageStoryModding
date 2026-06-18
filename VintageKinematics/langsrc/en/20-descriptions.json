@@ -43,7 +43,7 @@
     "blockdesc-trashcan": "Filtered automation sink. Deletes matching items from belts and funnels only.",
     "blockdesc-kineticsieve-*": "Powered sieve for crushed rock, grit, dust, and pannable blocks. Input top/side; output bottom/opposite side.",
     "blockdesc-kineticsawmill-*": "Powered sawmill for logs. Input top/side; output bottom/opposite side. Use non shaft faces for item IO.",
-    "blockdesc-kineticextractor-*": "Powered organic extractor. Item input top/side; solid output bottom/opposite side; liquids stay in the internal buffer.",
+    "blockdesc-kineticextractor-*": "Powered organic extractor. Item input top/side; solid output bottom/opposite side; liquids drain into an open container below.",
     "blockdesc-kineticforgepress-*": "Fueled hot metal press. Metal and fuel input top/side; output bottom/opposite side. Bellows improve chamber heat.",
     "blockdesc-kineticbellows-*": "Powered bellows for forge presses and firepits. Point the nozzle at the target and supply rotation.",
     "blockdesc-kineticmixer-*": "Two block mixer. Drive the upper cog; item input side; output bottom/opposite side.",

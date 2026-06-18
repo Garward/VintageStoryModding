@@ -24,6 +24,29 @@ namespace VintageKinematics.Api
         public float StressUnitMultiplier { get; set; } = 1f;
 
         /// <summary>
+        /// How VK should translate vanilla mechanical-power sources.
+        /// "dynamic" keeps the current live torque tracking. "sampledStatic" samples the
+        /// vanilla source capacity when the bridge node is built and then keeps that rating
+        /// stable until the VK network is rebuilt. "fixed" gives every rotating vanilla bridge
+        /// the configured <see cref="VanillaBridgeFixedSU"/> capacity. "disabled" prevents VK
+        /// from bridging vanilla mechanical power.
+        /// </summary>
+        public string VanillaBridgeMode { get; set; } = "dynamic";
+
+        /// <summary>
+        /// Fixed stress capacity used when <see cref="VanillaBridgeMode"/> is "fixed".
+        /// This is total SU capacity at <see cref="VanillaBridgeStableRPM"/>.
+        /// </summary>
+        public float VanillaBridgeFixedSU { get; set; } = 2000f;
+
+        /// <summary>
+        /// How often VK polls vanilla bridge sources. Dynamic mode benefits from the default
+        /// 250 ms value; fixed/sample modes can safely be raised on large servers if delayed
+        /// stop/start detection is acceptable.
+        /// </summary>
+        public int VanillaBridgePollIntervalMs { get; set; } = 250;
+
+        /// <summary>
         /// Fixed VK RPM published by the vanilla MP bridge whenever the upstream axle is rotating
         /// (sign tracks vanilla direction). Static by design: vanilla MP speed jitters per tick
         /// with wind/water/load, and forwarding that magnitude would make MaxRPM-bound consumers

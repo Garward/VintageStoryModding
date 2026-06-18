@@ -1,12 +1,26 @@
-{
-	"ingredientPattern": "LRL,RFR,LTL",
-	"ingredients": {
-		"L": { "type": "item", "code": "game:leather-normal-*", "name": "leather" },
-		"R": { "type": "item", "code": "game:resin" },
-		"F": { "type": "item", "code": "game:fat" },
-		"T": { "type": "item", "code": "game:rope" }
+[
+	{
+		"ingredientPattern": "LRL,RFR,LTL",
+		"ingredients": {
+			"L": { "type": "item", "code": "game:leather-normal-*", "name": "leather" },
+			"R": { "type": "item", "code": "game:resin" },
+			"F": { "type": "item", "code": "game:fat" },
+			"T": { "type": "item", "code": "game:rope" }
+		},
+		"width": 3,
+		"height": 3,
+		"output": { "type": "item", "code": "beltcompound", "quantity": 1 }
 	},
-	"width": 3,
-	"height": 3,
-	"output": { "type": "item", "code": "beltcompound", "quantity": 1 }
-}
+	{
+		"ingredientPattern": "LRL,RFR,LTL",
+		"ingredients": {
+			"L": { "type": "item", "code": "game:leather-normal-*", "name": "leather" },
+			"R": { "type": "item", "code": "game:resin" },
+			"F": { "type": "item", "code": "game:fat-rendered" },
+			"T": { "type": "item", "code": "game:rope" }
+		},
+		"width": 3,
+		"height": 3,
+		"output": { "type": "item", "code": "beltcompound", "quantity": 1 }
+	}
+]

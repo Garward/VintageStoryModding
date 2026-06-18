@@ -153,70 +153,15 @@ namespace VintageKinematics.BlockEntities
 
         protected override IOFaceMap BuildIOFaceMap()
         {
-            IOFaceMap map = new IOFaceMap(Pos);
             BlockFacing inputFace = AutomationInputFace();
-            BlockFacing outputFace = inputFace.Opposite;
-
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size))
-            {
-                MapInputCell(map, Pos, inputFace);
-                MapInputCell(map, Pos, BlockFacing.UP);
-                MapOutputCell(map, Pos, outputFace);
-                MapOutputCell(map, Pos, BlockFacing.DOWN);
-                return map;
-            }
-
-            int centerX = baseCorner.X + size.X / 2;
-            int centerZ = baseCorner.Z + size.Z / 2;
-            int minX = baseCorner.X;
-            int maxX = baseCorner.X + size.X - 1;
-            int minZ = baseCorner.Z;
-            int maxZ = baseCorner.Z + size.Z - 1;
-            int bottomY = baseCorner.Y;
-            int topY = baseCorner.Y + size.Y - 1;
-
-            BlockPos inputCell;
-            BlockPos outputCell;
-            switch (inputFace.Code)
-            {
-                case "east":
-                    inputCell = new BlockPos(maxX, bottomY, centerZ, Pos.dimension);
-                    outputCell = new BlockPos(minX, bottomY, centerZ, Pos.dimension);
-                    break;
-                case "west":
-                    inputCell = new BlockPos(minX, bottomY, centerZ, Pos.dimension);
-                    outputCell = new BlockPos(maxX, bottomY, centerZ, Pos.dimension);
-                    break;
-                case "north":
-                    inputCell = new BlockPos(centerX, bottomY, minZ, Pos.dimension);
-                    outputCell = new BlockPos(centerX, bottomY, maxZ, Pos.dimension);
-                    break;
-                case "south":
-                default:
-                    inputCell = new BlockPos(centerX, bottomY, maxZ, Pos.dimension);
-                    outputCell = new BlockPos(centerX, bottomY, minZ, Pos.dimension);
-                    break;
-            }
-
-            MapInputCell(map, inputCell, inputFace);
-            MapInputCell(map, new BlockPos(centerX, topY, centerZ, Pos.dimension), BlockFacing.UP);
-            MapOutputCell(map, outputCell, outputFace);
-            MapOutputCell(map, new BlockPos(centerX, bottomY, centerZ, Pos.dimension), BlockFacing.DOWN);
-            return map;
-        }
-
-        private void MapInputCell(IOFaceMap map, BlockPos cell, BlockFacing face)
-        {
-            map.MapInput(cell, face, SlotInput);
-            map.MapInput(cell, face, SlotFuel);
-        }
-
-        private void MapOutputCell(IOFaceMap map, BlockPos cell, BlockFacing face)
-        {
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                map.MapOutput(cell, face, i);
-            }
+            return MachineIoLayouts.MultiblockFaceCenterInputTopCenterInputOppositeAndDownOutput(
+                Block,
+                Pos,
+                inputFace,
+                SlotInput,
+                SlotFuel,
+                SlotOutputFirst,
+                SlotOutputLast);
         }
 
         private void OnHeatTick(float dt)

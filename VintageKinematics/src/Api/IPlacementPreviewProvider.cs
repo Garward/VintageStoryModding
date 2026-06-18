@@ -44,5 +44,51 @@ namespace VintageKinematics.Api
                 ? sel.Position
                 : sel.Position.AddCopy(sel.Face);
         }
+
+        /// <summary>
+        /// Literal horizontal side from player yaw: facing north selects <c>n</c>, east selects
+        /// <c>e</c>, south selects <c>s</c>, and west selects <c>w</c>.
+        /// </summary>
+        public static string CardinalSideFromPlayerYaw(IPlayer byPlayer)
+        {
+            if (byPlayer?.Entity == null) return null;
+
+            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
+            return CardinalSide(facing);
+        }
+
+        public static string CardinalSideOppositePlayerYaw(IPlayer byPlayer)
+        {
+            if (byPlayer?.Entity == null) return null;
+
+            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw).Opposite;
+            return CardinalSide(facing);
+        }
+
+        public static string CardinalSide(BlockFacing facing)
+        {
+            if (facing == BlockFacing.NORTH) return "n";
+            if (facing == BlockFacing.EAST) return "e";
+            if (facing == BlockFacing.SOUTH) return "s";
+            if (facing == BlockFacing.WEST) return "w";
+            return null;
+        }
+
+        /// <summary>
+        /// Maps a clicked center cell to the controller cell for the existing bore-style 3x3
+        /// footprint. The offsets preserve the legacy bore placement exactly.
+        /// </summary>
+        public static BlockPos Centered3x3ControllerPos(BlockPos clickPos, string side)
+        {
+            BlockPos p = clickPos.Copy();
+            switch (side)
+            {
+                case "n": p.X -= 1; p.Z -= 1; break;
+                case "e": p.X += 1; p.Z -= 1; break;
+                case "s": p.X += 1; p.Z += 1; break;
+                case "w": p.X -= 1; p.Z += 1; break;
+            }
+            return p;
+        }
     }
 }

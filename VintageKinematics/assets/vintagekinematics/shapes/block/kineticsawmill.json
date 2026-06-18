@@ -258,12 +258,12 @@
     {
       "name": "InfeedDeck",
       "from": [
-        9.25,
+        0.0,
         8.25,
         2.0
       ],
       "to": [
-        16.0,
+        6.75,
         10.25,
         14.0
       ],
@@ -339,12 +339,12 @@
     {
       "name": "OutfeedDeck",
       "from": [
-        0.0,
+        9.25,
         8.25,
         2.0
       ],
       "to": [
-        6.75,
+        16.0,
         10.25,
         14.0
       ],
@@ -506,12 +506,12 @@
     {
       "name": "InfeedRailNorth",
       "from": [
-        9.25,
+        0.0,
         10.25,
         14.0
       ],
       "to": [
-        16.0,
+        6.75,
         11.5,
         14.75
       ],
@@ -587,6 +587,168 @@
     {
       "name": "InfeedRailSouth",
       "from": [
+        0.0,
+        10.25,
+        1.25
+      ],
+      "to": [
+        6.75,
+        11.5,
+        2.0
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "OutfeedRailNorth",
+      "from": [
+        9.25,
+        10.25,
+        14.0
+      ],
+      "to": [
+        16.0,
+        11.5,
+        14.75
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            7.0,
+            1.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "OutfeedRailSouth",
+      "from": [
         9.25,
         10.25,
         1.25
@@ -666,176 +828,14 @@
       }
     },
     {
-      "name": "OutfeedRailNorth",
-      "from": [
-        0.0,
-        10.25,
-        14.0
-      ],
-      "to": [
-        6.75,
-        11.5,
-        14.75
-      ],
-      "faces": {
-        "north": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "east": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "south": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "west": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "up": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "down": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        }
-      }
-    },
-    {
-      "name": "OutfeedRailSouth",
-      "from": [
-        0.0,
-        10.25,
-        1.25
-      ],
-      "to": [
-        6.75,
-        11.5,
-        2.0
-      ],
-      "faces": {
-        "north": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "east": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "south": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "west": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "up": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        },
-        "down": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            7.0,
-            1.0
-          ],
-          "autoUv": false
-        }
-      }
-    },
-    {
       "name": "InputLipWest",
       "from": [
-        15.5,
+        -0.26,
         8.75,
         1.9
       ],
       "to": [
-        16.26,
+        0.5,
         10.27,
         14.1
       ],
@@ -911,12 +911,12 @@
     {
       "name": "InputMouth",
       "from": [
-        13.45,
+        1.95,
         6.75,
         5.25
       ],
       "to": [
-        14.05,
+        2.55,
         9.75,
         10.75
       ],

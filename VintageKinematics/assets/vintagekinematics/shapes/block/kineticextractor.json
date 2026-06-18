@@ -8,7 +8,7 @@
   },
   "elements": [
     {
-      "name": "FootNW",
+      "name": "FootSW",
       "from": [
         1.0,
         0.0,
@@ -89,7 +89,7 @@
       }
     },
     {
-      "name": "FootNE",
+      "name": "FootNW",
       "from": [
         1.0,
         0.0,
@@ -170,7 +170,7 @@
       }
     },
     {
-      "name": "FootSW",
+      "name": "FootSE",
       "from": [
         12.0,
         0.0,
@@ -251,7 +251,7 @@
       }
     },
     {
-      "name": "FootSE",
+      "name": "FootNE",
       "from": [
         12.0,
         0.0,
@@ -502,7 +502,7 @@
       ],
       "to": [
         10.5,
-        1.15,
+        2.15,
         10.5
       ],
       "faces": {
@@ -575,7 +575,7 @@
       }
     },
     {
-      "name": "TrayNorth",
+      "name": "TrayWest",
       "from": [
         2.0,
         3.0,
@@ -656,7 +656,7 @@
       }
     },
     {
-      "name": "TraySouth",
+      "name": "TrayEast",
       "from": [
         13.0,
         3.0,
@@ -737,7 +737,7 @@
       }
     },
     {
-      "name": "TrayWest",
+      "name": "TraySouth",
       "from": [
         3.0,
         3.0,
@@ -818,7 +818,7 @@
       }
     },
     {
-      "name": "TrayEast",
+      "name": "TrayNorth",
       "from": [
         3.0,
         3.0,
@@ -899,7 +899,7 @@
       }
     },
     {
-      "name": "BasketNorth",
+      "name": "BasketWest",
       "from": [
         3.5,
         5.0,
@@ -980,7 +980,7 @@
       }
     },
     {
-      "name": "BasketSouth",
+      "name": "BasketEast",
       "from": [
         11.5,
         5.0,
@@ -1061,15 +1061,15 @@
       }
     },
     {
-      "name": "BasketWest",
+      "name": "BasketSouth",
       "from": [
         4.5,
         5.0,
-        11.5
+        11.3
       ],
       "to": [
         11.5,
-        9.5,
+        11.5,
         12.5
       ],
       "faces": {
@@ -1142,7 +1142,7 @@
       }
     },
     {
-      "name": "BasketEast",
+      "name": "BasketNorth",
       "from": [
         4.5,
         5.0,
@@ -1150,8 +1150,8 @@
       ],
       "to": [
         11.5,
-        9.5,
-        4.5
+        11.5,
+        4.7
       ],
       "faces": {
         "north": {
@@ -1217,6 +1217,87 @@
             4.0,
             1.0,
             11.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "PostSW",
+      "from": [
+        0.75,
+        2.0,
+        13.25
+      ],
+      "to": [
+        2.75,
+        14.0,
+        15.25
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
           ],
           "autoUv": false
         }
@@ -1227,174 +1308,12 @@
       "from": [
         0.75,
         2.0,
-        13.25
-      ],
-      "to": [
-        2.75,
-        16.0,
-        15.25
-      ],
-      "faces": {
-        "north": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "east": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "south": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "west": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "up": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            2.0
-          ],
-          "autoUv": false
-        },
-        "down": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            2.0
-          ],
-          "autoUv": false
-        }
-      }
-    },
-    {
-      "name": "PostNE",
-      "from": [
-        0.75,
-        2.0,
         0.75
       ],
       "to": [
         2.75,
-        16.0,
+        14.0,
         2.75
-      ],
-      "faces": {
-        "north": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "east": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "south": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "west": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            14.0
-          ],
-          "autoUv": false
-        },
-        "up": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            2.0
-          ],
-          "autoUv": false
-        },
-        "down": {
-          "enabled": true,
-          "texture": "#wood",
-          "uv": [
-            0.0,
-            0.0,
-            2.0,
-            2.0
-          ],
-          "autoUv": false
-        }
-      }
-    },
-    {
-      "name": "PostSW",
-      "from": [
-        13.25,
-        2.0,
-        13.25
-      ],
-      "to": [
-        15.25,
-        16.0,
-        15.25
       ],
       "faces": {
         "north": {
@@ -1470,11 +1389,92 @@
       "from": [
         13.25,
         2.0,
+        13.25
+      ],
+      "to": [
+        15.25,
+        14.0,
+        15.25
+      ],
+      "faces": {
+        "north": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "east": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "south": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "west": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            14.0
+          ],
+          "autoUv": false
+        },
+        "up": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ],
+          "autoUv": false
+        },
+        "down": {
+          "enabled": true,
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            2.0,
+            2.0
+          ],
+          "autoUv": false
+        }
+      }
+    },
+    {
+      "name": "PostNE",
+      "from": [
+        13.25,
+        2.0,
         0.75
       ],
       "to": [
         15.25,
-        16.0,
+        14.0,
         2.75
       ],
       "faces": {
@@ -1547,7 +1547,7 @@
       }
     },
     {
-      "name": "TopNorth",
+      "name": "TopWest",
       "from": [
         0.0,
         14.0,
@@ -1628,7 +1628,7 @@
       }
     },
     {
-      "name": "TopSouth",
+      "name": "TopEast",
       "from": [
         12.5,
         14.0,
@@ -1871,7 +1871,7 @@
       }
     },
     {
-      "name": "GuideNorth",
+      "name": "GuideWest",
       "from": [
         5.75,
         9.75,
@@ -1952,7 +1952,7 @@
       }
     },
     {
-      "name": "GuideSouth",
+      "name": "GuideEast",
       "from": [
         9.75,
         9.75,
@@ -2033,7 +2033,7 @@
       }
     },
     {
-      "name": "GuideWest",
+      "name": "GuideSouth",
       "from": [
         6.25,
         9.75,
@@ -2114,7 +2114,7 @@
       }
     },
     {
-      "name": "GuideEast",
+      "name": "GuideNorth",
       "from": [
         6.25,
         9.75,
@@ -2299,58 +2299,70 @@
       ],
       "faces": {
         "north": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
-            0,
-            0,
+            0.0,
+            0.0,
             1.5,
-            3
-          ]
+            3.0
+          ],
+          "autoUv": false
         },
         "east": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
-            0,
-            0,
+            0.0,
+            0.0,
             1.5,
-            3
-          ]
+            3.0
+          ],
+          "autoUv": false
         },
         "south": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
-            0,
-            0,
+            0.0,
+            0.0,
             1.5,
-            3
-          ]
+            3.0
+          ],
+          "autoUv": false
         },
         "west": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
-            0,
-            0,
+            0.0,
+            0.0,
             1.5,
-            3
-          ]
+            3.0
+          ],
+          "autoUv": false
         },
         "up": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             7.25,
             7.25,
             8.75,
             8.75
-          ]
+          ],
+          "autoUv": false
         },
         "down": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             7.25,
             7.25,
             8.75,
             8.75
-          ]
+          ],
+          "autoUv": false
         }
       }
     },
@@ -2373,58 +2385,70 @@
       ],
       "faces": {
         "north": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             5.5,
-            0,
+            0.0,
             10.5,
             0.75
-          ]
+          ],
+          "autoUv": false
         },
         "east": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             5.5,
-            0,
+            0.0,
             10.5,
             0.75
-          ]
+          ],
+          "autoUv": false
         },
         "south": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             5.5,
-            0,
+            0.0,
             10.5,
             0.75
-          ]
+          ],
+          "autoUv": false
         },
         "west": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             5.5,
-            0,
+            0.0,
             10.5,
             0.75
-          ]
+          ],
+          "autoUv": false
         },
         "up": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             5.5,
             5.5,
             10.5,
             10.5
-          ]
+          ],
+          "autoUv": false
         },
         "down": {
+          "enabled": true,
           "texture": "#iron",
           "uv": [
             5.5,
             5.5,
             10.5,
             10.5
-          ]
+          ],
+          "autoUv": false
         }
       }
     },
@@ -2605,12 +2629,12 @@
       "from": [
         -0.05,
         7.55,
-        4.0
+        2.5
       ],
       "to": [
-        3.0,
+        4.0,
         8.25,
-        12.0
+        13.5
       ],
       "faces": {
         "north": {
@@ -2765,14 +2789,14 @@
     {
       "name": "OutputDeckEast",
       "from": [
-        13.0,
+        12.0,
         7.55,
-        4.0
+        2.5
       ],
       "to": [
         16.05,
         8.25,
-        12.0
+        13.5
       ],
       "faces": {
         "north": {

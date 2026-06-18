@@ -751,13 +751,12 @@ namespace VintageKinematics.BlockEntities
             {
                 case EnumBeltPart.Middle:
                     SpawnBeltItem(center);
-                    if (HasShaft) SpawnShaftItem(center, InsertedShaftAxis ?? "y");
+                    if (HasShaft) SpawnShaftItem(center);
                     break;
                 default:
                     // Start, End, Solo: this position originally held a shaft on the perpendicular
-                    // axis. Restore that exact shaft as a drop.
-                    string pulleyAxis = BlockBelt.TravelAxis(Direction) == EnumKineticAxis.X ? "z" : "x";
-                    SpawnShaftItem(center, pulleyAxis);
+                    // axis. Drop the canonical shaft item so rotation variants do not leak.
+                    SpawnShaftItem(center);
                     break;
             }
         }
@@ -769,9 +768,9 @@ namespace VintageKinematics.BlockEntities
             Api.World.SpawnItemEntity(new ItemStack(beltItem), at);
         }
 
-        private void SpawnShaftItem(Vec3d at, string axis)
+        private void SpawnShaftItem(Vec3d at)
         {
-            Block shaftBlock = Api.World.GetBlock(new AssetLocation("vintagekinematics", "shaft-" + axis));
+            Block shaftBlock = Api.World.GetBlock(new AssetLocation("vintagekinematics", "shaft-y"));
             if (shaftBlock == null) return;
             Api.World.SpawnItemEntity(new ItemStack(shaftBlock), at);
         }

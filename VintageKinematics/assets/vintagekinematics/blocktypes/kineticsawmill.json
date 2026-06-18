@@ -1,6 +1,6 @@
 {
     "code": "kineticsawmill",
-    "class": "BlockKineticSawmill",
+    "class": "BlockKineticOpenableMachine",
     "entityClass": "KineticSawmill",
     "attributes": {
         "vkIo": [
@@ -265,7 +265,7 @@
         },
         "*-e": {
             "base": "block/kineticsawmill",
-            "rotateY": 90
+            "rotateY": 270
         },
         "*-s": {
             "base": "block/kineticsawmill",
@@ -273,7 +273,7 @@
         },
         "*-w": {
             "base": "block/kineticsawmill",
-            "rotateY": 270
+            "rotateY": 90
         }
     },
     "blockmaterial": "Wood",

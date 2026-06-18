@@ -106,13 +106,19 @@ namespace VintageKinematics.Network
             foreach (var kvp in network.Nodes)
             {
                 if (kvp.Value.StressImpact >= 0f || kvp.Value.RatedRPM <= 0f) continue;
-                if (anchorPos == null)
+                if (anchorPos == null || ComparePos(kvp.Key, anchorPos) < 0)
                 {
                     anchorPos = kvp.Key;
                     anchorRatio = kvp.Value.Ratio;
                     anchorDir = kvp.Value.Direction;
-                    continue;
                 }
+            }
+
+            if (anchorPos == null) return;
+
+            foreach (var kvp in network.Nodes)
+            {
+                if (kvp.Value.StressImpact >= 0f || kvp.Value.RatedRPM <= 0f) continue;
                 // Second source: it must imply the same global anchor.
                 float impliedRatio = kvp.Value.Ratio;
                 int impliedDir = kvp.Value.Direction;
@@ -126,7 +132,6 @@ namespace VintageKinematics.Network
                 }
             }
 
-            if (anchorPos == null) return;
             if (anchorRatio <= 0f) return;
 
             float scale = 1f / anchorRatio;
@@ -139,6 +144,17 @@ namespace VintageKinematics.Network
                 n.Direction *= sign;
                 network.Nodes[k] = n;
             }
+        }
+
+        private static int ComparePos(BlockPos left, BlockPos right)
+        {
+            int dim = left.dimension.CompareTo(right.dimension);
+            if (dim != 0) return dim;
+            int y = left.Y.CompareTo(right.Y);
+            if (y != 0) return y;
+            int x = left.X.CompareTo(right.X);
+            if (x != 0) return x;
+            return left.Z.CompareTo(right.Z);
         }
     }
 }

@@ -63,14 +63,14 @@ namespace VintageKinematics.Api
                 case "back": return facing.Opposite;
                 case "left": return MultiblockHelper.LeftOf(facing);
                 case "right": return MultiblockHelper.RightOf(facing);
-                case "localNorth": return ModelLocalFace(BlockFacing.NORTH, block?.Variant?["side"]);
-                case "localEast": return ModelLocalFace(BlockFacing.WEST, block?.Variant?["side"]);
-                case "localSouth": return ModelLocalFace(BlockFacing.SOUTH, block?.Variant?["side"]);
-                case "localWest": return ModelLocalFace(BlockFacing.EAST, block?.Variant?["side"]);
-                case "inputLipNorth": return ModelLipFace(BlockFacing.NORTH, block?.Variant?["side"]);
-                case "inputLipEast": return ModelLipFace(BlockFacing.EAST, block?.Variant?["side"]);
-                case "inputLipSouth": return ModelLipFace(BlockFacing.SOUTH, block?.Variant?["side"]);
-                case "inputLipWest": return ModelLipFace(BlockFacing.WEST, block?.Variant?["side"]);
+                case "localNorth": return ModelLocalFace(BlockFacing.NORTH, block);
+                case "localEast": return ModelLocalFace(BlockFacing.EAST, block);
+                case "localSouth": return ModelLocalFace(BlockFacing.SOUTH, block);
+                case "localWest": return ModelLocalFace(BlockFacing.WEST, block);
+                case "inputLipNorth": return ModelLipFace(BlockFacing.NORTH, block);
+                case "inputLipEast": return ModelLipFace(BlockFacing.EAST, block);
+                case "inputLipSouth": return ModelLipFace(BlockFacing.SOUTH, block);
+                case "inputLipWest": return ModelLipFace(BlockFacing.WEST, block);
                 default: return BlockFacing.FromCode(code);
             }
         }
@@ -208,12 +208,12 @@ namespace VintageKinematics.Api
             }
         }
 
-        private static BlockFacing ModelLipFace(BlockFacing modelFace, string side)
+        private static BlockFacing ModelLipFace(BlockFacing modelFace, Block block)
         {
-            return ModelLocalFace(modelFace, side);
+            return ModelLocalFace(modelFace, block);
         }
 
-        private static BlockFacing ModelLocalFace(BlockFacing modelFace, string side)
+        private static BlockFacing ModelLocalFace(BlockFacing modelFace, Block block)
         {
             if (modelFace == BlockFacing.UP || modelFace == BlockFacing.DOWN) return modelFace;
 
@@ -228,13 +228,8 @@ namespace VintageKinematics.Api
                 }
             }
 
-            int offset = side switch
-            {
-                "e" => -1,
-                "s" => -2,
-                "w" => -3,
-                _ => 0
-            };
+            int rotateY = (int)(block?.Shape?.rotateY ?? 0f);
+            int offset = (((-rotateY / 90) % 4) + 4) % 4;
             return order[(index + offset + 4) % 4];
         }
 

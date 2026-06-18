@@ -48,17 +48,7 @@ namespace VintageKinematics.BlockEntities
         protected override IOFaceMap BuildIOFaceMap()
         {
             BlockFacing inputFace = AutomationInputFace();
-            BlockFacing outputSideFace = inputFace.Opposite;
-            IOFaceMap map = new IOFaceMap(Pos)
-                .MapInput(BlockFacing.UP, SlotInput)
-                .MapInput(inputFace, SlotInput);
-
-            for (int i = SlotOutputFirst; i <= SlotOutputLast; i++)
-            {
-                map.MapOutput(outputSideFace, i).MapOutput(BlockFacing.DOWN, i);
-            }
-
-            return map;
+            return MachineIoLayouts.SideInputOppositeAndDownOutput(Pos, inputFace, SlotInput, SlotOutputFirst, SlotOutputLast);
         }
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)

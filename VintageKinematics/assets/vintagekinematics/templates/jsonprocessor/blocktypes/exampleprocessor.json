@@ -82,9 +82,9 @@
     "shape": { "base": "yourmod:block/exampleprocessor" },
     "shapeByType": {
         "*-n": { "base": "yourmod:block/exampleprocessor", "rotateY": 0 },
-        "*-e": { "base": "yourmod:block/exampleprocessor", "rotateY": 90 },
+        "*-e": { "base": "yourmod:block/exampleprocessor", "rotateY": 270 },
         "*-s": { "base": "yourmod:block/exampleprocessor", "rotateY": 180 },
-        "*-w": { "base": "yourmod:block/exampleprocessor", "rotateY": 270 }
+        "*-w": { "base": "yourmod:block/exampleprocessor", "rotateY": 90 }
     },
     "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 },
     "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 }

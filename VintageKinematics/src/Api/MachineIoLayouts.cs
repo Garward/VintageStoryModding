@@ -97,6 +97,65 @@ namespace VintageKinematics.Api
             return map;
         }
 
+        public static IOFaceMap MultiblockUpperBackCenterOutput(Block block, BlockPos pos, int outputFirst, int outputLast)
+        {
+            IOFaceMap map = new IOFaceMap(pos);
+            if (block == null) return map;
+            if (!MultiblockHelper.TryGetClaim(block, pos, out BlockPos baseCorner, out Vec3i size)) return map;
+
+            BlockFacing backFace = BlockFacing.FromFirstLetter(block.Variant?["side"] ?? "n") ?? BlockFacing.NORTH;
+            BlockPos outputCell = MultiblockHelper.CellAtFaceCenter(baseCorner, size, backFace, baseCorner.Y + size.Y - 1, pos.dimension);
+            for (int i = outputFirst; i <= outputLast; i++) map.MapOutput(outputCell, backFace, i);
+            return map;
+        }
+
+        public static IOFaceMap MultiblockFaceCenterInputTopCenterInputOppositeAndDownOutput(
+            Block block,
+            BlockPos pos,
+            BlockFacing inputFace,
+            int inputFirst,
+            int inputLast,
+            int outputFirst,
+            int outputLast)
+        {
+            IOFaceMap map = new IOFaceMap(pos);
+            BlockFacing outputFace = inputFace.Opposite;
+
+            if (!MultiblockHelper.TryGetClaim(block, pos, out BlockPos baseCorner, out Vec3i size))
+            {
+                for (int i = inputFirst; i <= inputLast; i++)
+                {
+                    map.MapInput(inputFace, i);
+                    map.MapInput(BlockFacing.UP, i);
+                }
+                for (int i = outputFirst; i <= outputLast; i++)
+                {
+                    map.MapOutput(outputFace, i);
+                    map.MapOutput(BlockFacing.DOWN, i);
+                }
+                return map;
+            }
+
+            int bottomY = baseCorner.Y;
+            int topY = baseCorner.Y + size.Y - 1;
+            BlockPos inputCell = MultiblockHelper.CellAtFaceCenter(baseCorner, size, inputFace, bottomY, pos.dimension);
+            BlockPos topInputCell = MultiblockHelper.CellAtClaimCenter(baseCorner, size, topY, pos.dimension);
+            BlockPos outputCell = MultiblockHelper.CellAtFaceCenter(baseCorner, size, outputFace, bottomY, pos.dimension);
+            BlockPos downOutputCell = MultiblockHelper.CellAtClaimCenter(baseCorner, size, bottomY, pos.dimension);
+
+            for (int i = inputFirst; i <= inputLast; i++)
+            {
+                map.MapInput(inputCell, inputFace, i);
+                map.MapInput(topInputCell, BlockFacing.UP, i);
+            }
+            for (int i = outputFirst; i <= outputLast; i++)
+            {
+                map.MapOutput(outputCell, outputFace, i);
+                map.MapOutput(downOutputCell, BlockFacing.DOWN, i);
+            }
+            return map;
+        }
+
         private static void MapInputRangeOnFace(IOFaceMap map, Block block, BlockPos pos, BlockFacing face, int first, int last)
         {
             foreach (BlockPos cell in MultiblockHelper.CellsOnFace(block, pos, face))
@@ -112,5 +171,6 @@ namespace VintageKinematics.Api
                 for (int i = first; i <= last; i++) map.MapOutput(cell, face, i);
             }
         }
+
     }
 }

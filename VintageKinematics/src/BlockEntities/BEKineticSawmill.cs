@@ -38,15 +38,7 @@ namespace VintageKinematics.BlockEntities
 
         protected override IOFaceMap BuildIOFaceMap()
         {
-            IOFaceMap explicitMap = BuildJsonIOFaceMap();
-            if (explicitMap != null) return explicitMap;
-
-            return MachineIoLayouts.SideInputOppositeAndDownOutput(
-                Pos,
-                JsonMachineIoBuilder.ResolveFace(Block, "localWest"),
-                SlotInput,
-                SlotOutputFirst,
-                SlotOutputLast);
+            return BuildJsonIOFaceMap();
         }
 
         protected override KineticSawmillRecipe FindRecipe(ItemStack input)

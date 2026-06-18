@@ -2,6 +2,11 @@
     "code": "kineticsieve",
     "class": "BlockKineticSieve",
     "entityClass": "KineticSieve",
+    "attributes": {
+        "vkPlacement": {
+            "side": "oppositePlayer"
+        }
+    },
     "entityBehaviors": [
         {
             "name": "Kinetic",

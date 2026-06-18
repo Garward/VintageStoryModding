@@ -217,9 +217,9 @@ the top block is decorative geometry. Add `KineticPiston` or
   "shape": { "base": "mymod:block/handlelathe" },
   "shapeByType": {
     "*-n": { "base": "mymod:block/handlelathe", "rotateY": 0 },
-    "*-e": { "base": "mymod:block/handlelathe", "rotateY": 90 },
+    "*-e": { "base": "mymod:block/handlelathe", "rotateY": 270 },
     "*-s": { "base": "mymod:block/handlelathe", "rotateY": 180 },
-    "*-w": { "base": "mymod:block/handlelathe", "rotateY": 270 }
+    "*-w": { "base": "mymod:block/handlelathe", "rotateY": 90 }
   },
   "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 },
   "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 2, "z2": 1 }
@@ -253,6 +253,9 @@ Important fields:
 - `KineticWorker.workPerCycle` is the recipe cost in RPM-seconds.
 - `KineticAnimator` and `KineticPiston` can be added directly in JSON for
   moving parts.
+- `shapeByType` assumes the raw shape is the north variant. Vintage Story's
+  positive `rotateY` turns counter-clockwise in top-down cardinal terms, so
+  the standard horizontal table is `n=0`, `e=270`, `s=180`, `w=90`.
 - `vkProcessor.io` declares automation faces directly. For standard VK
   machines, use `localWest`/`localEast` for model-local side IO that rotates
   with the block: west/top input and east/bottom output. `cell` is an exact
@@ -412,6 +415,8 @@ Each entry supports:
   `front`, `back`, `left`, `right`; or model-local rotating aliases
   `localNorth`, `localEast`, `localSouth`, `localWest`. Prefer
   `localWest`/`localEast` for standard machine side input/output.
+  Model-local aliases are resolved from the block's `shape.rotateY`, so keep
+  the `shapeByType` rotation table aligned with the visual model.
 - `slots`: `inputs`, `outputs`, a single slot string like `64`, a range like
   `64-72`, or an object `{ "first": 64, "last": 72 }`.
 - `cell`: exact controller-relative base-orientation offset, for example
@@ -875,6 +880,9 @@ Rules that came out of the Treadwheel and Counterweight Drive pass:
 - Use one base shape plus `shapeByType.rotateY`. Do not add per-direction
   models unless the variant is genuinely different or flipped, not merely
   rotated.
+- For a raw north-facing base shape, use `n=0`, `e=270`, `s=180`, `w=90`.
+  Positive `rotateY` in Vintage Story is counter-clockwise in top-down
+  cardinal terms, which is why east uses `270` rather than `90`.
 - Keep placement grounded by leaving `cposition.y` on the placement layer.
   If the shaft is one or two blocks above the controller, use
   `kineticShaftControllerOffset`, e.g. `{ "x": 0, "y": 2, "z": 0 }`.

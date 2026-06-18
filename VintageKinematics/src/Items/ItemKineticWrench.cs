@@ -66,8 +66,7 @@ namespace VintageKinematics.Items
             bool sneaking = player?.Entity?.Controls?.Sneak == true;
             if (sneaking && belt.Part == EnumBeltPart.Middle && belt.HasShaft)
             {
-                string axis = belt.InsertedShaftAxis ?? "y";
-                Block shaftBlock = api.World.GetBlock(new AssetLocation("vintagekinematics", "shaft-" + axis));
+                Block shaftBlock = api.World.GetBlock(new AssetLocation("vintagekinematics", "shaft-y"));
                 if (shaftBlock != null)
                 {
                     ItemStack drop = new ItemStack(shaftBlock);

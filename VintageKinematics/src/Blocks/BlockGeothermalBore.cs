@@ -23,7 +23,7 @@ namespace VintageKinematics.Blocks
             if (blockSel?.Face == null) return false;
 
             BlockPos clickPos = PlacementPreview.DefaultTargetPos(world, blockSel, this);
-            string desired = SideFacingPlayer(byPlayer);
+            string desired = PlacementPreview.CardinalSideFromPlayerYaw(byPlayer);
             if (desired == null)
             {
                 targetPos = clickPos;
@@ -31,7 +31,7 @@ namespace VintageKinematics.Blocks
                 return true;
             }
             variant = world.GetBlock(CodeWithVariants(new[] { "side", "state" }, new[] { desired, "cool" })) ?? this;
-            targetPos = ShiftControllerToCenterClick(clickPos, desired);
+            targetPos = PlacementPreview.Centered3x3ControllerPos(clickPos, desired);
             return true;
         }
 
@@ -45,28 +45,5 @@ namespace VintageKinematics.Blocks
             return variant.TryPlaceBlock(world, byPlayer, itemStack, shiftedSel, ref failureCode);
         }
 
-        private static BlockPos ShiftControllerToCenterClick(BlockPos clickPos, string side)
-        {
-            BlockPos p = clickPos.Copy();
-            switch (side)
-            {
-                case "n": p.X -= 1; p.Z -= 1; break;
-                case "e": p.X += 1; p.Z -= 1; break;
-                case "s": p.X += 1; p.Z += 1; break;
-                case "w": p.X -= 1; p.Z += 1; break;
-            }
-            return p;
-        }
-
-        private static string SideFacingPlayer(IPlayer byPlayer)
-        {
-            if (byPlayer?.Entity == null) return null;
-            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
-            if (facing == BlockFacing.NORTH) return "n";
-            if (facing == BlockFacing.EAST)  return "e";
-            if (facing == BlockFacing.SOUTH) return "s";
-            if (facing == BlockFacing.WEST)  return "w";
-            return null;
-        }
     }
 }

@@ -55,11 +55,13 @@ namespace VintageKinematics.Api
             BlockPos clicked = ClickedPos(sel);
             BEBehaviorKinetic clickedKin = GetKinetic(world, clicked);
 
-            // Case A: no kinetic block clicked — default placement, fallback axis.
+            // Case A: no kinetic block clicked — default placement, fallback axis. Do not scan
+            // nearby kinetics here: dense cog builds often have several valid neighbouring axes,
+            // and choosing the first one by offset order makes placement feel random. Click a
+            // kinetic block directly when the cog should inherit that block's axis.
             if (clickedKin == null)
             {
-                EnumKineticAxis? scanAxis = ScanForKineticAxis(world, defaultTarget);
-                return new CogPlacement(defaultTarget, scanAxis ?? fallbackAxis, redirected: false);
+                return new CogPlacement(defaultTarget, fallbackAxis, redirected: false);
             }
 
             // The new cog's axis always inherits from the clicked cog/shaft. Same convention
@@ -178,21 +180,6 @@ namespace VintageKinematics.Api
             return be?.GetBehavior<BEBehaviorKinetic>();
         }
 
-        private static EnumKineticAxis? ScanForKineticAxis(IWorldAccessor world, BlockPos around)
-        {
-            if (around == null) return null;
-            for (int dx = -1; dx <= 1; dx++)
-            for (int dy = -1; dy <= 1; dy++)
-            for (int dz = -1; dz <= 1; dz++)
-            {
-                if (dx == 0 && dy == 0 && dz == 0) continue;
-                BlockPos p = new BlockPos(around.X + dx, around.Y + dy, around.Z + dz, around.dimension);
-                BEBehaviorKinetic kin = GetKinetic(world, p);
-                if (kin != null) return kin.Axis;
-            }
-            return null;
-        }
-
         private static EnumKineticAxis FaceToAxis(BlockFacing face)
         {
             if (face == null) return EnumKineticAxis.Y;
@@ -221,28 +208,12 @@ namespace VintageKinematics.Api
             _ => "y"
         };
 
-        // Per Create's CogWheelBlock.isValidCogwheelPosition: a cog can't sit face-adjacent
-        // (perpendicular to its rotation axis) to another cog whose rotation axis differs —
-        // their teeth would visually and logically clash. Same-axis face-adjacency is only valid
-        // when it maps to an actual connection rule: coaxial along the shaft axis, or small-small
-        // teeth meshing perpendicular to the shaft. Mixed-size cogs must use diagonal placement.
+        // Placement should not be stricter than the runtime graph. Dense layouts can have cogs
+        // physically near each other without those two cogs being the intended connection, and
+        // the wrench can already rotate blocks into those states. Occupancy/collision is handled
+        // by CanPlaceBlock; connection validity/conflict is handled by the kinetic network.
         public static bool IsValidCogPlacement(IWorldAccessor world, BlockPos pos, EnumKineticAxis cogAxis, EnumKineticRole cogRole)
         {
-            for (int i = 0; i < 6; i++)
-            {
-                Vec3i off = FaceOffsets[i];
-                bool faceAlongAxis = (cogAxis == EnumKineticAxis.X && off.X != 0)
-                                  || (cogAxis == EnumKineticAxis.Y && off.Y != 0)
-                                  || (cogAxis == EnumKineticAxis.Z && off.Z != 0);
-                if (faceAlongAxis) continue;
-
-                BlockPos nbr = new BlockPos(pos.X + off.X, pos.Y + off.Y, pos.Z + off.Z, pos.dimension);
-                BEBehaviorKinetic kin = GetKinetic(world, nbr);
-                if (kin == null) continue;
-                if (!IsCogRole(kin.Role)) continue;
-                if (kin.Axis != cogAxis) return false;
-                if (!faceAlongAxis && (!IsSmallCogRole(cogRole) || !IsSmallCogRole(kin.Role))) return false;
-            }
             return true;
         }
 
@@ -269,12 +240,5 @@ namespace VintageKinematics.Api
         {
             return role == EnumKineticRole.LargeCogwheel || role == EnumKineticRole.EncasedLargeCogwheel;
         }
-
-        private static readonly Vec3i[] FaceOffsets = new[]
-        {
-            new Vec3i( 1, 0, 0), new Vec3i(-1, 0, 0),
-            new Vec3i( 0, 1, 0), new Vec3i( 0,-1, 0),
-            new Vec3i( 0, 0, 1), new Vec3i( 0, 0,-1),
-        };
     }
 }

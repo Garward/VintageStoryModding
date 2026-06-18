@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.IO;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Gui;
@@ -20,7 +18,7 @@ namespace VintageKinematics.BlockEntities
     /// bedrock / out-of-mining-tier blocks. Right-clicking opens the dialog with a Retract button
     /// that walks the bore back to the surface, returning one drill rod per layer.
     /// </summary>
-    public class BEKineticBore : BlockEntity, IFaceMappedContainer
+    public class BEKineticBore : BEBoreBase, IFaceMappedContainer
     {
         public const int InputSlotFirst = 0;
         public const int InputSlotLast = 2;
@@ -41,51 +39,34 @@ namespace VintageKinematics.BlockEntities
         // enough for every standard ore + granite without trivializing rarer materials.
         private const int DefaultMiningTier = 5;
 
-        private readonly InventoryGeneric inventory;
-        private int drillDepth;
-        private bool halted;
-        private bool retracting;
-        // Paused after a completed retract so the bore doesn't immediately consume the just-returned
-        // rods. Player must click the button again to resume drilling.
-        private bool paused;
         private int miningTier;
         // Stack of rod items consumed on descent. Popped back into the input row during retract
         // so the player always recovers what they put in (subject to inventory space).
         private readonly List<ItemStack> deployedShafts = new List<ItemStack>();
 
-        private GuiDialogKineticBore clientDialog;
         private BoreDrillDescentRenderer descentRenderer;
         private IOFaceMap ioFaces;
-        // Locally placed visual stubs in the center column. Tracked so we can pop them in reverse
-        // on retract, on chunk-unload, and on bore removal. Stored as world positions because the
-        // controller's Pos is a corner of the multiblock, not the column origin — we'd otherwise
-        // have to re-derive the center cell from the side variant every step.
-        private readonly List<BlockPos> placedShaftPositions = new List<BlockPos>();
         private static int boreShaftBlockId = -1;
 
-        public InventoryBase Inventory => inventory;
         public IOFaceMap IOFaces => ioFaces;
 
-        public int DrillDepth => drillDepth;
-        public bool Halted => halted;
-        public bool Retracting => retracting;
-        public bool Paused => paused;
+        protected override int OpenDialogPacketId => PacketIdOpenDialog;
+        protected override int ToggleRetractPacketId => PacketIdToggleRetract;
+        protected override string TitleLangCode => "vintagekinematics:kineticbore-title";
+        protected override string FallbackTitle => "Kinetic Bore";
 
         public BEKineticBore()
-        {
-            inventory = new InventoryGeneric(InventorySize, "kineticbore-0", null, null, (slotId, self) =>
+            : base("kineticbore", InventorySize, (slotId, self) =>
             {
                 if (slotId <= InputSlotLast) return new ItemSlotShaftInput(self);
                 return new ItemSlotCrusherOutput(self);
-            });
+            })
+        {
         }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-            inventory.LateInitialize("kineticbore-" + Pos, api);
-            inventory.ResolveBlocksOrItems();
-            inventory.SlotModified += _ => Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
 
             miningTier = Block?.Attributes?["miningTier"].AsInt(DefaultMiningTier) ?? DefaultMiningTier;
 
@@ -100,10 +81,10 @@ namespace VintageKinematics.BlockEntities
                 var worker = GetBehavior<BEBehaviorKineticWorker>();
                 if (worker != null) worker.OnWorkCompleted += OnWorkCycle;
                 // FromTreeAttributes runs before Initialize on world load, with Api still null,
-                // so its RebuildPlacedShaftPositions call early-exits and the tracking list is
+                // so its RebuildPlacedColumnPositionsFromDepth call early-exits and the tracking list is
                 // never populated. Without this re-call, breaking a bore that was descended in
                 // a previous session would leave the shaft column orphaned forever.
-                RebuildPlacedShaftPositions();
+                RebuildPlacedColumnPositionsFromDepth();
                 if (drillDepth <= 0) AdoptExistingShaftColumn();
             }
 
@@ -131,110 +112,16 @@ namespace VintageKinematics.BlockEntities
             return true;
         }
 
-        public bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
+        protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            if (Api.World is IServerWorldAccessor)
-            {
-                string title = Lang.Get("vintagekinematics:kineticbore-title");
-                if (string.IsNullOrEmpty(title) || title == "vintagekinematics:kineticbore-title") title = "Kinetic Bore";
-
-                using var ms = new MemoryStream();
-                using var bw = new BinaryWriter(ms);
-                bw.Write(title);
-                bw.Write(drillDepth);
-                bw.Write(halted);
-                bw.Write(retracting);
-                bw.Write(paused);
-                var tree = new TreeAttribute();
-                inventory.ToTreeAttributes(tree);
-                tree.ToBytes(bw);
-                byte[] data = ms.ToArray();
-
-                ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                    (IServerPlayer)byPlayer, Pos, PacketIdOpenDialog, data);
-                byPlayer.InventoryManager.OpenInventory(inventory);
-            }
-            return true;
+            return new GuiDialogKineticBore(
+                title, inventory, Pos,
+                () => retracting, () => halted, () => paused, () => drillDepth,
+                OnClientToggleRetract, capi);
         }
 
-        public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
-        {
-            if (packetid == 1001)
-            {
-                player.InventoryManager?.CloseInventory(inventory);
-                return;
-            }
-            if (packetid == PacketIdToggleRetract)
-            {
-                if (!CheckClaim(player)) return;
-                // Three-state cycle driven by one button:
-                //   drilling   -> start retracting (clears halt so a stuck bore can recover)
-                //   retracting -> pause (so cancelling a retract doesn't immediately re-consume shafts)
-                //   paused     -> resume drilling
-                if (retracting)
-                {
-                    retracting = false;
-                    paused = true;
-                }
-                else if (paused)
-                {
-                    paused = false;
-                }
-                else
-                {
-                    retracting = true;
-                    halted = false;
-                }
-                MarkDirty(true);
-                return;
-            }
-            if (packetid < 1000)
-            {
-                if (!CheckClaim(player)) return;
-                inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-            }
-        }
-
-        private bool CheckClaim(IPlayer player)
-        {
-            if (Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use)) return true;
-            Api.World.Logger.Audit("Player {0} sent bore packet at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
-            return false;
-        }
-
-        public override void OnReceivedServerPacket(int packetid, byte[] data)
-        {
-            if (packetid != PacketIdOpenDialog) return;
-
-            ICoreClientAPI capi = Api as ICoreClientAPI;
-            if (capi == null) return;
-
-            using var ms = new MemoryStream(data);
-            using var br = new BinaryReader(ms);
-            string title = br.ReadString();
-            drillDepth = br.ReadInt32();
-            halted = br.ReadBoolean();
-            retracting = br.ReadBoolean();
-            paused = br.ReadBoolean();
-            var tree = new TreeAttribute();
-            tree.FromBytes(br);
-            inventory.FromTreeAttributes(tree);
-            inventory.ResolveBlocksOrItems();
-
-            if (clientDialog == null)
-            {
-                clientDialog = new GuiDialogKineticBore(
-                    title, inventory, Pos,
-                    () => retracting, () => halted, () => paused, () => drillDepth,
-                    OnClientToggleRetract, capi);
-                clientDialog.OnClosed += OnDialogClosed;
-                clientDialog.TryOpen();
-            }
-            else
-            {
-                clientDialog.OnStateUpdated();
-            }
-        }
+        protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog) =>
+            (dialog as GuiDialogKineticBore)?.OnStateUpdated();
 
         private void OnClientToggleRetract()
         {
@@ -243,13 +130,8 @@ namespace VintageKinematics.BlockEntities
             if (retracting) { retracting = false; paused = true; }
             else if (paused) { paused = false; }
             else { retracting = true; halted = false; }
-            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdToggleRetract);
-            clientDialog?.OnStateUpdated();
-        }
-
-        private void OnDialogClosed()
-        {
-            clientDialog = null;
+            SendClientToggleRetractPacket();
+            RefreshClientDialog();
         }
 
         // Declarative IO surface: shaft inputs map to whichever multiblock-aware shaft stubs the
@@ -259,27 +141,7 @@ namespace VintageKinematics.BlockEntities
         // pipes / funnels see a consistent cell-aware IO surface.
         private void BuildIOFaceMap()
         {
-            ioFaces = new IOFaceMap(Pos);
-            if (Block == null) return;
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out Vec3i size)) return;
-
-            string side = Block.Variant?["side"] ?? "n";
-            BlockFacing backFace;
-            int backX, backZ;
-            int midX = baseCorner.X + size.X / 2;
-            int midZ = baseCorner.Z + size.Z / 2;
-            switch (side)
-            {
-                case "s": backFace = BlockFacing.SOUTH; backX = midX;                      backZ = baseCorner.Z + size.Z - 1; break;
-                case "e": backFace = BlockFacing.EAST;  backX = baseCorner.X + size.X - 1; backZ = midZ;                      break;
-                case "w": backFace = BlockFacing.WEST;  backX = baseCorner.X;              backZ = midZ;                      break;
-                default:  backFace = BlockFacing.NORTH; backX = midX;                      backZ = baseCorner.Z;              break;
-            }
-            BlockPos outputCell = new BlockPos(backX, baseCorner.Y + size.Y - 1, backZ, Pos.dimension);
-            for (int slotId = OutputSlotFirst; slotId <= OutputSlotLast; slotId++)
-            {
-                ioFaces.MapOutput(outputCell, backFace, slotId);
-            }
+            ioFaces = MachineIoLayouts.MultiblockUpperBackCenterOutput(Block, Pos, OutputSlotFirst, OutputSlotLast);
             ioFaces.Apply(inventory);
         }
 
@@ -431,10 +293,6 @@ namespace VintageKinematics.BlockEntities
             MarkDirty(true);
         }
 
-        // Center cell of the 3x3 footprint at the just-mined layer.
-        private BlockPos CenterColumnPos(BlockPos baseCorner, int y) =>
-            new BlockPos(baseCorner.X + 1, y, baseCorner.Z + 1, Pos.dimension);
-
         // World-space X/Z of the bore's central drill column. Used by the descent renderer
         // to draw the shaft fill-mesh in the housing notch at the correct cell regardless
         // of which corner the controller occupies for this rotation variant.
@@ -453,30 +311,17 @@ namespace VintageKinematics.BlockEntities
 
         private void PlaceVisualShaft(BlockPos baseCorner, int atY)
         {
-            if (boreShaftBlockId < 0) return;
             BlockPos columnPos = CenterColumnPos(baseCorner, atY);
-            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return;
-            Api.World.BlockAccessor.SetBlock(boreShaftBlockId, columnPos);
-            placedShaftPositions.Add(columnPos.Copy());
+            TryPlaceTrackedColumnBlock(columnPos, boreShaftBlockId);
         }
 
         private ItemStack RemoveVisualShaft(ItemStack deployedShaft)
         {
-            if (placedShaftPositions.Count == 0) return null;
-            int lastIdx = placedShaftPositions.Count - 1;
-            BlockPos columnPos = placedShaftPositions[lastIdx];
-            placedShaftPositions.RemoveAt(lastIdx);
-            // Only clear if it's still our shaft block — a player who manually broke the column
-            // would leave air, and a falling-block landing on the cell would be theirs to keep.
-            Block here = Api.World.BlockAccessor.GetBlock(columnPos);
-            if (here?.Id != boreShaftBlockId) return null;
-            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return null;
-
-            Api.World.BlockAccessor.SetBlock(0, columnPos);
-            if (deployedShaft != null) return deployedShaft;
-
-            Item drillRod = Api.World.GetItem(new AssetLocation("vintagekinematics:drillrod"));
-            return drillRod == null ? null : new ItemStack(drillRod, 1);
+            return RemoveTrackedColumnBlock(boreShaftBlockId, deployedShaft, _ =>
+            {
+                Item drillRod = Api.World.GetItem(new AssetLocation("vintagekinematics:drillrod"));
+                return drillRod == null ? null : new ItemStack(drillRod, 1);
+            });
         }
 
         private ItemSlot FindShaftSlot()
@@ -532,15 +377,8 @@ namespace VintageKinematics.BlockEntities
             MachineOutputHelper.DepositOrPush(this, inventory, OutputSlotFirst, OutputSlotLast, stack, ioFaces?.OutputEntries, OutputPushBatch, at);
         }
 
-        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+        protected override void ReadExtraTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
-            base.FromTreeAttributes(tree, worldAccessForResolve);
-            inventory?.FromTreeAttributes(tree);
-            drillDepth = tree.GetInt("drillDepth", 0);
-            halted = tree.GetBool("halted", false);
-            retracting = tree.GetBool("retracting", false);
-            paused = tree.GetBool("paused", false);
-
             deployedShafts.Clear();
             ITreeAttribute shaftsTree = tree.GetTreeAttribute("deployedShafts");
             if (shaftsTree != null)
@@ -556,62 +394,25 @@ namespace VintageKinematics.BlockEntities
                     }
                 }
             }
-
-            if (Api != null) inventory?.ResolveBlocksOrItems();
-            clientDialog?.OnStateUpdated();
-            RebuildPlacedShaftPositions();
         }
 
-        // Reconstructs the placed-column tracking list from drillDepth so OnBlockRemoved knows
-        // where to clear and StepRetract knows where to pop. The column always runs at the center
-        // cell of the bore's 3x3 footprint, descending one cell per drillDepth step. Skipped on
-        // client (the renderer derives the offset purely from drillDepth, and only the server
-        // mutates the world).
-        private void RebuildPlacedShaftPositions()
+        protected override void OnAfterTreeAttributesLoaded(IWorldAccessor worldAccessForResolve)
         {
-            placedShaftPositions.Clear();
-            if (Api == null || Api.Side != EnumAppSide.Server || drillDepth <= 0) return;
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _)) return;
-            // Shafts exist at baseY-1 (top of column, placed first) through baseY-drillDepth
-            // (deepest, placed last). Adding in this order keeps the list LIFO so retract pops
-            // the deepest shaft first — the cell the drill is rising back into.
-            for (int d = 1; d <= drillDepth; d++)
-            {
-                placedShaftPositions.Add(CenterColumnPos(baseCorner, baseCorner.Y - d));
-            }
+            RebuildPlacedColumnPositionsFromDepth();
         }
 
         private void AdoptExistingShaftColumn()
         {
-            if (Api == null || Api.Side != EnumAppSide.Server || boreShaftBlockId < 0) return;
-            if (!MultiblockHelper.TryGetClaim(Block, Pos, out BlockPos baseCorner, out _)) return;
-
-            placedShaftPositions.Clear();
-            for (int y = baseCorner.Y - 1; y > 0; y--)
-            {
-                BlockPos columnPos = CenterColumnPos(baseCorner, y);
-                Block here = Api.World.BlockAccessor.GetBlock(columnPos);
-                if (here?.Id != boreShaftBlockId) break;
-                placedShaftPositions.Add(columnPos);
-            }
-
-            if (placedShaftPositions.Count <= 0) return;
-            drillDepth = placedShaftPositions.Count;
+            if (!TryAdoptExistingColumn(boreShaftBlockId, out _)) return;
+            drillDepth = PlacedColumnPositions.Count;
             halted = false;
             retracting = false;
             paused = false;
             MarkDirty(true);
         }
 
-        public override void ToTreeAttributes(ITreeAttribute tree)
+        protected override void WriteExtraTreeAttributes(ITreeAttribute tree)
         {
-            base.ToTreeAttributes(tree);
-            inventory?.ToTreeAttributes(tree);
-            tree.SetInt("drillDepth", drillDepth);
-            tree.SetBool("halted", halted);
-            tree.SetBool("retracting", retracting);
-            tree.SetBool("paused", paused);
-
             ITreeAttribute shaftsTree = new TreeAttribute();
             shaftsTree.SetInt("count", deployedShafts.Count);
             for (int i = 0; i < deployedShafts.Count; i++)
@@ -633,7 +434,6 @@ namespace VintageKinematics.BlockEntities
         public override void OnBlockUnloaded()
         {
             base.OnBlockUnloaded();
-            DisposeDialog();
             DisposeDescentRenderer();
         }
 
@@ -644,11 +444,10 @@ namespace VintageKinematics.BlockEntities
             // from accidentally breaking the controller without voiding drill rods.
             if (Api?.Side == EnumAppSide.Server)
             {
-                placedShaftPositions.Clear();
+                ClearPlacedColumnPositions();
                 deployedShafts.Clear();
             }
             base.OnBlockRemoved();
-            DisposeDialog();
             DisposeDescentRenderer();
         }
 
@@ -660,6 +459,5 @@ namespace VintageKinematics.BlockEntities
             descentRenderer = null;
         }
 
-        private void DisposeDialog() => GuiDialogUtil.SafeDispose(ref clientDialog);
     }
 }
