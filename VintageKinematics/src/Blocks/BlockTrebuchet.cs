@@ -8,30 +8,9 @@ using VintageKinematics.BlockEntities;
 
 namespace VintageKinematics.Blocks
 {
-    public class BlockTrebuchet : Block, IPlacementPreviewProvider, IMultiBlockColSelBoxes
+    public class BlockTrebuchet : BlockKineticSidePlaced, IMultiBlockColSelBoxes
     {
         private WorldInteraction[] interactions;
-
-        public bool TryResolvePlacementPreview(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, out BlockPos targetPos, out Block variant)
-        {
-            targetPos = null;
-            variant = null;
-            if (blockSel?.Face == null) return false;
-
-            targetPos = PlacementPreview.DefaultTargetPos(world, blockSel, this);
-            string desired = SideFacingPlayer(byPlayer);
-            variant = world.GetBlock(CodeWithVariant("side", desired)) ?? this;
-            return true;
-        }
-
-        public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel, ref string failureCode)
-        {
-            if (!TryResolvePlacementPreview(world, byPlayer, blockSel, out _, out Block variant) || variant == this)
-            {
-                return base.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
-            }
-            return variant.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
-        }
 
         public override void OnLoaded(ICoreAPI api)
         {
@@ -91,17 +70,6 @@ namespace VintageKinematics.Blocks
             }
 
             return be.TryMount(byPlayer.Entity);
-        }
-
-        private static string SideFacingPlayer(IPlayer byPlayer)
-        {
-            if (byPlayer?.Entity == null) return "n";
-            BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
-            if (facing == BlockFacing.NORTH) return "s";
-            if (facing == BlockFacing.EAST) return "e";
-            if (facing == BlockFacing.SOUTH) return "n";
-            if (facing == BlockFacing.WEST) return "w";
-            return "n";
         }
 
         private static bool IsLaunchCollisionSuppressed(IBlockAccessor blockAccessor, BlockPos pos)

@@ -34,6 +34,8 @@ namespace VintageKinematics.BlockEntities
         private static int geothermalPipeBlockId = -1;
 
         public bool IsTapped => tapped;
+        public override bool HasUnretractedColumn =>
+            tapped || base.HasUnretractedColumn || deployedRods.Count > 0 || deployedPipes.Count > 0;
 
         protected override int OpenDialogPacketId => PacketIdOpenDialog;
         protected override int ToggleRetractPacketId => PacketIdToggleRetract;

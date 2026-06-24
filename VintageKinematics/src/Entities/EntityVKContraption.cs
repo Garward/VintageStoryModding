@@ -247,14 +247,7 @@ namespace VintageKinematics.Entities
             if (World?.Side != EnumAppSide.Server) return base.ReceiveDamage(damageSource, damage);
 
             IPlayer player = (damageSource?.GetCauseEntity() as EntityPlayer)?.Player;
-            if (!TryRestoreSnapshotToWorld(player, overwrite: false))
-            {
-                Notify(player, "Contraption cannot disassemble: target space is blocked.");
-                return false;
-            }
-
-            Die(EnumDespawnReason.Removed);
-            return true;
+            return TryPlayerDisassemble(player);
         }
 
         public override void OnGameTick(float dt)
@@ -271,13 +264,19 @@ namespace VintageKinematics.Entities
             if (mode != EnumInteractMode.Interact && mode != EnumInteractMode.Attack) return;
 
             IPlayer player = (byEntity as EntityPlayer)?.Player;
+            TryPlayerDisassemble(player);
+        }
+
+        private bool TryPlayerDisassemble(IPlayer player)
+        {
             if (!TryRestoreSnapshotToWorld(player, overwrite: false))
             {
-                Notify(player, "Contraption cannot disassemble: target space is blocked.");
-                return;
+                Notify(player, "Contraption cannot disassemble: target space is blocked. Ask an admin to use /vk contraptionset or /vk contraptiondelete if it is stuck.");
+                return false;
             }
 
             Die(EnumDespawnReason.Removed);
+            return true;
         }
 
         private static bool ShouldRestoreOnDie(EnumDespawnReason reason)
@@ -558,6 +557,7 @@ namespace VintageKinematics.Entities
         private Cuboidf[] ResolveSnapshotCollisionBoxes(Block block, Vec3i offset)
         {
             if (block == null || block.Id == 0) return null;
+            if (IsFluidBlock(block)) return null;
             if (World == null) return block.CollisionBoxes;
 
             BlockPos pos = GetWorldBlockPositionForOffset(offset);
@@ -1023,6 +1023,7 @@ namespace VintageKinematics.Entities
 
                         Block existing = World.BlockAccessor.GetBlock(targetPos);
                         if (existing == null || existing.Id == 0) continue;
+                        if (IsFluidBlock(existing)) continue;
                         if (IsGantryShaft(existing)) continue;
 
                         Cuboidd[] worldBlockBoxes = GetWorldBlockCollisionBoxes(existing, targetPos);
@@ -1047,6 +1048,7 @@ namespace VintageKinematics.Entities
             {
                 if (offsets[i] == null || string.IsNullOrEmpty(blockCodes[i])) continue;
                 if (IsGantryShaftCode(blockCodes[i])) continue;
+                if (IsSnapshotFluidCode(blockCodes[i])) continue;
 
                 BlockPos targetPos = GetWorldBlockPositionForOffsetAfterMove(offsets[i], dx, dy, dz);
                 if (CanAutomationBuildOrBreakAt(targetPos)) continue;
@@ -1230,13 +1232,26 @@ namespace VintageKinematics.Entities
             return true;
         }
 
+        public bool TryAdminForceRestoreToWorld(bool despawnOnSuccess = true)
+        {
+            if (!TryRestoreSnapshotToWorld(null, overwrite: true, bypassClaims: true)) return false;
+            if (despawnOnSuccess) Die(EnumDespawnReason.Removed);
+            return true;
+        }
+
+        public void AdminDeleteEntityOnly()
+        {
+            snapshotRestored = true;
+            Die(EnumDespawnReason.Removed);
+        }
+
         private bool IsNearInitialAngle()
         {
             float initialYaw = WatchedAttributes.GetFloat(AttrInitialYaw, (float)SidedPos.Yaw);
             return Math.Abs(GameMath.AngleRadDistance((float)SidedPos.Yaw, initialYaw)) <= InitialAngleRestoreToleranceRad;
         }
 
-        private bool TryRestoreSnapshotToWorld(IPlayer player, bool overwrite)
+        private bool TryRestoreSnapshotToWorld(IPlayer player, bool overwrite, bool bypassClaims = false)
         {
             if (snapshotRestored) return true;
             if (!TryGetSnapshot(out _, out _, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)) return false;
@@ -1250,6 +1265,7 @@ namespace VintageKinematics.Entities
             {
                 if (string.IsNullOrEmpty(blockCodes[i])) continue;
                 if (IsGantryShaftCode(blockCodes[i])) continue;
+                if (IsSnapshotFluidCode(blockCodes[i])) continue;
 
                 restorePositions[i] = GetWorldBlockPositionForOffset(offsets[i]);
                 if (IsControllerSnapshotBlock(offsets[i], blockCodes[i])) controllerIndex = i;
@@ -1260,7 +1276,7 @@ namespace VintageKinematics.Entities
                 Block existingControllerTarget = World.BlockAccessor.GetBlock(restorePositions[controllerIndex]);
                 if (!overwrite && IsGantryShaft(existingControllerTarget))
                 {
-                    if (!TryFindControllerRestorePosition(restorePositions[controllerIndex], restorePositions, count, player, overwrite, out BlockPos controllerRestorePos))
+                    if (!TryFindControllerRestorePosition(restorePositions[controllerIndex], restorePositions, count, player, overwrite, bypassClaims, out BlockPos controllerRestorePos))
                     {
                         return false;
                     }
@@ -1280,10 +1296,12 @@ namespace VintageKinematics.Entities
             {
                 if (string.IsNullOrEmpty(blockCodes[i])) continue;
                 if (IsGantryShaftCode(blockCodes[i])) continue;
+                if (IsSnapshotFluidCode(blockCodes[i])) continue;
                 BlockPos blockPos = restorePositions[i];
+                if (blockPos == null) continue;
 
                 if (!occupiedTargets.Add(PositionKey(blockPos))) return false;
-                if (!CanRestoreBlockAt(blockPos, player, overwrite)) return false;
+                if (!CanRestoreBlockAt(blockPos, player, overwrite, bypassClaims)) return false;
             }
 
             List<Entity> restoreCarriedEntities = FindRestoreCarriedEntities(movingBoxes);
@@ -1295,11 +1313,14 @@ namespace VintageKinematics.Entities
             {
                 if (string.IsNullOrEmpty(blockCodes[i])) continue;
                 if (IsGantryShaftCode(blockCodes[i])) continue;
+                if (IsSnapshotFluidCode(blockCodes[i])) continue;
 
                 Block block = World.GetBlock(new AssetLocation(blockCodes[i]));
                 if (block == null || block.Id == 0) continue;
+                if (IsFluidBlock(block)) continue;
 
                 BlockPos blockPos = restorePositions[i];
+                if (blockPos == null) continue;
                 World.BlockAccessor.SetBlock(block.Id, blockPos);
                 RestoreBlockEntityTree(blockPos, blockEntityTrees[i]);
                 World.BlockAccessor.MarkBlockDirty(blockPos);
@@ -1420,6 +1441,7 @@ namespace VintageKinematics.Entities
             if (index < 0 || index >= offsets.Length || index >= blockCodes.Length || index >= restorePositions.Length) return false;
             if (string.IsNullOrEmpty(blockCodes[index])) return false;
             if (IsGantryShaftCode(blockCodes[index])) return false;
+            if (IsSnapshotFluidCode(blockCodes[index])) return false;
 
             BlockPos blockPos = restorePositions[index];
             if (blockPos == null) return false;
@@ -1442,6 +1464,7 @@ namespace VintageKinematics.Entities
             {
                 if (string.IsNullOrEmpty(blockCodes[i])) continue;
                 if (IsGantryShaftCode(blockCodes[i])) continue;
+                if (IsSnapshotFluidCode(blockCodes[i])) continue;
 
                 BlockPos blockPos = restorePositions[i];
                 if (blockPos == null) continue;
@@ -1621,7 +1644,7 @@ namespace VintageKinematics.Entities
             }
         }
 
-        private bool TryFindControllerRestorePosition(BlockPos preferred, BlockPos[] reservedPositions, int count, IPlayer player, bool overwrite, out BlockPos restorePos)
+        private bool TryFindControllerRestorePosition(BlockPos preferred, BlockPos[] reservedPositions, int count, IPlayer player, bool overwrite, bool bypassClaims, out BlockPos restorePos)
         {
             restorePos = null;
             int[][] candidates =
@@ -1643,7 +1666,7 @@ namespace VintageKinematics.Entities
                 int[] offset = candidates[i];
                 BlockPos candidate = preferred.AddCopy(offset[0], offset[1], offset[2]);
                 if (IsReservedRestorePosition(candidate, reservedPositions, count)) continue;
-                if (!CanRestoreBlockAt(candidate, player, overwrite)) continue;
+                if (!CanRestoreBlockAt(candidate, player, overwrite, bypassClaims)) continue;
 
                 restorePos = candidate;
                 return true;
@@ -1652,12 +1675,16 @@ namespace VintageKinematics.Entities
             return false;
         }
 
-        private bool CanRestoreBlockAt(BlockPos blockPos, IPlayer player, bool overwrite)
+        private bool CanRestoreBlockAt(BlockPos blockPos, IPlayer player, bool overwrite, bool bypassClaims = false)
         {
-            if (player != null && !World.Claims.TryAccess(player, blockPos, EnumBlockAccessFlags.BuildOrBreak)) return false;
-            if (player == null && !CanAutomationBuildOrBreakAt(blockPos)) return false;
+            if (!bypassClaims)
+            {
+                if (player != null && !World.Claims.TryAccess(player, blockPos, EnumBlockAccessFlags.BuildOrBreak)) return false;
+                if (player == null && !CanAutomationBuildOrBreakAt(blockPos)) return false;
+            }
 
             Block existing = World.BlockAccessor.GetBlock(blockPos);
+            if (IsFluidBlock(existing)) return true;
             return overwrite || existing == null || existing.Id == 0;
         }
 
@@ -1711,6 +1738,7 @@ namespace VintageKinematics.Entities
             {
                 if (offsets[i] == null || string.IsNullOrEmpty(blockCodes[i])) continue;
                 if (IsGantryShaftCode(blockCodes[i])) continue;
+                if (IsSnapshotFluidCode(blockCodes[i])) continue;
 
                 if (PositionKey(GetWorldBlockPositionForOffset(offsets[i])) == PositionKey(pos)) return true;
             }
@@ -1722,6 +1750,21 @@ namespace VintageKinematics.Entities
         {
             return blockCode != null
                 && blockCode.StartsWith("vintagekinematics:gantryshaft", StringComparison.Ordinal);
+        }
+
+        private bool IsSnapshotFluidCode(string blockCode)
+        {
+            if (World == null || string.IsNullOrEmpty(blockCode)) return false;
+            Block block = World.GetBlock(new AssetLocation(blockCode));
+            return IsFluidBlock(block);
+        }
+
+        private static bool IsFluidBlock(Block block)
+        {
+            return block != null
+                && (block.IsLiquid()
+                    || !string.IsNullOrEmpty(block.LiquidCode)
+                    || block.BlockMaterial == EnumBlockMaterial.Lava);
         }
 
         private static string PositionKey(BlockPos blockPos)
@@ -1739,15 +1782,27 @@ namespace VintageKinematics.Entities
             if (max != null) controllerTree.SetVec3i("localMax", OffsetFromRestoreDelta(max, restoreDelta));
 
             Vec3i[] controllerOffsets = controllerTree.GetVec3is("snapshotOffsets");
-            if (controllerOffsets == null) return;
-
-            Vec3i[] adjustedOffsets = new Vec3i[controllerOffsets.Length];
-            for (int i = 0; i < controllerOffsets.Length; i++)
+            if (controllerOffsets != null)
             {
-                adjustedOffsets[i] = OffsetFromRestoreDelta(controllerOffsets[i], restoreDelta);
+                controllerTree.SetVec3is("snapshotOffsets", OffsetArrayFromRestoreDelta(controllerOffsets, restoreDelta));
             }
 
-            controllerTree.SetVec3is("snapshotOffsets", adjustedOffsets);
+            Vec3i[] selectionOffsets = controllerTree.GetVec3is("selectionCellOffsets");
+            if (selectionOffsets != null)
+            {
+                controllerTree.SetVec3is("selectionCellOffsets", OffsetArrayFromRestoreDelta(selectionOffsets, restoreDelta));
+            }
+        }
+
+        private static Vec3i[] OffsetArrayFromRestoreDelta(Vec3i[] values, Vec3i restoreDelta)
+        {
+            Vec3i[] adjusted = new Vec3i[values.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                adjusted[i] = OffsetFromRestoreDelta(values[i], restoreDelta);
+            }
+
+            return adjusted;
         }
 
         private static Vec3i OffsetFromRestoreDelta(Vec3i value, Vec3i restoreDelta)

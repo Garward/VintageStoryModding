@@ -5,6 +5,7 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Entities;
+using VintageKinematics.Network;
 
 #pragma warning disable CS0618
 namespace VintageKinematics.Api
@@ -74,7 +75,7 @@ namespace VintageKinematics.Api
 
                         offsets.Add(new Vec3i(x, y, z));
                         blockCodes.Add(block.Code.ToString());
-                        blockEntityTrees.Add(CaptureBlockEntityTree(world, blockPos));
+                        blockEntityTrees.Add(CaptureContraptionBlockEntityTree(world, blockPos));
                     }
                 }
             }
@@ -202,11 +203,24 @@ namespace VintageKinematics.Api
         {
             if (world == null || controllerPos == null || snapshot?.Offsets == null) return;
 
+            List<BlockPos> kineticPositions = new List<BlockPos>();
             for (int i = 0; i < snapshot.Offsets.Length; i++)
             {
                 BlockPos blockPos = WorldPosFromOffset(controllerPos, snapshot.Offsets[i]);
+                BlockEntity be = world.BlockAccessor.GetBlockEntity(blockPos);
+                if (be?.GetBehavior<BEBehaviorKinetic>() != null)
+                {
+                    kineticPositions.Add(blockPos.Copy());
+                }
+
                 world.BlockAccessor.SetBlock(0, blockPos);
                 world.BlockAccessor.MarkBlockDirty(blockPos);
+            }
+
+            KineticNetworkManager manager = world.Api?.ModLoader.GetModSystem<KineticNetworkManager>();
+            for (int i = 0; i < kineticPositions.Count; i++)
+            {
+                manager?.OnRemoved(kineticPositions[i]);
             }
         }
 
@@ -235,6 +249,33 @@ namespace VintageKinematics.Api
             TreeAttribute tree = new TreeAttribute();
             be.ToTreeAttributes(tree);
             return tree;
+        }
+
+        public static TreeAttribute CaptureContraptionBlockEntityTree(IWorldAccessor world, BlockPos blockPos)
+        {
+            TreeAttribute tree = CaptureBlockEntityTree(world, blockPos);
+            ClearKineticRuntimeState(tree);
+            return tree;
+        }
+
+        public static void ClearKineticRuntimeState(ITreeAttribute tree)
+        {
+            if (tree == null) return;
+
+            tree.RemoveAttribute("axis");
+            tree.RemoveAttribute("ratio");
+            tree.RemoveAttribute("phaseOffset");
+            tree.RemoveAttribute("networkId");
+            tree.RemoveAttribute("currentRPM");
+            tree.RemoveAttribute("netConflicted");
+            tree.RemoveAttribute("netStressTotal");
+            tree.RemoveAttribute("netStressCapacity");
+            tree.RemoveAttribute("netOverstressed");
+            tree.RemoveAttribute("netNodeCount");
+
+            tree.SetFloat("decaySeconds", 0f);
+            tree.SetFloat("lastWindSeconds", 0f);
+            tree.SetLong("lastWindWorldMs", 0);
         }
 
         public static TreeAttribute[] NormalizeBlockEntityTrees(TreeAttribute[] trees, int count)

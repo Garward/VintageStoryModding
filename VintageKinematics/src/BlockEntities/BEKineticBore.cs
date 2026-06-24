@@ -54,6 +54,7 @@ namespace VintageKinematics.BlockEntities
         protected override int ToggleRetractPacketId => PacketIdToggleRetract;
         protected override string TitleLangCode => "vintagekinematics:kineticbore-title";
         protected override string FallbackTitle => "Kinetic Bore";
+        public override bool HasUnretractedColumn => base.HasUnretractedColumn || deployedShafts.Count > 0;
 
         public BEKineticBore()
             : base("kineticbore", InventorySize, (slotId, self) =>

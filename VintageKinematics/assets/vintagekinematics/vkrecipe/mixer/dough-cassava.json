@@ -1,0 +1,11 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "game:flour-cassava", "quantity": 8 }
+    ],
+    "liquidCode": "game:waterportion",
+    "liquidLitres": 8,
+    "outputs": [
+        { "type": "item", "code": "game:dough-cassava", "quantity": 8 }
+    ],
+    "mixTicks": 4
+}

@@ -50,6 +50,7 @@ vintagekinematics:gantrycarriage-status-linked
 vintagekinematics:gantrycarriage-selection
 vintagekinematics:gantrycarriage-assembled
 vintagekinematics:heldhelp-mechanicalbinder-select
+vintagekinematics:heldhelp-mechanicalbinder-remove
 vintagekinematics:heldhelp-mechanicalbinder-assign
 block-counterweightdrive-*
 vintagekinematics:reinforcedchest-title

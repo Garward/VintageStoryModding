@@ -110,10 +110,10 @@ Sawmill, one input plus selected sawmill mode:
 
 ```json
 {
-  "ingredient": { "type": "block", "code": "game:log-placed-*-*", "quantity": 1 },
+  "ingredient": { "type": "block", "code": "*:log-placed-*-*", "quantity": 1 },
   "outputs": [
-    { "type": "item", "code": "game:plank-*", "quantity": 16 },
-    { "type": "item", "code": "vintagekinematics:sawdust", "quantity": 2 }
+    { "type": "item", "code": "*:plank-*", "quantity": 16 },
+    { "type": "item", "code": "sawdust", "quantity": 2 }
   ],
   "sawTicks": 4,
   "mode": "Plank"
@@ -121,9 +121,9 @@ Sawmill, one input plus selected sawmill mode:
 ```
 
 Sawmill modes are `Plank`, `Shaft`, `Stick`, `CogwheelSection`, `Firewood`,
-and `Gearbox`. The machine currently selects by mode, so do not add multiple
-recipes with the same ingredient and the same mode unless you intentionally
-want only the first matching recipe to run.
+`Gearbox`, `Axle`, and `AngledGear`. The machine currently selects by mode,
+so do not add multiple recipes with the same ingredient and the same mode
+unless you intentionally want only the first matching recipe to run.
 
 Generic process recipe, one input to outputs:
 
@@ -263,7 +263,7 @@ Important fields:
   with the machine. In this example, the top input is on the decorative block
   one cell above the controller.
 
-## 2. Recipe JSON
+## 3. Recipe JSON
 
 `assets/mymod/vkrecipe/process/handlelathe/stick-to-handcrank.json`:
 
@@ -289,7 +289,7 @@ Drop more files in the same folder to add recipes. No code changes needed.
 The folder name is used as the machine code if the recipe omits `"machine"`,
 but declaring it explicitly makes templates easier to read.
 
-## 3. Recipe Browser API
+## 4. Recipe Browser API
 
 For JSON processors, prefer the no-code path:
 
@@ -377,7 +377,7 @@ private IEnumerable<IRecipeBrowserListItem> BuildRecipeRows()
 }
 ```
 
-## 4. Template Files Shipped With VK
+## 5. Template Files Shipped With VK
 
 VK ships an editable template under:
 
@@ -394,7 +394,22 @@ packaged as a visible example. It converts sticks into hand cranks and shows
 shaft animation, piston animation, multiblock IO, GUI slots, and output
 pushing.
 
-## 5. JSON IO
+For a current C#-backed example that still uses the same framework primitives,
+look at the Kinetic Sawmill:
+
+```text
+assets/vintagekinematics/blocktypes/kineticsawmill.json
+src/BlockEntities/BEKineticSawmill.cs
+assets/vintagekinematics/vkrecipe/sawmill/
+```
+
+The blocktype owns the standard placement, kinetic behaviors, canonical drop,
+and `vkIo` map. The block entity only handles sawmill-specific recipe lookup,
+wildcard output resolution, the selected output mode, and recipe-browser rows.
+That is the intended shape for custom machines: keep common mechanics in JSON
+and only write C# for the part that is actually unique.
+
+## 6. JSON IO
 
 Prefer explicit `vkProcessor.io` entries for new generic JSON processor
 machines:
@@ -476,7 +491,7 @@ the same IO schema without being full JSON processors. Put it at top-level
 }
 ```
 
-## 5. JSON-Backed Generators
+## 7. JSON-Backed Generators
 
 Generators should put their common kinetic source tuning in JSON:
 
@@ -521,7 +536,7 @@ knobs. Current built-in examples:
   `maxOutputRPM` are JSON; C# only bridges world kinetic charge into the item
   stack's stored charge.
 
-## 6. When You Need C#
+## 8. When You Need C#
 
 If the generic JSON processor is not enough, do not start from an empty
 `BlockEntity`. Extend the same primitives instead:
@@ -551,6 +566,18 @@ claim-safe inventory packets, worker subscription, active input/output
 ranges, GUI packet flow, output storage, output pushing, drop fallback, and
 animated mesh splitting. Custom machines should add features on top of that
 instead of reimplementing the same boilerplate.
+
+For a normal powered item machine with custom recipes, use the sawmill pattern:
+
+- Block JSON uses `class: BlockKineticOpenableMachine`.
+- Block JSON declares `Kinetic`, `KineticWorker`, optional animation
+  behaviors, `CanonicalDrop`, and top-level `attributes.vkIo`.
+- The BE inherits `BEKineticItemProcessorBase<TRecipe>`.
+- `BuildIOFaceMap()` returns `BuildJsonIOFaceMap()`.
+- The shared `GuiDialogKineticJsonProcessor` is used for slots, progress, and
+  the reusable recipe browser.
+- C# is limited to recipe matching, outputs, and any small state such as the
+  sawmill's selected mode.
 
 For a machine whose inventory block is not the kinetic block, extend the
 external inventory base instead. This is the pattern used by the Crusher Basin:
@@ -640,7 +667,7 @@ Fields:
 - `requiredTemperature`: chamber temperature required before work can run.
 - `pressTicks`: intended recipe cost in press cycles.
 
-## 7. Driving keyframe animations from RPM
+## 9. Driving keyframe animations from RPM
 
 If your model has a keyframe animation (the kind exported by VS Model
 Creator with bones / joints), add `KineticAnimationDriver` to wire its
@@ -664,7 +691,7 @@ translated by `KineticPiston`, stretched by `KineticStretch`, or solved as a
 pleat strip by `KineticLinkedPleat`. Don't drive the same element from more
 than one movement behavior.
 
-## 8. Pistons (linear oscillating or extending elements)
+## 10. Pistons (linear oscillating or extending elements)
 
 For elements that should reciprocate (hammer, pump, saw) or extend in one
 direction with the network's rotation (lift, gate, drill), use
@@ -697,7 +724,7 @@ Vec3f offset = piston?.GetOffsetFor("hammer") ?? new Vec3f();
 // translate the "hammer" element by `offset` in your mesh assembly
 ```
 
-## 9. Wire it all up: the OnTesselation override
+## 11. Wire it all up: the OnTesselation override
 
 `KineticAnimator`, `KineticPiston`, `KineticStretch`, and
 `KineticLinkedPleat` render their managed elements through their own
@@ -725,7 +752,7 @@ If you also need to render custom static decorations (item-on-pedestal
 style), tesselate them and call `mesher.AddMeshData` on each before
 returning.
 
-## 10. Linked pleats (accordion / bellows folds)
+## 12. Linked pleats (accordion / bellows folds)
 
 For accordion-like geometry where a row of flat strips should stay snapped
 between a fixed bottom edge and a moving top edge, use `KineticLinkedPleat`.
@@ -801,7 +828,7 @@ caps centered on an eight-fold chain use `translateTOffset: 0.125` and
 `translateTStep: 0.25`, placing them at `1/8`, `3/8`, `5/8`, and `7/8` of
 the moving height.
 
-## 11. Multiblocks (footprint larger than 1x1x1)
+## 13. Multiblocks (footprint larger than 1x1x1)
 
 If your machine occupies more than one block (the Kinetic Sieve is a 1×1×3
 drum, for example), use vanilla's `Multiblock` block behavior to declare the
@@ -910,7 +937,7 @@ Rules that came out of the Treadwheel and Counterweight Drive pass:
   `KineticPiston` for moving parts like a falling weight, and
   `KineticStretch` for length-changing parts like a rope.
 
-## 12. Restricting kinetic input to specific cells (`KineticMultiblock`)
+## 14. Restricting kinetic input to specific cells (`KineticMultiblock`)
 
 By default, every filler cell of a multiblock is treated as a coaxial
 shaft passthrough: a shaft against any face of any cell will join the
@@ -976,7 +1003,7 @@ When to use it:
 - Multiblocks where the input cell isn't on a face of the controller and
   the default coaxial rule wouldn't form the edge.
 
-## 13. Placement previews and non-standard placement
+## 15. Placement previews and non-standard placement
 
 When placement depends on the clicked block, the clicked face, or the
 player's yaw, implement `IPlacementPreviewProvider` on the block class.
@@ -1022,7 +1049,7 @@ Rules:
   so the block code remains data-driven instead of hard-coded string
   concatenation.
 
-## 14. Kinetic Activator support (`IKineticActivatable`)
+## 16. Kinetic Activator support (`IKineticActivatable`)
 
 The Kinetic Activator normally tries three paths:
 
@@ -1068,7 +1095,7 @@ Guidelines:
   `KineticActivatorTargetBlacklist` in `ModConfig/vintagekinematics.json`.
   The default blacklist blocks command/ticker/conditional block families.
 
-## 15. Gantry contraptions
+## 17. Gantry contraptions
 
 Gantry contraptions are the current constrained moving-block prototype.
 They are intentionally narrower than a full Create-style contraption:
@@ -1077,8 +1104,9 @@ They are intentionally narrower than a full Create-style contraption:
   line is driven by the canonical shaft at the start of the track.
 - A `gantrycarriage-*` attaches to a shaft and owns the bound block
   assembly.
-- The Mechanical Binder selects two corners, assigns the box to a carriage,
-  and the carriage keeps only connected blocks from that selection.
+- The Mechanical Binder can add multiple selection boxes and shift-left-click
+  removal boxes, then sneak-right-click assigns the connected result to a
+  carriage.
 - While moving, the selection becomes an `EntityVKContraption` with custom
   rendering, collision, saved block codes, and saved block-entity trees.
 - When stopped, the entity restores to blocks according to the carriage's
@@ -1180,7 +1208,7 @@ Controller responsibilities:
 - Call `EntityVKContraption.MoveBy(dx, dy, dz)` for straight translation
   so carried entities move with the contraption.
 
-## 16. What the API does for free
+## 18. What the API does for free
 
 - Network membership and stress accounting on placement / removal.
 - Tooltip lines: status, stress, idle/active source labels.
@@ -1201,14 +1229,14 @@ Controller responsibilities:
   on recovery.
 - Multiblock kinetic-input restriction via the `KineticMultiblock`
   behavior: declare shaft cells in JSON, get variant-rotation and
-  cposition math for free (see section 11).
+  cposition math for free (see section 14).
 - Placement previews for blocks that implement `IPlacementPreviewProvider`.
 - Kinetic Activator automation hooks via `IKineticActivatable`, with a
   config blacklist before fallback activation.
 - Contraption snapshot capture, disconnected-block pruning, entity spawn,
   world block removal, and binder assignment through `IContraptionController`.
 
-## 17. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
+## 19. Client-side dialogs: always use `GuiDialogUtil.SafeDispose`
 
 If your block entity opens a `GuiDialogBlockEntity` on the client, **always**
 dispose it through `VintageKinematics.Api.GuiDialogUtil.SafeDispose` from
@@ -1251,7 +1279,7 @@ The helper takes any `GuiDialogBlockEntity` subclass by `ref`:
 public static void SafeDispose<T>(ref T dialog) where T : GuiDialogBlockEntity
 ```
 
-## 18. What's still your responsibility
+## 20. What's still your responsibility
 
 - For pure JSON machines: blocktype JSON, shape JSON, process recipe JSON,
   textures, and optional lang entries.

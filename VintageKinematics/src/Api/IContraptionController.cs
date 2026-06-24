@@ -1,5 +1,6 @@
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using System.Collections.Generic;
 
 namespace VintageKinematics.Api
 {
@@ -10,5 +11,7 @@ namespace VintageKinematics.Api
     public interface IContraptionController
     {
         bool SetSelectionFromWorldBounds(BlockPos start, BlockPos end, IPlayer byPlayer);
+        bool SetSelectionFromWorldPositions(IEnumerable<BlockPos> positions, IPlayer byPlayer);
+        IEnumerable<BlockPos> GetSelectionWorldPositions();
     }
 }

@@ -3,6 +3,9 @@
     "class": "BlockTrebuchet",
     "entityClass": "Trebuchet",
     "attributes": {
+        "vkPlacement": {
+            "side": "oppositePlayer"
+        },
         "kineticShaftCells": [
             {
                 "x": 0,

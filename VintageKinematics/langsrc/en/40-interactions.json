@@ -1,8 +1,10 @@
 {
     "vintagekinematics:blockhelp-gantrycarriage-toggle": "Assemble carriage",
     "vintagekinematics:blockhelp-gantrycarriage-clear": "Cycle placement mode",
-    "vintagekinematics:heldhelp-mechanicalbinder-select": "Select contraption corner",
-    "vintagekinematics:heldhelp-mechanicalbinder-assign": "Assign selection to carriage",
+    "vintagekinematics:heldhelp-mechanicalbinder-select": "Add selection box",
+    "vintagekinematics:heldhelp-mechanicalbinder-remove": "Add removal box",
+    "vintagekinematics:heldhelp-mechanicalbinder-clear": "Clear selection",
+    "vintagekinematics:heldhelp-mechanicalbinder-assign": "Sneak-right click carriage to assign",
     "vintagekinematics:blockhelp-retort-addfirewood": "Add firewood",
     "vintagekinematics:blockhelp-retort-addallfirewood": "Add held firewood stack",
     "vintagekinematics:blockhelp-retort-takecharcoal": "Take charcoal",

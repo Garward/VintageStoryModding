@@ -16,6 +16,13 @@ namespace VintageKinematics.Blocks
             return base.OnBlockInteractStart(world, byPlayer, blockSel);
         }
 
+        public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
+        {
+            if (BoreBreakGuard.PreventIfUnretracted(world, pos, byPlayer, "vintagekinematics:kineticbore-must-be-retracted")) return;
+
+            base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
+        }
+
         public bool TryResolvePlacementPreview(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, out BlockPos targetPos, out Block variant)
         {
             targetPos = null;
@@ -37,12 +44,10 @@ namespace VintageKinematics.Blocks
 
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel, ref string failureCode)
         {
-            if (!TryResolvePlacementPreview(world, byPlayer, blockSel, out BlockPos targetPos, out Block variant) || variant == this)
+            if (!TryResolvePlacementPreview(world, byPlayer, blockSel, out BlockPos targetPos, out Block variant))
                 return base.TryPlaceBlock(world, byPlayer, itemStack, blockSel, ref failureCode);
 
-            BlockSelection shiftedSel = blockSel.Clone();
-            shiftedSel.Position = targetPos;
-            return variant.TryPlaceBlock(world, byPlayer, itemStack, shiftedSel, ref failureCode);
+            return PlacementPreview.TryPlaceResolvedVariant(variant, world, byPlayer, itemStack, blockSel, targetPos, ref failureCode);
         }
 
     }

@@ -16,6 +16,8 @@ namespace VintageKinematics
         private KineticPlacementPreviewRenderer placementPreview;
         private System.IDisposable contraptionToolMovingParts;
         private System.IDisposable contraptionToolWork;
+        private ICoreClientAPI clientApi;
+        private long binderHighlightCleanupListenerId;
         private bool contentClassesRegistered;
 
         public override void StartPre(ICoreAPI api)
@@ -57,6 +59,8 @@ namespace VintageKinematics
             api.RegisterBlockEntityBehaviorClass("BellowsPulse", typeof(BEBehaviorBellowsPulse));
             api.RegisterBlockEntityBehaviorClass("CrusherProcess", typeof(BEBehaviorCrusherProcess));
             api.RegisterBlockBehaviorClass("CanonicalDrop", typeof(Blocks.BlockBehaviorCanonicalDrop));
+            api.RegisterBlockBehaviorClass("RequireEmptyInventoryOnBreak", typeof(Blocks.BlockBehaviorRequireEmptyInventoryOnBreak));
+            api.RegisterBlockBehaviorClass("RequireBoreRetractedOnBreak", typeof(Blocks.BlockBehaviorRequireBoreRetractedOnBreak));
             api.RegisterBlockEntityClass("Kinetic", typeof(BlockEntities.BEKinetic));
             api.RegisterBlockEntityClass("HandCrank", typeof(BlockEntities.BEHandCrank));
             api.RegisterBlockEntityClass("KineticAnimated", typeof(BlockEntities.BEKineticAnimated));
@@ -156,8 +160,10 @@ namespace VintageKinematics
         public override void StartClientSide(ICoreClientAPI capi)
         {
             base.StartClientSide(capi);
+            clientApi = capi;
             placementPreview = new KineticPlacementPreviewRenderer(capi);
             capi.Event.RegisterRenderer(placementPreview, EnumRenderStage.Opaque);
+            binderHighlightCleanupListenerId = capi.Event.RegisterGameTickListener(_ => Items.ItemMechanicalBinder.OnClientTick(capi), 100);
             contraptionToolMovingParts = ContraptionMovingPartRegistry.Subscribe(new ContraptionToolMovingPartProvider());
         }
 
@@ -168,6 +174,12 @@ namespace VintageKinematics
             contraptionToolWork?.Dispose();
             contraptionToolMovingParts?.Dispose();
             placementPreview?.Dispose();
+            if (binderHighlightCleanupListenerId != 0)
+            {
+                clientApi?.Event?.UnregisterGameTickListener(binderHighlightCleanupListenerId);
+                binderHighlightCleanupListenerId = 0;
+            }
+            clientApi = null;
             base.Dispose();
         }
     }

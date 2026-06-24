@@ -133,11 +133,21 @@ namespace VintageKinematics.Rendering
             for (int i = 0; i < blockCodes.Length; i++)
             {
                 if (string.IsNullOrEmpty(blockCodes[i])) continue;
-                blocks[i] = capi.World.GetBlock(new AssetLocation(blockCodes[i]));
+                Block block = capi.World.GetBlock(new AssetLocation(blockCodes[i]));
+                if (IsFluidBlock(block)) continue;
+                blocks[i] = block;
             }
             blockEntityTrees = nextBlockEntityTrees ?? Array.Empty<TreeAttribute>();
 
             snapshotId = currentId;
+        }
+
+        private static bool IsFluidBlock(Block block)
+        {
+            return block != null
+                && (block.IsLiquid()
+                    || !string.IsNullOrEmpty(block.LiquidCode)
+                    || block.BlockMaterial == EnumBlockMaterial.Lava);
         }
 
         private MultiTextureMeshRef GetBlockMesh(Block block, int alternateIndex, int sourceX, int sourceY, int sourceZ)

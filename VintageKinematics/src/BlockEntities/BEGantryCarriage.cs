@@ -9,6 +9,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using VintageKinematics.Api;
 using VintageKinematics.Entities;
+using VintageKinematics.Network;
 
 #pragma warning disable CS0618
 namespace VintageKinematics.BlockEntities
@@ -23,6 +24,7 @@ namespace VintageKinematics.BlockEntities
         private long linkedEntityId;
         private Vec3i localMin = new Vec3i(0, 1, 0);
         private Vec3i localMax = new Vec3i(0, 1, 0);
+        private Vec3i[] selectionCellOffsets = Array.Empty<Vec3i>();
         private Vec3i[] snapshotOffsets = new[] { new Vec3i(0, 1, 0) };
         private string[] snapshotBlockCodes = Array.Empty<string>();
         private TreeAttribute[] snapshotBlockEntityTrees = Array.Empty<TreeAttribute>();
@@ -315,6 +317,7 @@ namespace VintageKinematics.BlockEntities
 
                 TreeAttribute tree = new TreeAttribute();
                 ToTreeAttributes(tree);
+                ContraptionApi.ClearKineticRuntimeState(tree);
                 tree.SetLong("linkedEntityId", 0);
                 tree.SetBool("assembled", false);
                 tree.SetDouble("assembledX", Pos.X);
@@ -335,27 +338,54 @@ namespace VintageKinematics.BlockEntities
                 return true;
             }
 
-            Vec3i min = new Vec3i(Math.Min(start.X, end.X) - Pos.X, Math.Min(start.Y, end.Y) - Pos.Y, Math.Min(start.Z, end.Z) - Pos.Z);
-            Vec3i max = new Vec3i(Math.Max(start.X, end.X) - Pos.X, Math.Max(start.Y, end.Y) - Pos.Y, Math.Max(start.Z, end.Z) - Pos.Z);
-            IncludeControllerInBounds(ref min, ref max);
-            IncludeControllerAttachmentInBounds(ref min, ref max);
-            int blocks = CountBlocks(min, max);
-            if (blocks > DefaultMaxSelectedBlocks)
+            List<BlockPos> positions = new List<BlockPos>();
+            int minX = Math.Min(start.X, end.X);
+            int minY = Math.Min(start.Y, end.Y);
+            int minZ = Math.Min(start.Z, end.Z);
+            int maxX = Math.Max(start.X, end.X);
+            int maxY = Math.Max(start.Y, end.Y);
+            int maxZ = Math.Max(start.Z, end.Z);
+
+            for (int y = minY; y <= maxY; y++)
             {
-                Notify(byPlayer, $"Contraption selection is too large ({blocks}/{DefaultMaxSelectedBlocks} blocks).");
+                for (int z = minZ; z <= maxZ; z++)
+                {
+                    for (int x = minX; x <= maxX; x++)
+                    {
+                        positions.Add(new BlockPos(x, y, z, Pos.dimension));
+                    }
+                }
+            }
+
+            return SetSelectionFromWorldPositions(positions, byPlayer);
+        }
+
+        public bool SetSelectionFromWorldPositions(IEnumerable<BlockPos> positions, IPlayer byPlayer)
+        {
+            if (positions == null || !CheckClaim(byPlayer)) return false;
+
+            Vec3i[] cells = BuildSelectionCellOffsets(positions, Pos, out bool wrongDimension);
+            if (wrongDimension)
+            {
+                Notify(byPlayer, "Contraption selection must be in the same dimension as the controller.");
                 return true;
             }
 
-            CaptureSnapshot(min, max, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees);
+            CaptureSnapshot(cells, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees);
             int removedDisconnected = PruneDisconnectedSnapshot(ref offsets, ref blockCodes, ref blockEntityTrees);
             if (offsets.Length == 0)
             {
                 Notify(byPlayer, "Contraption selection has no blocks to capture.");
                 return true;
             }
+            if (offsets.Length > DefaultMaxSelectedBlocks)
+            {
+                Notify(byPlayer, $"Contraption selection is too large ({offsets.Length}/{DefaultMaxSelectedBlocks} captured blocks).");
+                return true;
+            }
 
-            localMin = min;
-            localMax = max;
+            selectionCellOffsets = cells;
+            SetBoundsFromOffsets(offsets, ref localMin, ref localMax);
             snapshotOffsets = offsets;
             snapshotBlockCodes = blockCodes;
             snapshotBlockEntityTrees = blockEntityTrees;
@@ -364,6 +394,20 @@ namespace VintageKinematics.BlockEntities
             string suffix = removedDisconnected > 0 ? $" {removedDisconnected} disconnected blocks excluded." : string.Empty;
             Notify(byPlayer, $"Contraption selection assigned: {offsets.Length} blocks captured.{suffix}");
             return true;
+        }
+
+        public IEnumerable<BlockPos> GetSelectionWorldPositions()
+        {
+            Vec3i[] offsets = snapshotOffsets != null && snapshotOffsets.Length > 0
+                ? snapshotOffsets
+                : selectionCellOffsets;
+
+            for (int i = 0; i < (offsets?.Length ?? 0); i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null) continue;
+                yield return WorldPosFromOffset(offset);
+            }
         }
 
         public override void OnBlockRemoved()
@@ -395,6 +439,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetLong("linkedEntityId", linkedEntityId);
             tree.SetVec3i("localMin", localMin);
             tree.SetVec3i("localMax", localMax);
+            tree.SetVec3is("selectionCellOffsets", selectionCellOffsets ?? Array.Empty<Vec3i>());
             tree.SetVec3is("snapshotOffsets", snapshotOffsets ?? Array.Empty<Vec3i>());
             tree["snapshotBlockCodes"] = new StringArrayAttribute(snapshotBlockCodes ?? Array.Empty<string>());
             tree["snapshotBlockEntityTrees"] = new TreeArrayAttribute(NormalizeBlockEntityTrees(snapshotBlockEntityTrees, snapshotBlockCodes?.Length ?? 0));
@@ -417,6 +462,7 @@ namespace VintageKinematics.BlockEntities
             linkedEntityId = tree.GetLong("linkedEntityId");
             localMin = tree.GetVec3i("localMin", new Vec3i(0, 1, 0));
             localMax = tree.GetVec3i("localMax", new Vec3i(0, 1, 0));
+            selectionCellOffsets = tree.GetVec3is("selectionCellOffsets", Array.Empty<Vec3i>());
             snapshotOffsets = tree.GetVec3is("snapshotOffsets", new[] { new Vec3i(0, 1, 0) });
             snapshotBlockCodes = (tree["snapshotBlockCodes"] as StringArrayAttribute)?.value ?? Array.Empty<string>();
             snapshotBlockEntityTrees = NormalizeBlockEntityTrees((tree["snapshotBlockEntityTrees"] as TreeArrayAttribute)?.value, snapshotBlockCodes.Length);
@@ -621,6 +667,132 @@ namespace VintageKinematics.BlockEntities
             return (max.X - min.X + 1) * (max.Y - min.Y + 1) * (max.Z - min.Z + 1);
         }
 
+        public static List<BlockPos> GetConnectedSelectionPreview(IWorldAccessor world, BlockPos controllerPos, IEnumerable<BlockPos> positions)
+        {
+            List<BlockPos> preview = new List<BlockPos>();
+            if (world == null || controllerPos == null || positions == null) return preview;
+
+            Vec3i[] cells = BuildSelectionCellOffsets(positions, controllerPos, out _);
+            List<Vec3i> offsets = new List<Vec3i>();
+            List<string> blockCodes = new List<string>();
+
+            for (int i = 0; i < cells.Length; i++)
+            {
+                Vec3i cell = cells[i];
+                if (cell == null) continue;
+
+                BlockPos blockPos = new BlockPos(controllerPos.X + cell.X, controllerPos.Y + cell.Y, controllerPos.Z + cell.Z, controllerPos.dimension);
+                Block block = world.BlockAccessor.GetBlock(blockPos);
+                if (block == null || block.Id == 0 || block.Code == null) continue;
+                if (IsFluidBlock(block)) continue;
+                if (IsGantryShaft(block, out _)) continue;
+
+                offsets.Add(cell.Clone());
+                blockCodes.Add(block.Code.ToString());
+            }
+
+            Vec3i[] offsetArray = offsets.ToArray();
+            string[] codeArray = blockCodes.ToArray();
+            PruneDisconnectedSnapshot(ref offsetArray, ref codeArray);
+
+            for (int i = 0; i < offsetArray.Length; i++)
+            {
+                Vec3i offset = offsetArray[i];
+                if (offset == null) continue;
+                preview.Add(new BlockPos(controllerPos.X + offset.X, controllerPos.Y + offset.Y, controllerPos.Z + offset.Z, controllerPos.dimension));
+            }
+
+            return preview;
+        }
+
+        private static Vec3i[] BuildSelectionCellOffsets(IEnumerable<BlockPos> positions, BlockPos controllerPos, out bool wrongDimension)
+        {
+            wrongDimension = false;
+            if (positions == null || controllerPos == null) return Array.Empty<Vec3i>();
+
+            Dictionary<string, Vec3i> cells = new Dictionary<string, Vec3i>();
+            AddSelectionCell(cells, 0, 0, 0);
+
+            foreach (BlockPos pos in positions)
+            {
+                if (pos == null) continue;
+                if (pos.dimension != controllerPos.dimension)
+                {
+                    wrongDimension = true;
+                    continue;
+                }
+
+                AddSelectionCell(cells, pos.X - controllerPos.X, pos.Y - controllerPos.Y, pos.Z - controllerPos.Z);
+            }
+
+            Vec3i[] result = new Vec3i[cells.Count];
+            int index = 0;
+            foreach (Vec3i cell in cells.Values)
+            {
+                result[index++] = cell;
+            }
+
+            Array.Sort(result, CompareOffset);
+            return result;
+        }
+
+        private static void AddSelectionCell(Dictionary<string, Vec3i> cells, int x, int y, int z)
+        {
+            string key = OffsetKey(x, y, z);
+            if (!cells.ContainsKey(key)) cells[key] = new Vec3i(x, y, z);
+        }
+
+        private static int CompareOffset(Vec3i left, Vec3i right)
+        {
+            if (left == null && right == null) return 0;
+            if (left == null) return -1;
+            if (right == null) return 1;
+            int y = left.Y.CompareTo(right.Y);
+            if (y != 0) return y;
+            int z = left.Z.CompareTo(right.Z);
+            if (z != 0) return z;
+            return left.X.CompareTo(right.X);
+        }
+
+        private static void SetBoundsFromOffsets(Vec3i[] offsets, ref Vec3i min, ref Vec3i max)
+        {
+            if (offsets == null || offsets.Length == 0)
+            {
+                min = new Vec3i(0, 1, 0);
+                max = new Vec3i(0, 1, 0);
+                return;
+            }
+
+            int minX = int.MaxValue;
+            int minY = int.MaxValue;
+            int minZ = int.MaxValue;
+            int maxX = int.MinValue;
+            int maxY = int.MinValue;
+            int maxZ = int.MinValue;
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                Vec3i offset = offsets[i];
+                if (offset == null) continue;
+                minX = Math.Min(minX, offset.X);
+                minY = Math.Min(minY, offset.Y);
+                minZ = Math.Min(minZ, offset.Z);
+                maxX = Math.Max(maxX, offset.X);
+                maxY = Math.Max(maxY, offset.Y);
+                maxZ = Math.Max(maxZ, offset.Z);
+            }
+
+            if (minX == int.MaxValue)
+            {
+                min = new Vec3i(0, 1, 0);
+                max = new Vec3i(0, 1, 0);
+                return;
+            }
+
+            min = new Vec3i(minX, minY, minZ);
+            max = new Vec3i(maxX, maxY, maxZ);
+        }
+
         private void CaptureSnapshot(Vec3i min, Vec3i max, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)
         {
             List<Vec3i> capturedOffsets = new List<Vec3i>();
@@ -637,11 +809,12 @@ namespace VintageKinematics.BlockEntities
 
                         Block block = Api.World.BlockAccessor.GetBlock(blockPos);
                         if (block == null || block.Id == 0 || block.Code == null) continue;
+                        if (IsFluidBlock(block)) continue;
                         if (IsGantryShaft(block, out _)) continue;
 
                         capturedOffsets.Add(new Vec3i(x, y, z));
                         capturedCodes.Add(block.Code.ToString());
-                        capturedBlockEntityTrees.Add(CaptureBlockEntityTree(blockPos));
+                        capturedBlockEntityTrees.Add(ContraptionApi.CaptureContraptionBlockEntityTree(Api.World, blockPos));
                     }
                 }
             }
@@ -651,13 +824,52 @@ namespace VintageKinematics.BlockEntities
             blockEntityTrees = capturedBlockEntityTrees.ToArray();
         }
 
-        private void RefreshSnapshotFromCurrentWorld()
+        private void CaptureSnapshot(Vec3i[] cells, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)
         {
+            List<Vec3i> capturedOffsets = new List<Vec3i>();
+            List<string> capturedCodes = new List<string>();
+            List<TreeAttribute> capturedBlockEntityTrees = new List<TreeAttribute>();
+
+            for (int i = 0; i < (cells?.Length ?? 0); i++)
+            {
+                Vec3i cell = cells[i];
+                if (cell == null) continue;
+
+                BlockPos blockPos = new BlockPos(Pos.X + cell.X, Pos.Y + cell.Y, Pos.Z + cell.Z, Pos.dimension);
+                Block block = Api.World.BlockAccessor.GetBlock(blockPos);
+                if (block == null || block.Id == 0 || block.Code == null) continue;
+                if (IsFluidBlock(block)) continue;
+                if (IsGantryShaft(block, out _)) continue;
+
+                capturedOffsets.Add(cell.Clone());
+                capturedCodes.Add(block.Code.ToString());
+                capturedBlockEntityTrees.Add(ContraptionApi.CaptureContraptionBlockEntityTree(Api.World, blockPos));
+            }
+
+            offsets = capturedOffsets.ToArray();
+            blockCodes = capturedCodes.ToArray();
+            blockEntityTrees = capturedBlockEntityTrees.ToArray();
+        }
+
+        private void CaptureSelectionSnapshot(out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees)
+        {
+            if (selectionCellOffsets != null && selectionCellOffsets.Length > 0)
+            {
+                CaptureSnapshot(selectionCellOffsets, out offsets, out blockCodes, out blockEntityTrees);
+                return;
+            }
+
             NormalizeBounds(ref localMin, ref localMax);
             IncludeControllerInBounds(ref localMin, ref localMax);
             IncludeControllerAttachmentInBounds(ref localMin, ref localMax);
-            CaptureSnapshot(localMin, localMax, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees);
+            CaptureSnapshot(localMin, localMax, out offsets, out blockCodes, out blockEntityTrees);
+        }
+
+        private void RefreshSnapshotFromCurrentWorld()
+        {
+            CaptureSelectionSnapshot(out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees);
             PruneDisconnectedSnapshot(ref offsets, ref blockCodes, ref blockEntityTrees);
+            if (offsets.Length > 0) SetBoundsFromOffsets(offsets, ref localMin, ref localMax);
             snapshotOffsets = offsets;
             snapshotBlockCodes = blockCodes;
             snapshotBlockEntityTrees = blockEntityTrees;
@@ -667,11 +879,9 @@ namespace VintageKinematics.BlockEntities
         {
             if (assembled || GetLinkedEntity() != null) return;
 
-            NormalizeBounds(ref localMin, ref localMax);
-            IncludeControllerInBounds(ref localMin, ref localMax);
-            IncludeControllerAttachmentInBounds(ref localMin, ref localMax);
-            CaptureSnapshot(localMin, localMax, out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees);
+            CaptureSelectionSnapshot(out Vec3i[] offsets, out string[] blockCodes, out TreeAttribute[] blockEntityTrees);
             PruneDisconnectedSnapshot(ref offsets, ref blockCodes, ref blockEntityTrees);
+            if (offsets.Length > 0) SetBoundsFromOffsets(offsets, ref localMin, ref localMax);
             if (SnapshotMatches(offsets, blockCodes)) return;
 
             snapshotOffsets = offsets;
@@ -923,11 +1133,24 @@ namespace VintageKinematics.BlockEntities
         {
             if (snapshotOffsets == null) return;
 
+            List<BlockPos> kineticPositions = new List<BlockPos>();
             for (int i = 0; i < snapshotOffsets.Length; i++)
             {
                 BlockPos blockPos = WorldPosFromOffset(snapshotOffsets[i]);
+                BlockEntity be = Api.World.BlockAccessor.GetBlockEntity(blockPos);
+                if (be?.GetBehavior<BEBehaviorKinetic>() != null)
+                {
+                    kineticPositions.Add(blockPos.Copy());
+                }
+
                 Api.World.BlockAccessor.SetBlock(0, blockPos);
                 Api.World.BlockAccessor.MarkBlockDirty(blockPos);
+            }
+
+            KineticNetworkManager manager = Api.ModLoader.GetModSystem<KineticNetworkManager>();
+            for (int i = 0; i < kineticPositions.Count; i++)
+            {
+                manager?.OnRemoved(kineticPositions[i]);
             }
         }
 
@@ -952,16 +1175,6 @@ namespace VintageKinematics.BlockEntities
                 RestoreBlockEntityTree(blockPos, snapshotBlockEntityTrees[i]);
                 Api.World.BlockAccessor.MarkBlockDirty(blockPos);
             }
-        }
-
-        private TreeAttribute CaptureBlockEntityTree(BlockPos blockPos)
-        {
-            BlockEntity be = Api.World.BlockAccessor.GetBlockEntity(blockPos);
-            if (be == null) return new TreeAttribute();
-
-            TreeAttribute tree = new TreeAttribute();
-            be.ToTreeAttributes(tree);
-            return tree;
         }
 
         private void RestoreBlockEntityTree(BlockPos blockPos, TreeAttribute savedTree)
@@ -1063,6 +1276,14 @@ namespace VintageKinematics.BlockEntities
             else if (axisCode == "z") axis = EnumKineticAxis.Z;
             else axis = EnumKineticAxis.X;
             return true;
+        }
+
+        private static bool IsFluidBlock(Block block)
+        {
+            return block != null
+                && (block.IsLiquid()
+                    || !string.IsNullOrEmpty(block.LiquidCode)
+                    || block.BlockMaterial == EnumBlockMaterial.Lava);
         }
     }
 }

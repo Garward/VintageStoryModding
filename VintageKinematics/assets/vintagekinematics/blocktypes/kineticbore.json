@@ -408,6 +408,12 @@
     },
     "behaviors": [
         {
+            "name": "RequireBoreRetractedOnBreak",
+            "properties": {
+                "messageLangCode": "vintagekinematics:kineticbore-must-be-retracted"
+            }
+        },
+        {
             "name": "CanonicalDrop",
             "properties": {
                 "variants": {

@@ -6,5 +6,5 @@
 		{ "type": "item", "code": "game:ingot-steel", "quantity": 1 }
 	],
 	"requiredTemperature": 1500,
-	"pressTicks": 64
+	"pressTicks": 6
 }

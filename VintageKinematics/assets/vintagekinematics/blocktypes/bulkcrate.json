@@ -111,6 +111,12 @@
     },
     "behaviors": [
         {
+            "name": "RequireEmptyInventoryOnBreak",
+            "properties": {
+                "messageLangCode": "vintagekinematics:bulkcrate-must-be-empty"
+            }
+        },
+        {
             "name": "CanonicalDrop",
             "properties": {
                 "variants": {

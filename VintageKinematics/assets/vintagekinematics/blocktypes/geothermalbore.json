@@ -478,6 +478,18 @@
     },
     "behaviors": [
         {
+            "name": "RequireBoreRetractedOnBreak",
+            "properties": {
+                "messageLangCode": "vintagekinematics:geothermalbore-must-be-retracted"
+            }
+        },
+        {
+            "name": "RequireEmptyInventoryOnBreak",
+            "properties": {
+                "messageLangCode": "vintagekinematics:geothermalbore-must-be-empty"
+            }
+        },
+        {
             "name": "CanonicalDrop",
             "properties": {
                 "variants": {

@@ -34,6 +34,11 @@ namespace VintageKinematics.Items
             if (api.Side != EnumAppSide.Server) return;
 
             IPlayer byPlayer = byEntity.World.PlayerByUid((byEntity as EntityPlayer)?.PlayerUID);
+            if (byPlayer == null)
+            {
+                ClearAnchor(slot);
+                return;
+            }
             if (blockSel == null)
             {
                 ClearAnchor(slot);
@@ -65,15 +70,27 @@ namespace VintageKinematics.Items
                 attr.SetInt("anchorX", blockSel.Position.X);
                 attr.SetInt("anchorY", blockSel.Position.Y);
                 attr.SetInt("anchorZ", blockSel.Position.Z);
+                attr.SetInt("anchorDim", blockSel.Position.dimension);
                 attr.SetString("anchorAxis", axis);
                 slot.MarkDirty();
                 Notify(byPlayer, $"Belt: first shaft set ({axis}). Click the parallel shaft to span.");
                 return;
             }
 
-            BlockPos anchor = new BlockPos(attr.GetInt("anchorX"), attr.GetInt("anchorY"), attr.GetInt("anchorZ"));
+            BlockPos anchor = new BlockPos(
+                attr.GetInt("anchorX"),
+                attr.GetInt("anchorY"),
+                attr.GetInt("anchorZ"),
+                attr.GetInt("anchorDim", blockSel.Position.dimension));
             string anchorAxis = attr.GetString("anchorAxis");
             BlockPos other = blockSel.Position;
+
+            if (anchor.dimension != other.dimension)
+            {
+                ClearAnchor(slot);
+                Notify(byPlayer, "Belt: shafts must be in the same dimension.");
+                return;
+            }
 
             // Same shaft clicked twice → cancel.
             if (anchor.Equals(other))
@@ -160,10 +177,25 @@ namespace VintageKinematics.Items
                 return;
             }
 
+            if (!CanBuildAt(byEntity.World, byPlayer, anchor)
+                || !CanBuildAt(byEntity.World, byPlayer, other))
+            {
+                ClearAnchor(slot);
+                Notify(byPlayer, "Belt: protected claim blocks this span.");
+                return;
+            }
+
             // Verify path is clear before placing anything.
             BlockPos cursor = anchor.AddCopy(step.X, 0, step.Z);
             for (int i = 0; i < segmentCount; i++)
             {
+                if (!CanBuildAt(byEntity.World, byPlayer, cursor))
+                {
+                    ClearAnchor(slot);
+                    Notify(byPlayer, "Belt: protected claim blocks this span.");
+                    return;
+                }
+
                 Block existing = byEntity.World.BlockAccessor.GetBlock(cursor);
                 if (existing != null && existing.Id != 0)
                 {
@@ -208,12 +240,18 @@ namespace VintageKinematics.Items
             Notify(byPlayer, $"Belt: span placed ({segmentCount} middle, 2 ends).");
         }
 
+        private static bool CanBuildAt(IWorldAccessor world, IPlayer player, BlockPos pos)
+        {
+            return world?.Claims?.TryAccess(player, pos, EnumBlockAccessFlags.BuildOrBreak) == true;
+        }
+
         private static void ClearAnchor(ItemSlot slot)
         {
             if (slot?.Itemstack?.Attributes == null) return;
             slot.Itemstack.Attributes.RemoveAttribute("anchorX");
             slot.Itemstack.Attributes.RemoveAttribute("anchorY");
             slot.Itemstack.Attributes.RemoveAttribute("anchorZ");
+            slot.Itemstack.Attributes.RemoveAttribute("anchorDim");
             slot.Itemstack.Attributes.RemoveAttribute("anchorAxis");
         }
 

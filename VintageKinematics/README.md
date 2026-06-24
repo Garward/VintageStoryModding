@@ -1,89 +1,60 @@
 # Vintage Kinematics
 
-Create-style kinetic power, item logistics, automation, contraptions, and powered tools for [Vintage Story](https://www.vintagestory.at/).
+Create style kinetic power, item logistics, automation, contraptions, and powered tools for [Vintage Story](https://www.vintagestory.at/).
 
-Vintage Kinematics is a separate kinetic power system from vanilla mechanical power. It has its own shafts, stress units, ratios, machines, animations, and diagnostics. Vanilla windmills and water wheels can still feed VK networks through the built-in bridge, but VK is not a patch on top of the vanilla mechanical-power system.
+Vintage Kinematics is its own kinetic power system. It has shafts, stress units, ratios, machines, animations, diagnostics, moving contraptions, and automation rules that are separate from vanilla mechanical power. Vanilla windmills and water wheels can still feed VK networks through the bridge, but VK is not a patch on top of vanilla mechanical power.
 
 ## Current Scope
 
-- Version: `1.3.10`
-- Side: universal, required on both client and server
-- Vintage Story: targets the local game assemblies referenced by `VSPath`; currently developed against the 1.22 line
-- Dependencies: none beyond the base game assemblies
+Version: `1.3.18`
 
-## Gameplay Features
+Side: universal, required on both client and server.
 
-### Power
+Vintage Story: developed against the 1.22 line using the local game assemblies referenced by `VSPath` or `VINTAGE_STORY`.
 
-- Hand crank for short manual bursts.
-- Treadwheel for sustained player-powered rotation.
-- Counterweight drive for stored early-game work.
-- Coal motor for fueled mid-game power.
-- Flywheel and reinforced flywheel banks for charge/release buffering.
-- Geothermal bore plus geothermal steam engine for late-game sustained power.
-- Creative motor for testing and creative builds.
-- Vanilla mechanical-power bridge for stable VK input from wind or water networks.
+Dependencies: none beyond the base game assemblies.
 
-### Transmission
+## Gameplay
 
-- Shafts, encased shafts, cogwheels, large cogwheels, encased cogwheels, encased large cogwheels, and gearboxes.
-- Clutches and reversers for controllable networks.
-- Gantry shafts and gantry carriages for moving builds.
-- Placement previews, kinetic tooltips, conflict particles, and animated/sounding machine parts.
+Power starts with the hand crank, treadwheel, and counterweight drive, then grows into coal motors, flywheel banks, vanilla mechanical power bridges, geothermal bores, and geothermal steam engines. The network tooltip shows RPM, stress demand, stress capacity, overstress, and source conflicts so players can debug builds in game.
 
-### Item Logistics And Storage
+Transmission uses shafts, encased shafts, cogwheels, large cogwheels, encased cogwheels, gearboxes, clutches, reversers, gantry shafts, and gantry carriages. Placement previews, animated parts, kinetic sounds, and conflict particles are used where they make machine state easier to read.
 
-- Belts that move item stacks across powered belt lines.
-- Copper and iron funnels with whitelist/blacklist filtering.
-- Filtered trashcan for disposal lines.
-- Machine face IO for direct pushing into inventories, chutes, hoppers, funnels, and moving belts.
-- Reinforced chests, double reinforced chests, and bulk crates.
+Logistics are handled by powered belts, copper and iron funnels, item filters, trashcans, machine face IO, reinforced storage, bulk crates, copper pipes, and pumps. Barrels, mixers, pumps, funnels, and belts are intended to support actual automated production lines rather than isolated machines.
 
-### Machines
+Machines include primitive and kinetic sieves, the kinetic quern, crusher and crusher basin, kinetic sawmill, kinetic extractor, forge press, kinetic bellows, kinetic mixer, charcoal retort, kinetic igniter, kinetic activator, kinetic bore, geothermal bore, and several JSON driven machine templates for downstream mods.
 
-- Primitive sieve and kinetic sieve for pannable materials, crushed rock, grit, and dust.
-- Kinetic quern for vanilla quern work and grit-to-dust processing.
-- Crusher and crusher basin for rock, stone, and ore processing.
-- Kinetic sawmill with selectable output modes.
-- Kinetic extractor for oils, juices, and solid byproducts.
-- Kinetic forge press for hot metal work, dies, plates, bloom refining, nugget smelting, glass melting, and tier-3 lining progression.
-- Kinetic bellows for forge press and firepit heat support.
-- Kinetic mixer for mortar, plaster, blasting powder, raw refractory mixes, and other dry blends.
-- Kinetic charcoal retort, kinetic igniter, and kinetic activator.
-- Kinetic bore for heavy 3x3 drilling.
-- Geothermal bore for pipe installation down to bedrock/world bottom.
+Contraptions use gantry carriages and gantry shafts to move selected blocks as one entity. The Mechanical Binder supports custom multi box selections, removal boxes, live previews, and connected block validation. Contraption drills and saws can work while moving, and carried storage can collect drops.
 
-### Contraptions And Tools
+Tools include the kinetic wrench, powered drill, powered saw, flywheel backpack, reinforced backpack, pogo rod, kinetic boots, and the Mechanical Binder.
 
-- Moving contraption entity support with registered moving-part and work providers.
-- Contraption drill and contraption saw tool blocks.
-- Kinetic wrench for network and block interactions.
-- Powered drill and powered saw tool items.
-- Flywheel backpack, reinforced backpack, pogo rod, kinetic boots, mechanical binder, and kinetic alloy/press component progression.
+## Version 1.3.18 Highlights
+
+The Mechanical Binder was reworked with live previews, custom multi box selections, removal boxes, and connected capture validation. Fluids are ignored by contraption capture, rendering, collision, movement, and restore logic, which fixes broken behavior when contraptions are assembled around water or lava.
+
+Moved kinetic parts now clear stale network and source state when assembled into a contraption, preventing old SU output from lingering visually until the next network update.
+
+Admins now have recovery commands for stuck contraptions: `/vk contraptionset [radius]` force restores nearby contraption entities, while `/vk contraptiondelete [radius]` removes the entities without restoring blocks. Unsafe force restore is no longer exposed through normal player interaction.
+
+The kinetic mixer now has pump friendly dough recipes, and forge press steel timing was adjusted so the blister steel step carries the real work time.
 
 ## Installation
 
 1. Build or download `vintagekinematics-X.Y.Z.zip`.
-2. Drop the zip into the Vintage Story `Mods` folder.
+2. Put the zip in the Vintage Story `Mods` folder.
 3. Install it on both client and server for multiplayer worlds.
 
 Typical Mods folders:
 
-- Linux: `~/.config/VintagestoryData/Mods/`
-- Windows: `%APPDATA%\VintagestoryData\Mods\`
+Linux: `~/.config/VintagestoryData/Mods/`
 
-## In-Game Documentation
+Windows: `%APPDATA%\VintagestoryData\Mods\`
 
-The mod ships a Kinematics handbook category with progression pages and IO notes:
+## In Game Documentation
 
-- Kinetics for Dummies
-- Progression Overview
-- Crank Era
-- Forge Press Era
-- Coal Motor Era
-- Machine IO
+The mod ships a Vintage Kinematics handbook category with progression, power, machine IO, and contraption guides. Individual handbook entries document machine IO, recipes, power roles, filters, storage behavior, tool use, and special machine rules.
 
-Individual handbook entries also document machine IO, power roles, recipes, and special behavior for the major blocks and tools.
+Key guide pages include Kinetics for Dummies, Progression Overview, Crank Era, Forge Press Era, Coal Motor Era, Machine IO, Logic Machines, and Contraptions.
 
 ## Configuration
 
@@ -93,22 +64,18 @@ Server config is generated at:
 ModConfig/vintagekinematics.json
 ```
 
-Important tunables include:
-
-- Global consumer speed and generator stress multipliers.
-- Per-consumer and per-generator overrides.
-- Vanilla bridge RPM, torque capacity, and smoothing.
-- Sieve yield multipliers, vanilla panning-drop use, and per-output yield overrides.
-- Primitive sieve and kinetic sieve panning yield multipliers.
-- Forge press and coal motor fuel usage speed.
-- Opt-in modded nugget smelting gates for the forge press.
-- Kinetic activator target blacklist.
-
-Existing config files are updated with new default keys at startup.
+The config covers global consumer speed, generator stress multipliers, per block overrides, vanilla bridge behavior, sieve yields, forge press timing, coal motor fuel usage, modded nugget smelting gates, and kinetic activator target filtering. Existing config files are updated with new default keys at startup.
 
 ## Diagnostics
 
-Run `/vk netinfo` as a server-control privileged user to list kinetic networks, node counts, source RPM, stress usage/capacity, conflict state, and vanilla bridge details.
+Run `/vk netinfo` as a server control privileged user to list kinetic networks, node counts, source RPM, stress usage, stress capacity, conflict state, and vanilla bridge details.
+
+Contraption recovery commands are also under `/vk` and require the same server control privilege:
+
+```text
+/vk contraptionset [radius]
+/vk contraptiondelete [radius]
+```
 
 ## For Mod Developers
 
@@ -116,20 +83,13 @@ Vintage Kinematics exposes API types in the `VintageKinematics.Api` namespace fo
 
 Useful docs:
 
-- [`docs/api-tutorial.md`](docs/api-tutorial.md): JSON-first workflow for downstream kinetic machines, with C# extension points only where needed.
-- [`docs/modeling-guide.md`](docs/modeling-guide.md): model setup for kinetic animation and mesh splitting.
-- [`docs/piston-guide.md`](docs/piston-guide.md): piston-style animation behavior guide.
+[`docs/api-tutorial.md`](docs/api-tutorial.md) explains the JSON first workflow for downstream kinetic machines, including C# extension points only where needed.
 
-The API covers:
+[`docs/modeling-guide.md`](docs/modeling-guide.md) covers model setup for kinetic animation, placement, shape rotation, mesh splitting, and contraption friendly models.
 
-- Kinetic block entity behaviors: `Kinetic`, `KineticSource`, `KineticWorker`, `KineticAnimator`, `KineticSound`, `KineticPiston`, `KineticStretch`, `KineticLinkedPleat`, `KineticAnimationDriver`, and `KineticMultiblock`.
-- Generic JSON processors through `BlockKineticJsonProcessor` / `KineticJsonProcessor`, backed by recipes under `assets/<modid>/vkrecipe/process/<machineCode>/`.
-- Mesh splitting via `KineticMeshSplitter`.
-- Multiblock helpers and placement preview hooks.
-- Work-cycle helpers, kinetic tooltips, inventory pushing, IO face maps, item filters, machine output helpers, crusher processes, and sound/animation coordination.
-- Recipe registries under `assets/<modid>/vkrecipe/` for crusher, sieve, sawmill, forge press, mixer, and extractor recipes.
-- Contraption extension points through moving-part and work registries.
-- Optional geothermal heat provider integration.
+[`docs/piston-guide.md`](docs/piston-guide.md) documents piston style animation behavior.
+
+The API includes kinetic block entity behaviors, JSON processors, recipe registries, mesh splitting, multiblock helpers, placement preview hooks, work cycle helpers, kinetic tooltips, inventory pushing, IO face maps, item filters, machine output helpers, crusher processes, sound and animation coordination, contraption moving part registries, contraption work registries, and optional geothermal heat provider integration.
 
 Reference the built `VintageKinematics.dll` from your mod project and add:
 
@@ -172,4 +132,4 @@ The package script requires `7z` and stages the DLL, `assets/`, `modinfo.json`, 
 
 Mod code and original assets are released under the repository [MIT License](../LICENSE).
 
-Bundled third-party assets retain their original licenses. See [`CREDITS.md`](CREDITS.md) for attribution.
+Bundled third party assets retain their original licenses. See [`CREDITS.md`](CREDITS.md) for attribution.

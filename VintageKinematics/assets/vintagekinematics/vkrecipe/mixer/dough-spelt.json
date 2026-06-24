@@ -1,0 +1,11 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "game:flour-spelt", "quantity": 8 }
+    ],
+    "liquidCode": "game:waterportion",
+    "liquidLitres": 8,
+    "outputs": [
+        { "type": "item", "code": "game:dough-spelt", "quantity": 8 }
+    ],
+    "mixTicks": 4
+}

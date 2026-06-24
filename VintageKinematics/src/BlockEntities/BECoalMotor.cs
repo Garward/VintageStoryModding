@@ -38,6 +38,8 @@ namespace VintageKinematics.BlockEntities
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
+            inventory.LateInitialize("coalmotor-" + Pos, api);
+            inventory.ResolveBlocksOrItems();
             inventory.SlotModified += _ => Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
 
             string title = Lang.Get("vintagekinematics:coalmotor-title");
@@ -160,7 +162,7 @@ namespace VintageKinematics.BlockEntities
         {
             base.FromTreeAttributes(tree, worldForResolving);
             inventory.FromTreeAttributes(tree);
-            inventory.ResolveBlocksOrItems();
+            if (Api != null) inventory.ResolveBlocksOrItems();
         }
 
         private void OnFuelTick(float dt)

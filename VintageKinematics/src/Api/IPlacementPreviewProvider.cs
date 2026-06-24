@@ -90,5 +90,29 @@ namespace VintageKinematics.Api
             }
             return p;
         }
+
+        /// <summary>
+        /// Places a variant that has already been resolved by an <see cref="IPlacementPreviewProvider"/>
+        /// at an already-resolved target position. This intentionally uses CanPlaceBlock +
+        /// DoPlaceBlock instead of TryPlaceBlock so variant blocks with the same preview provider do
+        /// not recursively re-run placement resolution and apply offsets twice.
+        /// </summary>
+        public static bool TryPlaceResolvedVariant(
+            Block variant,
+            IWorldAccessor world,
+            IPlayer byPlayer,
+            ItemStack itemStack,
+            BlockSelection originalSelection,
+            BlockPos targetPos,
+            ref string failureCode)
+        {
+            if (variant == null || targetPos == null) return false;
+
+            BlockSelection resolvedSelection = originalSelection.Clone();
+            resolvedSelection.Position = targetPos;
+
+            return variant.CanPlaceBlock(world, byPlayer, resolvedSelection, ref failureCode)
+                && variant.DoPlaceBlock(world, byPlayer, resolvedSelection, itemStack);
+        }
     }
 }

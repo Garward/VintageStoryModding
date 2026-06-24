@@ -42,7 +42,7 @@
     "blockdesc-funnel-iron-*": "Fast filtered item mover. Pulls from the block above and pushes out the face it points at.",
     "blockdesc-trashcan": "Filtered automation sink. Deletes matching items from belts and funnels only.",
     "blockdesc-kineticsieve-*": "Powered sieve for crushed rock, grit, dust, and pannable blocks. Input top/side; output bottom/opposite side.",
-    "blockdesc-kineticsawmill-*": "Powered sawmill for logs. Input top/side; output bottom/opposite side. Use non shaft faces for item IO.",
+    "blockdesc-kineticsawmill-*": "Powered sawmill for logs. Input top/local west; output bottom/local east. Use non shaft faces for item IO.",
     "blockdesc-kineticextractor-*": "Powered organic extractor. Item input top/side; solid output bottom/opposite side; liquids drain into an open container below.",
     "blockdesc-kineticforgepress-*": "Fueled hot metal press. Metal and fuel input top/side; output bottom/opposite side. Bellows improve chamber heat.",
     "blockdesc-kineticbellows-*": "Powered bellows for forge presses and firepits. Point the nozzle at the target and supply rotation.",

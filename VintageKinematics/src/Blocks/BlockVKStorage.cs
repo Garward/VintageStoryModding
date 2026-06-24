@@ -49,6 +49,23 @@ namespace VintageKinematics.Blocks
             return new[] { CreateStorageStack(world, pos) };
         }
 
+        public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
+        {
+            bool preventDefault = false;
+            foreach (BlockBehavior behavior in BlockBehaviors)
+            {
+                EnumHandling handled = EnumHandling.PassThrough;
+                behavior.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier, ref handled);
+                if (handled == EnumHandling.PreventDefault) preventDefault = true;
+                if (handled == EnumHandling.PreventSubsequent) return;
+            }
+
+            if (!preventDefault)
+            {
+                SpawnDropsAndRemoveBlock(world, pos, byPlayer, dropQuantityMultiplier);
+            }
+        }
+
         public Cuboidf[] MBGetCollisionBoxes(IBlockAccessor blockAccessor, BlockPos pos, Vec3i offset)
         {
             return ShiftMultiblockBoxes(base.GetCollisionBoxes(blockAccessor, pos.AddCopy(offset)), offset);

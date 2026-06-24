@@ -41,6 +41,7 @@ namespace VintageKinematics.Api
         public bool Halted => halted;
         public bool Retracting => retracting;
         public bool Paused => paused;
+        public virtual bool HasUnretractedColumn => drillDepth > 0 || placedColumnPositions.Count > 0;
         protected IReadOnlyList<BlockPos> PlacedColumnPositions => placedColumnPositions;
 
         protected abstract int OpenDialogPacketId { get; }

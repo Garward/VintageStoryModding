@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
+using VintageKinematics.Entities;
 
 namespace VintageKinematics.Network
 {
@@ -70,7 +73,88 @@ namespace VintageKinematics.Network
                         }
                         return Vintagestory.API.Common.TextCommandResult.Success(sb.ToString());
                     })
+                .EndSubCommand()
+                .BeginSubCommand("contraptionset")
+                    .WithDescription("Emergency restore nearby VK contraption entities, overwriting target blocks")
+                    .RequiresPlayer()
+                    .WithArgs(sapi.ChatCommands.Parsers.OptionalInt("radius", 8))
+                    .HandleWith(args =>
+                    {
+                        int radius = GameMath.Clamp((int)args[0], 1, 128);
+                        EntityPos pos = args.Caller.Entity.Pos;
+                        List<EntityVKContraption> contraptions = FindContraptionsNear(sapi, pos.XYZ, radius);
+                        int restored = 0;
+                        int failed = 0;
+
+                        for (int i = 0; i < contraptions.Count; i++)
+                        {
+                            if (contraptions[i].TryAdminForceRestoreToWorld()) restored++;
+                            else failed++;
+                        }
+
+                        sapi.Logger.Warning(
+                            "[VintageKinematics] Admin {0} force-restored {1}/{2} contraption(s) within radius {3} at {4:F1},{5:F1},{6:F1}.",
+                            args.Caller.Player?.PlayerName ?? args.Caller.FromChatGroupId.ToString(),
+                            restored,
+                            contraptions.Count,
+                            radius,
+                            pos.X,
+                            pos.Y,
+                            pos.Z);
+
+                        string message = failed > 0
+                            ? $"Force-restored {restored}/{contraptions.Count} contraption(s); {failed} failed."
+                            : $"Force-restored {restored} contraption(s).";
+                        return TextCommandResult.Success(message);
+                    })
+                .EndSubCommand()
+                .BeginSubCommand("contraptiondelete")
+                    .WithDescription("Emergency delete nearby VK contraption entities without restoring blocks")
+                    .RequiresPlayer()
+                    .WithArgs(sapi.ChatCommands.Parsers.OptionalInt("radius", 8))
+                    .HandleWith(args =>
+                    {
+                        int radius = GameMath.Clamp((int)args[0], 1, 128);
+                        EntityPos pos = args.Caller.Entity.Pos;
+                        List<EntityVKContraption> contraptions = FindContraptionsNear(sapi, pos.XYZ, radius);
+
+                        for (int i = 0; i < contraptions.Count; i++)
+                        {
+                            contraptions[i].AdminDeleteEntityOnly();
+                        }
+
+                        sapi.Logger.Warning(
+                            "[VintageKinematics] Admin {0} deleted {1} contraption entity/entities without restore within radius {2} at {3:F1},{4:F1},{5:F1}.",
+                            args.Caller.Player?.PlayerName ?? args.Caller.FromChatGroupId.ToString(),
+                            contraptions.Count,
+                            radius,
+                            pos.X,
+                            pos.Y,
+                            pos.Z);
+
+                        return TextCommandResult.Success($"Deleted {contraptions.Count} contraption entity/entities without restoring blocks.");
+                    })
                 .EndSubCommand();
+        }
+
+        private static List<EntityVKContraption> FindContraptionsNear(Vintagestory.API.Server.ICoreServerAPI sapi, Vec3d center, int radius)
+        {
+            Entity[] entities = sapi.World.GetEntitiesAround(
+                center,
+                radius,
+                radius,
+                entity => entity is EntityVKContraption contraption && contraption.Alive && !contraption.SnapshotRestored);
+
+            List<EntityVKContraption> contraptions = new List<EntityVKContraption>();
+            for (int i = 0; i < entities.Length; i++)
+            {
+                if (entities[i] is EntityVKContraption contraption)
+                {
+                    contraptions.Add(contraption);
+                }
+            }
+
+            return contraptions;
         }
 
         private void UpdateAndEmitConflictParticles()

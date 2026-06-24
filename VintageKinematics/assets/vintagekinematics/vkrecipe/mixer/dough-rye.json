@@ -1,0 +1,11 @@
+{
+    "ingredients": [
+        { "type": "item", "code": "game:flour-rye", "quantity": 8 }
+    ],
+    "liquidCode": "game:waterportion",
+    "liquidLitres": 8,
+    "outputs": [
+        { "type": "item", "code": "game:dough-rye", "quantity": 8 }
+    ],
+    "mixTicks": 4
+}
