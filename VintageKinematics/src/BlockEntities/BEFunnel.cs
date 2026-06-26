@@ -95,8 +95,8 @@ namespace VintageKinematics.BlockEntities
             return TryOutputStack(stack);
         }
 
-        // All-empty filter means default behavior. Once a filter exists, whitelist/blacklist
-        // and fuzzy matching decide whether the stack can pass.
+        // Empty blacklist allows default behavior; empty whitelist blocks everything.
+        // Once a filter exists, whitelist/blacklist and fuzzy matching decide whether the stack can pass.
         public bool MatchesFilter(ItemStack stack) => filter.Matches(stack);
 
         private void OnServerTick(float dt)

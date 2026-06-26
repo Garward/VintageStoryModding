@@ -20,21 +20,29 @@ namespace VintageKinematics.Gui
         private readonly string[] details;
         private readonly string searchText;
         private readonly Dictionary<string, string> sortKeys;
+        private readonly string selectionKey;
+        private readonly string selectionLabel;
         private LoadedTexture titleTexture;
         private LoadedTexture[] detailTextures = new LoadedTexture[0];
         private ElementBounds scissorBounds;
 
         public bool Visible => true;
         public string SortTitle => title ?? "";
+        public string SelectionKey => selectionKey;
+        public string SelectionLabel => selectionLabel ?? SortTitle;
 
         public SimpleRecipeBrowserListItem(
             string title,
             ItemStack iconStack = null,
             IEnumerable<string> details = null,
             string searchText = null,
-            IDictionary<string, string> sortKeys = null)
+            IDictionary<string, string> sortKeys = null,
+            string selectionKey = null,
+            string selectionLabel = null)
         {
             this.title = string.IsNullOrEmpty(title) ? "Recipe" : title;
+            this.selectionKey = selectionKey;
+            this.selectionLabel = selectionLabel;
             if (iconStack != null) iconSlot = new DummySlot(iconStack.Clone());
 
             List<string> detailList = new List<string>();

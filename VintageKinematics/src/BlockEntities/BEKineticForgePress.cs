@@ -11,6 +11,7 @@ using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
+using VintageKinematics.Blocks;
 using VintageKinematics.Crafting;
 using VintageKinematics.Gui;
 using VintageKinematics.Network;
@@ -32,7 +33,11 @@ namespace VintageKinematics.BlockEntities
         public const int InventorySize = 12;
         // Dialog packets are handled by BEKineticForgePressBase; this is the forge-press operation picker.
         public const int PacketIdSelectOperation = 5511;
+        public const int PacketIdSetAutoMetalLimit = 5512;
         private const int DefaultRefractoryLiningBrickCost = 24;
+        private const int DefaultAutoMetalInputLimit = 64;
+        private const int MinAutoMetalInputLimit = 1;
+        private const int MaxAutoMetalInputLimit = 64;
 
         private const float DefaultOutputPushIntervalMs = 250f;
         private const int DefaultOutputPushBatch = 8;
@@ -52,6 +57,7 @@ namespace VintageKinematics.BlockEntities
         private const float DefaultSmokeParticleY = 35.5f / 16f;
         private static readonly AssetLocation PressHitSound = new AssetLocation("sounds/effect/anvilhit");
         private static readonly AssetLocation PressCompleteSound = new AssetLocation("game:sounds/block/anvil");
+        private const float AutomationHotInputThreshold = 50f;
         private static readonly Vec3d[] DefaultSmokeStackLocalPositions =
         {
             new Vec3d(-6f / 16f, DefaultSmokeParticleY, 22f / 16f),
@@ -68,6 +74,7 @@ namespace VintageKinematics.BlockEntities
         private string pressingOperationCode;
         private string pressingDieCode;
         private bool hasTier3RefractoryLining;
+        private int autoMetalInputLimit = DefaultAutoMetalInputLimit;
 
         public bool HasTier3RefractoryLining => hasTier3RefractoryLining;
 
@@ -103,6 +110,16 @@ namespace VintageKinematics.BlockEntities
         private float MaxBellowsStackPenaltyRelief => GameMath.Clamp(KineticForgePressAttributes.MaxBellowsStackPenaltyRelief(Block, DefaultMaxBellowsStackPenaltyRelief), 0f, 1f);
         private int RefractoryLiningBrickCost => Math.Max(0, KineticForgePressAttributes.RefractoryLiningBrickCost(Block, DefaultRefractoryLiningBrickCost));
         private Vec3d[] SmokeStackLocalPositions => KineticForgePressAttributes.SmokeStackLocalPositions(Block, DefaultSmokeStackLocalPositions);
+
+        public override void OnBlockPlaced(ItemStack byItemStack = null)
+        {
+            base.OnBlockPlaced(byItemStack);
+            if (byItemStack?.Attributes?.GetBool(BlockKineticForgePress.RefractoryLiningAttribute, false) == true)
+            {
+                hasTier3RefractoryLining = true;
+                MarkDirty(true);
+            }
+        }
 
         public override void Initialize(ICoreAPI api)
         {
@@ -161,7 +178,35 @@ namespace VintageKinematics.BlockEntities
                 SlotInput,
                 SlotFuel,
                 SlotOutputFirst,
-                SlotOutputLast);
+                SlotOutputLast)
+                .WithAutoPushFilter(CanAutoPushIntoSlot)
+                .WithAutoPushLimit(AutoPushLimitForSlot);
+        }
+
+        private bool CanAutoPushIntoSlot(IInventory inv, BlockPos cell, BlockFacing face, int slotId, ItemSlot fromSlot)
+        {
+            if (slotId != SlotInput) return true;
+            if (fromSlot == null || fromSlot.Empty) return false;
+            if (AutoPushLimitForSlot(inv, cell, face, slotId, fromSlot) <= 0) return false;
+
+            ItemSlot inputSlot = inventory[SlotInput];
+            if (inputSlot.Empty || inputSlot.Itemstack?.Collectible == null) return true;
+
+            KineticForgePressRecipe recipe = CurrentRecipe();
+            if (recipe == null) return true;
+
+            float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
+            return inputTemperature <= GlobalConstants.CollectibleDefaultTemperature + AutomationHotInputThreshold;
+        }
+
+        private int AutoPushLimitForSlot(IInventory inv, BlockPos cell, BlockFacing face, int slotId, ItemSlot fromSlot)
+        {
+            if (slotId != SlotInput) return int.MaxValue;
+
+            int limit = ClampAutoMetalInputLimit(autoMetalInputLimit);
+            ItemSlot inputSlot = inventory[SlotInput];
+            int current = inputSlot.Empty ? 0 : inputSlot.StackSize;
+            return Math.Max(0, limit - current);
         }
 
         private void OnHeatTick(float dt)
@@ -634,13 +679,25 @@ namespace VintageKinematics.BlockEntities
 
         protected override bool HandleCustomClientPacket(IPlayer player, int packetid, byte[] data)
         {
-            if (packetid != PacketIdSelectOperation) return false;
-            if (!CheckClaim(player)) return true;
+            if (packetid == PacketIdSelectOperation)
+            {
+                if (!CheckClaim(player)) return true;
+                using var ms = new MemoryStream(data);
+                using var br = new BinaryReader(ms);
+                SetSelectedOperation(br.ReadString());
+                return true;
+            }
 
-            using var ms = new MemoryStream(data);
-            using var br = new BinaryReader(ms);
-            SetSelectedOperation(br.ReadString());
-            return true;
+            if (packetid == PacketIdSetAutoMetalLimit)
+            {
+                if (!CheckClaim(player)) return true;
+                using var ms = new MemoryStream(data);
+                using var br = new BinaryReader(ms);
+                SetAutoMetalInputLimit(br.ReadInt32());
+                return true;
+            }
+
+            return false;
         }
 
         private void SetSelectedOperation(string operationCode)
@@ -657,12 +714,23 @@ namespace VintageKinematics.BlockEntities
 
         protected override GuiDialogBlockEntity CreateClientDialog(string title, ICoreClientAPI capi)
         {
-            return new GuiDialogKineticForgePress(title, inventory, Pos, () => selectedOperationCode, CurrentPressProgress, CurrentPressProgressMax, CanPressCurrentRecipe, OnClientSelectOperation, capi);
+            return new GuiDialogKineticForgePress(
+                title,
+                inventory,
+                Pos,
+                () => selectedOperationCode,
+                () => autoMetalInputLimit,
+                CurrentPressProgress,
+                CurrentPressProgressMax,
+                CanPressCurrentRecipe,
+                OnClientSelectOperation,
+                OnClientSetAutoMetalInputLimit,
+                capi);
         }
 
         protected override void OnClientDialogUpdated(GuiDialogBlockEntity dialog)
         {
-            (dialog as GuiDialogKineticForgePress)?.OnOperationUpdated();
+            (dialog as GuiDialogKineticForgePress)?.OnStateUpdated();
         }
 
         private void OnClientSelectOperation(string operationCode)
@@ -673,6 +741,29 @@ namespace VintageKinematics.BlockEntities
             bw.Write(selectedOperationCode);
             ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSelectOperation, ms.ToArray());
             RefreshClientDialog();
+        }
+
+        private void OnClientSetAutoMetalInputLimit(int limit)
+        {
+            autoMetalInputLimit = ClampAutoMetalInputLimit(limit);
+            using var ms = new MemoryStream();
+            using var bw = new BinaryWriter(ms);
+            bw.Write(autoMetalInputLimit);
+            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSetAutoMetalLimit, ms.ToArray());
+            RefreshClientDialog();
+        }
+
+        private void SetAutoMetalInputLimit(int limit)
+        {
+            int clamped = ClampAutoMetalInputLimit(limit);
+            if (autoMetalInputLimit == clamped) return;
+            autoMetalInputLimit = clamped;
+            MarkDirty(true);
+        }
+
+        private static int ClampAutoMetalInputLimit(int limit)
+        {
+            return GameMath.Clamp(limit, MinAutoMetalInputLimit, MaxAutoMetalInputLimit);
         }
 
         private float CurrentPressProgress()
@@ -751,6 +842,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetString("pressingOperationCode", pressingOperationCode ?? "");
             tree.SetString("pressingDieCode", pressingDieCode ?? "");
             tree.SetBool("tier3RefractoryLining", hasTier3RefractoryLining);
+            tree.SetInt("autoMetalInputLimit", autoMetalInputLimit);
         }
 
         protected override void ReadState(ITreeAttribute tree)
@@ -767,6 +859,7 @@ namespace VintageKinematics.BlockEntities
             pressingDieCode = tree.GetString("pressingDieCode", "");
             if (string.IsNullOrEmpty(pressingDieCode)) pressingDieCode = null;
             hasTier3RefractoryLining = tree.GetBool("tier3RefractoryLining", false);
+            autoMetalInputLimit = ClampAutoMetalInputLimit(tree.GetInt("autoMetalInputLimit", DefaultAutoMetalInputLimit));
         }
 
         protected override void OnAfterStateRead()

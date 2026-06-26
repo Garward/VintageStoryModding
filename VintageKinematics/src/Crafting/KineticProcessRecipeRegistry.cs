@@ -6,6 +6,7 @@ namespace VintageKinematics.Crafting
 {
     public class KineticProcessRecipe
     {
+        public string Code;
         public string Machine;
         public JsonItemStack Ingredient;
         public JsonItemStack[] Outputs;
@@ -63,6 +64,7 @@ namespace VintageKinematics.Crafting
             {
                 KineticProcessRecipe recipe = entry.Value;
                 if (recipe == null) continue;
+                recipe.Code = entry.Key.ToString();
                 if (string.IsNullOrEmpty(recipe.Machine)) recipe.Machine = MachineFromAssetPath(entry.Key.Path);
                 if (string.IsNullOrEmpty(recipe.Machine)) continue;
                 if (recipe.Resolve(api.World, entry.Key.ToString())) recipes.Add(recipe);

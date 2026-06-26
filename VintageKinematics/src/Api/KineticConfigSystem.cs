@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Vintagestory.API.Common;
 
 namespace VintageKinematics.Api
@@ -25,15 +26,21 @@ namespace VintageKinematics.Api
             }
             cfg ??= new VintageKinematicsConfig();
 
-            cfg.Consumers ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.ConsumerOverride>();
-            cfg.Generators ??= new System.Collections.Generic.Dictionary<string, VintageKinematicsConfig.GeneratorOverride>();
-            cfg.SieveYieldOverrides ??= new System.Collections.Generic.Dictionary<string, float>();
-            cfg.KineticActivatorTargetBlacklist ??= new System.Collections.Generic.List<string>();
-            cfg.ForgePressModdedNuggetSmeltingMods ??= new System.Collections.Generic.Dictionary<string, bool>();
-            cfg.ForgePressModdedNuggetSmeltingAllowedPatterns ??= new System.Collections.Generic.List<string>();
+            cfg.Consumers ??= new Dictionary<string, VintageKinematicsConfig.ConsumerOverride>();
+            cfg.Generators ??= new Dictionary<string, VintageKinematicsConfig.GeneratorOverride>();
+            cfg.SieveYieldOverrides ??= new Dictionary<string, float>();
+            cfg.KineticActivatorTargetBlacklist = NormalizeList(cfg.KineticActivatorTargetBlacklist);
+            cfg.ForgePressModdedNuggetSmeltingMods ??= new Dictionary<string, bool>();
+            cfg.ForgePressModdedNuggetSmeltingAllowedPatterns = NormalizeList(cfg.ForgePressModdedNuggetSmeltingAllowedPatterns);
 
             EnsureConsumer(cfg, "kineticquern");
             EnsureGenerator(cfg, "handcrank");
+            EnsureGenerator(cfg, "treadwheel");
+            EnsureGenerator(cfg, "counterweightdrive");
+            EnsureGenerator(cfg, "coalmotor");
+            EnsureGenerator(cfg, "geothermalsteamengine");
+            EnsureGenerator(cfg, "flywheel");
+            EnsureGenerator(cfg, "reinforcedflywheel");
             EnsureGenerator(cfg, "creativemotor");
             EnsureSieveOverrideStub(cfg, "game:nugget-*");
             EnsureSieveOverrideStub(cfg, "game:gem-*");
@@ -90,6 +97,22 @@ namespace VintageKinematics.Api
             if (cfg.ForgePressModdedNuggetSmeltingMods.ContainsKey(domain)) return false;
             cfg.ForgePressModdedNuggetSmeltingMods[domain] = false;
             return true;
+        }
+
+        private static List<string> NormalizeList(List<string> values)
+        {
+            List<string> normalized = new List<string>();
+            if (values == null) return normalized;
+
+            HashSet<string> seen = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+            foreach (string raw in values)
+            {
+                if (string.IsNullOrWhiteSpace(raw)) continue;
+                string value = raw.Trim();
+                if (seen.Add(value)) normalized.Add(value);
+            }
+
+            return normalized;
         }
     }
 }

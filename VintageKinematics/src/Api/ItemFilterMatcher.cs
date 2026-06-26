@@ -41,7 +41,7 @@ namespace VintageKinematics.Api
                 }
             }
 
-            bool allowed = validStack && (!filterExists || (whitelist ? anyMatch : !anyMatch));
+            bool allowed = validStack && (whitelist ? filterExists && anyMatch : !filterExists || !anyMatch);
             return new ItemFilterResult(filterExists, anyMatch, allowed);
         }
 

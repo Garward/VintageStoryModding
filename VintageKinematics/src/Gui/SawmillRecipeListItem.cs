@@ -26,6 +26,8 @@ namespace VintageKinematics.Gui
         public bool Visible => true;
         public KineticSawmillRecipe Recipe => recipe;
         public string SortTitle => title ?? "";
+        public string SelectionKey => recipe?.Mode.ToString();
+        public string SelectionLabel => ModeLabel(recipe?.Mode ?? SawmillMode.Plank);
         public string SortKey(string sortMode)
         {
             switch (sortMode)

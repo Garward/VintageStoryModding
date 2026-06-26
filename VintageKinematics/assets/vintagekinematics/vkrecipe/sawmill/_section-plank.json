@@ -1,0 +1,9 @@
+{
+    "ingredient": { "type": "block", "code": "*:logsection-placed-*-*-*", "quantity": 1 },
+    "outputs": [
+        { "type": "item", "code": "*:plank-*", "quantity": 4 },
+        { "type": "item", "code": "sawdust", "quantity": 1 }
+    ],
+    "sawTicks": 2,
+    "mode": "Plank"
+}

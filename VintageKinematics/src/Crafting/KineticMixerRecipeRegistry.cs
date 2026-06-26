@@ -11,6 +11,7 @@ namespace VintageKinematics.Crafting
     /// </summary>
     public class KineticMixerRecipe
     {
+        public string Code;
         public JsonItemStack[] Ingredients;
         public JsonItemStack[] Outputs;
         public AssetLocation LiquidCode;
@@ -137,6 +138,7 @@ namespace VintageKinematics.Crafting
                 if (recipe == null) continue;
                 if (recipe.Resolve(api.World, entry.Key.ToString()))
                 {
+                    recipe.Code = entry.Key.ToString();
                     recipes.Add(recipe);
                 }
             }
@@ -146,9 +148,21 @@ namespace VintageKinematics.Crafting
 
         public KineticMixerRecipe FindRecipe(ItemStack[] inputs, ItemStack liquidStack, float liquidLitres)
         {
+            KineticMixerRecipe best = null;
             foreach (KineticMixerRecipe recipe in recipes)
             {
-                if (recipe.Matches(inputs, liquidStack, liquidLitres)) return recipe;
+                if (!recipe.Matches(inputs, liquidStack, liquidLitres)) continue;
+                if (IsMoreSpecific(recipe, best)) best = recipe;
+            }
+            return best;
+        }
+
+        public KineticMixerRecipe FindRecipeByCode(string code)
+        {
+            if (string.IsNullOrEmpty(code)) return null;
+            foreach (KineticMixerRecipe recipe in recipes)
+            {
+                if (recipe?.Code == code) return recipe;
             }
             return null;
         }
@@ -171,6 +185,30 @@ namespace VintageKinematics.Crafting
                 if (recipe.MatchesLiquid(stack)) return recipe;
             }
             return null;
+        }
+
+        private static bool IsMoreSpecific(KineticMixerRecipe candidate, KineticMixerRecipe current)
+        {
+            if (current == null) return true;
+
+            int candidateQuantity = TotalIngredientQuantity(candidate);
+            int currentQuantity = TotalIngredientQuantity(current);
+            if (candidateQuantity != currentQuantity) return candidateQuantity > currentQuantity;
+
+            int candidateCount = candidate?.Ingredients?.Length ?? 0;
+            int currentCount = current?.Ingredients?.Length ?? 0;
+            return candidateCount > currentCount;
+        }
+
+        private static int TotalIngredientQuantity(KineticMixerRecipe recipe)
+        {
+            if (recipe?.Ingredients == null) return 0;
+            int total = 0;
+            for (int i = 0; i < recipe.Ingredients.Length; i++)
+            {
+                total += System.Math.Max(1, recipe.Ingredients[i]?.StackSize ?? 1);
+            }
+            return total;
         }
     }
 }

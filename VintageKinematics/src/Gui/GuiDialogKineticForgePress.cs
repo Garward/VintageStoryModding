@@ -12,13 +12,17 @@ namespace VintageKinematics.Gui
     public class GuiDialogKineticForgePress : GuiDialogBlockEntity
     {
         private readonly Func<string> getOperationCode;
+        private readonly Func<int> getAutoMetalInputLimit;
         private readonly Action<string> onSelectOperation;
+        private readonly Action<int> onSetAutoMetalInputLimit;
         private readonly MachineRecipeBrowser<ForgePressRecipeListItem> recipeBrowser;
         private readonly MachineProgressBar progressBar;
         private bool draggingDialog;
+        private bool suppressMetalLimitChange;
         private Vec2i dragStartMouse;
         private Vec2i dragStartDialog;
         private const string OperationButtonKey = "forgepress-recipes";
+        private const string AutoMetalLimitKey = "forgepress-auto-metal-limit";
         private const double BrowserWidth = 560.0;
         private const double BrowserListHeight = 292.0;
         private const int RecipeListCellHeight = 64;
@@ -32,15 +36,19 @@ namespace VintageKinematics.Gui
             InventoryBase inventory,
             BlockPos pos,
             Func<string> getOperationCode,
+            Func<int> getAutoMetalInputLimit,
             Func<float> getProgress,
             Func<float> getProgressMax,
             Func<bool> getCanProgress,
             Action<string> onSelectOperation,
+            Action<int> onSetAutoMetalInputLimit,
             ICoreClientAPI capi)
             : base(title, inventory, pos, capi)
         {
             this.getOperationCode = getOperationCode;
+            this.getAutoMetalInputLimit = getAutoMetalInputLimit;
             this.onSelectOperation = onSelectOperation;
+            this.onSetAutoMetalInputLimit = onSetAutoMetalInputLimit;
             progressBar = new MachineProgressBar(capi, "forgepress-progress", getProgress, getProgressMax, getCanProgress);
             recipeBrowser = new MachineRecipeBrowser<ForgePressRecipeListItem>(
                 "forgepress-recipe",
@@ -86,6 +94,9 @@ namespace VintageKinematics.Gui
             ElementBounds progressBounds = ElementBounds.Fixed(slotPad, operationButtonBounds.fixedY + operationButtonBounds.fixedHeight + 8.0, rowWidth, 18.0);
             ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, progressBounds.fixedY + progressBounds.fixedHeight + 10.0, rowWidth, 22.0);
             ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
+            double limitX = slotPad + 3.0 * (slotSize + slotPad) + 18.0;
+            ElementBounds autoLimitLabelBounds = ElementBounds.Fixed(limitX, outputLabelBounds.fixedY, 92.0, 22.0);
+            ElementBounds autoLimitInputBounds = ElementBounds.Fixed(limitX, outputLabelBounds.fixedY + 24.0, 76.0, 28.0);
 
             double browserX = slotPad + rowWidth + 24.0;
             recipeBrowser.SetBounds(browserX, slotPad + topOffset);
@@ -104,7 +115,9 @@ namespace VintageKinematics.Gui
                 operationButtonBounds,
                 progressBounds,
                 outputLabelBounds,
-                outputSlotsBounds
+                outputSlotsBounds,
+                autoLimitLabelBounds,
+                autoLimitInputBounds
             };
             recipeBrowser.AddBounds(childBounds);
             bgBounds.WithChildren(childBounds.ToArray());
@@ -142,10 +155,13 @@ namespace VintageKinematics.Gui
             SingleComposer = composer
                 .AddStaticText(Lang.Get("vintagekinematics:kineticforgepress-outputs"), CairoFont.WhiteSmallText(), outputLabelBounds)
                 .AddItemSlotGrid(Inventory, DoSendPacket, 3, outputSlots, outputSlotsBounds, "outputslots")
+                .AddStaticText(Lang.Get("vintagekinematics:kineticforgepress-auto-limit"), CairoFont.WhiteSmallText(), autoLimitLabelBounds)
+                .AddNumberInput(autoLimitInputBounds, OnAutoMetalLimitChanged, CairoFont.WhiteDetailText(), AutoMetalLimitKey)
                 .EndChildElements()
                 .Compose();
             oldComposer?.Dispose();
             progressBar.Refresh(SingleComposer, true);
+            SetAutoMetalLimitInput(getAutoMetalInputLimit?.Invoke() ?? 64);
 
             recipeBrowser.AfterCompose(SingleComposer);
         }
@@ -310,10 +326,35 @@ namespace VintageKinematics.Gui
             bounds.CalcWorldBounds();
         }
 
-        public void OnOperationUpdated()
+        private void OnAutoMetalLimitChanged(string _)
+        {
+            if (suppressMetalLimitChange) return;
+            float rawLimit = SingleComposer?.GetNumberInput(AutoMetalLimitKey)?.GetValue() ?? 64f;
+            int limit = (int)Math.Round(rawLimit);
+            limit = (int)GameMath.Clamp(limit, 1, 64);
+            SetAutoMetalLimitInput(limit);
+            onSetAutoMetalInputLimit?.Invoke(limit);
+        }
+
+        private void SetAutoMetalLimitInput(int limit)
+        {
+            if (SingleComposer == null) return;
+            suppressMetalLimitChange = true;
+            try
+            {
+                SingleComposer.GetNumberInput(AutoMetalLimitKey)?.SetValue(GameMath.Clamp(limit, 1, 64));
+            }
+            finally
+            {
+                suppressMetalLimitChange = false;
+            }
+        }
+
+        public void OnStateUpdated()
         {
             if (SingleComposer == null) return;
             RefreshOperationButtonLabel();
+            SetAutoMetalLimitInput(getAutoMetalInputLimit?.Invoke() ?? 64);
             progressBar.Refresh(SingleComposer, true);
         }
 

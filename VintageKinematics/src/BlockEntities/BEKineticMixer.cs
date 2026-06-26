@@ -30,6 +30,7 @@ namespace VintageKinematics.BlockEntities
 
         public const float LiquidCapacityLitres = 10f;
         public const int PacketIdOpenDialog = 5610;
+        public const int PacketIdSelectRecipe = 5612;
 
         private const float OutputPushIntervalMs = 250f;
         private const int OutputPushBatch = 8;
@@ -41,11 +42,16 @@ namespace VintageKinematics.BlockEntities
         private int mixTicksAccumulated;
         private int mixTicksRequired = 1;
         private string mixingRecipeKey;
-        private GuiDialogKineticMixer clientDialog;
+        private readonly RecipeSelectionState<KineticMixerRecipe> recipeSelection;
+        private GuiDialogKineticJsonProcessor clientDialog;
 
         public override InventoryBase Inventory => inventory;
         public override string InventoryClassName => "kineticmixer";
         public IOFaceMap IOFaces => ioFaces;
+
+        private JsonObject GuiAttr => Block?.Attributes?["vkGui"];
+        private JsonObject ProgressBarAttr => GuiAttr?["progressBar"];
+        private JsonObject RecipeBrowserAttr => GuiAttr?["recipeBrowser"];
 
         public BEKineticMixer()
         {
@@ -55,6 +61,8 @@ namespace VintageKinematics.BlockEntities
                     ? new ItemSlot(self)
                     : new ItemSlotCrusherOutput(self);
             });
+            recipeSelection = new RecipeSelectionState<KineticMixerRecipe>(
+                key => Api?.ModLoader.GetModSystem<KineticMixerRecipeRegistry>()?.FindRecipeByCode(key));
         }
 
         public override void Initialize(ICoreAPI api)
@@ -100,11 +108,16 @@ namespace VintageKinematics.BlockEntities
             if (Api.Side != EnumAppSide.Server) return;
 
             var registry = Api.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
-            KineticMixerRecipe recipe = registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres);
+            bool hasRecipeSelection = HasRecipeSelection();
+            KineticMixerRecipe recipe = hasRecipeSelection
+                ? FindSelectedRecipe(allowAdjacentLiquid: false)
+                : registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres);
 
             if (recipe == null)
             {
-                recipe = FindRecipeUsingAdjacentLiquid(registry);
+                recipe = hasRecipeSelection
+                    ? FindSelectedRecipe(allowAdjacentLiquid: true)
+                    : FindRecipeUsingAdjacentLiquid(registry);
                 if (recipe == null)
                 {
                     ResetMixingProgress();
@@ -185,6 +198,8 @@ namespace VintageKinematics.BlockEntities
 
             key.Append(";liquid=");
             key.Append(recipe?.LiquidCode);
+            key.Append(";recipe=");
+            key.Append(recipe?.Code);
             if (recipe?.LiquidCode != null)
             {
                 key.Append('@');
@@ -192,6 +207,25 @@ namespace VintageKinematics.BlockEntities
             }
 
             return key.ToString();
+        }
+
+        private KineticMixerRecipe FindSelectedRecipe(bool allowAdjacentLiquid)
+        {
+            return recipeSelection.GetSelectedIf(recipe => CanUseRecipe(recipe, allowAdjacentLiquid));
+        }
+
+        private bool HasRecipeSelection()
+        {
+            return !string.IsNullOrEmpty(recipeSelection.SelectedKey);
+        }
+
+        private bool CanUseRecipe(KineticMixerRecipe recipe, bool allowAdjacentLiquid)
+        {
+            if (recipe == null) return false;
+            ItemStack[] inputs = InputStacks();
+            if (!recipe.TryMapIngredients(inputs, null)) return false;
+            if (recipe.HasRequiredLiquid(liquidStack, liquidLitres)) return true;
+            return allowAdjacentLiquid && recipe.LiquidCode != null && recipe.LiquidLitres > 0f && HasAdjacentLiquid(recipe);
         }
 
         private void ResetMixingProgress()
@@ -503,6 +537,17 @@ namespace VintageKinematics.BlockEntities
 
         public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
         {
+            if (packetid == PacketIdSelectRecipe)
+            {
+                if (!Api.World.Claims.TryAccess(player, Pos, EnumBlockAccessFlags.Use))
+                {
+                    Api.World.Logger.Audit("Player {0} selected mixer recipe at {1} but has no claim access. Rejected.", player.PlayerName, Pos);
+                    return;
+                }
+
+                SetSelectedRecipe(RecipeSelectionState<KineticMixerRecipe>.FromPacket(data));
+                return;
+            }
             if (packetid == 1001)
             {
                 player.InventoryManager?.CloseInventory(inventory);
@@ -543,10 +588,94 @@ namespace VintageKinematics.BlockEntities
 
             if (clientDialog == null)
             {
-                clientDialog = new GuiDialogKineticMixer(title, inventory, Pos, CurrentMixProgress, CurrentMixProgressMax, CanMixCurrentRecipe, capi);
+                clientDialog = new GuiDialogKineticJsonProcessor(
+                    title,
+                    inventory,
+                    Pos,
+                    SlotInputFirst,
+                    SlotInputLast,
+                    SlotOutputFirst,
+                    SlotOutputLast,
+                    ProgressBarAttr?["enabled"].AsBool(true) ?? true,
+                    ProgressBarAttr?["width"].AsDouble(260.0) ?? 260.0,
+                    ProgressBarAttr?["align"].AsString("center"),
+                    CurrentMixProgress,
+                    CurrentMixProgressMax,
+                    CanMixCurrentRecipe,
+                    capi,
+                    inputColumnsOverride: GuiAttr?["inputColumns"].AsInt(3) ?? 3,
+                    outputColumnsOverride: GuiAttr?["outputColumns"].AsInt(3) ?? 3,
+                    inputLabelLangCode: GuiAttr?["inputLabelLangCode"].AsString("vintagekinematics:kineticmixer-input"),
+                    outputLabelLangCode: GuiAttr?["outputLabelLangCode"].AsString("vintagekinematics:kineticmixer-outputs"),
+                    dialogKeyPrefix: GuiAttr?["dialogKeyPrefix"].AsString("kineticmixer"),
+                    machineCode: GuiAttr?["machineCode"].AsString("kineticmixer"),
+                    recipeSource: RecipeBrowserAttr?["source"].AsString("mixer"),
+                    showRecipeBrowser: RecipeBrowserAttr?["enabled"].AsBool(true) ?? true,
+                    recipeTitleLangCode: RecipeBrowserAttr?["titleLangCode"].AsString("vintagekinematics:kineticmixer-recipes"),
+                    recipeSearchLangCode: RecipeBrowserAttr?["searchLangCode"].AsString("vintagekinematics:kineticmixer-search-recipes"),
+                    recipeBrowserWidth: RecipeBrowserAttr?["width"].AsDouble(520.0) ?? 520.0,
+                    recipeBrowserListHeight: RecipeBrowserAttr?["listHeight"].AsDouble(330.0) ?? 330.0,
+                    onRecipeClicked: OnRecipeClicked,
+                    recipeButtonLabel: SelectedRecipeLabel,
+                    recipeSortValues: RecipeSortValues(),
+                    recipeSortNames: RecipeSortNames(),
+                    recipeBrowserCellHeight: RecipeBrowserAttr?["cellHeight"].AsInt(76) ?? 76);
                 clientDialog.OnClosed += () => clientDialog = null;
                 clientDialog.TryOpen();
             }
+        }
+
+        private void OnRecipeClicked(IRecipeBrowserListItem item)
+        {
+            if (string.IsNullOrEmpty(item?.SelectionKey)) return;
+            OnClientSelectRecipe(item.SelectionKey);
+        }
+
+        private void OnClientSelectRecipe(string recipeKey)
+        {
+            recipeSelection.Set(recipeKey);
+            ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(
+                Pos,
+                PacketIdSelectRecipe,
+                RecipeSelectionState<KineticMixerRecipe>.ToPacket(recipeSelection.SelectedKey));
+            clientDialog?.RefreshRecipeButtonLabel();
+        }
+
+        private string SelectedRecipeLabel()
+        {
+            if (string.IsNullOrEmpty(recipeSelection.SelectedKey)) return null;
+
+            ICoreClientAPI capi = Api as ICoreClientAPI;
+            KineticMixerRecipe recipe = capi?.ModLoader.GetModSystem<KineticMixerRecipeRegistry>()?.FindRecipeByCode(recipeSelection.SelectedKey);
+            if (recipe == null) return null;
+
+            var item = new MixerRecipeListItem(recipe, capi);
+            string label = item.SelectionLabel;
+            item.Dispose();
+            return label;
+        }
+
+        private string[] RecipeSortValues()
+        {
+            return RecipeBrowserAttr?["sortValues"].AsArray<string>() ?? new[] { "output", "input", "work" };
+        }
+
+        private string[] RecipeSortNames()
+        {
+            string[] values = RecipeSortValues();
+            string[] names = new string[values.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                names[i] = Lang.Get("vintagekinematics:recipebrowser-sort-" + values[i]);
+            }
+            return names;
+        }
+
+        private void SetSelectedRecipe(string recipeKey)
+        {
+            if (!recipeSelection.Set(recipeKey)) return;
+            ResetMixingProgress();
+            MarkDirty(true);
         }
 
         private float CurrentMixProgress()
@@ -577,7 +706,9 @@ namespace VintageKinematics.BlockEntities
             if (mixTicksAccumulated > 0 || !string.IsNullOrEmpty(mixingRecipeKey)) return true;
 
             var registry = Api?.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
-            KineticMixerRecipe recipe = registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres) ?? FindRecipeUsingAdjacentLiquid(registry);
+            KineticMixerRecipe recipe = HasRecipeSelection()
+                ? FindSelectedRecipe(allowAdjacentLiquid: false) ?? FindSelectedRecipe(allowAdjacentLiquid: true)
+                : registry?.FindRecipe(InputStacks(), liquidStack, liquidLitres) ?? FindRecipeUsingAdjacentLiquid(registry);
             return recipe != null;
         }
 
@@ -713,6 +844,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetInt("mixTicks", mixTicksAccumulated);
             tree.SetInt("mixTicksRequired", mixTicksRequired);
             tree.SetString("mixingRecipeKey", mixingRecipeKey ?? "");
+            recipeSelection.WriteToTree(tree);
         }
 
         private void ReadMixingState(ITreeAttribute tree)
@@ -721,6 +853,7 @@ namespace VintageKinematics.BlockEntities
             mixTicksRequired = Math.Max(1, tree.GetInt("mixTicksRequired", 1));
             mixingRecipeKey = tree.GetString("mixingRecipeKey", "");
             if (string.IsNullOrEmpty(mixingRecipeKey)) mixingRecipeKey = null;
+            recipeSelection.ReadFromTree(tree);
         }
 
         public override void OnBlockUnloaded()

@@ -22,6 +22,8 @@ namespace VintageKinematics.Api
             = new Dictionary<BlockPos, Dictionary<BlockFacing, List<int>>>();
         private readonly Dictionary<BlockPos, Dictionary<BlockFacing, List<int>>> outputs
             = new Dictionary<BlockPos, Dictionary<BlockFacing, List<int>>>();
+        private Func<IInventory, BlockPos, BlockFacing, int, ItemSlot, bool> canAutoPushIntoSlot;
+        private Func<IInventory, BlockPos, BlockFacing, int, ItemSlot, int> autoPushLimitForSlot;
 
         public IOFaceMap(BlockPos defaultCell)
         {
@@ -45,6 +47,26 @@ namespace VintageKinematics.Api
         public IOFaceMap MapOutput(BlockPos cell, BlockFacing face, int slotId)
         {
             Add(outputs, cell, face, slotId);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an optional per-slot gate for automated push insertion. Manual inventory movement
+        /// still uses the target slot's normal rules.
+        /// </summary>
+        public IOFaceMap WithAutoPushFilter(Func<IInventory, BlockPos, BlockFacing, int, ItemSlot, bool> filter)
+        {
+            canAutoPushIntoSlot = filter;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds an optional per-slot quantity limit for automated push insertion. Return
+        /// <see cref="int.MaxValue"/> for normal slot behaviour.
+        /// </summary>
+        public IOFaceMap WithAutoPushLimit(Func<IInventory, BlockPos, BlockFacing, int, ItemSlot, int> limitProvider)
+        {
+            autoPushLimitForSlot = limitProvider;
             return this;
         }
 
@@ -107,19 +129,36 @@ namespace VintageKinematics.Api
         /// mapping exists or every mapped slot is full / non-stackable with the source.
         /// </summary>
         public ItemSlot GetPushSlot(IInventory inv, BlockPos cell, BlockFacing face, ItemSlot fromSlot)
+            => GetPushSlot(inv, cell, face, fromSlot, out _);
+
+        /// <summary>
+        /// Cell-aware push lookup with an optional per-move quantity cap supplied by the mapped
+        /// machine. Null if either no mapping exists or every mapped slot is full / non-stackable
+        /// with the source.
+        /// </summary>
+        public ItemSlot GetPushSlot(IInventory inv, BlockPos cell, BlockFacing face, ItemSlot fromSlot, out int maxQuantity)
         {
+            maxQuantity = int.MaxValue;
             if (cell == null || face == null) return null;
             if (!inputs.TryGetValue(cell, out var byFace)) return null;
             if (!byFace.TryGetValue(face, out var slotIds)) return null;
             foreach (int slotId in slotIds)
             {
                 ItemSlot slot = inv[slotId];
+                if (canAutoPushIntoSlot != null && !canAutoPushIntoSlot(inv, cell, face, slotId, fromSlot)) continue;
                 if (fromSlot != null && !slot.CanHold(fromSlot)) continue;
-                if (slot.Empty) return slot;
+                int slotLimit = autoPushLimitForSlot?.Invoke(inv, cell, face, slotId, fromSlot) ?? int.MaxValue;
+                if (slotLimit <= 0) continue;
+                if (slot.Empty)
+                {
+                    maxQuantity = slotLimit;
+                    return slot;
+                }
                 if (fromSlot != null && slot.Itemstack != null && fromSlot.Itemstack != null
                     && slot.Itemstack.Collectible == fromSlot.Itemstack.Collectible
                     && slot.Itemstack.StackSize < slot.Itemstack.Collectible.MaxStackSize)
                 {
+                    maxQuantity = slotLimit;
                     return slot;
                 }
             }

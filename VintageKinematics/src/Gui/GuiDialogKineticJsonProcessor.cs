@@ -23,6 +23,7 @@ namespace VintageKinematics.Gui
         private readonly string outputLabelLangCode;
         private readonly string dialogKeyPrefix;
         private readonly string machineCode;
+        private readonly string recipeSource;
         private readonly bool showRecipeBrowser;
         private readonly MachineProgressBar progressBar;
         private readonly Func<IEnumerable<IRecipeBrowserListItem>> buildRecipeItems;
@@ -57,6 +58,7 @@ namespace VintageKinematics.Gui
             string outputLabelLangCode = null,
             string dialogKeyPrefix = "kineticjsonprocessor",
             string machineCode = null,
+            string recipeSource = null,
             bool showRecipeBrowser = false,
             string recipeTitleLangCode = null,
             string recipeSearchLangCode = null,
@@ -83,6 +85,7 @@ namespace VintageKinematics.Gui
             this.outputLabelLangCode = outputLabelLangCode ?? "vintagekinematics:jsonprocessor-outputs";
             this.dialogKeyPrefix = dialogKeyPrefix ?? "kineticjsonprocessor";
             this.machineCode = machineCode;
+            this.recipeSource = string.IsNullOrEmpty(recipeSource) ? "process" : recipeSource;
             this.showRecipeBrowser = showRecipeBrowser;
             this.buildRecipeItems = buildRecipeItems;
             this.onRecipeClicked = onRecipeClicked;
@@ -232,6 +235,19 @@ namespace VintageKinematics.Gui
 
             var registry = capi.ModLoader.GetModSystem<KineticProcessRecipeRegistry>();
             List<IRecipeBrowserListItem> items = new List<IRecipeBrowserListItem>();
+
+            if (recipeSource == "mixer")
+            {
+                var mixerRegistry = capi.ModLoader.GetModSystem<KineticMixerRecipeRegistry>();
+                if (mixerRegistry == null) return items;
+
+                foreach (KineticMixerRecipe recipe in mixerRegistry.Recipes)
+                {
+                    items.Add(new MixerRecipeListItem(recipe, capi));
+                }
+                return items;
+            }
+
             if (registry == null || string.IsNullOrEmpty(machineCode)) return items;
 
             foreach (KineticProcessRecipe recipe in registry.Recipes)

@@ -126,16 +126,6 @@ namespace VintageKinematics.Api
                     if (Enum.TryParse(roleStr, true, out EnumKineticRole parsed))
                         Role = parsed;
                 }
-                StressImpact = properties["stressImpact"].AsFloat(0f);
-                if (StressImpact < 0f)
-                {
-                    var cfg = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
-                    if (cfg != null)
-                    {
-                        float mult = cfg.ResolveGeneratorStress(Block?.Code?.FirstCodePart());
-                        if (mult > 0f) StressImpact *= mult;
-                    }
-                }
                 if (properties["axis"].Exists)
                 {
                     string axisStr = properties["axis"].AsString();
@@ -144,6 +134,21 @@ namespace VintageKinematics.Api
                         Axis = explicitAxis;
                         axisExplicit = true;
                     }
+                }
+            }
+
+            StressImpact = properties != null && properties["stressImpact"].Exists
+                ? properties["stressImpact"].AsFloat(0f)
+                : Block?.Attributes?["vkKinetic"]?["stressImpact"].AsFloat(0f) ?? 0f;
+            if (StressImpact != 0f)
+            {
+                var cfg = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
+                if (cfg != null)
+                {
+                    float mult = StressImpact < 0f
+                        ? cfg.ResolveGeneratorStress(Block?.Code?.FirstCodePart())
+                        : cfg.ResolveConsumerStress(Block?.Code?.FirstCodePart());
+                    StressImpact *= mult;
                 }
             }
 

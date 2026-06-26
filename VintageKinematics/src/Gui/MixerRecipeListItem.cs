@@ -25,7 +25,10 @@ namespace VintageKinematics.Gui
         private ElementBounds scissorBounds;
 
         public bool Visible => true;
+        public KineticMixerRecipe Recipe => recipe;
         public string SortTitle => title ?? "";
+        public string SelectionKey => recipe?.Code;
+        public string SelectionLabel => SortTitle;
 
         public MixerRecipeListItem(KineticMixerRecipe recipe, ICoreClientAPI capi)
         {

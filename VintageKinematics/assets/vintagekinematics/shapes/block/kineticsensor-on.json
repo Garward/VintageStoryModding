@@ -1,0 +1,2259 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 64,
+    "textureHeight": 64,
+    "textureSizes": {},
+    "textures": {
+        "wood": "game:block/wood/planks/generic",
+        "darkwood": "game:block/wood/oak-dark",
+        "iron": "game:block/metal/plate/iron",
+        "steel": "game:block/metal/plate/steel",
+        "copper": "game:block/metal/plate/copper",
+        "dark": "game:block/coal/charcoal",
+        "glow": "vintagekinematics:block/kineticigniter-rod-glow"
+    },
+    "elements": [
+        {
+            "name": "shaftCoreNorth",
+            "from": [
+                6,
+                6,
+                1.22
+            ],
+            "to": [
+                10,
+                10,
+                7.92
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ]
+                },
+                "east": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        4
+                    ]
+                },
+                "south": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ]
+                },
+                "west": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        4
+                    ]
+                },
+                "up": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        6.7
+                    ]
+                },
+                "down": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        6.7
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "shaftCoreSouth",
+            "from": [
+                6,
+                6,
+                8.08
+            ],
+            "to": [
+                10,
+                10,
+                14.78
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ]
+                },
+                "east": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        4
+                    ]
+                },
+                "south": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        4
+                    ]
+                },
+                "west": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        4
+                    ]
+                },
+                "up": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        6.7
+                    ]
+                },
+                "down": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        4,
+                        6.7
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "shaftEndNorth",
+            "from": [
+                5.5,
+                5.5,
+                0.01
+            ],
+            "to": [
+                10.5,
+                10.5,
+                1.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "east": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        1.19,
+                        5
+                    ]
+                },
+                "south": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "west": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        1.19,
+                        5
+                    ]
+                },
+                "up": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        1.19
+                    ]
+                },
+                "down": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        1.19
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "shaftEndSouth",
+            "from": [
+                5.5,
+                5.5,
+                14.8
+            ],
+            "to": [
+                10.5,
+                10.5,
+                15.99
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "east": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        1.19,
+                        5
+                    ]
+                },
+                "south": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        5
+                    ]
+                },
+                "west": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        1.19,
+                        5
+                    ]
+                },
+                "up": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        1.19
+                    ]
+                },
+                "down": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        5,
+                        1.19
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ]
+        },
+        {
+            "name": "sensorCollarTop",
+            "from": [
+                3.8,
+                10,
+                4.8
+            ],
+            "to": [
+                12.2,
+                12,
+                11.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        6.4
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        6.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "sensorCollarBottom",
+            "from": [
+                3.8,
+                4,
+                4.8
+            ],
+            "to": [
+                12.2,
+                6,
+                11.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        2
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        2
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        2
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        2
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        6.4
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        8.4,
+                        6.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "sensorCollarWest",
+            "from": [
+                3.8,
+                6,
+                4.8
+            ],
+            "to": [
+                5.8,
+                10,
+                11.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        4
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        4
+                    ]
+                },
+                "up": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "down": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "name": "sensorCollarEast",
+            "from": [
+                10.2,
+                6,
+                4.8
+            ],
+            "to": [
+                12.2,
+                10,
+                11.2
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        4
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        2,
+                        4
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        4
+                    ]
+                },
+                "up": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "down": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "name": "sensorCollarNorthBand",
+            "from": [
+                4.4,
+                4.4,
+                4.25
+            ],
+            "to": [
+                11.6,
+                11.6,
+                5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        7.2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        7.2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        7.2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        7.2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        0.75
+                    ]
+                },
+                "down": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "name": "sensorCollarSouthBand",
+            "from": [
+                4.4,
+                4.4,
+                11
+            ],
+            "to": [
+                11.6,
+                11.6,
+                11.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        7.2
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        7.2
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        7.2
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        7.2
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        0.75
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        7.2,
+                        0.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "readoutBox",
+            "from": [
+                3.2,
+                11.5,
+                0.48
+            ],
+            "to": [
+                12.8,
+                15,
+                3.35
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#darkwood",
+                    "uv": [
+                        0,
+                        0,
+                        9.6,
+                        3.5
+                    ]
+                },
+                "east": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        2.87,
+                        3.5
+                    ]
+                },
+                "south": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        9.6,
+                        3.5
+                    ]
+                },
+                "west": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        2.87,
+                        3.5
+                    ]
+                },
+                "up": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        9.6,
+                        2.87
+                    ]
+                },
+                "down": {
+                    "texture": "#wood",
+                    "uv": [
+                        0,
+                        0,
+                        9.6,
+                        2.87
+                    ]
+                }
+            }
+        },
+        {
+            "name": "readoutFacePlate",
+            "from": [
+                4,
+                11.9,
+                0.18
+            ],
+            "to": [
+                12,
+                14.45,
+                0.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        2.55
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.32,
+                        2.55
+                    ]
+                },
+                "south": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.32,
+                        2.55
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        0.32
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        8,
+                        0.32
+                    ]
+                }
+            }
+        },
+        {
+            "name": "indicatorLensOff",
+            "from": [
+                5.55,
+                12.4,
+                0.05
+            ],
+            "to": [
+                10.45,
+                13.85,
+                0.18
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4.9,
+                        1.45
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.13,
+                        1.45
+                    ]
+                },
+                "south": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        0.13,
+                        1.45
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4.9,
+                        0.13
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        4.9,
+                        0.13
+                    ]
+                }
+            }
+        },
+        {
+            "name": "modeTrack",
+            "from": [
+                4.65,
+                11.55,
+                0.05
+            ],
+            "to": [
+                11.35,
+                12.2,
+                0.18
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        0.65
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.13,
+                        0.65
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        0.65
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.13,
+                        0.65
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        0.13
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.7,
+                        0.13
+                    ]
+                }
+            }
+        },
+        {
+            "name": "modeNeedle",
+            "from": [
+                7.55,
+                11.4,
+                0
+            ],
+            "to": [
+                8.45,
+                12.45,
+                0.04
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.05
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.04,
+                        1.05
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.05
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.04,
+                        1.05
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        0.04
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        0.04
+                    ]
+                }
+            }
+        },
+        {
+            "name": "readoutBackBracketWest",
+            "from": [
+                3.85,
+                10.85,
+                3.25
+            ],
+            "to": [
+                5.25,
+                12.2,
+                4.85
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.35
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.35
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "readoutBackBracketEast",
+            "from": [
+                10.75,
+                10.85,
+                3.25
+            ],
+            "to": [
+                12.15,
+                12.2,
+                4.85
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.35
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.35
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.6
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.4,
+                        1.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "frontBraceWest",
+            "from": [
+                3.55,
+                7.5,
+                2.75
+            ],
+            "to": [
+                5.15,
+                10.45,
+                5.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.95
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2.7,
+                        2.95
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.95
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2.7,
+                        2.95
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.7
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.7
+                    ]
+                }
+            }
+        },
+        {
+            "name": "frontBraceEast",
+            "from": [
+                10.85,
+                7.5,
+                2.75
+            ],
+            "to": [
+                12.45,
+                10.45,
+                5.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.95
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2.7,
+                        2.95
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.95
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        2.7,
+                        2.95
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.7
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.6,
+                        2.7
+                    ]
+                }
+            }
+        },
+        {
+            "name": "lowerCableNorth",
+            "from": [
+                4.8,
+                3.4,
+                3
+            ],
+            "to": [
+                11.2,
+                4.45,
+                5.5
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        1.05
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        1.05
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        1.05
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2.5,
+                        1.05
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        2.5
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        6.4,
+                        2.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "lowerCableWest",
+            "from": [
+                4.1,
+                3.3,
+                4.2
+            ],
+            "to": [
+                5,
+                5.4,
+                11.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        2.1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        2.1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        2.1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        2.1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.6
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "lowerCableEast",
+            "from": [
+                11,
+                3.3,
+                4.2
+            ],
+            "to": [
+                11.9,
+                5.4,
+                11.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        2.1
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        2.1
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        2.1
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        7.6,
+                        2.1
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.6
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        7.6
+                    ]
+                }
+            }
+        },
+        {
+            "name": "logicOutputFrameTop",
+            "from": [
+                5,
+                10.5,
+                0.05
+            ],
+            "to": [
+                11,
+                11.2,
+                0.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.7
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.4,
+                        0.7
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.7
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.4,
+                        0.7
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.4
+                    ]
+                },
+                "down": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "name": "logicOutputFrameBottom",
+            "from": [
+                5,
+                4.55,
+                0.05
+            ],
+            "to": [
+                11,
+                5.5,
+                0.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.95
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.4,
+                        0.95
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.95
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.4,
+                        0.95
+                    ]
+                },
+                "up": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        6,
+                        0.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "logicOutputFrameWest",
+            "from": [
+                4.55,
+                5.5,
+                0.05
+            ],
+            "to": [
+                5.5,
+                10.5,
+                0.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        5
+                    ]
+                },
+                "east": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        5
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.4,
+                        5
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        0.4
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        0.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "logicOutputFrameEast",
+            "from": [
+                10.5,
+                5.5,
+                0.05
+            ],
+            "to": [
+                11.45,
+                10.5,
+                0.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        5
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.4,
+                        5
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        5
+                    ]
+                },
+                "west": {
+                    "texture": "#null",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                    ],
+                    "enabled": false
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        0.4
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.95,
+                        0.4
+                    ]
+                }
+            }
+        },
+        {
+            "name": "logicOutputFace",
+            "from": [
+                6.55,
+                6.55,
+                0
+            ],
+            "to": [
+                9.45,
+                9.45,
+                0.008
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2.9,
+                        2.9
+                    ]
+                },
+                "east": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.008,
+                        2.9
+                    ]
+                },
+                "south": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2.9,
+                        2.9
+                    ]
+                },
+                "west": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        0.008,
+                        2.9
+                    ]
+                },
+                "up": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2.9,
+                        0.008
+                    ]
+                },
+                "down": {
+                    "texture": "#copper",
+                    "uv": [
+                        0,
+                        0,
+                        2.9,
+                        0.008
+                    ]
+                }
+            }
+        },
+        {
+            "name": "topScrewWest",
+            "from": [
+                4,
+                14.45,
+                0
+            ],
+            "to": [
+                5.25,
+                15.45,
+                0.035
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                }
+            }
+        },
+        {
+            "name": "topScrewEast",
+            "from": [
+                10.75,
+                14.45,
+                0
+            ],
+            "to": [
+                12,
+                15.45,
+                0.035
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        1
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                }
+            }
+        },
+        {
+            "name": "bottomScrewWest",
+            "from": [
+                4,
+                11.75,
+                0
+            ],
+            "to": [
+                5.25,
+                12.5,
+                0.035
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.75
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        0.75
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.75
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        0.75
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                }
+            }
+        },
+        {
+            "name": "bottomScrewEast",
+            "from": [
+                10.75,
+                11.75,
+                0
+            ],
+            "to": [
+                12,
+                12.5,
+                0.035
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.75
+                    ]
+                },
+                "east": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        0.75
+                    ]
+                },
+                "south": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.75
+                    ]
+                },
+                "west": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        0.75
+                    ]
+                },
+                "up": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                },
+                "down": {
+                    "texture": "#steel",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        0.035
+                    ]
+                }
+            }
+        },
+        {
+            "name": "indicatorLensOn",
+            "from": [
+                5.9,
+                12.65,
+                0
+            ],
+            "to": [
+                10.1,
+                13.5,
+                0.035
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#glow",
+                    "uv": [
+                        0,
+                        0,
+                        4.2,
+                        0.85
+                    ]
+                },
+                "east": {
+                    "texture": "#glow",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        0.85
+                    ]
+                },
+                "south": {
+                    "texture": "#glow",
+                    "uv": [
+                        0,
+                        0,
+                        4.2,
+                        0.85
+                    ]
+                },
+                "west": {
+                    "texture": "#glow",
+                    "uv": [
+                        0,
+                        0,
+                        0.035,
+                        0.85
+                    ]
+                },
+                "up": {
+                    "texture": "#glow",
+                    "uv": [
+                        0,
+                        0,
+                        4.2,
+                        0.035
+                    ]
+                },
+                "down": {
+                    "texture": "#glow",
+                    "uv": [
+                        0,
+                        0,
+                        4.2,
+                        0.035
+                    ]
+                }
+            }
+        }
+    ]
+}

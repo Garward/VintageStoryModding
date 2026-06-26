@@ -7,6 +7,33 @@
             "x": 0,
             "y": 1,
             "z": 0
+        },
+        "vkGui": {
+            "dialogKeyPrefix": "kineticmixer",
+            "machineCode": "kineticmixer",
+            "inputColumns": 3,
+            "outputColumns": 3,
+            "inputLabelLangCode": "vintagekinematics:kineticmixer-input",
+            "outputLabelLangCode": "vintagekinematics:kineticmixer-outputs",
+            "progressBar": {
+                "enabled": true,
+                "width": 260,
+                "align": "center"
+            },
+            "recipeBrowser": {
+                "enabled": true,
+                "source": "mixer",
+                "titleLangCode": "vintagekinematics:kineticmixer-recipes",
+                "searchLangCode": "vintagekinematics:kineticmixer-search-recipes",
+                "width": 520,
+                "listHeight": 330,
+                "cellHeight": 76,
+                "sortValues": [
+                    "output",
+                    "input",
+                    "work"
+                ]
+            }
         }
     },
     "entityBehaviorsByType": {

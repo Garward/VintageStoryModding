@@ -3,7 +3,6 @@ using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Network;
 
@@ -24,6 +23,7 @@ namespace VintageKinematics.BlockEntities
         private int pendingDirection;
         private int burstPulsesRemaining;
         private int burstDirection;
+        private string lastActivationStatus = "waiting";
 
         public KineticActivatorMode Mode { get; private set; } = KineticActivatorMode.RepeatWhileRotating;
         public int ActivationDelayMs { get; private set; } = 500;
@@ -187,82 +187,15 @@ namespace VintageKinematics.BlockEntities
         private bool TryActivateTarget(float signedRPM)
         {
             BlockFacing front = FrontFacing();
-            BlockPos targetPos = Pos.AddCopy(front);
-            Block targetBlock = Api.World.BlockAccessor.GetBlock(targetPos);
-            if (targetBlock == null || targetBlock.Id == 0) return false;
-
-            BlockFacing activatedFace = front.Opposite;
-            BlockEntity targetBe = Api.World.BlockAccessor.GetBlockEntity(targetPos);
-            BlockEntity activatableBe = MultiblockHelper.GetMultiblockAwareBE(Api.World, targetPos) ?? targetBe;
-            Block activatableBlock = activatableBe?.Block ?? targetBlock;
-
-            if (IsBlacklistedTarget(targetBlock, targetBe) || IsBlacklistedTarget(activatableBlock, activatableBe))
-            {
-                return false;
-            }
-
-            if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, targetPos, EnumBlockAccessFlags.Use))
-            {
-                return false;
-            }
-
-            bool handledByActivatorApi = false;
-
-            if (activatableBe is IKineticActivatable beTarget)
-            {
-                handledByActivatorApi = true;
-                if (beTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
-                {
-                    return true;
-                }
-            }
-
-            if (!handledByActivatorApi && activatableBlock is IKineticActivatable blockTarget)
-            {
-                handledByActivatorApi = true;
-                if (blockTarget.OnKineticActivate(Api.World, targetPos, activatedFace, Pos, signedRPM))
-                {
-                    return true;
-                }
-            }
-
-            if (handledByActivatorApi) return false;
-
-            if (targetBe is BlockEntityBarrel barrel)
-            {
-                return TrySealBarrel(barrel);
-            }
-
-            try
-            {
-                Caller caller = new Caller
-                {
-                    Pos = Pos.ToVec3d(),
-                    Type = EnumCallerType.Block
-                };
-                targetBlock.Activate(Api.World, caller, new BlockSelection(targetPos, activatedFace, targetBlock));
-                return true;
-            }
-            catch (Exception e)
-            {
-                Api.Logger.Warning("[VintageKinematics] Kinetic Activator failed to activate {0} at {1}: {2}", targetBlock.Code, targetPos, e.Message);
-                return false;
-            }
-        }
-
-        private static bool TrySealBarrel(BlockEntityBarrel barrel)
-        {
-            if (barrel == null || barrel.Sealed) return false;
-            if (!barrel.GetCanSeal(null)) return false;
-
-            barrel.SealBarrel();
-            return true;
-        }
-
-        private bool IsBlacklistedTarget(Block targetBlock, BlockEntity targetBe)
-        {
-            VintageKinematicsConfig cfg = Api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
-            return cfg != null && cfg.IsKineticActivatorTargetBlacklisted(targetBlock, targetBe);
+            bool ok = KineticActivationUtil.TryActivateTarget(
+                Api,
+                Pos,
+                front,
+                signedRPM,
+                allowFallbackActivate: true,
+                useActivatorBlacklist: true,
+                out lastActivationStatus);
+            return ok;
         }
 
         public KineticConnectionResult? TryConnect(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos)
@@ -310,6 +243,7 @@ namespace VintageKinematics.BlockEntities
             tree.SetInt("pulseCount", PulseCount);
             tree.SetBool("activatedThisRun", activatedThisRun);
             tree.SetInt("lastDirectionActivated", lastDirectionActivated);
+            tree.SetString("lastActivationStatus", lastActivationStatus ?? "");
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -321,6 +255,7 @@ namespace VintageKinematics.BlockEntities
             PulseCount = NormalizePulseCount(tree.GetInt("pulseCount", 2));
             activatedThisRun = tree.GetBool("activatedThisRun", false);
             lastDirectionActivated = tree.GetInt("lastDirectionActivated", 0);
+            lastActivationStatus = tree.GetString("lastActivationStatus", "waiting");
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
@@ -330,6 +265,7 @@ namespace VintageKinematics.BlockEntities
             dsc.AppendLine($"Activation delay: {DelayName()}");
             dsc.AppendLine($"Burst pulses: {PulseCount}");
             dsc.AppendLine(lastActivationWorked ? "Activator: target accepted last click" : "Activator: waiting for valid target");
+            dsc.AppendLine($"Last activation: {lastActivationStatus}");
         }
 
         private static int NormalizeDelay(int delayMs)

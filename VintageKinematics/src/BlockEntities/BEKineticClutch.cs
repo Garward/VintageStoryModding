@@ -36,13 +36,13 @@ namespace VintageKinematics.BlockEntities
 
         public KineticConnectionResult? TryConnect(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos)
         {
-            if (!Engaged && !IsShaftPosSide(fromPos, toPos)) return null;
-            return TryConnectInline(self, other, fromPos, toPos, 1);
+            if (!Engaged && !IsInputSide(fromPos, toPos)) return null;
+            return TryConnectInline(self, other, fromPos, toPos, Block?.Variant?["side"], 1);
         }
 
-        private bool IsShaftPosSide(BlockPos fromPos, BlockPos toPos)
+        private bool IsInputSide(BlockPos fromPos, BlockPos toPos)
         {
-            BlockFacing input = ShaftNegFacingFor(Block?.Variant["side"]).Opposite;
+            BlockFacing input = InputFacingFor(Block?.Variant?["side"]);
             return toPos.X == fromPos.X + input.Normali.X
                 && toPos.Y == fromPos.Y + input.Normali.Y
                 && toPos.Z == fromPos.Z + input.Normali.Z;
@@ -64,18 +64,25 @@ namespace VintageKinematics.BlockEntities
             };
         }
 
-        internal static KineticConnectionResult? TryConnectInline(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos, int sideDirection)
+        internal static BlockFacing InputFacingFor(string side)
+        {
+            return ShaftNegFacingFor(side).Opposite;
+        }
+
+        internal static BlockFacing OutputFacingFor(string side)
+        {
+            return ShaftNegFacingFor(side);
+        }
+
+        internal static KineticConnectionResult? TryConnectInline(KineticNodeInfo self, KineticNodeInfo other, BlockPos fromPos, BlockPos toPos, string side, int sideDirection)
         {
             int dx = toPos.X - fromPos.X;
             int dy = toPos.Y - fromPos.Y;
             int dz = toPos.Z - fromPos.Z;
             if (System.Math.Abs(dx) + System.Math.Abs(dy) + System.Math.Abs(dz) != 1) return null;
 
-            Vec3i axis = EnumKineticAxisExtensions.UnitVector(self.Axis);
-            bool isAxialFace = System.Math.Abs(dx) == System.Math.Abs(axis.X)
-                && System.Math.Abs(dy) == System.Math.Abs(axis.Y)
-                && System.Math.Abs(dz) == System.Math.Abs(axis.Z);
-            if (!isAxialFace) return null;
+            if (!IsLogicPort(side, dx, dy, dz)) return null;
+            if (other.Role == EnumKineticRole.Custom) return null;
 
             int dir = sideDirection;
             if (other.Role == EnumKineticRole.Gearbox)
@@ -93,6 +100,21 @@ namespace VintageKinematics.BlockEntities
             }
 
             return new KineticConnectionResult(1f, dir);
+        }
+
+        private static bool IsLogicPort(string side, int dx, int dy, int dz)
+        {
+            BlockFacing input = InputFacingFor(side);
+            BlockFacing output = OutputFacingFor(side);
+            return IsFacing(input, dx, dy, dz) || IsFacing(output, dx, dy, dz);
+        }
+
+        private static bool IsFacing(BlockFacing facing, int dx, int dy, int dz)
+        {
+            return facing != null
+                && dx == facing.Normali.X
+                && dy == facing.Normali.Y
+                && dz == facing.Normali.Z;
         }
 
         private void RebuildNetwork()

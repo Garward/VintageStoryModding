@@ -64,14 +64,15 @@ namespace VintageKinematics.Api
 
             while (!probe.Empty && probe.Itemstack.StackSize > 0)
             {
+                int targetMoveLimit = int.MaxValue;
                 ItemSlot targetSlot = faceMap != null
-                    ? faceMap.GetPushSlot(inventory, targetPos, fromFace, probe)
+                    ? faceMap.GetPushSlot(inventory, targetPos, fromFace, probe, out targetMoveLimit)
                     : invBase?.GetAutoPushIntoSlot(fromFace, probe);
                 int moved = 0;
 
                 if (targetSlot != null)
                 {
-                    moved = MoveIntoSlot(world, probe, targetSlot);
+                    moved = MoveIntoSlot(world, probe, targetSlot, targetMoveLimit);
                     if (moved <= 0) skip.Add(targetSlot);
                 }
                 else if (restrictedPush)
@@ -173,15 +174,15 @@ namespace VintageKinematics.Api
             return moved;
         }
 
-        private static int MoveIntoSlot(IWorldAccessor world, ItemSlot source, ItemSlot target)
+        private static int MoveIntoSlot(IWorldAccessor world, ItemSlot source, ItemSlot target, int maxQuantity = int.MaxValue)
         {
-            if (source == null || target == null || source.Empty) return 0;
+            if (source == null || target == null || source.Empty || maxQuantity <= 0) return 0;
             ItemStackMoveOperation op = new ItemStackMoveOperation(
                 world,
                 EnumMouseButton.Left,
                 0,
                 EnumMergePriority.DirectMerge,
-                source.Itemstack.StackSize);
+                System.Math.Min(source.Itemstack.StackSize, maxQuantity));
             return source.TryPutInto(target, ref op);
         }
     }

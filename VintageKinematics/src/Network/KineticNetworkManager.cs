@@ -24,6 +24,7 @@ namespace VintageKinematics.Network
         public event Action<KineticNetwork> NetworkBuilt;
         public event Action<KineticNetwork> NetworkRemoved;
         public event Action<KineticNetwork> NetworkConflictChanged;
+        public event Action<KineticNetwork> NetworkStateChanged;
 
         public override void Start(ICoreAPI api)
         {
@@ -320,6 +321,7 @@ namespace VintageKinematics.Network
         internal void NotifyConflictChanged(KineticNetwork net)
         {
             NetworkConflictChanged?.Invoke(net);
+            NetworkStateChanged?.Invoke(net);
         }
 
         // Refreshes each source node's RatedRPM to reflect its current active state. An
@@ -624,6 +626,7 @@ namespace VintageKinematics.Network
                     cons.OnNetworkRPMChanged(beh.CurrentRPM, net);
                 }
             }
+            NetworkStateChanged?.Invoke(net);
         }
 
         public void OnPlaced(BlockPos pos)

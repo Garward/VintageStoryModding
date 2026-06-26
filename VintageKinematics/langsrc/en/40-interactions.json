@@ -34,6 +34,7 @@
     "vintagekinematics:blockhelp-kineticactivator-mode": "Cycle activator mode",
     "vintagekinematics:blockhelp-kineticactivator-delay": "Cycle activator delay",
     "vintagekinematics:blockhelp-kineticactivator-pulses": "Cycle activator burst pulses",
+    "vintagekinematics:blockhelp-kineticsensor-mode": "Toggle sensor mode",
     "vintagekinematics:blockhelp-flywheel-toggle": "Toggle flywheel charge/release",
     "vintagekinematics:blockhelp-flywheel-burst": "Set flywheel burst output",
     "vintagekinematics:blockhelp-trebuchet-mount": "Mount",

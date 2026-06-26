@@ -12,13 +12,13 @@ namespace VintageKinematics.Gui
 
         private readonly Action<float> onSetBurst;
 
-        private float storedSeconds;
-        private float maxStoredSeconds;
+        private int storedSeconds;
+        private int maxStoredSeconds;
         private bool releaseMode;
-        private float burstMultiplier;
-        private float maxBurstMultiplier;
-        private float burstOutput;
-        private float remainingSeconds;
+        private int burstMultiplier;
+        private int maxBurstMultiplier;
+        private int burstOutput;
+        private int remainingSeconds;
         private int bankCount;
 
         public override double DrawOrder => 0.2;
@@ -26,13 +26,13 @@ namespace VintageKinematics.Gui
         public GuiDialogFlywheel(
             string title,
             BlockPos pos,
-            float storedSeconds,
-            float maxStoredSeconds,
+            int storedSeconds,
+            int maxStoredSeconds,
             bool releaseMode,
-            float burstMultiplier,
-            float maxBurstMultiplier,
-            float burstOutput,
-            float remainingSeconds,
+            int burstMultiplier,
+            int maxBurstMultiplier,
+            int burstOutput,
+            int remainingSeconds,
             int bankCount,
             Action<float> onSetBurst,
             ICoreClientAPI capi)
@@ -90,13 +90,13 @@ namespace VintageKinematics.Gui
         }
 
         public void UpdateState(
-            float storedSeconds,
-            float maxStoredSeconds,
+            int storedSeconds,
+            int maxStoredSeconds,
             bool releaseMode,
-            float burstMultiplier,
-            float maxBurstMultiplier,
-            float burstOutput,
-            float remainingSeconds,
+            int burstMultiplier,
+            int maxBurstMultiplier,
+            int burstOutput,
+            int remainingSeconds,
             int bankCount)
         {
             this.storedSeconds = storedSeconds;
@@ -115,7 +115,7 @@ namespace VintageKinematics.Gui
 
         private bool OnBurstClicked(float multiplier)
         {
-            if (multiplier > maxBurstMultiplier + 0.001f) return true;
+            if (multiplier > maxBurstMultiplier) return true;
             onSetBurst?.Invoke(multiplier);
             return true;
         }
@@ -127,14 +127,14 @@ namespace VintageKinematics.Gui
             {
                 GuiElementTextButton button = SingleComposer.GetButton(ButtonKey(step));
                 if (button == null) continue;
-                button.Enabled = step <= maxBurstMultiplier + 0.001f;
-                button.SetActive(MathF.Abs(step - burstMultiplier) < 0.001f);
+                button.Enabled = step <= maxBurstMultiplier;
+                button.SetActive((int)step == burstMultiplier);
             }
         }
 
         private string GetStatusText()
         {
-            float percent = maxStoredSeconds > 0f ? GameMath.Clamp(storedSeconds / maxStoredSeconds, 0f, 1f) * 100f : 0f;
+            int percent = maxStoredSeconds > 0 ? (int)MathF.Round(GameMath.Clamp(storedSeconds / (float)maxStoredSeconds, 0f, 1f) * 100f) : 0;
             string mode = releaseMode
                 ? Lang.Get("vintagekinematics:flywheel-mode-release")
                 : Lang.Get("vintagekinematics:flywheel-mode-charge");

@@ -40,7 +40,7 @@ namespace VintageKinematics.BlockEntities
             {
                 dir = -1;
             }
-            return BEKineticClutch.TryConnectInline(self, other, fromPos, toPos, dir);
+            return BEKineticClutch.TryConnectInline(self, other, fromPos, toPos, Block?.Variant?["side"], dir);
         }
 
         private bool IsOutputSide(BlockPos fromPos, BlockPos toPos)
@@ -53,7 +53,7 @@ namespace VintageKinematics.BlockEntities
 
         private BlockFacing ShaftNegFacing()
         {
-            return BEKineticClutch.ShaftNegFacingFor(Block?.Variant["side"]);
+            return BEKineticClutch.OutputFacingFor(Block?.Variant?["side"]);
         }
 
         private void RebuildNetwork()

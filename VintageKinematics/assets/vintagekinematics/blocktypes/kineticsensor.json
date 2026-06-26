@@ -1,0 +1,212 @@
+{
+    "code": "kineticsensor",
+    "class": "BlockKineticSensor",
+    "entityClass": "KineticSensor",
+    "variantgroups": [
+        {
+            "code": "side",
+            "states": [
+                "n",
+                "e",
+                "s",
+                "w",
+                "u",
+                "d"
+            ]
+        }
+    ],
+    "attributes": {
+        "vkKinetic": {
+            "stressImpact": 0
+        },
+        "handbook": {
+            "groupBy": [
+                "kineticsensor-*"
+            ]
+        }
+    },
+    "entityBehaviorsByType": {
+        "*-n": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Custom",
+                    "axis": "Z",
+                    "stressImpact": 0
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "shaftCoreSouth", "axis": "Z", "ratio": 1 },
+                        { "element": "shaftEndSouth", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            }
+        ],
+        "*-s": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Custom",
+                    "axis": "Z",
+                    "stressImpact": 0
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "shaftCoreSouth", "axis": "Z", "ratio": 1 },
+                        { "element": "shaftEndSouth", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            }
+        ],
+        "*-e": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Custom",
+                    "axis": "X",
+                    "stressImpact": 0
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "shaftCoreSouth", "axis": "Z", "ratio": 1 },
+                        { "element": "shaftEndSouth", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            }
+        ],
+        "*-w": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Custom",
+                    "axis": "X",
+                    "stressImpact": 0
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "shaftCoreSouth", "axis": "Z", "ratio": 1 },
+                        { "element": "shaftEndSouth", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            }
+        ],
+        "*-u": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Custom",
+                    "axis": "Y",
+                    "stressImpact": 0
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "shaftCoreSouth", "axis": "Z", "ratio": 1 },
+                        { "element": "shaftEndSouth", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            }
+        ],
+        "*-d": [
+            {
+                "name": "Kinetic",
+                "properties": {
+                    "role": "Custom",
+                    "axis": "Y",
+                    "stressImpact": 0
+                }
+            },
+            {
+                "name": "KineticAnimator",
+                "properties": {
+                    "rotators": [
+                        { "element": "shaftCoreSouth", "axis": "Z", "ratio": 1 },
+                        { "element": "shaftEndSouth", "axis": "Z", "ratio": 1 }
+                    ]
+                }
+            }
+        ]
+    },
+    "shape": {
+        "base": "block/kineticsensor-on"
+    },
+    "shapeByType": {
+        "*-n": { "base": "block/kineticsensor-on", "rotateY": 0 },
+        "*-e": { "base": "block/kineticsensor-on", "rotateY": 270 },
+        "*-s": { "base": "block/kineticsensor-on", "rotateY": 180 },
+        "*-w": { "base": "block/kineticsensor-on", "rotateY": 90 },
+        "*-u": { "base": "block/kineticsensor-on", "rotateX": 90 },
+        "*-d": { "base": "block/kineticsensor-on", "rotateX": 270 }
+    },
+    "textures": {
+        "wood": { "base": "game:block/wood/planks/generic" },
+        "darkwood": { "base": "game:block/wood/oak-dark" },
+        "iron": { "base": "game:block/metal/plate/iron" },
+        "steel": { "base": "game:block/metal/plate/steel" },
+        "copper": { "base": "game:block/metal/plate/copper" },
+        "dark": { "base": "game:block/coal/charcoal" },
+        "glow": { "base": "vintagekinematics:block/kineticigniter-rod-glow" }
+    },
+    "blockmaterial": "Metal",
+    "resistance": 2,
+    "creativeinventory": {
+        "general": [ "*-n" ],
+        "mechanics": [ "*-n" ],
+        "vintagekinematics": [ "*-n" ]
+    },
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "sidesolid": {
+        "all": "false"
+    },
+    "collisionbox": {
+        "x1": 0.125,
+        "y1": 0.125,
+        "z1": 0,
+        "x2": 0.875,
+        "y2": 0.9375,
+        "z2": 0.875
+    },
+    "collisionboxByType": {
+        "*-n": { "x1": 0.125, "y1": 0.125, "z1": 0, "x2": 0.875, "y2": 0.9375, "z2": 0.875 },
+        "*-s": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.9375, "z2": 1 },
+        "*-e": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 1, "y2": 0.9375, "z2": 0.875 },
+        "*-w": { "x1": 0, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.9375, "z2": 0.875 },
+        "*-u": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 1, "z2": 0.875 },
+        "*-d": { "x1": 0.125, "y1": 0, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 }
+    },
+    "selectionboxByType": {
+        "*-n": { "x1": 0.125, "y1": 0.125, "z1": 0, "x2": 0.875, "y2": 0.9375, "z2": 0.875 },
+        "*-s": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.9375, "z2": 1 },
+        "*-e": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 1, "y2": 0.9375, "z2": 0.875 },
+        "*-w": { "x1": 0, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 0.9375, "z2": 0.875 },
+        "*-u": { "x1": 0.125, "y1": 0.125, "z1": 0.125, "x2": 0.875, "y2": 1, "z2": 0.875 },
+        "*-d": { "x1": 0.125, "y1": 0, "z1": 0.125, "x2": 0.875, "y2": 0.875, "z2": 0.875 }
+    },
+    "behaviors": [
+        {
+            "name": "CanonicalDrop",
+            "properties": {
+                "variants": {
+                    "side": "n"
+                }
+            }
+        }
+    ]
+}

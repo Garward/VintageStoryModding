@@ -2,13 +2,17 @@
     "code": "kineticactivator",
     "class": "BlockKineticActivator",
     "entityClass": "KineticActivator",
+    "attributes": {
+        "vkKinetic": {
+            "stressImpact": 0
+        }
+    },
     "entityBehaviorsByType": {
         "*-n": [
             {
                 "name": "Kinetic",
                 "properties": {
                     "role": "Custom",
-                    "stressImpact": 1,
                     "axis": "Z"
                 }
             },
@@ -39,7 +43,6 @@
                 "name": "Kinetic",
                 "properties": {
                     "role": "Custom",
-                    "stressImpact": 1,
                     "axis": "Z"
                 }
             },
@@ -70,7 +73,6 @@
                 "name": "Kinetic",
                 "properties": {
                     "role": "Custom",
-                    "stressImpact": 1,
                     "axis": "X"
                 }
             },
@@ -101,7 +103,6 @@
                 "name": "Kinetic",
                 "properties": {
                     "role": "Custom",
-                    "stressImpact": 1,
                     "axis": "X"
                 }
             },
@@ -132,7 +133,6 @@
                 "name": "Kinetic",
                 "properties": {
                     "role": "Custom",
-                    "stressImpact": 1,
                     "axis": "Y"
                 }
             },
@@ -163,7 +163,6 @@
                 "name": "Kinetic",
                 "properties": {
                     "role": "Custom",
-                    "stressImpact": 1,
                     "axis": "Y"
                 }
             },

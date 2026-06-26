@@ -9,6 +9,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using VintageKinematics.Api;
 
 namespace VintageKinematics.Items
 {
@@ -240,6 +241,7 @@ namespace VintageKinematics.Items
                 || blockSel?.Position == null
                 || itemslot?.Itemstack == null
                 || !IsTitaniumDrill(itemslot.Itemstack)
+                || !IsTitaniumDrillWideMiningEnabled()
                 || GetMiningModeRadius(itemslot) <= 0
                 || byEntity is not EntityPlayer entityPlayer)
             {
@@ -255,14 +257,23 @@ namespace VintageKinematics.Items
 
         public override SkillItem[] GetToolModes(ItemSlot slot, IClientPlayer forPlayer, BlockSelection blockSel)
         {
-            if (IsTitaniumDrill(slot?.Itemstack)) return titaniumMiningModes;
+            if (IsTitaniumDrill(slot?.Itemstack))
+            {
+                if (!IsTitaniumDrillWideMiningEnabled() && titaniumMiningModes != null && titaniumMiningModes.Length > 0)
+                {
+                    return new[] { titaniumMiningModes[0] };
+                }
+
+                return titaniumMiningModes;
+            }
             return base.GetToolModes(slot, forPlayer, blockSel);
         }
 
         public override int GetToolMode(ItemSlot slot, IPlayer byPlayer, BlockSelection blockSel)
         {
             if (!IsTitaniumDrill(slot?.Itemstack)) return base.GetToolMode(slot, byPlayer, blockSel);
-            return GameMath.Clamp(slot.Itemstack.Attributes.GetInt(MiningModeAttribute, 0), 0, 2);
+            int maxMode = IsTitaniumDrillWideMiningEnabled() ? 2 : 0;
+            return GameMath.Clamp(slot.Itemstack.Attributes.GetInt(MiningModeAttribute, 0), 0, maxMode);
         }
 
         public override void SetToolMode(ItemSlot slot, IPlayer byPlayer, BlockSelection blockSel, int toolMode)
@@ -273,7 +284,8 @@ namespace VintageKinematics.Items
                 return;
             }
 
-            slot.Itemstack.Attributes.SetInt(MiningModeAttribute, GameMath.Clamp(toolMode, 0, 2));
+            int maxMode = IsTitaniumDrillWideMiningEnabled() ? 2 : 0;
+            slot.Itemstack.Attributes.SetInt(MiningModeAttribute, GameMath.Clamp(toolMode, 0, maxMode));
             slot.MarkDirty();
         }
 
@@ -320,11 +332,14 @@ namespace VintageKinematics.Items
 
             if (IsTitaniumDrill(inSlot?.Itemstack))
             {
-                interactions = interactions.Append(new WorldInteraction
+                if (IsTitaniumDrillWideMiningEnabled())
                 {
-                    ActionLangCode = "vintagekinematics:heldhelp-powereddrill-mode",
-                    HotKeyCode = "toolmodeselect"
-                });
+                    interactions = interactions.Append(new WorldInteraction
+                    {
+                        ActionLangCode = "vintagekinematics:heldhelp-powereddrill-mode",
+                        HotKeyCode = "toolmodeselect"
+                    });
+                }
             }
 
             return interactions;
@@ -421,6 +436,8 @@ namespace VintageKinematics.Items
 
         private int GetMiningModeRadius(ItemSlot slot)
         {
+            if (!IsTitaniumDrillWideMiningEnabled()) return 0;
+
             return GetToolMode(slot, null, null) switch
             {
                 1 => 1,
@@ -432,6 +449,11 @@ namespace VintageKinematics.Items
         private static bool IsTitaniumDrill(ItemStack stack)
         {
             return stack?.Collectible?.Code?.Path == "powereddrill-titanium";
+        }
+
+        private bool IsTitaniumDrillWideMiningEnabled()
+        {
+            return api?.ModLoader.GetModSystem<KineticConfigSystem>()?.Config?.IsTitaniumDrillWideMiningEnabled() != false;
         }
 
         private void MarkVisualSpinActive(ItemStack stack)

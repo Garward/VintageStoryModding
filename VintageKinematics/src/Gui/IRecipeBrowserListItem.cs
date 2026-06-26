@@ -20,5 +20,11 @@ namespace VintageKinematics.Gui
 
         /// <summary>Sort key for the active dropdown value, e.g. output, input, or work.</summary>
         string SortKey(string sortMode);
+
+        /// <summary>Stable key used when a machine wants clicking this row to select a recipe.</summary>
+        string SelectionKey { get; }
+
+        /// <summary>Short label for selected-recipe buttons and status text.</summary>
+        string SelectionLabel { get; }
     }
 }

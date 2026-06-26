@@ -296,6 +296,9 @@ namespace VintageKinematics.Items
 
         private Block TryGetVariantRotatedBlock(Block block, BlockFacing clickedFace)
         {
+            Block flywheelBlock = TryGetFlywheelFlippedBlock(block);
+            if (flywheelBlock != null) return flywheelBlock;
+
             Block axisBlock = TryGetAxisRotatedBlock(block, clickedFace);
             if (axisBlock != null) return axisBlock;
 
@@ -317,6 +320,27 @@ namespace VintageKinematics.Items
             }
 
             return null;
+        }
+
+        private Block TryGetFlywheelFlippedBlock(Block block)
+        {
+            if (block is not BlockFlywheel) return null;
+            if (block.Variant == null || !block.Variant.TryGetValue("side", out string side)) return null;
+
+            string flipped = side switch
+            {
+                "e" => "w",
+                "w" => "e",
+                "n" => "s",
+                "s" => "n",
+                "east" => "west",
+                "west" => "east",
+                "north" => "south",
+                "south" => "north",
+                _ => null
+            };
+
+            return flipped == null ? null : TryGetBlockWithVariant(block, "side", flipped);
         }
 
         private Block TryGetAxisRotatedBlock(Block block, BlockFacing clickedFace)

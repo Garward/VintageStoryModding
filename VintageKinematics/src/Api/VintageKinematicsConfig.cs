@@ -168,6 +168,13 @@ namespace VintageKinematics.Api
         public float CoalMotorFuelUsageSpeed { get; set; } = 1f;
 
         /// <summary>
+        /// Enables titanium powered drill 3x3 and 5x5 mining modes. Set false on servers that
+        /// want to avoid large accidental or unattended area-mining bursts; 1x1 drilling remains
+        /// available.
+        /// </summary>
+        public bool EnableTitaniumDrillWideMining { get; set; } = true;
+
+        /// <summary>
         /// Per-output-item overrides keyed by the dropped item's full code (wildcards supported,
         /// e.g. <c>"game:nugget-*"</c> or <c>"game:gem-*-rough"</c>). Final yield multiplier =
         /// <see cref="SieveYieldMultiplier"/> × first matching entry. If no entry matches, only the
@@ -175,7 +182,7 @@ namespace VintageKinematics.Api
         /// </summary>
         public Dictionary<string, float> SieveYieldOverrides { get; set; } = new Dictionary<string, float>();
 
-        /// <summary>Per-consumer-block speed overrides, keyed by block code (first code part).</summary>
+        /// <summary>Per-consumer-block speed and stress-demand overrides, keyed by block code (first code part).</summary>
         public Dictionary<string, ConsumerOverride> Consumers { get; set; } = new Dictionary<string, ConsumerOverride>();
 
         /// <summary>Per-generator-block stress overrides, keyed by block code (first code part).</summary>
@@ -185,6 +192,9 @@ namespace VintageKinematics.Api
         {
             /// <summary>Speed multiplier for this consumer block (combined multiplicatively with the global).</summary>
             public float SpeedMultiplier { get; set; } = 1f;
+
+            /// <summary>Stress demand multiplier for this consumer block. 1.0 = JSON stressImpact.</summary>
+            public float StressUnitMultiplier { get; set; } = 1f;
         }
 
         public class GeneratorOverride
@@ -201,12 +211,20 @@ namespace VintageKinematics.Api
             return SpeedMultiplier;
         }
 
+        /// <summary>Returns the effective stress-demand multiplier for a consumer block code.</summary>
+        public float ResolveConsumerStress(string blockCode)
+        {
+            if (Consumers != null && blockCode != null && Consumers.TryGetValue(blockCode, out var o) && o != null)
+                return ClampStressMultiplier(o.StressUnitMultiplier);
+            return 1f;
+        }
+
         /// <summary>Returns the effective stress-capacity multiplier for a generator block code. Falls back to the global when no per-block override exists.</summary>
         public float ResolveGeneratorStress(string blockCode)
         {
             if (Generators != null && blockCode != null && Generators.TryGetValue(blockCode, out var o) && o != null)
-                return StressUnitMultiplier * o.StressUnitMultiplier;
-            return StressUnitMultiplier;
+                return ClampStressMultiplier(StressUnitMultiplier * o.StressUnitMultiplier);
+            return ClampStressMultiplier(StressUnitMultiplier);
         }
 
         /// <summary>
@@ -290,6 +308,11 @@ namespace VintageKinematics.Api
             return ClampFuelUsageSpeed(CoalMotorFuelUsageSpeed);
         }
 
+        public bool IsTitaniumDrillWideMiningEnabled()
+        {
+            return EnableTitaniumDrillWideMining;
+        }
+
         public bool IsKineticActivatorTargetBlacklisted(Block block, BlockEntity blockEntity)
         {
             if (KineticActivatorTargetBlacklist == null || KineticActivatorTargetBlacklist.Count == 0) return false;
@@ -341,6 +364,12 @@ namespace VintageKinematics.Api
         {
             if (float.IsNaN(value) || float.IsInfinity(value)) return 1f;
             return GameMath.Clamp(value, 0.01f, 100f);
+        }
+
+        private static float ClampStressMultiplier(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value)) return 1f;
+            return GameMath.Clamp(value, 0f, 100f);
         }
 
         private static float ClampYieldMultiplier(float value)

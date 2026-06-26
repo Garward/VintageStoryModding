@@ -148,6 +148,7 @@ vintagekinematics:jsonprocessor-recipes
 vintagekinematics:jsonprocessor-search-recipes
 vintagekinematics:jsonprocessor-recipes-button
 vintagekinematics:kineticforgepress-outputs
+vintagekinematics:kineticforgepress-auto-limit
 vintagekinematics:kineticforgepress-heat-info
 vintagekinematics:kineticforgepress-lining-active
 vintagekinematics:kineticforgepress-lining-missing
@@ -394,6 +395,8 @@ vintagekinematics:block-handbooktitle-vintagekinematics:kineticforgepress-*
 vintagekinematics:block-handbooktext-vintagekinematics:kineticforgepress-*
 vintagekinematics:block-handbooktitle-vintagekinematics:kineticbellows-*
 vintagekinematics:block-handbooktext-vintagekinematics:kineticbellows-*
+vintagekinematics:block-handbooktitle-vintagekinematics:kineticcharcoalretort-*
+vintagekinematics:block-handbooktext-vintagekinematics:kineticcharcoalretort-*
 vintagekinematics:block-handbooktitle-vintagekinematics:kineticmixer-*
 vintagekinematics:block-handbooktext-vintagekinematics:kineticmixer-*
 vintagekinematics:block-handbooktitle-vintagekinematics:kineticbore-*

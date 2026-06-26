@@ -1,11 +1,11 @@
 {
     "ingredients": [
-        { "type": "item", "code": "game:clay-fire", "quantity": 2 },
-        { "type": "item", "code": "game:crushed-quartz", "quantity": 1 },
-        { "type": "item", "code": "game:crushed-bauxite", "quantity": 1 }
+        { "type": "item", "code": "game:clay-fire", "quantity": 16 },
+        { "type": "item", "code": "game:crushed-quartz", "quantity": 8 },
+        { "type": "item", "code": "game:crushed-bauxite", "quantity": 8 }
     ],
     "outputs": [
-        { "type": "item", "code": "game:refractorybrick-raw-tier1", "quantity": 1 }
+        { "type": "item", "code": "game:refractorybrick-raw-tier1", "quantity": 8 }
     ],
     "mixTicks": 6
 }

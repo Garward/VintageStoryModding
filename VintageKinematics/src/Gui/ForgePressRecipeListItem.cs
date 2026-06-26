@@ -24,6 +24,8 @@ namespace VintageKinematics.Gui
 
         public bool Visible => true;
         public KineticForgePressRecipe Recipe => recipe;
+        public string SelectionKey => recipe?.OperationCode;
+        public string SelectionLabel => recipe?.DisplayName ?? SortTitle;
 
         public ForgePressRecipeListItem(KineticForgePressRecipe recipe)
         {

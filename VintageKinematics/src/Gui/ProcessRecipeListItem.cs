@@ -25,6 +25,8 @@ namespace VintageKinematics.Gui
 
         public bool Visible => true;
         public string SortTitle => title ?? "";
+        public string SelectionKey => recipe?.Code;
+        public string SelectionLabel => SortTitle;
 
         public ProcessRecipeListItem(KineticProcessRecipe recipe)
         {

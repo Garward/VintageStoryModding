@@ -174,25 +174,54 @@ namespace VintageKinematics.Network
             var fromInfo = ToInfo(from, fromBlock);
             var toInfo   = ToInfo(to, toBlock);
 
-            if (MultiblockHelper.GetMultiblockAwareBE(world, from.Pos) is IKineticConnector beConnFrom)
+            IKineticConnector beConnFrom = MultiblockHelper.GetMultiblockAwareBE(world, from.Pos) as IKineticConnector;
+            IKineticConnector beConnTo = MultiblockHelper.GetMultiblockAwareBE(world, to.Pos) as IKineticConnector;
+            IKineticConnector blockConnFrom = fromBlock as IKineticConnector;
+            IKineticConnector blockConnTo = toBlock as IKineticConnector;
+
+            IKineticConnector exclusiveFrom = beConnFrom as IKineticExclusiveConnector ?? blockConnFrom as IKineticExclusiveConnector;
+            IKineticConnector exclusiveTo = beConnTo as IKineticExclusiveConnector ?? blockConnTo as IKineticExclusiveConnector;
+            if (exclusiveFrom != null || exclusiveTo != null)
+            {
+                KineticConnectionResult? fromResult = null;
+                KineticConnectionResult? toResult = null;
+
+                if (exclusiveFrom != null)
+                {
+                    fromResult = exclusiveFrom.TryConnect(fromInfo, toInfo, from.Pos, to.Pos);
+                    if (!fromResult.HasValue) return null;
+                }
+
+                if (exclusiveTo != null)
+                {
+                    toResult = exclusiveTo.TryConnect(toInfo, fromInfo, to.Pos, from.Pos);
+                    if (!toResult.HasValue) return null;
+                }
+
+                if (fromResult.HasValue) return Translate(fromResult.Value);
+                if (toResult.HasValue) return Translate(toResult.Value);
+                return null;
+            }
+
+            if (beConnFrom != null)
             {
                 var result = beConnFrom.TryConnect(fromInfo, toInfo, from.Pos, to.Pos);
                 if (result.HasValue) return Translate(result.Value);
             }
-            if (MultiblockHelper.GetMultiblockAwareBE(world, to.Pos) is IKineticConnector beConnTo)
+            if (beConnTo != null)
             {
                 var result = beConnTo.TryConnect(toInfo, fromInfo, to.Pos, from.Pos);
                 if (result.HasValue) return Translate(result.Value);
             }
 
-            if (fromBlock is IKineticConnector connFrom)
+            if (blockConnFrom != null)
             {
-                var result = connFrom.TryConnect(fromInfo, toInfo, from.Pos, to.Pos);
+                var result = blockConnFrom.TryConnect(fromInfo, toInfo, from.Pos, to.Pos);
                 if (result.HasValue) return Translate(result.Value);
             }
-            if (toBlock is IKineticConnector connTo)
+            if (blockConnTo != null)
             {
-                var result = connTo.TryConnect(toInfo, fromInfo, to.Pos, from.Pos);
+                var result = blockConnTo.TryConnect(toInfo, fromInfo, to.Pos, from.Pos);
                 if (result.HasValue) return Translate(result.Value);
             }
             return null;

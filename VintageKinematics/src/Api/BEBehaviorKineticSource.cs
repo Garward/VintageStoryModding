@@ -89,15 +89,18 @@ namespace VintageKinematics.Api
         /// (+1 = clockwise, -1 = counter-clockwise). Re-winding with a different direction reverses
         /// the source immediately. The kinetic network picks up the new state on the next manager tick.
         /// </summary>
-        public void Wind(float seconds = 5f, int direction = 1)
+        public void Wind(float seconds = 5f, int direction = 1, bool notifyNetwork = true, bool markDirty = true)
         {
             Direction = direction >= 0 ? 1 : -1;
             DecaySeconds = GameMath.Max(0f, seconds);
             LastWindSeconds = DecaySeconds;
             LastWindWorldMs = Api?.World?.ElapsedMilliseconds ?? 0;
-            var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
-            mgr?.OnSourceChanged(Pos, DecaySeconds > 0f ? SignedTargetRPM : 0f);
-            Blockentity.MarkDirty(true);
+            if (notifyNetwork)
+            {
+                var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
+                mgr?.OnSourceChanged(Pos, DecaySeconds > 0f ? SignedTargetRPM : 0f);
+            }
+            if (markDirty) Blockentity.MarkDirty(true);
         }
 
         public float TimedProgress01()
