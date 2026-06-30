@@ -36,13 +36,14 @@ namespace VintageKinematics.Api
             base.Initialize(api, properties);
             if (api.Side != EnumAppSide.Client) return;
 
-            soundPath          = properties?["sound"].AsString("") ?? "";
-            minRPM             = properties?["minRPM"].AsFloat(4f) ?? 4f;
-            volumeAt32RPM      = properties?["volumeAt32RPM"].AsFloat(1f) ?? 1f;
-            pitchAt32RPM       = properties?["pitchAt32RPM"].AsFloat(1f) ?? 1f;
-            pitchScalesWithRPM = properties?["pitchScalesWithRPM"].AsBool(true) ?? true;
-            dedupKey           = properties?["dedupKey"].AsString(soundPath) ?? soundPath;
-            maxSimultaneous    = properties?["maxSimultaneous"].AsInt(3) ?? 3;
+            JsonObject defaults = Block?.Attributes?["vkKineticSound"];
+            soundPath          = ReadString(properties, defaults, "sound", "");
+            minRPM             = ReadFloat(properties, defaults, "minRPM", 4f);
+            volumeAt32RPM      = ReadFloat(properties, defaults, "volumeAt32RPM", 1f);
+            pitchAt32RPM       = ReadFloat(properties, defaults, "pitchAt32RPM", 1f);
+            pitchScalesWithRPM = ReadBool(properties, defaults, "pitchScalesWithRPM", true);
+            dedupKey           = ReadString(properties, defaults, "dedupKey", soundPath);
+            maxSimultaneous    = ReadInt(properties, defaults, "maxSimultaneous", 3);
 
             if (string.IsNullOrEmpty(soundPath))
             {
@@ -118,6 +119,34 @@ namespace VintageKinematics.Api
             activeSound = null;
             if (Api is ICoreClientAPI capi)
                 capi.ModLoader.GetModSystem<KineticSoundCoordinator>()?.Unregister(this);
+        }
+
+        private static string ReadString(JsonObject properties, JsonObject defaults, string key, string fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsString(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsString(fallback);
+            return fallback;
+        }
+
+        private static float ReadFloat(JsonObject properties, JsonObject defaults, string key, float fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsFloat(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsFloat(fallback);
+            return fallback;
+        }
+
+        private static int ReadInt(JsonObject properties, JsonObject defaults, string key, int fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsInt(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsInt(fallback);
+            return fallback;
+        }
+
+        private static bool ReadBool(JsonObject properties, JsonObject defaults, string key, bool fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsBool(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsBool(fallback);
+            return fallback;
         }
     }
 }

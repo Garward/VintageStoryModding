@@ -65,6 +65,37 @@ namespace VintageKinematics.Crafting
             return null;
         }
 
+        /// <summary>First recipe defined for the given operation, or null.</summary>
+        public KineticForgePressRecipe FindByOperation(string operationCode)
+        {
+            if (string.IsNullOrEmpty(operationCode)) return null;
+            foreach (var recipe in recipes)
+            {
+                if (recipe.OperationCode == operationCode) return recipe;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Per-gate facts for the selected operation: whether any recipe exists for it, and
+        /// whether the input / die individually satisfy some recipe (each gate checked
+        /// independently of the others). Used to explain why a press is idle.
+        /// </summary>
+        public ForgePressOperationProbe ProbeOperation(ItemStack input, ItemStack die, string operationCode)
+        {
+            var probe = new ForgePressOperationProbe();
+            if (string.IsNullOrEmpty(operationCode)) return probe;
+            foreach (var recipe in recipes)
+            {
+                if (recipe.OperationCode != operationCode) continue;
+                probe.Exists = true;
+                if (recipe.RequiresDie) probe.RequiresDie = true;
+                if (input != null && recipe.MatchesInput(api?.World, config, input)) probe.InputMatches = true;
+                if (recipe.MatchesDieStack(die)) probe.DieMatches = true;
+            }
+            return probe;
+        }
+
         public string FirstOperationCode()
         {
             return operationCodes.Count > 0 ? operationCodes[0] : "";

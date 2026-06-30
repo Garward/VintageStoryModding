@@ -89,11 +89,12 @@ namespace VintageKinematics.Api
         {
             base.Initialize(api, properties);
 
-            float workPerCycle = properties?["workPerCycle"].AsFloat(100f) ?? 100f;
-            float minRPM       = properties?["minRPM"].AsFloat(8f) ?? 8f;
-            bool autoReset     = properties?["autoReset"].AsBool(true) ?? true;
-            tickInterval       = properties?["tickInterval"].AsFloat(0.25f) ?? 0.25f;
-            fixedWorkRPM       = properties?["fixedWorkRPM"].AsFloat(0f) ?? 0f;
+            JsonObject defaults = Block?.Attributes?["vkKineticWorker"];
+            float workPerCycle = ReadFloat(properties, defaults, "workPerCycle", 100f);
+            float minRPM       = ReadFloat(properties, defaults, "minRPM", 8f);
+            bool autoReset     = ReadBool(properties, defaults, "autoReset", true);
+            tickInterval       = ReadFloat(properties, defaults, "tickInterval", 0.25f);
+            fixedWorkRPM       = ReadFloat(properties, defaults, "fixedWorkRPM", 0f);
 
             var cfg = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
             if (cfg != null)
@@ -150,6 +151,20 @@ namespace VintageKinematics.Api
         }
 
         private void FireProgress(float cur, float total) => OnWorkProgress?.Invoke(cur, total);
+
+        private static float ReadFloat(JsonObject properties, JsonObject defaults, string key, float fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsFloat(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsFloat(fallback);
+            return fallback;
+        }
+
+        private static bool ReadBool(JsonObject properties, JsonObject defaults, string key, bool fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsBool(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsBool(fallback);
+            return fallback;
+        }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
         {

@@ -117,29 +117,25 @@ namespace VintageKinematics.Api
         {
             base.Initialize(api, properties);
 
+            JsonObject defaults = Block?.Attributes?["vkKinetic"];
             bool axisExplicit = false;
-            if (properties != null)
+            string roleStr = ReadString(properties, defaults, "role", null);
+            if (!string.IsNullOrEmpty(roleStr) && Enum.TryParse(roleStr, true, out EnumKineticRole parsed))
             {
-                if (properties["role"].Exists)
+                Role = parsed;
+            }
+
+            string axisStr = ReadString(properties, defaults, "axis", null);
+            if (!string.IsNullOrEmpty(axisStr))
+            {
+                if (Enum.TryParse(axisStr, true, out EnumKineticAxis explicitAxis))
                 {
-                    string roleStr = properties["role"].AsString("Shaft");
-                    if (Enum.TryParse(roleStr, true, out EnumKineticRole parsed))
-                        Role = parsed;
-                }
-                if (properties["axis"].Exists)
-                {
-                    string axisStr = properties["axis"].AsString();
-                    if (Enum.TryParse(axisStr, true, out EnumKineticAxis explicitAxis))
-                    {
-                        Axis = explicitAxis;
-                        axisExplicit = true;
-                    }
+                    Axis = explicitAxis;
+                    axisExplicit = true;
                 }
             }
 
-            StressImpact = properties != null && properties["stressImpact"].Exists
-                ? properties["stressImpact"].AsFloat(0f)
-                : Block?.Attributes?["vkKinetic"]?["stressImpact"].AsFloat(0f) ?? 0f;
+            StressImpact = ReadFloat(properties, defaults, "stressImpact", 0f);
             if (StressImpact != 0f)
             {
                 var cfg = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
@@ -157,7 +153,9 @@ namespace VintageKinematics.Api
             // valid X declaration with the AxisFromBlockFacing fallback.
             if (!axisExplicit)
             {
-                Axis = AxisFromBlockFacing();
+                Axis = ReadBool(properties, defaults, "axisFromSide", false)
+                    ? AxisFromSideVariant()
+                    : AxisFromBlockFacing();
             }
 
             // Networks live in RAM on the manager; chunk load / world load doesn't restore them.
@@ -181,6 +179,52 @@ namespace VintageKinematics.Api
             if (axisVariant == "y") return EnumKineticAxis.Y;
             if (axisVariant == "z") return EnumKineticAxis.Z;
             return EnumKineticAxis.Y;
+        }
+
+        private EnumKineticAxis AxisFromSideVariant()
+        {
+            string side = Block?.Variant?["side"] ?? "";
+            switch (side)
+            {
+                case "e":
+                case "w":
+                case "east":
+                case "west":
+                    return EnumKineticAxis.X;
+                case "n":
+                case "s":
+                case "north":
+                case "south":
+                    return EnumKineticAxis.Z;
+                case "u":
+                case "d":
+                case "up":
+                case "down":
+                    return EnumKineticAxis.Y;
+                default:
+                    return AxisFromBlockFacing();
+            }
+        }
+
+        private static string ReadString(JsonObject properties, JsonObject defaults, string key, string fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsString(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsString(fallback);
+            return fallback;
+        }
+
+        private static float ReadFloat(JsonObject properties, JsonObject defaults, string key, float fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsFloat(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsFloat(fallback);
+            return fallback;
+        }
+
+        private static bool ReadBool(JsonObject properties, JsonObject defaults, string key, bool fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsBool(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsBool(fallback);
+            return fallback;
         }
 
         public override void OnBlockPlaced(ItemStack byItemStack = null)

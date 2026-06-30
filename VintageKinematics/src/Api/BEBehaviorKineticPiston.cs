@@ -46,6 +46,7 @@ namespace VintageKinematics.Api
             pistons = new List<KineticPistonRenderer.Piston>();
 
             var arr = properties?["pistons"];
+            if (arr == null || !arr.Exists) arr = Block?.Attributes?["vkKineticPiston"]?["pistons"];
             if (arr != null && arr.Exists)
             {
                 foreach (var p in arr.AsArray())

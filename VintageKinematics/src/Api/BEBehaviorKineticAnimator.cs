@@ -33,6 +33,7 @@ namespace VintageKinematics.Api
             rotators = new List<KineticAnimatorRenderer.Rotator>();
 
             var arr = properties?["rotators"];
+            if (arr == null || !arr.Exists) arr = Block?.Attributes?["vkKineticAnimator"]?["rotators"];
             if (arr != null && arr.Exists)
             {
                 foreach (var r in arr.AsArray())

@@ -10,49 +10,10 @@
     <LangVersion>12.0</LangVersion>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ReferenceVSEssentials>true</ReferenceVSEssentials>
+    <ReferenceNewtonsoftJson>true</ReferenceNewtonsoftJson>
+    <CleanModOutputBeforeDeploy>true</CleanModOutputBeforeDeploy>
   </PropertyGroup>
-
-  <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
-
-  <PropertyGroup>
-    <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
-    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MOD_OUTPUT)' != ''">$(VINTAGE_STORY_MOD_OUTPUT)</ModOutputPath>
-    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/VintageKinematics</ModOutputPath>
-    <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
-    <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
-    <PythonExe Condition="'$(PythonExe)' == ''">python3</PythonExe>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="VintagestoryAPI">
-      <HintPath>$(VSPath)/VintagestoryAPI.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VintagestoryLib">
-      <HintPath>$(VSPath)/VintagestoryLib.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VSEssentials">
-      <HintPath>$(VSPath)/Mods/VSEssentials.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VSSurvivalMod">
-      <HintPath>$(VSPath)/Mods/VSSurvivalMod.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>$(VSPath)/Lib/Newtonsoft.Json.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="cairo-sharp">
-      <HintPath>$(VSPath)/Lib/cairo-sharp.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="modinfo.json" CopyToOutputDirectory="Always" />
@@ -60,33 +21,8 @@
     <Compile Remove="tests/**" />
   </ItemGroup>
 
-  <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(VSPath)' == ''">
-    <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
-  </Target>
-
   <Target Name="GenerateLang" BeforeTargets="BeforeBuild">
     <Exec Command="&quot;$(PythonExe)&quot; &quot;$(MSBuildProjectDirectory)/scripts/merge_lang.py&quot; --project &quot;$(MSBuildProjectDirectory)&quot; --locale en merge" />
-  </Target>
-
-  <Target Name="DeployToVS" AfterTargets="Build" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">
-    <ItemGroup>
-      <DllFiles Include="$(OutputPath)$(AssemblyName).dll" />
-      <PdbFiles Include="$(OutputPath)$(AssemblyName).pdb" />
-      <ModInfo Include="modinfo.json" />
-      <ModIcon Include="modicon.png" />
-      <AssetFiles Include="assets/**/*.*" />
-    </ItemGroup>
-    <RemoveDir Directories="$(ModOutputPath)" />
-    <MakeDir Directories="$(ModOutputPath)" />
-    <Copy SourceFiles="@(DllFiles)" DestinationFolder="$(ModOutputPath)" />
-    <Copy SourceFiles="@(PdbFiles)" DestinationFolder="$(ModOutputPath)" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
-    <Copy SourceFiles="@(ModInfo)" DestinationFolder="$(ModOutputPath)" />
-    <Copy SourceFiles="@(ModIcon)" DestinationFolder="$(ModOutputPath)" Condition="Exists('modicon.png')" />
-    <Copy SourceFiles="@(AssetFiles)" DestinationFiles="@(AssetFiles->'$(ModOutputPath)/assets/%(RecursiveDir)%(Filename)%(Extension)')" />
-  </Target>
-
-  <Target Name="PackageDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Exec Command="bash &quot;$(MSBuildProjectDirectory)/scripts/package.sh&quot; &quot;$(MSBuildProjectDirectory)&quot; &quot;$(MSBuildProjectDirectory)/$(OutputPath)&quot;" />
   </Target>
 
 </Project>

@@ -57,7 +57,6 @@ namespace VintageKinematics.BlockEntities
         private const float DefaultSmokeParticleY = 35.5f / 16f;
         private static readonly AssetLocation PressHitSound = new AssetLocation("sounds/effect/anvilhit");
         private static readonly AssetLocation PressCompleteSound = new AssetLocation("game:sounds/block/anvil");
-        private const float AutomationHotInputThreshold = 50f;
         private static readonly Vec3d[] DefaultSmokeStackLocalPositions =
         {
             new Vec3d(-6f / 16f, DefaultSmokeParticleY, 22f / 16f),
@@ -187,16 +186,7 @@ namespace VintageKinematics.BlockEntities
         {
             if (slotId != SlotInput) return true;
             if (fromSlot == null || fromSlot.Empty) return false;
-            if (AutoPushLimitForSlot(inv, cell, face, slotId, fromSlot) <= 0) return false;
-
-            ItemSlot inputSlot = inventory[SlotInput];
-            if (inputSlot.Empty || inputSlot.Itemstack?.Collectible == null) return true;
-
-            KineticForgePressRecipe recipe = CurrentRecipe();
-            if (recipe == null) return true;
-
-            float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
-            return inputTemperature <= GlobalConstants.CollectibleDefaultTemperature + AutomationHotInputThreshold;
+            return AutoPushLimitForSlot(inv, cell, face, slotId, fromSlot) > 0;
         }
 
         private int AutoPushLimitForSlot(IInventory inv, BlockPos cell, BlockFacing face, int slotId, ItemSlot fromSlot)
@@ -723,6 +713,7 @@ namespace VintageKinematics.BlockEntities
                 CurrentPressProgress,
                 CurrentPressProgressMax,
                 CanPressCurrentRecipe,
+                GetPressStatusText,
                 OnClientSelectOperation,
                 OnClientSetAutoMetalInputLimit,
                 capi);
@@ -750,7 +741,6 @@ namespace VintageKinematics.BlockEntities
             using var bw = new BinaryWriter(ms);
             bw.Write(autoMetalInputLimit);
             ((ICoreClientAPI)Api).Network.SendBlockEntityPacket(Pos, PacketIdSetAutoMetalLimit, ms.ToArray());
-            RefreshClientDialog();
         }
 
         private void SetAutoMetalInputLimit(int limit)
@@ -758,7 +748,7 @@ namespace VintageKinematics.BlockEntities
             int clamped = ClampAutoMetalInputLimit(limit);
             if (autoMetalInputLimit == clamped) return;
             autoMetalInputLimit = clamped;
-            MarkDirty(true);
+            MarkDirty(false);
         }
 
         private static int ClampAutoMetalInputLimit(int limit)
@@ -779,25 +769,116 @@ namespace VintageKinematics.BlockEntities
 
         private bool CanPressCurrentRecipe()
         {
+            return GetPressStatus() == EnumForgePressStatus.Pressing;
+        }
+
+        /// <summary>
+        /// Gathers the facts the press knows right now and resolves them to the single most
+        /// actionable reason it is (not) pressing. Drives both the progress bar enable state
+        /// and the idle-reason text shown to the player.
+        /// </summary>
+        private EnumForgePressStatus GetPressStatus()
+        {
+            return GetPressStatus(out _);
+        }
+
+        private EnumForgePressStatus GetPressStatus(out ForgePressStatusInputs facts)
+        {
+            facts = default;
+
             ItemSlot inputSlot = inventory[SlotInput];
-            if (inputSlot.Empty || inputSlot.Itemstack?.Collectible == null) return false;
+            ItemStack input = inputSlot?.Itemstack;
+            ItemStack die = inventory[SlotDie]?.Itemstack;
+            facts.HasInput = input?.Collectible != null;
 
-            KineticForgePressRecipe recipe = CurrentRecipe();
-            if (recipe == null) return false;
+            KineticForgePressRecipe recipe = facts.HasInput ? CurrentRecipe() : null;
+            facts.RecipeMatched = recipe != null;
 
-            int requiredQty = RequiredQuantityFor(recipe, inputSlot.Itemstack);
-            if (inputSlot.StackSize < requiredQty) return false;
+            var registry = Api?.ModLoader.GetModSystem<KineticForgePressRecipeRegistry>();
+            ForgePressOperationProbe probe = registry?.ProbeOperation(input, die, selectedOperationCode) ?? default;
+            facts.HasSelectedOperationRecipe = probe.Exists;
+            facts.SelectedOpInputMatches = probe.InputMatches;
+            facts.SelectedOpRequiresDie = probe.RequiresDie;
+            facts.SelectedOpDieMatches = probe.DieMatches;
 
-            float inputTemperature = inputSlot.Itemstack.Collectible.GetTemperature(Api.World, inputSlot.Itemstack);
-            if (inputTemperature < RequiredTemperatureFor(recipe, inputSlot.Itemstack)) return false;
+            if (recipe != null)
+            {
+                facts.InputStackSize = inputSlot.StackSize;
+                facts.RequiredQuantity = RequiredQuantityFor(recipe, input);
+                facts.InputTemperature = input.Collectible.GetTemperature(Api.World, input);
+                facts.RequiredTemperature = RequiredTemperatureFor(recipe, input);
+            }
 
             BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
-            if (kinetic == null) return false;
-            if (kinetic.IsConflicted || (kinetic.EffectiveNetwork?.IsOverstressed ?? false)) return false;
+            facts.HasKinetic = kinetic != null;
+            facts.IsConflicted = kinetic?.IsConflicted ?? false;
+            facts.IsOverstressed = kinetic?.EffectiveNetwork?.IsOverstressed ?? false;
 
             BEBehaviorKineticWorker worker = GetBehavior<BEBehaviorKineticWorker>();
             float minRpm = Math.Max(0.01f, worker?.MinRPM ?? 0.01f);
-            return Math.Abs(kinetic.CurrentRPM) >= minRpm;
+            facts.HasMinRpm = kinetic != null && Math.Abs(kinetic.CurrentRPM) >= minRpm;
+
+            return ForgePressStatusEvaluator.Evaluate(facts);
+        }
+
+        /// <summary>
+        /// Player-facing line explaining why the press is idle, or "" when it is pressing.
+        /// </summary>
+        public string GetPressStatusText()
+        {
+            EnumForgePressStatus status = GetPressStatus(out ForgePressStatusInputs facts);
+            switch (status)
+            {
+                case EnumForgePressStatus.Pressing:
+                    return "";
+                case EnumForgePressStatus.NoInput:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-noinput");
+                case EnumForgePressStatus.NoRecipeSelected:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-norecipe");
+                case EnumForgePressStatus.WrongMetal:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-wrongmetal", RequiredIngredientName());
+                case EnumForgePressStatus.WrongDie:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-wrongdie", RequiredDieName());
+                case EnumForgePressStatus.NoMatchingRecipe:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-nomatch");
+                case EnumForgePressStatus.NotEnoughInput:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-notenough", facts.RequiredQuantity);
+                case EnumForgePressStatus.TooCold:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-toocold", (int)facts.RequiredTemperature);
+                case EnumForgePressStatus.NoPower:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-nopower");
+                case EnumForgePressStatus.Overstressed:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-overstressed");
+                case EnumForgePressStatus.Conflicted:
+                    return Lang.Get("vintagekinematics:kineticforgepress-status-conflicted");
+                default:
+                    return "";
+            }
+        }
+
+        private string RequiredIngredientName()
+        {
+            var registry = Api?.ModLoader.GetModSystem<KineticForgePressRecipeRegistry>();
+            KineticForgePressRecipe recipe = registry?.FindByOperation(selectedOperationCode);
+            ItemStack resolved = recipe?.Ingredient?.ResolvedItemstack;
+            if (resolved != null) return resolved.GetName();
+            return PathTail(recipe?.Ingredient?.Code?.Path);
+        }
+
+        private string RequiredDieName()
+        {
+            var registry = Api?.ModLoader.GetModSystem<KineticForgePressRecipeRegistry>();
+            KineticForgePressRecipe recipe = registry?.FindByOperation(selectedOperationCode);
+            ItemStack resolved = recipe?.Die?.ResolvedItemstack;
+            if (resolved != null) return resolved.GetName();
+            return PathTail(recipe?.Die?.Code?.Path);
+        }
+
+        private static string PathTail(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return "";
+            int dash = path.LastIndexOf('-');
+            return dash >= 0 && dash < path.Length - 1 ? path.Substring(dash + 1) : path;
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)
@@ -810,6 +891,12 @@ namespace VintageKinematics.BlockEntities
             sb.AppendLine(hasTier3RefractoryLining
                 ? Lang.Get("vintagekinematics:kineticforgepress-lining-active")
                 : Lang.Get("vintagekinematics:kineticforgepress-lining-missing", RefractoryLiningBrickCost));
+
+            string idleReason = GetPressStatusText();
+            if (!string.IsNullOrEmpty(idleReason))
+            {
+                sb.AppendLine(idleReason);
+            }
         }
 
         public bool AppendKineticWorkTooltip(StringBuilder dsc, BEBehaviorKineticWorker worker)
@@ -826,6 +913,12 @@ namespace VintageKinematics.BlockEntities
                 float current = GameMath.Clamp(pressTicksAccumulated, 0, total);
                 float pct = 100f * current / total;
                 dsc.AppendLine($"Work: {current:F0}/{total:F0} press ticks ({pct:F0}%)");
+            }
+
+            string idleReason = GetPressStatusText();
+            if (!string.IsNullOrEmpty(idleReason))
+            {
+                dsc.AppendLine(idleReason);
             }
 
             return true;

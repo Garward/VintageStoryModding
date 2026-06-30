@@ -30,6 +30,7 @@ namespace VintageKinematics.Api
             stretches = new List<KineticStretchRenderer.Stretch>();
 
             var arr = properties?["stretches"];
+            if (arr == null || !arr.Exists) arr = Block?.Attributes?["vkKineticStretch"]?["stretches"];
             if (arr != null && arr.Exists)
             {
                 foreach (var s in arr.AsArray())

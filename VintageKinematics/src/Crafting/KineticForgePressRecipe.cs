@@ -26,10 +26,26 @@ namespace VintageKinematics.Crafting
 
         public bool Matches(IWorldAccessor world, VintageKinematicsConfig config, ItemStack stack, string operationCode, ItemStack dieStack)
         {
-            if (!string.IsNullOrEmpty(operationCode) && OperationCode != operationCode) return false;
+            if (!MatchesOperation(operationCode)) return false;
+            if (!MatchesInput(world, config, stack)) return false;
+            if (!MatchesDie(dieStack)) return false;
+            return true;
+        }
+
+        /// <summary>True when this recipe belongs to the given operation (empty matches any).</summary>
+        public bool MatchesOperation(string operationCode)
+        {
+            return string.IsNullOrEmpty(operationCode) || OperationCode == operationCode;
+        }
+
+        /// <summary>
+        /// True when the input stack satisfies this recipe's ingredient requirements, ignoring
+        /// operation and die. Used to explain why a press is idle (e.g. wrong metal).
+        /// </summary>
+        public bool MatchesInput(IWorldAccessor world, VintageKinematicsConfig config, ItemStack stack)
+        {
             if (stack == null || Ingredient?.Code == null) return false;
             if (!MatchesIngredientCode(stack.Collectible.Code)) return false;
-            if (!MatchesDie(dieStack)) return false;
             if (RequireNonGameDomain && stack.Collectible.Code?.Domain == "game") return false;
             if (RequiresModdedNuggetSmeltingConfig && config?.IsForgePressModdedNuggetSmeltingAllowed(stack.Collectible.Code) != true) return false;
             if (UseInputSmeltedStack && !HasInputSmeltedStack(world, stack)) return false;
@@ -43,6 +59,12 @@ namespace VintageKinematics.Crafting
             }
             return false;
         }
+
+        /// <summary>True when this recipe requires a die in the press.</summary>
+        public bool RequiresDie => Die?.Code != null;
+
+        /// <summary>True when the given die stack satisfies this recipe's die requirement.</summary>
+        public bool MatchesDieStack(ItemStack dieStack) => MatchesDie(dieStack);
 
         private bool MatchesIngredientCode(AssetLocation inputCode)
         {

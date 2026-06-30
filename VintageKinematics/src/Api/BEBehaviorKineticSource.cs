@@ -39,13 +39,12 @@ namespace VintageKinematics.Api
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
-            if (properties != null)
-            {
-                TargetRPM = properties["targetRPM"].AsFloat(8f);
-                AlwaysActive = properties["alwaysActive"].AsBool(false);
-                DecayTickMs = properties["decayTickMs"].AsInt(1000);
-                if (DecayTickMs < 50) DecayTickMs = 50;
-            }
+            JsonObject defaults = Block?.Attributes?["vkKineticSource"];
+            TargetRPM = ReadFloat(properties, defaults, "targetRPM", TargetRPM);
+            AlwaysActive = ReadBool(properties, defaults, "alwaysActive", AlwaysActive);
+            DecayTickMs = ReadInt(properties, defaults, "decayTickMs", DecayTickMs);
+            if (DecayTickMs < 50) DecayTickMs = 50;
+
             if (api.Side == EnumAppSide.Server)
             {
                 if (AlwaysActive)
@@ -156,6 +155,27 @@ namespace VintageKinematics.Api
                 float elapsed = GameMath.Max(0f, LastWindSeconds - DecaySeconds);
                 LastWindWorldMs = (Api.World?.ElapsedMilliseconds ?? 0) - (long)(elapsed * 1000f);
             }
+        }
+
+        private static float ReadFloat(JsonObject properties, JsonObject defaults, string key, float fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsFloat(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsFloat(fallback);
+            return fallback;
+        }
+
+        private static int ReadInt(JsonObject properties, JsonObject defaults, string key, int fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsInt(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsInt(fallback);
+            return fallback;
+        }
+
+        private static bool ReadBool(JsonObject properties, JsonObject defaults, string key, bool fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsBool(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsBool(fallback);
+            return fallback;
         }
     }
 }

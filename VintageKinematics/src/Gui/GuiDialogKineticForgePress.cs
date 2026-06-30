@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -13,10 +14,13 @@ namespace VintageKinematics.Gui
     {
         private readonly Func<string> getOperationCode;
         private readonly Func<int> getAutoMetalInputLimit;
+        private readonly Func<string> getStatusText;
         private readonly Action<string> onSelectOperation;
         private readonly Action<int> onSetAutoMetalInputLimit;
         private readonly MachineRecipeBrowser<ForgePressRecipeListItem> recipeBrowser;
         private readonly MachineProgressBar progressBar;
+        private string lastStatusText;
+        private const string StatusTextKey = "forgepress-status";
         private bool draggingDialog;
         private bool suppressMetalLimitChange;
         private Vec2i dragStartMouse;
@@ -40,6 +44,7 @@ namespace VintageKinematics.Gui
             Func<float> getProgress,
             Func<float> getProgressMax,
             Func<bool> getCanProgress,
+            Func<string> getStatusText,
             Action<string> onSelectOperation,
             Action<int> onSetAutoMetalInputLimit,
             ICoreClientAPI capi)
@@ -47,6 +52,7 @@ namespace VintageKinematics.Gui
         {
             this.getOperationCode = getOperationCode;
             this.getAutoMetalInputLimit = getAutoMetalInputLimit;
+            this.getStatusText = getStatusText;
             this.onSelectOperation = onSelectOperation;
             this.onSetAutoMetalInputLimit = onSetAutoMetalInputLimit;
             progressBar = new MachineProgressBar(capi, "forgepress-progress", getProgress, getProgressMax, getCanProgress);
@@ -67,6 +73,7 @@ namespace VintageKinematics.Gui
         public override void OnRenderGUI(float deltaTime)
         {
             progressBar.Refresh(SingleComposer, false);
+            RefreshStatusText();
             foreach (var composer in Composers)
             {
                 composer.Value.Render(deltaTime);
@@ -92,7 +99,10 @@ namespace VintageKinematics.Gui
             ElementBounds operationLabelBounds = ElementBounds.Fixed(slotPad, slotPad + topOffset + 24.0 + inputSlotBounds.fixedHeight + 8.0, rowWidth, 22.0);
             ElementBounds operationButtonBounds = ElementBounds.Fixed(slotPad, operationLabelBounds.fixedY + 24.0, rowWidth, 32.0);
             ElementBounds progressBounds = ElementBounds.Fixed(slotPad, operationButtonBounds.fixedY + operationButtonBounds.fixedHeight + 8.0, rowWidth, 18.0);
-            ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, progressBounds.fixedY + progressBounds.fixedHeight + 10.0, rowWidth, 22.0);
+            // Idle-reason line. Given two rows of height so longer localized messages don't clip
+            // (VS does not auto-shrink text to its widget bounds).
+            ElementBounds statusBounds = ElementBounds.Fixed(slotPad, progressBounds.fixedY + progressBounds.fixedHeight + 4.0, rowWidth, 36.0);
+            ElementBounds outputLabelBounds = ElementBounds.Fixed(slotPad, statusBounds.fixedY + statusBounds.fixedHeight + 8.0, rowWidth, 22.0);
             ElementBounds outputSlotsBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, slotPad, outputLabelBounds.fixedY + 24.0, 3, 3);
             double limitX = slotPad + 3.0 * (slotSize + slotPad) + 18.0;
             ElementBounds autoLimitLabelBounds = ElementBounds.Fixed(limitX, outputLabelBounds.fixedY, 92.0, 22.0);
@@ -114,6 +124,7 @@ namespace VintageKinematics.Gui
                 operationLabelBounds,
                 operationButtonBounds,
                 progressBounds,
+                statusBounds,
                 outputLabelBounds,
                 outputSlotsBounds,
                 autoLimitLabelBounds,
@@ -153,6 +164,7 @@ namespace VintageKinematics.Gui
 
             GuiComposer oldComposer = SingleComposer;
             SingleComposer = composer
+                .AddDynamicText("", StatusTextFont(), statusBounds, StatusTextKey)
                 .AddStaticText(Lang.Get("vintagekinematics:kineticforgepress-outputs"), CairoFont.WhiteSmallText(), outputLabelBounds)
                 .AddItemSlotGrid(Inventory, DoSendPacket, 3, outputSlots, outputSlotsBounds, "outputslots")
                 .AddStaticText(Lang.Get("vintagekinematics:kineticforgepress-auto-limit"), CairoFont.WhiteSmallText(), autoLimitLabelBounds)
@@ -162,8 +174,24 @@ namespace VintageKinematics.Gui
             oldComposer?.Dispose();
             progressBar.Refresh(SingleComposer, true);
             SetAutoMetalLimitInput(getAutoMetalInputLimit?.Invoke() ?? 64);
+            lastStatusText = null;
+            RefreshStatusText();
 
             recipeBrowser.AfterCompose(SingleComposer);
+        }
+
+        private static CairoFont StatusTextFont()
+        {
+            return CairoFont.WhiteSmallText().WithColor(GuiStyle.ErrorTextColor);
+        }
+
+        private void RefreshStatusText()
+        {
+            if (SingleComposer == null || getStatusText == null) return;
+            string text = getStatusText() ?? "";
+            if (text == lastStatusText) return;
+            lastStatusText = text;
+            SingleComposer.GetDynamicText(StatusTextKey)?.SetNewText(text);
         }
 
         private void GetOperationOptions(out string[] operationCodes, out string[] operationNames, out int selectedIndex)
@@ -326,13 +354,14 @@ namespace VintageKinematics.Gui
             bounds.CalcWorldBounds();
         }
 
-        private void OnAutoMetalLimitChanged(string _)
+        private void OnAutoMetalLimitChanged(string text)
         {
             if (suppressMetalLimitChange) return;
-            float rawLimit = SingleComposer?.GetNumberInput(AutoMetalLimitKey)?.GetValue() ?? 64f;
+            if (string.IsNullOrWhiteSpace(text) || text == "-") return;
+            if (!float.TryParse(text, NumberStyles.Any, GlobalConstants.DefaultCultureInfo, out float rawLimit)) return;
+
             int limit = (int)Math.Round(rawLimit);
             limit = (int)GameMath.Clamp(limit, 1, 64);
-            SetAutoMetalLimitInput(limit);
             onSetAutoMetalInputLimit?.Invoke(limit);
         }
 
@@ -354,8 +383,12 @@ namespace VintageKinematics.Gui
         {
             if (SingleComposer == null) return;
             RefreshOperationButtonLabel();
-            SetAutoMetalLimitInput(getAutoMetalInputLimit?.Invoke() ?? 64);
+            if (SingleComposer.GetNumberInput(AutoMetalLimitKey)?.HasFocus != true)
+            {
+                SetAutoMetalLimitInput(getAutoMetalInputLimit?.Invoke() ?? 64);
+            }
             progressBar.Refresh(SingleComposer, true);
+            RefreshStatusText();
         }
 
         private void RefreshOperationButtonLabel()
@@ -369,6 +402,8 @@ namespace VintageKinematics.Gui
 
             button.Text = label;
             SingleComposer.ReCompose();
+            // ReCompose rebuilds the dynamic status element with empty text; force a re-set.
+            lastStatusText = null;
         }
 
     }
