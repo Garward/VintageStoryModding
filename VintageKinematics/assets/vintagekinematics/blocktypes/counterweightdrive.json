@@ -12,378 +12,100 @@
             "maxChargeSeconds": 90,
             "windSecondsPerSecond": 8,
             "clickWindSeconds": 8
+        },
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": -512,
+            "axisFromSide": true
+        },
+        "vkKineticSource": {
+            "targetRPM": 16,
+            "alwaysActive": false
+        },
+        "vkKineticSound": {
+            "sound": "sounds/effect/gearbox_turn.ogg",
+            "minRPM": 4,
+            "volumeAt32RPM": 0.38,
+            "pitchAt32RPM": 0.75,
+            "pitchScalesWithRPM": false,
+            "dedupKey": "counterweightdrive",
+            "maxSimultaneous": 2
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "drum",
+                    "axis": "X",
+                    "ratio": 1
+                },
+                {
+                    "element": "ropeWrap",
+                    "axis": "X",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubXpos",
+                    "axis": "X",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubXneg",
+                    "axis": "X",
+                    "ratio": 1
+                }
+            ]
+        },
+        "vkKineticPiston": {
+            "pistons": [
+                {
+                    "element": "weight",
+                    "axis": "Y",
+                    "mode": "sourceTimed",
+                    "travel": 23,
+                    "invert": true
+                }
+            ]
+        },
+        "vkKineticStretch": {
+            "stretches": [
+                {
+                    "element": "ropeDrop",
+                    "axis": "Y",
+                    "mode": "sourceTimed",
+                    "minScale": 0.343,
+                    "maxScale": 1,
+                    "pivot": {
+                        "x": 8,
+                        "y": 45,
+                        "z": 10.75
+                    }
+                }
+            ]
         }
     },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -512,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.38,
-                    "pitchAt32RPM": 0.75,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "counterweightdrive",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "drum",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "ropeWrap",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "weight",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "travel": 23,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticStretch",
-                "properties": {
-                    "stretches": [
-                        {
-                            "element": "ropeDrop",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "minScale": 0.343,
-                            "maxScale": 1,
-                            "pivot": {
-                                "x": 8,
-                                "y": 45,
-                                "z": 10.75
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -512,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.38,
-                    "pitchAt32RPM": 0.75,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "counterweightdrive",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "drum",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "ropeWrap",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "weight",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "travel": 23,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticStretch",
-                "properties": {
-                    "stretches": [
-                        {
-                            "element": "ropeDrop",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "minScale": 0.343,
-                            "maxScale": 1,
-                            "pivot": {
-                                "x": 8,
-                                "y": 45,
-                                "z": 10.75
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -512,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.38,
-                    "pitchAt32RPM": 0.75,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "counterweightdrive",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "drum",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "ropeWrap",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "weight",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "travel": 23,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticStretch",
-                "properties": {
-                    "stretches": [
-                        {
-                            "element": "ropeDrop",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "minScale": 0.343,
-                            "maxScale": 1,
-                            "pivot": {
-                                "x": 8,
-                                "y": 45,
-                                "z": 10.75
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -512,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.38,
-                    "pitchAt32RPM": 0.75,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "counterweightdrive",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "drum",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "ropeWrap",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "weight",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "travel": 23,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticStretch",
-                "properties": {
-                    "stretches": [
-                        {
-                            "element": "ropeDrop",
-                            "axis": "Y",
-                            "mode": "sourceTimed",
-                            "minScale": 0.343,
-                            "maxScale": 1,
-                            "pivot": {
-                                "x": 8,
-                                "y": 45,
-                                "z": 10.75
-                            }
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticSource"
+        },
+        {
+            "name": "KineticSound"
+        },
+        {
+            "name": "KineticAnimator"
+        },
+        {
+            "name": "KineticPiston"
+        },
+        {
+            "name": "KineticStretch"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",

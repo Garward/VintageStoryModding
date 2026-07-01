@@ -123,12 +123,6 @@
     },
     "behaviors": [
         {
-            "name": "HorizontalOrientable",
-            "properties": {
-                "dropBlockFace": "north"
-            }
-        },
-        {
             "name": "CanonicalDrop",
             "properties": {
                 "code": "kineticsawmill-n"

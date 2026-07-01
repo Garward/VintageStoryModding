@@ -2,183 +2,6 @@
     "code": "platepiston",
     "class": "BlockPlatePiston",
     "entityClass": "KineticAnimated",
-    "entityBehaviors": [
-        {
-            "name": "Kinetic",
-            "properties": {
-                "role": "Gearbox",
-                "stressImpact": 8
-            }
-        },
-        {
-            "name": "KineticAnimator"
-        },
-        {
-            "name": "KineticPiston"
-        }
-    ],
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 8
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubBottom",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubSide",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "plate",
-                            "axis": "Y",
-                            "mode": "directional",
-                            "travel": 14,
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 8
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubBottom",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubSide",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "plate",
-                            "axis": "Y",
-                            "mode": "directional",
-                            "travel": 14,
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 8
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubBottom",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubSide",
-                            "axis": "Z",
-                            "ratio": -1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "plate",
-                            "axis": "Y",
-                            "mode": "directional",
-                            "travel": 14,
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 8
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubBottom",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubSide",
-                            "axis": "Z",
-                            "ratio": -1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "plate",
-                            "axis": "Y",
-                            "mode": "directional",
-                            "travel": 14,
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "side",
@@ -256,6 +79,54 @@
                     "side": "n"
                 }
             }
+        }
+    ],
+    "attributes": {
+        "vkKinetic": {
+            "role": "Gearbox",
+            "stressImpact": 8
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "stubBottom",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubSide",
+                    "axis": "Z",
+                    "ratio": 1,
+                    "ratioBySide": {
+                        "n": 1,
+                        "e": 1,
+                        "s": -1,
+                        "w": -1
+                    }
+                }
+            ]
+        },
+        "vkKineticPiston": {
+            "pistons": [
+                {
+                    "element": "plate",
+                    "axis": "Y",
+                    "mode": "directional",
+                    "travel": 14,
+                    "ratio": 1
+                }
+            ]
+        }
+    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticAnimator"
+        },
+        {
+            "name": "KineticPiston"
         }
     ]
 }

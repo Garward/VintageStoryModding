@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
@@ -52,9 +53,23 @@ namespace VintageKinematics.Api
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
+            JsonObject defaults = Block?.Attributes?["vkCrusherProcess"];
             if (properties != null && properties["crushTickMultiplier"].Exists)
             {
                 crushTickMultiplier = properties["crushTickMultiplier"].AsFloat(1f);
+            }
+            else if (defaults != null && defaults["crushTickMultiplier"].Exists)
+            {
+                crushTickMultiplier = defaults["crushTickMultiplier"].AsFloat(1f);
+            }
+            else
+            {
+                Dictionary<string, float> byMetal = defaults?["crushTickMultiplierByMetal"].AsObject<Dictionary<string, float>>(null);
+                string metal = Block?.Variant?["metal"];
+                if (!string.IsNullOrEmpty(metal) && byMetal != null && byMetal.TryGetValue(metal, out float multiplier))
+                {
+                    crushTickMultiplier = multiplier;
+                }
             }
             var piston = Blockentity.GetBehavior<BEBehaviorKineticPiston>();
             if (piston == null)

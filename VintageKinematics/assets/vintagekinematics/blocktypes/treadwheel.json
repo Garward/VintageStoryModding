@@ -11,186 +11,52 @@
         "vkGenerator": {
             "tickMs": 50,
             "windSeconds": 0.2
+        },
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": -256,
+            "axisFromSide": true
+        },
+        "vkKineticSource": {
+            "targetRPM": 16,
+            "alwaysActive": false
+        },
+        "vkKineticSound": {
+            "sound": "sounds/block/waterwheel-wood.ogg",
+            "minRPM": 4,
+            "volumeAt32RPM": 0.45,
+            "pitchAt32RPM": 0.85,
+            "pitchScalesWithRPM": false,
+            "dedupKey": "treadwheel",
+            "maxSimultaneous": 2
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "wheelAssembly",
+                    "axis": "X",
+                    "ratio": 1
+                }
+            ]
         }
     },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -256,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/block/waterwheel-wood.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.45,
-                    "pitchAt32RPM": 0.85,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "treadwheel",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "wheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -256,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/block/waterwheel-wood.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.45,
-                    "pitchAt32RPM": 0.85,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "treadwheel",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "wheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -256,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/block/waterwheel-wood.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.45,
-                    "pitchAt32RPM": 0.85,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "treadwheel",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "wheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -256,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/block/waterwheel-wood.ogg",
-                    "minRPM": 4,
-                    "volumeAt32RPM": 0.45,
-                    "pitchAt32RPM": 0.85,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "treadwheel",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "wheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticSource"
+        },
+        {
+            "name": "KineticSound"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",

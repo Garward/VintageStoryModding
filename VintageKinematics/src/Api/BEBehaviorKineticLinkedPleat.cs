@@ -36,6 +36,7 @@ namespace VintageKinematics.Api
             chains = new List<KineticLinkedPleatRenderer.Chain>();
 
             var arr = properties?["chains"];
+            if (arr == null || !arr.Exists) arr = Block?.Attributes?["vkKineticLinkedPleat"]?["chains"];
             if (arr != null && arr.Exists)
             {
                 foreach (var c in arr.AsArray())

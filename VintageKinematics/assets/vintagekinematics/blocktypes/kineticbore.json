@@ -5,240 +5,54 @@
     "attributes": {
         "kineticShaftElements": [
             "ShaftStub"
-        ]
+        ],
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 96,
+            "axisFromSide": true
+        },
+        "vkKineticWorker": {
+            "workPerCycle": 400,
+            "minRPM": 8,
+            "autoReset": true,
+            "tickInterval": 0.25
+        },
+        "vkKineticSound": {
+            "sound": "sounds/effect/gearbox_turn.ogg",
+            "minRPM": 8,
+            "volumeAt32RPM": 0.36,
+            "pitchAt32RPM": 0.58,
+            "pitchScalesWithRPM": false,
+            "dedupKey": "kineticbore",
+            "maxSimultaneous": 2
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "ShaftStub",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
+        }
     },
     "entityBehaviors": [
         {
-            "name": "Kinetic",
-            "properties": {
-                "role": "Shaft",
-                "stressImpact": 96,
-                "axis": "Z"
-            }
+            "name": "Kinetic"
         },
         {
             "name": "KineticMultiblock"
         },
         {
-            "name": "KineticWorker",
-            "properties": {
-                "workPerCycle": 400,
-                "minRPM": 8,
-                "autoReset": true,
-                "tickInterval": 0.25
-            }
+            "name": "KineticWorker"
         },
         {
-            "name": "KineticSound",
-            "properties": {
-                "sound": "sounds/effect/gearbox_turn.ogg",
-                "minRPM": 8,
-                "volumeAt32RPM": 0.36,
-                "pitchAt32RPM": 0.58,
-                "pitchScalesWithRPM": false,
-                "dedupKey": "kineticbore",
-                "maxSimultaneous": 2
-            }
+            "name": "KineticSound"
         },
         {
-            "name": "KineticAnimator",
-            "properties": {
-                "rotators": [
-                    {
-                        "element": "ShaftStub",
-                        "axis": "Z",
-                        "ratio": 1
-                    }
-                ]
-            }
+            "name": "KineticAnimator"
         }
     ],
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 96,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 400,
-                    "minRPM": 8,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 8,
-                    "volumeAt32RPM": 0.36,
-                    "pitchAt32RPM": 0.58,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "kineticbore",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "ShaftStub",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 96,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 400,
-                    "minRPM": 8,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 8,
-                    "volumeAt32RPM": 0.36,
-                    "pitchAt32RPM": 0.58,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "kineticbore",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "ShaftStub",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 96,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 400,
-                    "minRPM": 8,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 8,
-                    "volumeAt32RPM": 0.36,
-                    "pitchAt32RPM": 0.58,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "kineticbore",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "ShaftStub",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 96,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 400,
-                    "minRPM": 8,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticSound",
-                "properties": {
-                    "sound": "sounds/effect/gearbox_turn.ogg",
-                    "minRPM": 8,
-                    "volumeAt32RPM": 0.36,
-                    "pitchAt32RPM": 0.58,
-                    "pitchScalesWithRPM": false,
-                    "dedupKey": "kineticbore",
-                    "maxSimultaneous": 2
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "ShaftStub",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "side",

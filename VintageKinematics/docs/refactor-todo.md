@@ -185,6 +185,72 @@ These are not done until the block class, placement/open behavior, IO mapping, p
 - [ ] Test: wrench interactions still bypass normal GUI/open behavior.
 - [ ] Test: placement preview matches final placement.
 
+## 9A. Compact Kinetic Behavior JSON
+
+Goal: reduce repeated per-rotation `entityBehaviorsByType` blocks by moving shared values into block `attributes`, such as `vkKinetic`, `vkKineticSource`, `vkKineticWorker`, `vkKineticAnimator`, `vkKineticSound`, `vkKineticPiston`, and `vkKineticStretch`. Keep `entityBehaviorsByType` only where a behavior is truly different per variant.
+
+Conversion rules:
+
+- [ ] Prefer one `entityBehaviors` list with behavior names and shared defaults in `attributes`.
+- [ ] Use `axisFromSide` for normal side-variant shaft axes instead of repeating `axis` per side.
+- [ ] Use `axisFromSideMode: "perpendicular"` for blocks whose shaft axis is crosswise to their side variant, such as trebuchet.
+- [ ] Keep variant-specific animator/piston/stretch settings only when the element or axis really differs.
+- [ ] Do not add vanilla `HorizontalOrientable` to VK short `side` variants (`n/e/s/w`); use VK placement helpers instead.
+- [ ] After each batch, test placement in all four directions, kinetic connection axis, animation direction, canonical drop, and wrench rotation/pickup where relevant.
+
+Done:
+
+- [x] Kinetic sawmill.
+- [x] Flywheel.
+
+Batch 1:
+
+- [x] Reinforced flywheel.
+- [x] Kinetic mixer.
+- [x] Kinetic extractor.
+- [x] Kinetic forge press.
+- [x] Kinetic charcoal retort.
+
+Batch 2:
+
+- [x] Kinetic sieve.
+- [x] Primitive sieve.
+- [x] Kinetic bore.
+- [x] Geothermal bore.
+- [x] Trebuchet.
+
+Batch 3:
+
+- [x] Coal motor.
+- [x] Treadwheel.
+- [x] Counterweight drive.
+- [x] Geothermal steam engine.
+- [x] Creative motor.
+
+Batch 4:
+
+- [x] Kinetic bellows.
+- [x] Kinetic igniter.
+- [x] Kinetic activator.
+- [x] Kinetic clutch.
+- [x] Kinetic reverser.
+
+Batch 5:
+
+- [x] Gearbox.
+- [x] Plate piston.
+- [x] Crusher head.
+- [x] Copper pump.
+- [x] JSON machine template.
+
+Batch 6:
+
+- [x] Kinetic sensor.
+- [x] Backpack flywheel placed.
+- [x] Re-audit `assets/vintagekinematics/blocktypes` for any remaining `entityBehaviorsByType` repetition.
+- [ ] Update the API tutorial/modeling guide after the compact pattern is stable across multiple block shapes.
+- [ ] Add or update tests that catch long-name side variants such as `*-south` on short-code VK blocks.
+
 ## 10. Centered Multiblock Placement
 
 - [x] Add a reusable centered-footprint placement helper.

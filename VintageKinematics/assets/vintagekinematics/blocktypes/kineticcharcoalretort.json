@@ -40,270 +40,73 @@
                 "slots": "outputs",
                 "cells": "face"
             }
-        ]
+        ],
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 32,
+            "axisFromSide": true
+        },
+        "vkKineticWorker": {
+            "workPerCycle": 200,
+            "minRPM": 4,
+            "fixedWorkRPM": 16,
+            "autoReset": true,
+            "tickInterval": 0.25
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "shaftCore",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubZpos",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubZneg",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "hubZpos",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "hubZneg",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "draftFanBladeVertical",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "draftFanBladeHorizontal",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
+        }
     },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "fixedWorkRPM": 16,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftCore",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeVertical",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeHorizontal",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "fixedWorkRPM": 16,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftCore",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeVertical",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeHorizontal",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "fixedWorkRPM": 16,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftCore",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeVertical",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeHorizontal",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "fixedWorkRPM": 16,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftCore",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "hubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeVertical",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "draftFanBladeHorizontal",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticWorker"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",

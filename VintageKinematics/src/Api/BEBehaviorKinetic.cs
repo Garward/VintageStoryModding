@@ -154,7 +154,7 @@ namespace VintageKinematics.Api
             if (!axisExplicit)
             {
                 Axis = ReadBool(properties, defaults, "axisFromSide", false)
-                    ? AxisFromSideVariant()
+                    ? AxisFromSideVariant(ReadString(properties, defaults, "axisFromSideMode", "inline"))
                     : AxisFromBlockFacing();
             }
 
@@ -181,21 +181,23 @@ namespace VintageKinematics.Api
             return EnumKineticAxis.Y;
         }
 
-        private EnumKineticAxis AxisFromSideVariant()
+        private EnumKineticAxis AxisFromSideVariant(string mode)
         {
-            string side = Block?.Variant?["side"] ?? "";
+            string side = Block?.Variant?["side"] ?? Block?.Variant?["direction"] ?? "";
+            bool perpendicular = string.Equals(mode, "perpendicular", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(mode, "cross", StringComparison.OrdinalIgnoreCase);
             switch (side)
             {
                 case "e":
                 case "w":
                 case "east":
                 case "west":
-                    return EnumKineticAxis.X;
+                    return perpendicular ? EnumKineticAxis.Z : EnumKineticAxis.X;
                 case "n":
                 case "s":
                 case "north":
                 case "south":
-                    return EnumKineticAxis.Z;
+                    return perpendicular ? EnumKineticAxis.X : EnumKineticAxis.Z;
                 case "u":
                 case "d":
                 case "up":

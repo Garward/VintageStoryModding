@@ -52,13 +52,21 @@ namespace VintageKinematics.Api
                     string waveStr = r["waveform"].AsString("sine");
                     System.Enum.TryParse(waveStr, true, out KineticPistonRenderer.EnumPistonWaveform wave);
 
+                    float ratio = r["ratio"].AsFloat(1f);
+                    JsonObject ratioBySide = r["ratioBySide"];
+                    string side = Block?.Variant?["side"];
+                    if (!string.IsNullOrEmpty(side) && ratioBySide != null && ratioBySide.Exists && ratioBySide[side].Exists)
+                    {
+                        ratio = ratioBySide[side].AsFloat(ratio);
+                    }
+
                     rotators.Add(new KineticAnimatorRenderer.Rotator
                     {
                         ElementName = elem,
                         Axis = axis,
                         Mode = mode,
                         Waveform = wave,
-                        Ratio = r["ratio"].AsFloat(1f),
+                        Ratio = ratio,
                         PhaseOffset = r["phaseOffset"].AsFloat(0f),
                         MinAngle = DegToRad(r["minAngle"].AsFloat(0f)),
                         MaxAngle = DegToRad(r["maxAngle"].AsFloat(0f)),

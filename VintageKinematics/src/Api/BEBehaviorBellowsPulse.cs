@@ -37,10 +37,11 @@ namespace VintageKinematics.Api
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
-            minRPM = properties?["minRPM"].AsFloat(KineticNetwork.MinAbsRPM) ?? KineticNetwork.MinAbsRPM;
-            soundVolume = properties?["soundVolume"].AsFloat(soundVolume) ?? soundVolume;
-            soundRange = properties?["soundRange"].AsFloat(soundRange) ?? soundRange;
-            minSoundIntervalSeconds = properties?["minSoundIntervalSeconds"].AsFloat(minSoundIntervalSeconds) ?? minSoundIntervalSeconds;
+            JsonObject defaults = Block?.Attributes?["vkBellowsPulse"];
+            minRPM = ReadFloat(properties, defaults, "minRPM", KineticNetwork.MinAbsRPM);
+            soundVolume = ReadFloat(properties, defaults, "soundVolume", soundVolume);
+            soundRange = ReadFloat(properties, defaults, "soundRange", soundRange);
+            minSoundIntervalSeconds = ReadFloat(properties, defaults, "minSoundIntervalSeconds", minSoundIntervalSeconds);
 
             BEBehaviorKineticPiston piston = Blockentity.GetBehavior<BEBehaviorKineticPiston>();
             if (piston == null)
@@ -50,6 +51,13 @@ namespace VintageKinematics.Api
             }
 
             piston.OnPhaseCross("TopBoard", MathF.PI, OnCompressionStroke);
+        }
+
+        private static float ReadFloat(JsonObject properties, JsonObject defaults, string key, float fallback)
+        {
+            if (properties != null && properties[key].Exists) return properties[key].AsFloat(fallback);
+            if (defaults != null && defaults[key].Exists) return defaults[key].AsFloat(fallback);
+            return fallback;
         }
 
         private void OnCompressionStroke()

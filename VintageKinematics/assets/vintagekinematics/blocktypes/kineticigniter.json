@@ -2,63 +2,6 @@
     "code": "kineticigniter",
     "class": "BlockKineticIgniter",
     "entityClass": "KineticIgniter",
-    "entityBehaviors": [
-        {
-            "name": "Kinetic",
-            "properties": {
-                "role": "SmallCogwheel",
-                "stressImpact": 8,
-                "stressCurve": "Quadratic",
-                "axis": "Z"
-            }
-        }
-    ],
-    "entityBehaviorsByType": {
-        "*-n-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 8,
-                    "stressCurve": "Quadratic",
-                    "axis": "Z"
-                }
-            }
-        ],
-        "*-s-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 8,
-                    "stressCurve": "Quadratic",
-                    "axis": "Z"
-                }
-            }
-        ],
-        "*-e-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 8,
-                    "stressCurve": "Quadratic",
-                    "axis": "X"
-                }
-            }
-        ],
-        "*-w-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 8,
-                    "stressCurve": "Quadratic",
-                    "axis": "X"
-                }
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "side",
@@ -190,6 +133,19 @@
                     "state": "cool"
                 }
             }
+        }
+    ],
+    "attributes": {
+        "vkKinetic": {
+            "role": "SmallCogwheel",
+            "stressImpact": 8,
+            "stressCurve": "Quadratic",
+            "axisFromSide": true
+        }
+    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
         }
     ]
 }

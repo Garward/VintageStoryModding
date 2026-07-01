@@ -3,15 +3,58 @@
     "class": "BlockCrusher",
     "entityClass": "KineticAnimated",
     "attributes": {
-        "ioPassthroughDown": true
+        "ioPassthroughDown": true,
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 24,
+            "axisFromSide": true
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "stubZpos",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubZneg",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
+        },
+        "vkKineticPiston": {
+            "pistons": [
+                {
+                    "element": "head",
+                    "axis": "Y",
+                    "mode": "oscillate",
+                    "waveform": "sine",
+                    "travel": 24,
+                    "ratio": 1,
+                    "invert": true
+                },
+                {
+                    "element": "pistonShaft",
+                    "axis": "Y",
+                    "mode": "oscillate",
+                    "waveform": "sine",
+                    "travel": 24,
+                    "ratio": 1,
+                    "invert": true
+                }
+            ]
+        },
+        "vkCrusherProcess": {
+            "crushTickMultiplierByMetal": {
+                "bronze": 1.5,
+                "iron": 1.0
+            }
+        }
     },
     "entityBehaviors": [
         {
-            "name": "Kinetic",
-            "properties": {
-                "role": "Shaft",
-                "stressImpact": 24
-            }
+            "name": "Kinetic"
         },
         {
             "name": "KineticAnimator"
@@ -23,460 +66,6 @@
             "name": "CrusherProcess"
         }
     ],
-    "entityBehaviorsByType": {
-        "*-bronze-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess",
-                "properties": {
-                    "crushTickMultiplier": 1.5
-                }
-            }
-        ],
-        "*-bronze-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess",
-                "properties": {
-                    "crushTickMultiplier": 1.5
-                }
-            }
-        ],
-        "*-bronze-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess",
-                "properties": {
-                    "crushTickMultiplier": 1.5
-                }
-            }
-        ],
-        "*-bronze-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess",
-                "properties": {
-                    "crushTickMultiplier": 1.5
-                }
-            }
-        ],
-        "*-iron-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess"
-            }
-        ],
-        "*-iron-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess"
-            }
-        ],
-        "*-iron-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess"
-            }
-        ],
-        "*-iron-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 24,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "head",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        },
-                        {
-                            "element": "pistonShaft",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 24,
-                            "ratio": 1,
-                            "invert": true
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "CrusherProcess"
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "metal",

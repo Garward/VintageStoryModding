@@ -2,128 +2,6 @@
     "code": "gearbox",
     "class": "BlockGearbox",
     "entityClass": "KineticAnimated",
-    "entityBehaviors": [
-        {
-            "name": "Kinetic",
-            "properties": {
-                "role": "Gearbox",
-                "stressImpact": 0
-            }
-        },
-        {
-            "name": "KineticAnimator"
-        }
-    ],
-    "entityBehaviorsByType": {
-        "*-x": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 0
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": -1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": -1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-y": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 0
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": -1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": -1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-z": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Gearbox",
-                    "stressImpact": 0
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "stubXpos",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubXneg",
-                            "axis": "X",
-                            "ratio": -1
-                        },
-                        {
-                            "element": "stubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "stubZneg",
-                            "axis": "Z",
-                            "ratio": -1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "axis",
@@ -221,5 +99,43 @@
                 }
             }
         ]
-    }
+    },
+    "attributes": {
+        "vkKinetic": {
+            "role": "Gearbox",
+            "stressImpact": 0
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "stubXpos",
+                    "axis": "X",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubXneg",
+                    "axis": "X",
+                    "ratio": -1
+                },
+                {
+                    "element": "stubZpos",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "stubZneg",
+                    "axis": "Z",
+                    "ratio": -1
+                }
+            ]
+        }
+    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ]
 }

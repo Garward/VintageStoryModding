@@ -19,138 +19,40 @@
             "dischargeWindSeconds": 1.25,
             "spinDecayPerSecond": 0.985,
             "tickMs": 200
+        },
+        "vkKinetic": {
+            "role": "Custom",
+            "stressImpact": 640,
+            "axisFromSide": true
+        },
+        "vkKineticSource": {
+            "targetRPM": 16,
+            "alwaysActive": false
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "flywheelAssembly",
+                    "axis": "X",
+                    "ratio": 1
+                }
+            ]
         }
     },
-    "entityBehaviorsByType": {
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 640,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 640,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 640,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 640,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "X",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticSource"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",

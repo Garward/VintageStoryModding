@@ -34,670 +34,173 @@
                     "work"
                 ]
             }
+        },
+        "vkKinetic": {
+            "role": "SmallCogwheel",
+            "stressImpact": 16,
+            "axis": "Y",
+            "stressCurve": "Quadratic"
+        },
+        "vkKineticWorker": {
+            "workPerCycle": 180,
+            "minRPM": 4,
+            "autoReset": true,
+            "tickInterval": 0.25
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "DriveCogShaft",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hub_outer_00",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hub_outer_36",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hub_outer_72",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hub_outer_108",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hub_outer_144",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_00",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_36",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_72",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_108",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_144",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_180",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_216",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_252",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_288",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_tooth_324",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_top_00",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_top_36",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_top_72",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_top_108",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_top_144",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_bottom_00",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_bottom_36",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_bottom_72",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_bottom_108",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "DriveCog_hubcenter_bottom_144",
+                    "axis": "Y",
+                    "ratio": 1
+                },
+                {
+                    "element": "Paddle",
+                    "axis": "Y",
+                    "ratio": 0.5
+                }
+            ]
         }
     },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 16,
-                    "axis": "Y",
-                    "stressCurve": "Quadratic"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 180,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "DriveCogShaft",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_180",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_216",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_252",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_288",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_324",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "Paddle",
-                            "axis": "Y",
-                            "ratio": 0.5
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 16,
-                    "axis": "Y",
-                    "stressCurve": "Quadratic"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 180,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "DriveCogShaft",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_180",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_216",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_252",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_288",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_324",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "Paddle",
-                            "axis": "Y",
-                            "ratio": 0.5
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 16,
-                    "axis": "Y",
-                    "stressCurve": "Quadratic"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 180,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "DriveCogShaft",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_180",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_216",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_252",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_288",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_324",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "Paddle",
-                            "axis": "Y",
-                            "ratio": 0.5
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 16,
-                    "axis": "Y",
-                    "stressCurve": "Quadratic"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 180,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "DriveCogShaft",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hub_outer_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_180",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_216",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_252",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_288",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_tooth_324",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_top_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_00",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_36",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_72",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_108",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "DriveCog_hubcenter_bottom_144",
-                            "axis": "Y",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "Paddle",
-                            "axis": "Y",
-                            "ratio": 0.5
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticWorker"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "behaviorsByType": {
         "*-n": [
             {

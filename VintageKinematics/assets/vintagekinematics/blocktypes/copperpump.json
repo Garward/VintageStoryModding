@@ -2,560 +2,6 @@
     "code": "copperpump",
     "class": "BlockCopperPump",
     "entityClass": "CopperPump",
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 4,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "pump-cog-hub_outer_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_180",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_216",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_252",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_288",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_324",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 4,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "pump-cog-hub_outer_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_180",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_216",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_252",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_288",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_324",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 4,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "pump-cog-hub_outer_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_180",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_216",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_252",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_288",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_324",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 4,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "pump-cog-hub_outer_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_180",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_216",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_252",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_288",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_324",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-u": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 4,
-                    "axis": "Y"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "pump-cog-hub_outer_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_180",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_216",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_252",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_288",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_324",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-d": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "SmallCogwheel",
-                    "stressImpact": 4,
-                    "axis": "Y"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "pump-cog-hub_outer_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-hub_outer_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_00",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_36",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_72",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_108",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_144",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_180",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_216",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_252",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_288",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "pump-cog-tooth_324",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "direction",
@@ -600,8 +46,100 @@
     "attributes": {
         "pipe": true,
         "connectsLiquidPipe": true,
-        "liquidPump": true
+        "liquidPump": true,
+        "vkKinetic": {
+            "role": "SmallCogwheel",
+            "stressImpact": 4,
+            "axisFromSide": true
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "pump-cog-hub_outer_00",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-hub_outer_36",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-hub_outer_72",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-hub_outer_108",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-hub_outer_144",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_00",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_36",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_72",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_108",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_144",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_180",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_216",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_252",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_288",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "pump-cog-tooth_324",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
+        }
     },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "blockmaterial": "Metal",
     "resistance": 1.5,
     "requiredMiningTier": 1,

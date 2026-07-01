@@ -25,8 +25,43 @@
             "tickMs": 1000,
             "windSeconds": 1.25,
             "waterLitresPerSecond": 0.05
+        },
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": -4096,
+            "axisFromSide": true,
+            "axisFromSideMode": "perpendicular"
+        },
+        "vkKineticSource": {
+            "targetRPM": 16,
+            "alwaysActive": false
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "driveShaft",
+                    "axis": "X",
+                    "ratio": 1
+                },
+                {
+                    "element": "turbineRotor",
+                    "axis": "X",
+                    "ratio": 2
+                }
+            ]
         }
     },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticSource"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "behaviorsByType": {
         "*-n-*": [
             {
@@ -121,178 +156,6 @@
                         "side": "n",
                         "state": "cool"
                     }
-                }
-            }
-        ]
-    },
-    "entityBehaviors": [
-        {
-            "name": "Kinetic",
-            "properties": {
-                "role": "Shaft",
-                "stressImpact": -4096,
-                "axis": "X"
-            }
-        },
-        {
-            "name": "KineticSource",
-            "properties": {
-                "targetRPM": 16,
-                "alwaysActive": false
-            }
-        },
-        {
-            "name": "KineticAnimator",
-            "properties": {
-                "rotators": [
-                    {
-                        "element": "driveShaft",
-                        "axis": "X",
-                        "ratio": 1
-                    },
-                    {
-                        "element": "turbineRotor",
-                        "axis": "X",
-                        "ratio": 2
-                    }
-                ]
-            }
-        }
-    ],
-    "entityBehaviorsByType": {
-        "*-n-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -4096,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "driveShaft",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "turbineRotor",
-                            "axis": "X",
-                            "ratio": 2
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -4096,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "driveShaft",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "turbineRotor",
-                            "axis": "X",
-                            "ratio": 2
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -4096,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "driveShaft",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "turbineRotor",
-                            "axis": "X",
-                            "ratio": 2
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w-*": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": -4096,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticSource",
-                "properties": {
-                    "targetRPM": 16,
-                    "alwaysActive": false
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "driveShaft",
-                            "axis": "X",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "turbineRotor",
-                            "axis": "X",
-                            "ratio": 2
-                        }
-                    ]
                 }
             }
         ]

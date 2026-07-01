@@ -44,230 +44,63 @@
                     "z": 1.375
                 }
             ]
+        },
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 40,
+            "axisFromSide": true
+        },
+        "vkKineticWorker": {
+            "workPerCycle": 360,
+            "minRPM": 4,
+            "autoReset": true,
+            "tickInterval": 0.25
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "StubZpos",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "StubZneg",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
+        },
+        "vkKineticPiston": {
+            "pistons": [
+                {
+                    "element": "Plate",
+                    "axis": "Y",
+                    "mode": "oscillate",
+                    "waveform": "sine",
+                    "travel": 4,
+                    "ratio": 0.5,
+                    "invert": true
+                }
+            ]
         }
     },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 40,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 360,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "Plate",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 4,
-                            "ratio": 0.5,
-                            "invert": true
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 40,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 360,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "Plate",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 4,
-                            "ratio": 0.5,
-                            "invert": true
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 40,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 360,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "Plate",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 4,
-                            "ratio": 0.5,
-                            "invert": true
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 40,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticMultiblock"
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 360,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "KineticPiston",
-                "properties": {
-                    "pistons": [
-                        {
-                            "element": "Plate",
-                            "axis": "Y",
-                            "mode": "oscillate",
-                            "waveform": "sine",
-                            "travel": 4,
-                            "ratio": 0.5,
-                            "invert": true
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticMultiblock"
+        },
+        {
+            "name": "KineticWorker"
+        },
+        {
+            "name": "KineticAnimator"
+        },
+        {
+            "name": "KineticPiston"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",

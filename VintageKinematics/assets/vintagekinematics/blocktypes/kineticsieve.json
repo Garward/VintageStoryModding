@@ -5,215 +5,49 @@
     "attributes": {
         "vkPlacement": {
             "side": "oppositePlayer"
+        },
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 32,
+            "axisFromSide": true
+        },
+        "vkKineticWorker": {
+            "workPerCycle": 200,
+            "minRPM": 4,
+            "autoReset": true,
+            "tickInterval": 0.25
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "Drum",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "StubZneg",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "StubZpos",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
         }
     },
     "entityBehaviors": [
         {
-            "name": "Kinetic",
-            "properties": {
-                "role": "Shaft",
-                "stressImpact": 32,
-                "axis": "Z"
-            }
+            "name": "Kinetic"
         },
         {
-            "name": "KineticWorker",
-            "properties": {
-                "workPerCycle": 200,
-                "minRPM": 4,
-                "autoReset": true,
-                "tickInterval": 0.25
-            }
+            "name": "KineticWorker"
         },
         {
-            "name": "KineticAnimator",
-            "properties": {
-                "rotators": [
-                    {
-                        "element": "Drum",
-                        "axis": "Z",
-                        "ratio": 1
-                    },
-                    {
-                        "element": "StubZneg",
-                        "axis": "Z",
-                        "ratio": 1
-                    },
-                    {
-                        "element": "StubZpos",
-                        "axis": "Z",
-                        "ratio": 1
-                    }
-                ]
-            }
+            "name": "KineticAnimator"
         }
     ],
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "Drum",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "Drum",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "Drum",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Shaft",
-                    "stressImpact": 32,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticWorker",
-                "properties": {
-                    "workPerCycle": 200,
-                    "minRPM": 4,
-                    "autoReset": true,
-                    "tickInterval": 0.25
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "Drum",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZneg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "StubZpos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
     "variantgroups": [
         {
             "code": "side",

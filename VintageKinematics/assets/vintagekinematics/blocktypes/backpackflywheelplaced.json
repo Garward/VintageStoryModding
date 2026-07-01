@@ -8,8 +8,30 @@
             "chargeStress": 64,
             "chargeEfficiency": 0.75,
             "maxOutputRPM": 16
+        },
+        "vkKinetic": {
+            "role": "Custom",
+            "stressImpact": 64,
+            "axisFromSide": true
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "flywheelAssembly",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
         }
     },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",
@@ -40,96 +62,6 @@
             "base": "block/backpackflywheelplaced",
             "rotateY": 270
         }
-    },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 64,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 64,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 64,
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "stressImpact": 64,
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "flywheelAssembly",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
     },
     "textures": {
         "darktone": {

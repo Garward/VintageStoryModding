@@ -3,168 +3,39 @@
     "class": "BlockKineticReverser",
     "entityClass": "KineticReverser",
     "attributes": {
+        "handbook": {
+            "groupBy": [
+                "kineticreverser-*"
+            ]
+        },
         "vkKinetic": {
+            "role": "Custom",
+            "axisFromSide": true,
             "stressImpact": 0
+        },
+        "vkKineticAnimator": {
+            "rotators": [
+                {
+                    "element": "shaftNeg",
+                    "axis": "Z",
+                    "ratio": 1
+                },
+                {
+                    "element": "shaftPos",
+                    "axis": "Z",
+                    "ratio": 1
+                }
+            ]
         }
     },
-    "entityBehaviorsByType": {
-        "*-n": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftNeg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "shaftPos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-e": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftNeg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "shaftPos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-s": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "axis": "Z"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftNeg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "shaftPos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-w": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "axis": "X"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftNeg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "shaftPos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-u": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "axis": "Y"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftNeg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "shaftPos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ],
-        "*-d": [
-            {
-                "name": "Kinetic",
-                "properties": {
-                    "role": "Custom",
-                    "axis": "Y"
-                }
-            },
-            {
-                "name": "KineticAnimator",
-                "properties": {
-                    "rotators": [
-                        {
-                            "element": "shaftNeg",
-                            "axis": "Z",
-                            "ratio": 1
-                        },
-                        {
-                            "element": "shaftPos",
-                            "axis": "Z",
-                            "ratio": 1
-                        }
-                    ]
-                }
-            }
-        ]
-    },
+    "entityBehaviors": [
+        {
+            "name": "Kinetic"
+        },
+        {
+            "name": "KineticAnimator"
+        }
+    ],
     "variantgroups": [
         {
             "code": "side",
@@ -232,13 +103,6 @@
         "vintagekinematics": [
             "*-n"
         ]
-    },
-    "attributes": {
-        "handbook": {
-            "groupBy": [
-                "kineticreverser-*"
-            ]
-        }
     },
     "lightAbsorption": 0,
     "sideopaque": {
