@@ -2908,16 +2908,22 @@ internal static class Patch_ItemSlotCraftingOutput_FlipWith
 
 internal static class Patch_InventoryCraftingGrid_FindMatchingRecipe
 {
-    public static void Prefix(out long __state)
+    public readonly record struct FindMatchingRecipeState(long StartedMs, bool HadOutput);
+
+    public static void Prefix(InventoryCraftingGrid __instance, out FindMatchingRecipeState __state)
     {
-        __state = Environment.TickCount64;
+        __state = new FindMatchingRecipeState(
+            Environment.TickCount64,
+            __instance?.Count > 0 && !__instance[__instance.Count - 1].Empty);
     }
 
-    public static void Postfix(InventoryCraftingGrid __instance, long __state)
+    public static void Postfix(InventoryCraftingGrid __instance, FindMatchingRecipeState __state)
     {
+        CraftingOutputGuard.SuppressSpuriousEmptyOutputDirty(__instance, __state.HadOutput);
+
         SyncDiagnostics.Slow(
             __instance.Api,
-            __state,
+            __state.StartedMs,
             "FindMatchingRecipe",
             string.Format(
                 "{0} side={1} recipe={2} output={3} inputs={4}",
@@ -3028,6 +3034,25 @@ internal static class CraftingOutputGuard
     {
         HasLeftOversField.SetValue(outputSlot, false);
         PrevStackField.SetValue(outputSlot, null);
+    }
+
+    public static void SuppressSpuriousEmptyOutputDirty(InventoryCraftingGrid inv, bool hadOutput)
+    {
+        if (inv?.Api?.Side != EnumAppSide.Server || inv.Count == 0 || hadOutput || inv.MatchingRecipe != null)
+        {
+            return;
+        }
+
+        int outputSlotId = inv.Count - 1;
+        if (inv[outputSlotId]?.Itemstack != null)
+        {
+            return;
+        }
+
+        // Vanilla marks the output dirty even when FindMatchingRecipe() only reconfirms
+        // "no recipe". If the dirty flush lands between fast grid placements, that empty
+        // server update can overwrite the client's newly predicted valid output.
+        inv.dirtySlots.Remove(outputSlotId);
     }
 
     public static bool IsMissingOutputResultException(Exception exception, out string message)
