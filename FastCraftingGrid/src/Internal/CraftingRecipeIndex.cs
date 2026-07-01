@@ -116,12 +116,32 @@ internal sealed class CraftingRecipeIndex
         ByWorld.Clear();
     }
 
-    public static CraftingRecipeIndex GetReadyOrStartBuild(IWorldAccessor world)
+    public static CraftingRecipeIndex GetReady(IWorldAccessor world)
     {
-        Slot slot = ByWorld.GetValue(world, _ => new Slot());
+        if (world == null)
+        {
+            return null;
+        }
 
+        Slot slot = ByWorld.GetValue(world, _ => new Slot());
+        return slot.Index;
+    }
+
+    public static void StartPrewarm(IWorldAccessor world)
+    {
+        if (world == null)
+        {
+            return;
+        }
+
+        Slot slot = ByWorld.GetValue(world, _ => new Slot());
+        StartBuildIfNeeded(world, slot);
+    }
+
+    private static void StartBuildIfNeeded(IWorldAccessor world, Slot slot)
+    {
         CraftingRecipeIndex index = slot.Index;
-        if (index != null) return index;
+        if (index != null) return;
 
         if (Interlocked.CompareExchange(ref slot.Building, 1, 0) == 0)
         {
@@ -138,8 +158,6 @@ internal sealed class CraftingRecipeIndex
                 }
             });
         }
-
-        return null;
     }
 
     public static CraftingRecipeIndex Get(IWorldAccessor world)

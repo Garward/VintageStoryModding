@@ -38,7 +38,7 @@ public class FastCraftingGridModSystem : ModSystem
     private static void Prewarm(ICoreAPI api)
     {
         api.Logger.Notification("[fastcraftinggrid] world ready - prewarming recipe index in the background");
-        CraftingRecipeIndex.GetReadyOrStartBuild(api.World);
+        CraftingRecipeIndex.StartPrewarm(api.World);
     }
 
     public override void Dispose()

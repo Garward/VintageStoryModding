@@ -24,7 +24,7 @@ internal static class FindMatchingRecipePatch
 
     private static bool Prefix(InventoryCraftingGrid __instance)
     {
-        CraftingRecipeIndex index = CraftingRecipeIndex.GetReadyOrStartBuild(__instance.Api.World);
+        CraftingRecipeIndex index = CraftingRecipeIndex.GetReady(__instance.Api.World);
         if (index == null) return true;
 
         long start = Stopwatch.GetTimestamp();
@@ -49,14 +49,20 @@ internal static class FindMatchingRecipePatch
         }
 
         ItemSlot outputSlot = inventory[outputIndex];
+        bool hadOutput = outputSlot?.Itemstack != null;
         long gridHash = ComputeGridHash(slots);
         GridMatchCache cache = MatchCaches.GetValue(inventory, _ => new GridMatchCache());
 
         if (cache.Valid && cache.Hash == gridHash)
         {
-            ApplyCachedMatch(inventory, slots, outputSlot, outputIndex, cache);
-            Interlocked.Increment(ref cacheHits);
-            return MatchProfile.FromCache(cache.MatchedRecipe?.Name?.ToString() ?? "none");
+            if (ApplyCachedMatch(inventory, slots, outputSlot, outputIndex, cache, hadOutput))
+            {
+                Interlocked.Increment(ref cacheHits);
+                return MatchProfile.FromCache(cache.MatchedRecipe?.Name?.ToString() ?? "none");
+            }
+
+            cache.Valid = false;
+            return MatchProfile.FromCache("errored-output");
         }
 
         bool hasOccupiedSlots = HasOccupiedSlots(slots);
@@ -89,7 +95,12 @@ internal static class FindMatchingRecipePatch
             if (!recipe.Shapeless && recipe.Matches(player, world, slots, gridWidth))
             {
                 shapedTicks = Stopwatch.GetTimestamp() - shapedStart;
-                outputTicks = FoundMatch(inventory, recipe, slots, outputSlot, outputIndex);
+                if (!TryFoundMatch(inventory, recipe, slots, outputSlot, outputIndex, out outputTicks))
+                {
+                    StoreCache(cache, gridHash, null);
+                    return new MatchProfile(candidates.Count, plausibleCandidates, "errored-output", gatherTicks, shapedTicks, 0, outputTicks);
+                }
+
                 StoreCache(cache, gridHash, recipe);
                 return new MatchProfile(candidates.Count, plausibleCandidates, recipe.Name?.ToString() ?? "unknown", gatherTicks, shapedTicks, 0, outputTicks);
             }
@@ -104,29 +115,45 @@ internal static class FindMatchingRecipePatch
             if (recipe.Shapeless && recipe.Matches(player, world, slots, gridWidth))
             {
                 shapelessTicks = Stopwatch.GetTimestamp() - shapelessStart;
-                outputTicks = FoundMatch(inventory, recipe, slots, outputSlot, outputIndex);
+                if (!TryFoundMatch(inventory, recipe, slots, outputSlot, outputIndex, out outputTicks))
+                {
+                    StoreCache(cache, gridHash, null);
+                    return new MatchProfile(candidates.Count, plausibleCandidates, "errored-output", gatherTicks, shapedTicks, shapelessTicks, outputTicks);
+                }
+
                 StoreCache(cache, gridHash, recipe);
                 return new MatchProfile(candidates.Count, plausibleCandidates, recipe.Name?.ToString() ?? "unknown", gatherTicks, shapedTicks, shapelessTicks, outputTicks);
             }
         }
         shapelessTicks = Stopwatch.GetTimestamp() - shapelessStart;
 
-        inventory.MarkSlotDirty(outputIndex);
+        MarkOutputDirtyIfNeeded(inventory, outputIndex, hadOutput);
         StoreCache(cache, gridHash, null);
         return new MatchProfile(candidates.Count, plausibleCandidates, "none", gatherTicks, shapedTicks, shapelessTicks, 0);
     }
 
-    private static void ApplyCachedMatch(InventoryCraftingGrid inventory, ItemSlot[] slots, ItemSlot outputSlot, int outputIndex, GridMatchCache cache)
+    private static bool ApplyCachedMatch(
+        InventoryCraftingGrid inventory,
+        ItemSlot[] slots,
+        ItemSlot outputSlot,
+        int outputIndex,
+        GridMatchCache cache,
+        bool hadOutput)
     {
         inventory.MatchingRecipe = cache.MatchedRecipe;
         outputSlot.Itemstack = null;
 
         if (cache.MatchedRecipe != null)
         {
-            cache.MatchedRecipe.GenerateOutputStack(slots, outputSlot);
+            if (!TryGenerateOutputStack(inventory, cache.MatchedRecipe, slots, outputSlot))
+            {
+                ClearErroredOutput(inventory, outputSlot, outputIndex);
+                return false;
+            }
         }
 
-        inventory.MarkSlotDirty(outputIndex);
+        MarkOutputDirtyIfNeeded(inventory, outputIndex, hadOutput || cache.MatchedRecipe != null);
+        return true;
     }
 
     private static void StoreCache(GridMatchCache cache, long gridHash, GridRecipe recipe)
@@ -165,13 +192,65 @@ internal static class FindMatchingRecipePatch
         return hash;
     }
 
-    private static long FoundMatch(InventoryCraftingGrid inventory, GridRecipe recipe, ItemSlot[] slots, ItemSlot outputSlot, int outputIndex)
+    private static bool TryFoundMatch(
+        InventoryCraftingGrid inventory,
+        GridRecipe recipe,
+        ItemSlot[] slots,
+        ItemSlot outputSlot,
+        int outputIndex,
+        out long ticks)
     {
         long start = Stopwatch.GetTimestamp();
         inventory.MatchingRecipe = recipe;
-        recipe.GenerateOutputStack(slots, outputSlot);
+        outputSlot.Itemstack = null;
+        if (!TryGenerateOutputStack(inventory, recipe, slots, outputSlot))
+        {
+            ticks = Stopwatch.GetTimestamp() - start;
+            ClearErroredOutput(inventory, outputSlot, outputIndex);
+            return false;
+        }
+
         inventory.MarkSlotDirty(outputIndex);
-        return Stopwatch.GetTimestamp() - start;
+        ticks = Stopwatch.GetTimestamp() - start;
+        return true;
+    }
+
+    private static bool TryGenerateOutputStack(InventoryCraftingGrid inventory, GridRecipe recipe, ItemSlot[] slots, ItemSlot outputSlot)
+    {
+        try
+        {
+            recipe.GenerateOutputStack(slots, outputSlot);
+            return true;
+        }
+        catch (InvalidOperationException ex) when (IsMissingOutputResultException(ex))
+        {
+            inventory.Api?.Logger.Warning(
+                "[fastcraftinggrid] Suppressed crafting output generation error for {0}: {1}",
+                inventory.InventoryID ?? "?",
+                ex.Message);
+            return false;
+        }
+    }
+
+    private static bool IsMissingOutputResultException(Exception exception)
+    {
+        return exception is InvalidOperationException invalid
+            && invalid.Message.StartsWith("Missing or errored output result for recipe", StringComparison.Ordinal);
+    }
+
+    private static void ClearErroredOutput(InventoryCraftingGrid inventory, ItemSlot outputSlot, int outputIndex)
+    {
+        inventory.MatchingRecipe = null;
+        outputSlot.Itemstack = null;
+        inventory.MarkSlotDirty(outputIndex);
+    }
+
+    private static void MarkOutputDirtyIfNeeded(InventoryCraftingGrid inventory, int outputIndex, bool hadOutput)
+    {
+        if (hadOutput || inventory.MatchingRecipe != null || inventory[outputIndex]?.Itemstack != null)
+        {
+            inventory.MarkSlotDirty(outputIndex);
+        }
     }
 
     private static void Record(InventoryCraftingGrid inventory, long ticks, MatchProfile profile)
