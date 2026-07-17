@@ -1,0 +1,30 @@
+{
+  "code": "vrpg:defense",
+  "name": "Defense Stat Families",
+  "sourceReference": "Mine-And-Slash-Rework DefenseStats.java, StatsRegister.java, and defensive StatLayers.java, summarized as original VRPG data.",
+  "conversionNote": "Target-side stats feed defensive layers after offensive damage has been built.",
+  "axes": [
+    { "code": "element", "values": ["physical", "fire", "cold", "lightning", "rust", "elemental", "all"] },
+    { "code": "spell_tag", "values": ["registry:spell_tags"] }
+  ],
+  "families": [
+    { "code": "no_attacker_stats_on_selfdmg", "namePattern": "Self Damage Ignores Attacker Stat Effects", "category": "rules", "operation": "flag", "minValue": 0, "maxValue": 1, "appliesTo": "self-damage spells" },
+    { "code": "{element}_vuln_crit", "namePattern": "{element} Damage Always Crits You", "category": "critical", "axes": ["element"], "operation": "flag", "percent": true, "appliesTo": "incoming matching element damage" },
+    { "code": "dmg_received", "namePattern": "Damage Received", "category": "taken", "operation": "increased_taken", "layer": "additive_damage", "percent": true, "maxValue": 90, "appliesTo": "incoming damage" },
+    { "code": "{element}_dmg_reduction", "namePattern": "{element} Damage Reduction", "category": "mitigation", "axes": ["element"], "operation": "reduced_taken", "layer": "damage_reduction", "percent": true, "minValue": -500, "maxValue": 50, "appliesTo": "incoming matching element damage" },
+    { "code": "dmg_reduction", "namePattern": "Damage Reduction", "category": "mitigation", "operation": "reduced_taken", "layer": "damage_reduction", "percent": true, "minValue": -500, "maxValue": 50, "appliesTo": "incoming damage" },
+    { "code": "dmg_reduction_chance", "namePattern": "Damage Suppression Chance", "category": "mitigation", "operation": "chance", "layer": "damage_suppression", "percent": true, "minValue": 0, "maxValue": 100, "appliesTo": "incoming damage", "conversion": "roll chance; on success damage_suppression layer is x0.5" },
+    { "code": "proj_dmg_received", "namePattern": "Projectile Damage Received", "category": "taken", "operation": "increased_taken", "layer": "additive_damage", "percent": true, "baseValue": 0, "appliesTo": "incoming projectile damage" },
+    { "code": "{spell_tag}_spell_dmg_taken", "namePattern": "{spell_tag} Damage Taken", "category": "taken", "axes": ["spell_tag"], "operation": "increased_taken", "layer": "additive_damage", "percent": true, "appliesTo": "incoming tagged damage" },
+    { "code": "missing_magic_shield_dmg_received_per_10", "namePattern": "Damage Received per 10% Missing Magic Shield", "category": "taken", "operation": "missing_resource_scaling", "layer": "additive_damage", "percent": true, "appliesTo": "target missing magic shield", "conversion": "effective = floor(missingMagicShieldPercent / 10) * value" },
+    { "code": "armor", "namePattern": "Armor", "category": "mitigation", "operation": "rating", "layer": "armor_mitigation", "appliesTo": "incoming physical damage", "conversion": "VS-specific armor curve should replace Minecraft armor math" },
+    { "code": "dodge_rating", "namePattern": "Dodge Rating", "category": "avoidance", "operation": "rating", "appliesTo": "incoming hit chance" },
+    { "code": "damage_shield", "namePattern": "Damage Shield", "category": "absorb", "operation": "flat_pool", "appliesTo": "incoming damage" },
+    { "code": "block_chance", "namePattern": "Block Chance", "category": "avoidance", "operation": "chance", "percent": true, "minValue": 0, "maxValue": 100, "appliesTo": "blockable incoming damage" },
+    { "code": "armor_penetration", "namePattern": "Armor Penetration", "category": "penetration", "operation": "rating", "appliesTo": "target armor mitigation" },
+    { "code": "{element}_resist", "namePattern": "{element} Resistance", "category": "resistance", "axes": ["element"], "operation": "reduced_taken", "percent": true, "appliesTo": "incoming matching element damage" },
+    { "code": "max_{element}_resist", "namePattern": "Maximum {element} Resistance", "category": "resistance_cap", "axes": ["element"], "operation": "cap_modifier", "percent": true, "appliesTo": "matching resistance cap" },
+    { "code": "{element}_penetration", "namePattern": "{element} Penetration", "category": "penetration", "axes": ["element"], "operation": "penetration", "percent": true, "appliesTo": "target matching resistance" },
+    { "code": "spell_dodge", "namePattern": "Spell Dodge", "category": "avoidance", "operation": "chance", "percent": true, "minValue": 0, "maxValue": 100, "appliesTo": "incoming spell hits" }
+  ]
+}

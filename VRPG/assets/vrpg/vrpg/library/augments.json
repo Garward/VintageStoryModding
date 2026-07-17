@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:augments",
+  "name": "Augments",
+  "category": "augments",
+  "summary": "Augments are permanent or semi-permanent item modifications layered on top of base gear, affixes, etchings, and tender.",
+  "tags": ["augment", "gear", "crafting"]
+}

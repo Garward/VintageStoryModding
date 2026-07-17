@@ -1,0 +1,50 @@
+{
+  "code": "vrpg:cinder_orb",
+  "name": "Cinder Orb",
+  "description": "Launch a rust-caged ember that bursts on a creature or solid surface.",
+  "classCode": "vrpg:corroder",
+  "icon": "cinder-orb",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "projectile_aoe",
+  "cooldownSeconds": 2.8,
+  "range": 28.0,
+  "radius": 3.2,
+  "maxTargets": 0,
+  "model": "vrpg:entity/skill/cinder-orb",
+  "color": "#f06a28b8",
+  "tags": ["spell", "fire", "projectile", "area"],
+  "damage": {
+    "type": "vrpg:fire",
+    "base": 16.0,
+    "perLevel": 5.0,
+    "weaponDamagePercent": 120.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "mana",
+    "base": 14.0,
+    "perLevel": 1.0
+  },
+  "projectile": {
+    "impactMode": "entity",
+    "speed": 0.62,
+    "lifetimeSeconds": 4.5,
+    "verticalOffset": -0.52,
+    "horizontalOffset": 0.22,
+    "forwardOffset": 0.55,
+    "aimConvergenceDistance": 12.0
+  },
+  "particles": {
+    "model": "quad",
+    "burstQuantity": 20.0,
+    "trailQuantity": 0.7,
+    "lifetimeSeconds": 0.52,
+    "trailLifetimeSeconds": 0.22,
+    "gravity": -0.12,
+    "scale": 0.26,
+    "velocity": 1.15
+  }
+}

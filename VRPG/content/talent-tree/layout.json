@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "status": "authoring-scaffold",
+  "world": {
+    "width": 5600,
+    "height": 5600,
+    "centerX": 2800,
+    "centerY": 2800,
+    "nodeDiameter": 44
+  },
+  "geometry": {
+    "startAngleDegrees": -90,
+    "startRadius": 1200,
+    "innerBandRadius": 1450,
+    "middleBandRadius": 2070,
+    "outerBandRadius": 2110,
+    "perimeterRadius": 2150,
+    "perimeterNodeCount": 42,
+    "representativeRoute": "force"
+  },
+  "routes": [
+    {
+      "code": "force",
+      "name": "Force",
+      "dominantAttribute": "strength",
+      "secondaryAttribute": "dexterity",
+      "color": "#c9543f"
+    },
+    {
+      "code": "precision",
+      "name": "Precision",
+      "dominantAttribute": "dexterity",
+      "secondaryAttribute": "strength",
+      "color": "#75b65a"
+    },
+    {
+      "code": "exposure",
+      "name": "Exposure",
+      "dominantAttribute": "dexterity",
+      "secondaryAttribute": "intelligence",
+      "color": "#9b70c9"
+    },
+    {
+      "code": "tuning",
+      "name": "Tuning",
+      "dominantAttribute": "intelligence",
+      "secondaryAttribute": "dexterity",
+      "color": "#668fd4"
+    },
+    {
+      "code": "command",
+      "name": "Command",
+      "dominantAttribute": "intelligence",
+      "secondaryAttribute": "strength",
+      "color": "#7d79c9"
+    },
+    {
+      "code": "shelter",
+      "name": "Shelter",
+      "dominantAttribute": "strength",
+      "secondaryAttribute": "intelligence",
+      "color": "#c88b43"
+    }
+  ],
+  "manualOffsets": {}
+}

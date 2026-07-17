@@ -1,0 +1,54 @@
+{
+  "code": "vrpg:default",
+  "name": "Default VRPG Scaling",
+  "maxPlayerLevel": 100,
+  "maxCreatureLevel": 100,
+  "playerLevels": {
+    "baseExperienceToNextLevel": 1000,
+    "experienceGrowth": 1.13,
+    "experienceLinearPerLevel": 75
+  },
+  "creatureLevels": {
+    "openWorldNearbyPlayerLevelCap": true,
+    "surfaceAllowedOverlevel": 3,
+    "undergroundAllowedOverlevel": 5,
+    "temporalAllowedOverlevel": 8,
+    "riftAllowedOverlevel": 100,
+    "nearbyPlayerRadius": 96,
+    "spawnDistanceBlocksPerLevel": 650,
+    "depthBlocksPerLevel": 10,
+    "undergroundStartsBelowY": 96,
+    "riftBaseLevel": 10,
+    "riftUsesNearbyPlayerCap": false
+  },
+  "creatureStats": {
+    "healthPerLevelPercent": 12,
+    "damagePerLevelPercent": 8,
+    "armorPerLevel": 0.2,
+    "statusChancePerLevelPercent": 0.25,
+    "tiers": [
+      { "startsAtLevel": 1, "healthMultiplier": 1.00, "damageMultiplier": 1.00, "experienceMultiplier": 1.00 },
+      { "startsAtLevel": 11, "healthMultiplier": 1.15, "damageMultiplier": 1.12, "experienceMultiplier": 1.18 },
+      { "startsAtLevel": 21, "healthMultiplier": 1.60, "damageMultiplier": 1.30, "experienceMultiplier": 1.45 },
+      { "startsAtLevel": 31, "healthMultiplier": 2.40, "damageMultiplier": 1.55, "experienceMultiplier": 1.85 },
+      { "startsAtLevel": 41, "healthMultiplier": 3.60, "damageMultiplier": 1.90, "experienceMultiplier": 2.35 },
+      { "startsAtLevel": 51, "healthMultiplier": 5.60, "damageMultiplier": 2.35, "experienceMultiplier": 3.00 },
+      { "startsAtLevel": 61, "healthMultiplier": 8.50, "damageMultiplier": 2.90, "experienceMultiplier": 3.85 },
+      { "startsAtLevel": 71, "healthMultiplier": 13.00, "damageMultiplier": 3.60, "experienceMultiplier": 4.95 },
+      { "startsAtLevel": 81, "healthMultiplier": 20.00, "damageMultiplier": 4.50, "experienceMultiplier": 6.35 },
+      { "startsAtLevel": 91, "healthMultiplier": 32.00, "damageMultiplier": 5.70, "experienceMultiplier": 8.10 }
+    ]
+  },
+  "creatureRarities": [
+    { "code": "ordinary", "name": "Ordinary", "minLevel": 1, "weight": 1000, "affixSlots": 0, "healthMultiplier": 1.00, "damageMultiplier": 1.00, "experienceMultiplier": 1.00 },
+    { "code": "hardened", "name": "Hardened", "minLevel": 8, "weight": 160, "affixSlots": 1, "healthMultiplier": 1.35, "damageMultiplier": 1.20, "experienceMultiplier": 1.60 },
+    { "code": "marked", "name": "Marked", "minLevel": 18, "weight": 60, "affixSlots": 2, "healthMultiplier": 1.85, "damageMultiplier": 1.45, "experienceMultiplier": 2.50 },
+    { "code": "warped", "name": "Warped", "minLevel": 35, "weight": 20, "affixSlots": 3, "healthMultiplier": 2.60, "damageMultiplier": 1.85, "experienceMultiplier": 4.00 },
+    { "code": "named", "name": "Named", "minLevel": 55, "weight": 5, "affixSlots": 4, "healthMultiplier": 4.00, "damageMultiplier": 2.50, "experienceMultiplier": 8.00 }
+  ],
+  "weaponLevels": {
+    "baseDamage": 10,
+    "damagePerLevelPercent": 3.5,
+    "commonRarityMultiplier": 1
+  }
+}

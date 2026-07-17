@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:fire",
+  "name": "Fire",
+  "description": "Heat and flame damage. Fire damage can trigger Burn.",
+  "colorHex": "#ff6a1a",
+  "tags": ["damage", "elemental", "fire", "burn_source"]
+}

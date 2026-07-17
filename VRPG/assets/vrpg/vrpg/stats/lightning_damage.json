@@ -1,0 +1,9 @@
+{
+  "code": "lightning_damage",
+  "name": "Lightning Damage",
+  "description": "Increases lightning damage and shock proc scaling.",
+  "category": "damage_type",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

@@ -1,0 +1,14 @@
+{
+  "code": "vrpg:steady_heart",
+  "name": "Steady Heart",
+  "description": "Recover health steadily enough to stay in the fight.",
+  "x": -165,
+  "y": 95,
+  "links": ["vrpg:iron_grip", "vrpg:living_bulwark"],
+  "modifiers": [
+    { "stat": "vrpg:health_regen", "min": 0.5, "max": 0.5, "operation": "add" }
+  ],
+  "cost": 1,
+  "visualTier": "major",
+  "foundation": "strength"
+}

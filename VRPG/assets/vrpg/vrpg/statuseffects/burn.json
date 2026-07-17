@@ -1,0 +1,19 @@
+{
+  "code": "vrpg:burn",
+  "name": "Burn",
+  "description": "A fire ailment triggered by fire damage. Burn has the shortest duration but highest burst damage-over-time profile.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "triggerDamageType": "vrpg:fire",
+  "procMode": "damage_over_time",
+  "chanceStat": "burn_chance",
+  "durationStat": "burn_duration",
+  "damageProfile": "short_high_burst",
+  "stackMode": "strongest_refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 3,
+  "tickSeconds": 1,
+  "tags": ["ailment", "fire", "fire_damage", "burn", "burn_chance", "burn_duration", "damage_over_time"],
+  "visualHint": "orange flame",
+  "visual": { "icon": "burn", "color": "#f06a28", "aura": "embers" }
+}

@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:currency",
+  "name": "Currency",
+  "category": "currency",
+  "summary": "Tender covers crafting and modification items used for rolling, upgrading, sealing, or cleansing RPG gear.",
+  "tags": ["currency", "crafting", "gear"]
+}

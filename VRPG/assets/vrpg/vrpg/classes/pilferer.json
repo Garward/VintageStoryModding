@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:pilferer",
+  "name": "Pilferer",
+  "description": "A dexterity dagger class built around poison, openers, stolen advantages, and escaping before the answer lands.",
+  "icon": "dagger",
+  "color": "#65bf78",
+  "tags": ["melee", "dexterity", "poison"],
+  "sortOrder": 30
+}

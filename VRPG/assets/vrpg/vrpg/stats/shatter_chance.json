@@ -1,0 +1,10 @@
+{
+  "code": "shatter_chance",
+  "name": "Shatter Chance",
+  "description": "Chance for cold damage against a frozen target to trigger Shatter detonation.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100,
+  "percent": true
+}

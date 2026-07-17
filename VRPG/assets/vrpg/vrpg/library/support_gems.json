@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:support_fittings",
+  "name": "Support Fittings",
+  "category": "support_fittings",
+  "summary": "Support Fittings modify active skills by adding costs, tags, constraints, and behavior changes.",
+  "tags": ["support", "fitting", "skill"]
+}

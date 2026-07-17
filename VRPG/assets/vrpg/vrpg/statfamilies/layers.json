@@ -1,0 +1,25 @@
+{
+  "code": "vrpg:layers",
+  "name": "Stat Calculation and Damage Layer Math",
+  "sourceReference": "Mine-And-Slash-Rework InCalcStatData.java, StatData.java, StatLayer.java, and StatLayers.java, summarized as original VRPG data.",
+  "conversionNote": "This file is the canonical VRPG math target. It is intentionally data-first so balancing can move to JSON before code hooks are complete.",
+  "families": [
+    { "code": "stat_aggregate", "namePattern": "Stat Aggregate", "category": "math", "operation": "formula", "conversion": "value = clamp((base + flat) * (1 + increased / 100) * statMore, min, hardCap). statMore applies only to stats marked multiply_stat." },
+    { "code": "damage_more_storage", "namePattern": "Damage More Storage", "category": "math", "operation": "formula", "conversion": "Stats marked multiplicative_damage store more separately as damageMore = product(1 + more / 100). Their displayed value still uses flat/increased math." },
+    { "code": "level_scaling", "namePattern": "Level Scaling", "category": "math", "operation": "formula", "conversion": "Only flat modifiers scale with level. Percent and more modifiers stay unchanged. VRPG should replace original level curves with Vintage-Story-friendly curves in data." },
+    { "code": "flat_damage", "namePattern": "Flat Damage", "category": "offensive_layer", "operation": "add", "layer": "flat_damage", "minValue": -999999, "maxValue": 999999 },
+    { "code": "damage_conversion", "namePattern": "Damage Conversion", "category": "offensive_layer", "operation": "convert_percent", "layer": "damage_conversion", "minValue": 0, "maxValue": 100, "conversion": "Normalize conversion totals to 100%; move converted amount from source element into target element bonus damage." },
+    { "code": "ele_as_extra_flat", "namePattern": "Element as Extra Flat Damage", "category": "offensive_layer", "operation": "as_extra", "layer": "ele_as_extra_flat", "minValue": 0, "maxValue": 100, "conversion": "extraDamage = currentDamage * percent / 100 and is added as target element." },
+    { "code": "additive_damage", "namePattern": "Additive Damage", "category": "offensive_layer", "operation": "multiply", "layer": "additive_damage", "minValue": -100, "conversion": "damage *= max(0, 1 + totalIncreased / 100)" },
+    { "code": "dot_dmg_multi", "namePattern": "Damage Over Time Multiplier", "category": "offensive_layer", "operation": "multiply", "layer": "dot_dmg_multi", "minValue": -100 },
+    { "code": "crit_damage", "namePattern": "Critical Damage", "category": "offensive_layer", "operation": "multiply", "layer": "crit_damage", "minValue": -100 },
+    { "code": "double_damage", "namePattern": "Double Damage", "category": "offensive_layer", "operation": "multiply", "layer": "double_damage", "minValue": 2, "maxValue": 2 },
+    { "code": "damage_taken_as", "namePattern": "Damage Taken As", "category": "defensive_layer", "operation": "damage_taken_as", "layer": "damage_taken_as", "minValue": 0, "maxValue": 100 },
+    { "code": "armor_mitigation", "namePattern": "Armor Mitigation", "category": "defensive_layer", "operation": "multiply", "layer": "armor_mitigation", "minValue": 0.1 },
+    { "code": "physical_mitigation", "namePattern": "Physical Mitigation", "category": "defensive_layer", "operation": "multiply", "layer": "physical_mitigation", "minValue": 0.1 },
+    { "code": "elemental_mitigation", "namePattern": "Elemental Mitigation", "category": "defensive_layer", "operation": "multiply", "layer": "elemental_mitigation", "minValue": 0.1 },
+    { "code": "damage_reduction", "namePattern": "Damage Reduction", "category": "defensive_layer", "operation": "multiply", "layer": "damage_reduction", "minValue": 0.5 },
+    { "code": "damage_suppression", "namePattern": "Damage Suppression", "category": "defensive_layer", "operation": "multiply", "layer": "damage_suppression", "minValue": 0.5, "maxValue": 1 },
+    { "code": "flat_damage_reduction", "namePattern": "Flat Damage Reduction", "category": "defensive_layer", "operation": "add", "layer": "flat_damage_reduction", "minValue": -1000 }
+  ]
+}

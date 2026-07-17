@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:physical_damage",
+  "name": "Physical Damage",
+  "description": "Flat physical damage added by gear and talents.",
+  "category": "combat",
+  "baseValue": 0
+}

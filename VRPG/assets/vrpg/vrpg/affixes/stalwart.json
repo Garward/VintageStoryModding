@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:stalwart",
+  "name": "Stalwart",
+  "slotTag": "armor",
+  "rarity": "vrpg:common",
+  "modifiers": [
+    { "stat": "vrpg:max_health_percent", "min": 3, "max": 8, "operation": "add" }
+  ]
+}

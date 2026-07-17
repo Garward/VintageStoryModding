@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:gear_rarities",
+  "name": "Gear Rarities",
+  "category": "equipment",
+  "summary": "Gear rarity controls affix count, stat scaling, color, and drop weighting.",
+  "tags": ["gear", "loot"]
+}

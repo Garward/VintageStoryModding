@@ -1,0 +1,10 @@
+{
+  "code": "shock_chance",
+  "name": "Shock Chance",
+  "description": "Chance for lightning damage to trigger Shock detonation.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100,
+  "percent": true
+}

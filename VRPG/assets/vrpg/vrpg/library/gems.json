@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:fittings",
+  "name": "Fittings",
+  "category": "fittings",
+  "summary": "Fittings define active skills, tags, scaling hooks, costs, and supported item sockets.",
+  "tags": ["fitting", "skill", "active"]
+}

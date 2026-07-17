@@ -1,0 +1,14 @@
+{
+  "code": "vrpg:slipstream",
+  "name": "Slipstream",
+  "description": "Carry farther through danger when Evasive Step activates.",
+  "x": 165,
+  "y": 95,
+  "links": ["vrpg:quick_reflex", "vrpg:untouchable_moment"],
+  "modifiers": [
+    { "stat": "vrpg:evasive_step_impulse", "min": 0.05, "max": 0.05, "operation": "add" }
+  ],
+  "cost": 1,
+  "visualTier": "major",
+  "foundation": "dexterity"
+}

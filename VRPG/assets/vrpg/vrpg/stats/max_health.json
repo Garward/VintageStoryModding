@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:max_health",
+  "name": "Maximum Health",
+  "description": "Flat increase to VRPG maximum health. Health is displayed by the VRPG HUD and backed by Vintage Story's health tree for death handling.",
+  "category": "resource",
+  "baseValue": 100,
+  "minValue": 1,
+  "maxValue": 100000
+}

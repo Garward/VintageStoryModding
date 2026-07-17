@@ -1,0 +1,10 @@
+{
+  "code": "burn_chance",
+  "name": "Burn Chance",
+  "description": "Chance for fire damage to apply Burn.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100,
+  "percent": true
+}

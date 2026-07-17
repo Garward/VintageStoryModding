@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:getting_started",
+  "name": "Getting Started",
+  "category": "guide",
+  "summary": "VRPG is data-first: stats, rarities, affixes, talents, library pages, and dungeon themes are JSON records that can be extended by content packs.",
+  "tags": ["basics", "data"]
+}

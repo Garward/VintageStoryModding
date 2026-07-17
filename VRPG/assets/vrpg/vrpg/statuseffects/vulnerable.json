@@ -1,0 +1,16 @@
+{
+  "code": "vrpg:vulnerable",
+  "name": "Vulnerable",
+  "description": "A debuff that increases incoming damage from all sources. Vulnerable is a readable high-value setup effect.",
+  "kind": "debuff",
+  "polarity": "harmful",
+  "stackMode": "refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 6,
+  "tickSeconds": 0,
+  "tags": ["damage_taken", "debuff"],
+  "modifiers": [
+    { "stat": "dmg_received", "min": 15, "max": 15, "operation": "increased" }
+  ],
+  "visualHint": "cracked mark"
+}

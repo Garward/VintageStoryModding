@@ -1,0 +1,14 @@
+{
+  "code": "vrpg:arcane_shelter",
+  "name": "Arcane Shelter",
+  "description": "Choose the Intelligence foundation and establish a magic shield.",
+  "x": 0,
+  "y": -110,
+  "links": ["vrpg:shield_conduit"],
+  "modifiers": [
+    { "stat": "vrpg:max_magic_shield", "min": 15, "max": 15, "operation": "add" }
+  ],
+  "cost": 1,
+  "starter": true,
+  "foundation": "intelligence"
+}

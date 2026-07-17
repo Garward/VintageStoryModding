@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:status_effects",
+  "name": "Status Effects",
+  "category": "status_effects",
+  "summary": "Status effects will describe buffs, ailments, debuffs, durations, stacking, and stat hooks. Current stat-family records already include ailment and effect math.",
+  "tags": ["status", "effect", "ailment", "buff", "debuff"]
+}

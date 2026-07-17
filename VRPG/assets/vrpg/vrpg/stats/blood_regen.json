@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:blood_regen",
+  "name": "Blood Regeneration",
+  "description": "Blood recovered or generated per second for blood-mage builds.",
+  "category": "resource",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 10000
+}

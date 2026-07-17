@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:cold",
+  "name": "Cold",
+  "description": "Frost and freezing damage. Cold damage can trigger Freeze and later Shatter.",
+  "colorHex": "#8fd8ff",
+  "tags": ["damage", "elemental", "cold", "freeze_source", "shatter_source"]
+}

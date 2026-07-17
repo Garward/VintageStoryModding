@@ -1,0 +1,9 @@
+{
+  "code": "cold_damage",
+  "name": "Cold Damage",
+  "description": "Increases cold damage and cold ailment/proc scaling.",
+  "category": "damage_type",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

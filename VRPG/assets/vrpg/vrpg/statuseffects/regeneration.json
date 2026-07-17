@@ -1,0 +1,13 @@
+{
+  "code": "vrpg:regeneration",
+  "name": "Regeneration",
+  "description": "A beneficial status effect that restores health over time. Multiple sources refresh or upgrade the active regeneration effect.",
+  "kind": "buff",
+  "polarity": "beneficial",
+  "stackMode": "strongest_refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 8,
+  "tickSeconds": 1,
+  "tags": ["heal", "buff", "over_time"],
+  "visualHint": "soft green glow"
+}

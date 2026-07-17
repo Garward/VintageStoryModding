@@ -1,0 +1,40 @@
+{
+  "code": "vrpg:fracture_pulse",
+  "name": "Fracture Pulse",
+  "description": "Drive force into the ground and release a close circular shockwave around yourself.",
+  "classCode": "vrpg:smith",
+  "icon": "fracture-pulse",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "circle",
+  "cooldownSeconds": 4.0,
+  "range": 0.0,
+  "radius": 4.5,
+  "maxTargets": 0,
+  "color": "#d8a35ba0",
+  "tags": ["attack", "physical", "area", "self"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 9.0,
+    "perLevel": 2.75,
+    "weaponDamagePercent": 145.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 1,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0
+  },
+  "particles": {
+    "model": "cube",
+    "burstQuantity": 24.0,
+    "trailQuantity": 0.0,
+    "lifetimeSeconds": 0.38,
+    "trailLifetimeSeconds": 0.2,
+    "gravity": 0.7,
+    "scale": 0.22,
+    "velocity": 0.9
+  }
+}

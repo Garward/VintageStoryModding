@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:assemblies",
+  "name": "Assemblies",
+  "category": "assemblies",
+  "summary": "Assemblies activate when compatible etchings are arranged in a valid item.",
+  "tags": ["assembly", "etching", "socket", "gear"]
+}

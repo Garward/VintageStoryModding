@@ -1,0 +1,10 @@
+{
+  "code": "vrpg:rare",
+  "name": "Rare",
+  "colorHex": "#f3d36b",
+  "weight": 120,
+  "minAffixes": 3,
+  "maxAffixes": 5,
+  "statScalar": 1.35,
+  "weaponPowerScalar": 1.15
+}

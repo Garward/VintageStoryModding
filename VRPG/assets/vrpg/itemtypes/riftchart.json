@@ -1,0 +1,29 @@
+{
+  code: "riftchart",
+  class: "vrpg.riftchart",
+  shape: { base: "game:item/gear-temporal" },
+  texture: { base: "game:item/resource/temporalgear" },
+  creativeinventory: { "general": ["*"], "items": ["*"] },
+  maxstacksize: 16,
+  attributes: {
+    vrpgLevel: 1
+  },
+  guiTransform: {
+    translation: { x: 3, y: 1, z: 0 },
+    rotation: { x: 145, y: -12, z: 0 },
+    origin: { x: 0.5, y: 0.0625, z: 0.5 },
+    scale: 2.5
+  },
+  tpHandTransform: {
+    translation: { x: -0.95, y: -0.11, z: -0.85 },
+    rotation: { x: 0, y: -89, z: 5 },
+    origin: { x: 0.5, y: 0.0625, z: 0.5 },
+    scale: 0.61
+  },
+  groundTransform: {
+    translation: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    origin: { x: 0.39, y: 0, z: 0.47 },
+    scale: 3.76
+  }
+}

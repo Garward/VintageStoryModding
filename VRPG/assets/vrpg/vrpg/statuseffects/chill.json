@@ -1,0 +1,17 @@
+{
+  "code": "vrpg:chill",
+  "name": "Chill",
+  "description": "A cold status effect that slows movement and action speed. Chill can exist without fully freezing the target.",
+  "kind": "debuff",
+  "polarity": "harmful",
+  "stackMode": "strongest_refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 4,
+  "tickSeconds": 0,
+  "tags": ["cold", "slow", "control"],
+  "modifiers": [
+    { "stat": "move_speed", "min": -30, "max": -10, "operation": "increased" }
+  ],
+  "visualHint": "pale blue frost",
+  "visual": { "icon": "chill", "color": "#78c9f0", "aura": "frost" }
+}

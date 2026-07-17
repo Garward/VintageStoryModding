@@ -1,0 +1,10 @@
+{
+  "code": "poison_chance",
+  "name": "Poison Chance",
+  "description": "Chance for rust damage to apply Poison.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100,
+  "percent": true
+}

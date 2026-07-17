@@ -1,0 +1,17 @@
+{
+  "code": "vrpg:stagger",
+  "name": "Stagger",
+  "description": "Posture damage builds toward a breaking point.",
+  "kind": "buildup",
+  "polarity": "harmful",
+  "stackMode": "refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 6.0,
+  "tags": ["physical", "control", "buildup"],
+  "visual": {
+    "icon": "fracture_pulse",
+    "color": "#ffd166",
+    "showStacks": false,
+    "buildup": { "showBar": true, "threshold": 100.0, "flashAtThreshold": true }
+  }
+}

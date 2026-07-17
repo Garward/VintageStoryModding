@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:stat_math",
+  "name": "Stat Math",
+  "category": "systems",
+  "summary": "VRPG aggregates flat, increased percent, and more multipliers, then applies damage through explicit layers. The taxonomy is stored in stat-family JSON files.",
+  "tags": ["stats", "gear", "data"]
+}

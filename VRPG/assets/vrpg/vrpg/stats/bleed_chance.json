@@ -1,0 +1,10 @@
+{
+  "code": "bleed_chance",
+  "name": "Bleed Chance",
+  "description": "Chance for physical damage to apply Bleed.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100,
+  "percent": true
+}

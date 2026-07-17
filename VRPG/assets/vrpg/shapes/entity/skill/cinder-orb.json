@@ -1,0 +1,65 @@
+{
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "rust": "game:block/metal/tarnished/rusty-iron",
+    "ember": "game:block/metal/ingot/copper"
+  },
+  "elements": [
+    {
+      "name": "ember-core",
+      "from": [-2.5, -2.5, -2.5],
+      "to": [2.5, 2.5, 2.5],
+      "rotationOrigin": [0.0, 0.0, 0.0],
+      "rotationX": 45.0,
+      "rotationY": 45.0,
+      "faces": {
+        "north": { "texture": "#ember", "uv": [0, 0, 5, 5] },
+        "east": { "texture": "#ember", "uv": [0, 0, 5, 5] },
+        "south": { "texture": "#ember", "uv": [0, 0, 5, 5] },
+        "west": { "texture": "#ember", "uv": [0, 0, 5, 5] },
+        "up": { "texture": "#ember", "uv": [0, 0, 5, 5] },
+        "down": { "texture": "#ember", "uv": [0, 0, 5, 5] }
+      }
+    },
+    {
+      "name": "rust-cage-x",
+      "from": [-4.0, -0.65, -0.65],
+      "to": [4.0, 0.65, 0.65],
+      "faces": {
+        "north": { "texture": "#rust", "uv": [0, 0, 8, 1.3] },
+        "east": { "texture": "#rust", "uv": [0, 0, 1.3, 1.3] },
+        "south": { "texture": "#rust", "uv": [0, 0, 8, 1.3] },
+        "west": { "texture": "#rust", "uv": [0, 0, 1.3, 1.3] },
+        "up": { "texture": "#rust", "uv": [0, 0, 8, 1.3] },
+        "down": { "texture": "#rust", "uv": [0, 0, 8, 1.3] }
+      }
+    },
+    {
+      "name": "rust-cage-y",
+      "from": [-0.65, -4.0, -0.65],
+      "to": [0.65, 4.0, 0.65],
+      "faces": {
+        "north": { "texture": "#rust", "uv": [0, 0, 1.3, 8] },
+        "east": { "texture": "#rust", "uv": [0, 0, 1.3, 8] },
+        "south": { "texture": "#rust", "uv": [0, 0, 1.3, 8] },
+        "west": { "texture": "#rust", "uv": [0, 0, 1.3, 8] },
+        "up": { "texture": "#rust", "uv": [0, 0, 1.3, 1.3] },
+        "down": { "texture": "#rust", "uv": [0, 0, 1.3, 1.3] }
+      }
+    },
+    {
+      "name": "rust-cage-z",
+      "from": [-0.65, -0.65, -4.0],
+      "to": [0.65, 0.65, 4.0],
+      "faces": {
+        "north": { "texture": "#rust", "uv": [0, 0, 1.3, 1.3] },
+        "east": { "texture": "#rust", "uv": [0, 0, 8, 1.3] },
+        "south": { "texture": "#rust", "uv": [0, 0, 1.3, 1.3] },
+        "west": { "texture": "#rust", "uv": [0, 0, 8, 1.3] },
+        "up": { "texture": "#rust", "uv": [0, 0, 1.3, 8] },
+        "down": { "texture": "#rust", "uv": [0, 0, 1.3, 8] }
+      }
+    }
+  ]
+}

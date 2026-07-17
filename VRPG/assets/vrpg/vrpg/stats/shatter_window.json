@@ -1,0 +1,9 @@
+{
+  "code": "shatter_window",
+  "name": "Shatter Window",
+  "description": "Increases the timing window in which cold damage can shatter a frozen target.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

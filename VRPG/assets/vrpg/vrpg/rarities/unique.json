@@ -1,0 +1,11 @@
+{
+  "code": "vrpg:unique",
+  "name": "Unique",
+  "colorHex": "#c98042",
+  "weight": 10,
+  "minAffixes": 4,
+  "maxAffixes": 6,
+  "statScalar": 1.0,
+  "weaponPowerScalar": 1.2,
+  "uniqueLike": true
+}

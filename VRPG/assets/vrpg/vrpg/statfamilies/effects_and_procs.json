@@ -1,0 +1,39 @@
+{
+  "code": "vrpg:effects_and_procs",
+  "name": "Effect, Ailment, and Proc Stat Families",
+  "sourceReference": "Mine-And-Slash-Rework EffectStats.java, ProcStats.java, MobDeathStats.java, and StatsRegister.java, summarized as original VRPG data.",
+  "conversionNote": "Represent effects and procs as event-triggered stat families. Most are dormant until VRPG status effects and ailment systems exist.",
+  "axes": [
+    { "code": "effect", "values": ["registry:effects"] },
+    { "code": "effect_tag", "values": ["registry:effect_tags"] },
+    { "code": "mod_tag", "values": ["registry:mod_tags"] },
+    { "code": "ailment", "values": ["registry:ailments"] }
+  ],
+  "families": [
+    { "code": "chance_to_give_caster_{effect}", "namePattern": "Chance to Give Caster {effect}", "category": "effect_apply", "axes": ["effect"], "operation": "chance", "percent": true, "appliesTo": "effect trigger events" },
+    { "code": "apply_golem_{effect}", "namePattern": "Apply Golem {effect}", "category": "effect_apply", "axes": ["effect"], "operation": "chance_or_flag", "appliesTo": "golem effects" },
+    { "code": "curse_self_{effect}", "namePattern": "Curse Self with {effect}", "category": "effect_apply", "axes": ["effect"], "operation": "flag", "appliesTo": "self curse" },
+    { "code": "{effect}_immunity", "namePattern": "{effect} Immunity", "category": "immunity", "axes": ["effect"], "operation": "flag", "appliesTo": "incoming effect application" },
+    { "code": "effect_of_buffs_given_{effect_tag}", "namePattern": "Effect of {effect_tag} Buffs You Give", "category": "effect_strength", "axes": ["effect_tag"], "operation": "increased", "percent": true, "appliesTo": "outgoing tagged buffs" },
+    { "code": "effect_of_buffs_on_you_{mod_tag}", "namePattern": "Effect of {mod_tag} Buffs on You", "category": "effect_strength", "axes": ["mod_tag"], "operation": "increased_received", "percent": true, "appliesTo": "incoming tagged buffs" },
+    { "code": "effect_duration_you_cast", "namePattern": "Effect Duration You Cast", "category": "duration", "operation": "increased", "percent": true, "appliesTo": "outgoing effects" },
+    { "code": "{effect_tag}_duration_you_cast", "namePattern": "{effect_tag} Duration You Cast", "category": "duration", "axes": ["effect_tag"], "operation": "increased", "percent": true, "appliesTo": "outgoing tagged effects" },
+    { "code": "chance_of_applying_{effect}", "namePattern": "Chance of Applying {effect}", "category": "effect_apply", "axes": ["effect"], "operation": "chance", "percent": true, "appliesTo": "effect application" },
+    { "code": "blood_explode_on_kill", "namePattern": "Blood Explosion on Kill", "category": "proc", "operation": "chance_or_flag", "appliesTo": "kill events" },
+    { "code": "ignite_explode_on_kill", "namePattern": "Ignite Explosion on Kill", "category": "proc", "operation": "chance_or_flag", "appliesTo": "kill events" },
+    { "code": "profane_explosion_on_cursed_kill", "namePattern": "Profane Explosion on Cursed Kill", "category": "proc", "operation": "chance_or_flag", "appliesTo": "kill cursed target events" },
+    { "code": "profane_explosion_on_kill", "namePattern": "Profane Explosion on Kill", "category": "proc", "operation": "chance_or_flag", "appliesTo": "kill events" },
+    { "code": "proc_shatter", "namePattern": "Shatter Proc", "category": "proc", "operation": "chance_or_flag", "appliesTo": "freeze/kill events" },
+    { "code": "ignite_explode_on_mob_death", "namePattern": "Ignite Explosion on Mob Death", "category": "mob_death", "operation": "chance_or_flag", "appliesTo": "mob death events" },
+    { "code": "{ailment}_chance", "namePattern": "{ailment} Chance", "category": "ailment", "axes": ["ailment"], "operation": "chance", "percent": true, "appliesTo": "ailment application" },
+    { "code": "{ailment}_receive_chance", "namePattern": "{ailment} Receive Chance", "category": "ailment", "axes": ["ailment"], "operation": "chance_received", "percent": true, "appliesTo": "incoming ailment application" },
+    { "code": "{ailment}_damage", "namePattern": "{ailment} Damage", "category": "ailment", "axes": ["ailment"], "operation": "increased", "percent": true, "appliesTo": "ailment damage" },
+    { "code": "{ailment}_duration", "namePattern": "{ailment} Duration", "category": "ailment", "axes": ["ailment"], "operation": "increased", "percent": true, "appliesTo": "ailment duration" },
+    { "code": "{ailment}_effect", "namePattern": "{ailment} Effect", "category": "ailment", "axes": ["ailment"], "operation": "increased", "percent": true, "appliesTo": "ailment non-damage effect" },
+    { "code": "{ailment}_resistance", "namePattern": "{ailment} Resistance", "category": "ailment", "axes": ["ailment"], "operation": "reduced_received", "percent": true, "appliesTo": "incoming ailment effect" },
+    { "code": "{ailment}_proc", "namePattern": "{ailment} Proc", "category": "ailment", "axes": ["ailment"], "operation": "chance_or_flag", "appliesTo": "ailment proc events" },
+    { "code": "ailment_speed", "namePattern": "Ailment Speed", "category": "ailment", "operation": "increased", "percent": true, "appliesTo": "ailment tick speed" },
+    { "code": "all_ailment_damage", "namePattern": "All Ailment Damage", "category": "ailment", "operation": "increased", "percent": true, "appliesTo": "all ailment damage" },
+    { "code": "hit_damage", "namePattern": "Hit Damage", "category": "hit", "operation": "increased", "percent": true, "appliesTo": "hit damage" }
+  ]
+}

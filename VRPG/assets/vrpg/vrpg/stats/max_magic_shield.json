@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:max_magic_shield",
+  "name": "Maximum Magic Shield",
+  "description": "Maximum protective magic shield. The VRPG HUD shows this bar only when shield exists unless configured otherwise.",
+  "category": "resource",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100000
+}

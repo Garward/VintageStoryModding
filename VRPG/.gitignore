@@ -1,0 +1,5 @@
+Directory.Build.local.props
+bin/
+obj/
+dist/
+balance-reports/

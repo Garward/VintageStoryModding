@@ -1,0 +1,55 @@
+{
+  "code": "vrpg:flurry",
+  "name": "Flurry",
+  "description": "Strike the aimed close target four times. Every strike resolves independently for critical hits, ailments, leech, and on-hit effects.",
+  "classCode": "vrpg:pilferer",
+  "icon": "flurry",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "melee_single",
+  "cooldownSeconds": 3.0,
+  "range": 2.2,
+  "radius": 0.0,
+  "maxTargets": 1,
+  "color": "#65bf78c0",
+  "tags": ["attack", "physical", "melee", "close", "sequence"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 3.0,
+    "perLevel": 1.0,
+    "weaponDamagePercent": 32.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": true
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "cast"
+  },
+  "melee": {
+    "arcDegrees": 30.0,
+    "width": 0.9,
+    "verticalTolerance": 2.0
+  },
+  "timing": {
+    "mode": "sequence",
+    "hitCount": 4,
+    "hitIntervalSeconds": 0.2,
+    "maxDurationSeconds": 0.8
+  },
+  "particles": {
+    "model": "quad",
+    "burstQuantity": 5.0,
+    "trailQuantity": 0.7,
+    "lifetimeSeconds": 0.22,
+    "trailLifetimeSeconds": 0.1,
+    "gravity": 0.0,
+    "scale": 0.16,
+    "velocity": 0.35,
+    "originVerticalOffset": -0.45,
+    "originHorizontalOffset": 0.12,
+    "originForwardOffset": 0.3
+  }
+}

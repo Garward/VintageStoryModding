@@ -1,0 +1,18 @@
+{
+  "code": "vrpg:poison",
+  "name": "Poison",
+  "description": "A rust ailment triggered by rust damage. Poison has the longest duration and lowest burst, but stacked poison reaches the highest sustained damage.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "triggerDamageType": "vrpg:rust",
+  "procMode": "damage_over_time",
+  "chanceStat": "poison_chance",
+  "durationStat": "poison_duration",
+  "damageProfile": "long_low_burst_high_stack_ceiling",
+  "stackMode": "independent_stacks",
+  "maxStacks": 12,
+  "defaultDurationSeconds": 8,
+  "tickSeconds": 1,
+  "tags": ["ailment", "rust", "rust_damage", "poison", "poison_chance", "poison_duration", "damage_over_time", "stacking"],
+  "visualHint": "green droplet"
+}

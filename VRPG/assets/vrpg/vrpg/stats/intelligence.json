@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:intelligence",
+  "name": "Intelligence",
+  "description": "Primary magic attribute. Each point grants +0.2% magic skill damage, +0.3% healing strength, +0.2% summon damage, +10 mana, +1% mana regeneration, and +0.2% magic shield.",
+  "category": "attribute",
+  "baseValue": 10
+}

@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:smith",
+  "name": "Smith",
+  "description": "A strength melee class built around hammers, armor pressure, stagger, and staying in the fight.",
+  "icon": "anvil",
+  "color": "#d98b3a",
+  "tags": ["melee", "strength", "armor"],
+  "sortOrder": 10
+}

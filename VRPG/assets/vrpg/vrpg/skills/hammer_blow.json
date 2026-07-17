@@ -1,0 +1,52 @@
+{
+  "code": "vrpg:hammer_blow",
+  "name": "Hammer Blow",
+  "description": "Sweep a weapon through a short authored arc. Its reach does not use the held weapon's vanilla interaction range.",
+  "classCode": "vrpg:smith",
+  "icon": "hammer-blow",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "melee_arc",
+  "cooldownSeconds": 1.2,
+  "range": 2.5,
+  "radius": 0.0,
+  "maxTargets": 0,
+  "color": "#d98b3ac0",
+  "tags": ["attack", "physical", "melee", "area", "close"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 8.0,
+    "perLevel": 2.5,
+    "weaponDamagePercent": 105.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 1,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "cast"
+  },
+  "melee": {
+    "arcDegrees": 70.0,
+    "width": 1.2,
+    "verticalTolerance": 2.25
+  },
+  "timing": {
+    "mode": "instant",
+    "hitCount": 1,
+    "hitIntervalSeconds": 0.2,
+    "maxDurationSeconds": 1.0
+  },
+  "particles": {
+    "model": "cube",
+    "burstQuantity": 18.0,
+    "trailQuantity": 0.0,
+    "lifetimeSeconds": 0.3,
+    "trailLifetimeSeconds": 0.12,
+    "gravity": 0.25,
+    "scale": 0.2,
+    "velocity": 0.5
+  }
+}

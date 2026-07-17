@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:physical",
+  "name": "Physical",
+  "description": "Weapon, impact, and body damage. Physical damage can trigger Bleed.",
+  "colorHex": "#d8c8a0",
+  "tags": ["damage", "physical", "bleed_source"]
+}

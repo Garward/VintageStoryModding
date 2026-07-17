@@ -1,0 +1,13 @@
+{
+  "code": "vrpg:stun",
+  "name": "Stun",
+  "description": "A control status effect that briefly interrupts actions. Stun is short, readable, and subject to resistance or immunity windows.",
+  "kind": "control",
+  "polarity": "harmful",
+  "stackMode": "refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 0.75,
+  "tickSeconds": 0,
+  "tags": ["control", "interrupt"],
+  "visualHint": "gold burst"
+}

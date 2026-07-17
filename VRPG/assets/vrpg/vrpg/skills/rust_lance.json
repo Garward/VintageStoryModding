@@ -1,0 +1,43 @@
+{
+  "code": "vrpg:rust_lance",
+  "name": "Rust Lance",
+  "description": "Collapse a line of temporal corrosion at the aimed point, damaging everything close to the impact.",
+  "classCode": "vrpg:corroder",
+  "icon": "rust-lance",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "raycast_aoe",
+  "cooldownSeconds": 1.4,
+  "range": 18.0,
+  "radius": 1.8,
+  "maxTargets": 0,
+  "color": "#b86a2aa6",
+  "tags": ["spell", "rust", "area", "aimed"],
+  "damage": {
+    "type": "vrpg:rust",
+    "base": 11.0,
+    "perLevel": 3.5,
+    "weaponDamagePercent": 85.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "mana",
+    "base": 8.0,
+    "perLevel": 0.5
+  },
+  "particles": {
+    "model": "quad",
+    "burstQuantity": 14.0,
+    "trailQuantity": 1.0,
+    "lifetimeSeconds": 0.5,
+    "trailLifetimeSeconds": 0.16,
+    "gravity": -0.05,
+    "scale": 0.23,
+    "velocity": 0.75,
+    "originVerticalOffset": -0.5,
+    "originHorizontalOffset": 0.18,
+    "originForwardOffset": 0.4
+  }
+}

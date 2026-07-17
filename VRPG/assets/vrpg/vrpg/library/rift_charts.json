@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:rift_charts",
+  "name": "Rift Charts",
+  "category": "rifts",
+  "summary": "Rift Charts hold annotated temporal surveys, gearwork readings, and route calculations that stabilize a path into a themed expedition.",
+  "tags": ["rifts", "rift_charts", "temporal", "gearwork"]
+}

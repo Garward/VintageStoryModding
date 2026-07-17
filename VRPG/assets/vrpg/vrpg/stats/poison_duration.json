@@ -1,0 +1,9 @@
+{
+  "code": "poison_duration",
+  "name": "Poison Duration",
+  "description": "Increases Poison duration.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

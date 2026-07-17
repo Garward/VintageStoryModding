@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:handler",
+  "name": "Handler",
+  "description": "An intelligence caster built around tuned constructs, discharge damage, cold control, and direct summon commands.",
+  "icon": "construct",
+  "color": "#7da7db",
+  "tags": ["summon", "intelligence", "control"],
+  "sortOrder": 60
+}

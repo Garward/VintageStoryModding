@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:warden",
+  "name": "Warden",
+  "description": "A strength and intelligence support class built around tridents, wards, stability, and protecting allies.",
+  "icon": "ward",
+  "color": "#67bfc6",
+  "tags": ["support", "strength", "intelligence"],
+  "sortOrder": 40
+}

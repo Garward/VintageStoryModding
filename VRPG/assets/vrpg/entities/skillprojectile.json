@@ -1,0 +1,36 @@
+{
+  "code": "skillprojectile",
+  "class": "EntityVrpgSkillProjectile",
+  "tags": ["inanimate", "projectile", "vrpg"],
+  "hitboxSize": { "x": 0.32, "y": 0.32 },
+  "attributes": {
+    "isProjectile": true,
+    "collectible": false
+  },
+  "client": {
+    "renderer": "Shape",
+    "shape": { "base": "entity/skill/cinder-orb" },
+    "behaviors": [
+      {
+        "code": "passivephysics",
+        "groundDragFactor": 1.0,
+        "airDragFactor": 0.0,
+        "gravityFactor": 0.0
+      },
+      { "code": "interpolateposition" }
+    ]
+  },
+  "server": {
+    "behaviors": [
+      {
+        "code": "passivephysics",
+        "groundDragFactor": 1.0,
+        "airDragFactor": 0.0,
+        "gravityFactor": 0.0
+      },
+      { "code": "despawn", "minSeconds": 10 },
+      { "code": "entitystatetags" }
+    ]
+  },
+  "sounds": {}
+}

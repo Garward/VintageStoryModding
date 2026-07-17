@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "modid": "vrpg",
+  "name": "VRPG",
+  "version": "0.1.0",
+  "description": "Data-first RPG progression and optional procedural dungeon modules for Vintage Story.",
+  "authors": ["garward"],
+  "side": "Universal",
+  "requiredOnClient": false,
+  "requiredOnServer": true,
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

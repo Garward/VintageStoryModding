@@ -1,0 +1,21 @@
+{
+  "code": "vrpg:shock",
+  "name": "Shock",
+  "description": "A lightning ailment proc triggered by lightning damage. Shock detonates stacked status damage immediately instead of dealing damage over time.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "triggerDamageType": "vrpg:lightning",
+  "procMode": "detonate_stacked_status_damage",
+  "chanceStat": "shock_chance",
+  "durationStat": "shock_duration",
+  "damageProfile": "instant_status_detonation",
+  "stackMode": "strongest_refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 1,
+  "tickSeconds": 0,
+  "tags": ["ailment", "lightning", "lightning_damage", "shock", "shock_chance", "shock_duration", "detonation"],
+  "modifiers": [
+    { "stat": "dmg_received", "min": 10, "max": 30, "operation": "increased" }
+  ],
+  "visualHint": "blue arc"
+}

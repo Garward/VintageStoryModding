@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:magic_shield_regen",
+  "name": "Magic Shield Regeneration",
+  "description": "Magic shield recovered per second after its recharge delay is satisfied.",
+  "category": "resource",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 10000
+}

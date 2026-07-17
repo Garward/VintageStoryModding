@@ -1,0 +1,10 @@
+{
+  "code": "vrpg:common",
+  "name": "Common",
+  "colorHex": "#d7d7d7",
+  "weight": 600,
+  "minAffixes": 0,
+  "maxAffixes": 1,
+  "statScalar": 1.0,
+  "weaponPowerScalar": 1.0
+}

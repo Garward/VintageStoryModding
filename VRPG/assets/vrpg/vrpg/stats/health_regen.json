@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:health_regen",
+  "name": "Health Regeneration",
+  "description": "Health recovered per second before recovery modifiers.",
+  "category": "resource",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 10000
+}

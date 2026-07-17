@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:dexterity",
+  "name": "Dexterity",
+  "description": "Primary speed attribute. Each point grants +0.2% projectile skill damage, +0.2% attack speed, +1% Additional Critical Chance, and +0.2% dodge rating.",
+  "category": "attribute",
+  "baseValue": 10
+}

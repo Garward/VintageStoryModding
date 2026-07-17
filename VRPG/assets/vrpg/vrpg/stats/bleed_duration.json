@@ -1,0 +1,9 @@
+{
+  "code": "bleed_duration",
+  "name": "Bleed Duration",
+  "description": "Increases Bleed duration.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

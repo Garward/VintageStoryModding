@@ -1,0 +1,9 @@
+{
+  "code": "shock_duration",
+  "name": "Shock Duration",
+  "description": "Increases the short Shock vulnerability/proc window.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

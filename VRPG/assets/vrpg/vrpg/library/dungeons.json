@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:dungeons",
+  "name": "Temporal Rifts",
+  "category": "rifts",
+  "summary": "The rift module uses Manifold to open Temporal Rifts. Rift Charts hold the survey marks, gearwork readings, and route calculations for themed expeditions.",
+  "tags": ["rifts", "rift_charts", "temporal", "manifold"]
+}

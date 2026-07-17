@@ -1,0 +1,16 @@
+{
+  "code": "vrpg:guarded",
+  "name": "Guarded",
+  "description": "A beneficial defensive status effect that reduces incoming damage for a short duration.",
+  "kind": "buff",
+  "polarity": "beneficial",
+  "stackMode": "refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 6,
+  "tickSeconds": 0,
+  "tags": ["defense", "buff"],
+  "modifiers": [
+    { "stat": "dmg_received", "min": -15, "max": -15, "operation": "increased" }
+  ],
+  "visualHint": "bronze shield"
+}

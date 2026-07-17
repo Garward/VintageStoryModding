@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:etchings",
+  "name": "Etchings",
+  "category": "etchings",
+  "summary": "Etchings are socket components with their own marks, drop sources, and modifier identities.",
+  "tags": ["etching", "socket", "gear"]
+}

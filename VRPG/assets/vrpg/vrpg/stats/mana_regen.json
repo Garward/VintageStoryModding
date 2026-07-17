@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:mana_regen",
+  "name": "Mana Regeneration",
+  "description": "Mana recovered per second before recovery modifiers.",
+  "category": "resource",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 10000
+}

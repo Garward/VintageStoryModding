@@ -1,0 +1,10 @@
+{
+  "code": "vrpg:experience_gain",
+  "name": "Experience Gain",
+  "description": "Percent modifier to VRPG experience gained from kills, rifts, and RPG events.",
+  "category": "progression",
+  "baseValue": 0,
+  "minValue": -100,
+  "maxValue": 10000,
+  "percent": true
+}

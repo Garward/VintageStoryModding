@@ -1,0 +1,18 @@
+{
+  "code": "vrpg:freeze",
+  "name": "Freeze",
+  "description": "A cold ailment triggered by cold damage. Freeze stores a short control window and sets up Shatter-style detonation effects.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "triggerDamageType": "vrpg:cold",
+  "procMode": "control_setup",
+  "chanceStat": "freeze_chance",
+  "durationStat": "freeze_duration",
+  "damageProfile": "control_then_shatter_setup",
+  "stackMode": "refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 1.5,
+  "tickSeconds": 0,
+  "tags": ["ailment", "cold", "cold_damage", "freeze", "freeze_chance", "freeze_duration", "control", "shatter_setup"],
+  "visualHint": "ice shell"
+}

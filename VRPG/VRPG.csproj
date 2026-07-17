@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>VRPG</RootNamespace>
+    <AssemblyName>VRPG</AssemblyName>
+    <OutputType>Library</OutputType>
+    <LangVersion>12.0</LangVersion>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <PackageFileName>VRPG-0.1.0.zip</PackageFileName>
+    <CleanModOutputBeforeDeploy>true</CleanModOutputBeforeDeploy>
+    <ReferenceProtobufNet>true</ReferenceProtobufNet>
+    <ReferenceVSEssentials>true</ReferenceVSEssentials>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="modinfo.json" CopyToOutputDirectory="Always" />
+    <None Include="assets/**/*.*" CopyToOutputDirectory="Always" LinkBase="assets" />
+    <Compile Remove="tests/**/*.cs" />
+    <Compile Remove="tools/**/*.cs" />
+  </ItemGroup>
+
+</Project>

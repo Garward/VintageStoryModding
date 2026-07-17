@@ -1,0 +1,9 @@
+{
+  "code": "fire_damage",
+  "name": "Fire Damage",
+  "description": "Increases fire damage and fire-damage ailment scaling.",
+  "category": "damage_type",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

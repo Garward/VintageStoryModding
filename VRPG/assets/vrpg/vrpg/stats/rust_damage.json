@@ -1,0 +1,9 @@
+{
+  "code": "rust_damage",
+  "name": "Rust Damage",
+  "description": "Increases rust damage and poison scaling.",
+  "category": "damage_type",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

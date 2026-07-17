@@ -1,0 +1,50 @@
+{
+  "code": "vrpg:cinder_bombardment",
+  "name": "Cinder Bombardment",
+  "description": "Launch a cinder charge at the aimed surface. It ignores creatures in flight and erupts where it lands.",
+  "classCode": "vrpg:corroder",
+  "icon": "cinder-orb",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "projectile_aoe",
+  "cooldownSeconds": 3.5,
+  "range": 24.0,
+  "radius": 3.8,
+  "maxTargets": 0,
+  "model": "vrpg:entity/skill/cinder-orb",
+  "color": "#e84c24c8",
+  "tags": ["spell", "fire", "projectile", "area", "ground-targeted"],
+  "damage": {
+    "type": "vrpg:fire",
+    "base": 20.0,
+    "perLevel": 5.5,
+    "weaponDamagePercent": 120.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "mana",
+    "base": 18.0,
+    "perLevel": 1.0
+  },
+  "projectile": {
+    "impactMode": "ground",
+    "speed": 0.56,
+    "lifetimeSeconds": 5.0,
+    "verticalOffset": -0.52,
+    "horizontalOffset": 0.22,
+    "forwardOffset": 0.55,
+    "aimConvergenceDistance": 12.0
+  },
+  "particles": {
+    "model": "quad",
+    "burstQuantity": 24.0,
+    "trailQuantity": 0.8,
+    "lifetimeSeconds": 0.58,
+    "trailLifetimeSeconds": 0.2,
+    "gravity": -0.12,
+    "scale": 0.28,
+    "velocity": 1.25
+  }
+}

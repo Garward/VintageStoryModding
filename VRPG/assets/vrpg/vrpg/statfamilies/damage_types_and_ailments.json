@@ -1,0 +1,16 @@
+{
+  "code": "damage_types_and_ailments",
+  "name": "Damage Types and Ailments",
+  "sourceReference": "VRPG original damage-type and ailment trigger model",
+  "conversionNote": "Five damage types drive five primary ailment/proc paths: physical->Bleed, fire->Burn, cold->Freeze/Shatter, lightning->Shock, rust->Poison.",
+  "axes": [
+    { "code": "damage_type", "values": ["physical", "fire", "cold", "lightning", "rust"] },
+    { "code": "ailment", "values": ["burn", "poison", "bleed", "freeze", "shock", "shatter"] }
+  ],
+  "families": [
+    { "code": "{damage_type}_damage", "namePattern": "{damage_type} Damage", "category": "damage_type", "axes": ["damage_type"], "operation": "increased", "percent": true, "appliesTo": "matching damage type" },
+    { "code": "{ailment}_chance", "namePattern": "{ailment} Chance", "category": "ailment", "axes": ["ailment"], "operation": "chance", "percent": true, "minValue": 0, "maxValue": 100, "appliesTo": "matching ailment trigger roll" },
+    { "code": "{ailment}_duration", "namePattern": "{ailment} Duration", "category": "ailment", "axes": ["ailment"], "operation": "increased", "percent": true, "minValue": -100, "appliesTo": "matching duration-based ailment" },
+    { "code": "{ailment}_effect", "namePattern": "{ailment} Effect", "category": "ailment", "axes": ["ailment"], "operation": "increased", "percent": true, "minValue": -100, "appliesTo": "matching ailment magnitude or proc output" }
+  ]
+}

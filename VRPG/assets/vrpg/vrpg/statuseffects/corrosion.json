@@ -1,0 +1,12 @@
+{
+  "code": "vrpg:corrosion",
+  "name": "Corrosion",
+  "description": "Rust eats at the target, dealing damage over time.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "stackMode": "refresh",
+  "maxStacks": 10,
+  "defaultDurationSeconds": 8.0,
+  "tags": ["rust", "ailment", "dot"],
+  "visual": { "icon": "rust", "color": "#c96a1e", "aura": "rustflakes", "auraIntensityPerStack": 0.6 }
+}

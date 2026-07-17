@@ -1,0 +1,8 @@
+{
+  "code": "vrpg:max_health_percent",
+  "name": "Maximum Health",
+  "description": "Percent increase to maximum health.",
+  "category": "defense",
+  "baseValue": 0,
+  "percent": true
+}

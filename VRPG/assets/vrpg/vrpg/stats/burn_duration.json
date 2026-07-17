@@ -1,0 +1,9 @@
+{
+  "code": "burn_duration",
+  "name": "Burn Duration",
+  "description": "Increases Burn duration.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}

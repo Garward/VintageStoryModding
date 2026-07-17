@@ -1,0 +1,32 @@
+{
+  "code": "vrpg:spell_change",
+  "name": "Spell and Ability Change Stat Families",
+  "sourceReference": "Mine-And-Slash-Rework SpellChangeStats.java, summarized as original VRPG data.",
+  "conversionNote": "Skill-changing stats alter costs, tags, timing, projectiles, summons, threat, and area behavior.",
+  "axes": [
+    { "code": "spell_tag", "values": ["registry:spell_tags"] },
+    { "code": "aura", "values": ["registry:aura_gems"] }
+  ],
+  "families": [
+    { "code": "{aura}_cost", "namePattern": "{aura} Cost", "category": "aura", "axes": ["aura"], "operation": "cost_modifier", "percent": true, "appliesTo": "specific aura reservation/cost" },
+    { "code": "max_summon_capacity", "namePattern": "Maximum Summon Capacity", "category": "summon", "operation": "flat", "appliesTo": "summon limit" },
+    { "code": "mana_cost", "namePattern": "Mana Cost", "category": "cost", "operation": "increased_or_reduced", "percent": true, "appliesTo": "mana cost" },
+    { "code": "cast_speed", "namePattern": "Cast Speed", "category": "speed", "operation": "increased", "percent": true, "appliesTo": "spell cast time" },
+    { "code": "{spell_tag}_cast_time", "namePattern": "{spell_tag} Cast Time", "category": "speed", "axes": ["spell_tag"], "operation": "increased_or_reduced", "percent": true, "appliesTo": "tagged spell cast time" },
+    { "code": "{spell_tag}_cooldown_reduction", "namePattern": "{spell_tag} Cooldown Reduction", "category": "cooldown", "axes": ["spell_tag"], "operation": "reduced", "percent": true, "appliesTo": "tagged spell cooldown" },
+    { "code": "cooldown_reduction", "namePattern": "Cooldown Reduction", "category": "cooldown", "operation": "reduced", "percent": true, "appliesTo": "spell cooldown" },
+    { "code": "cooldown_ticks", "namePattern": "Cooldown Ticks", "category": "cooldown", "operation": "flat", "appliesTo": "spell cooldown" },
+    { "code": "projectile_speed", "namePattern": "Projectile Speed", "category": "projectile", "operation": "increased", "percent": true, "appliesTo": "projectile spells" },
+    { "code": "projectile_spread_randomness", "namePattern": "Projectile Spread Randomness", "category": "projectile", "operation": "increased_or_reduced", "percent": true, "appliesTo": "projectile spread" },
+    { "code": "projectile_count", "namePattern": "Projectile Count", "category": "projectile", "operation": "flat", "appliesTo": "projectile count" },
+    { "code": "chain_count", "namePattern": "Chain Count", "category": "projectile", "operation": "flat", "appliesTo": "chain count" },
+    { "code": "projectile_barrage", "namePattern": "Projectile Barrage", "category": "projectile", "operation": "flag_or_count", "appliesTo": "projectile release behavior" },
+    { "code": "summon_duration", "namePattern": "Summon Duration", "category": "duration", "operation": "increased", "percent": true, "appliesTo": "summon duration" },
+    { "code": "totem_duration", "namePattern": "Totem Duration", "category": "duration", "operation": "increased", "percent": true, "appliesTo": "totem duration" },
+    { "code": "aggro_radius", "namePattern": "Aggro Radius", "category": "threat", "operation": "increased", "percent": true, "appliesTo": "aggro radius" },
+    { "code": "increased_area", "namePattern": "Increased Area", "category": "area", "operation": "increased", "percent": true, "appliesTo": "area radius" },
+    { "code": "piercing_projectiles", "namePattern": "Piercing Projectiles", "category": "projectile", "operation": "flat", "appliesTo": "projectile pierce count" },
+    { "code": "threat_generated", "namePattern": "Threat Generated", "category": "threat", "operation": "increased", "percent": true, "appliesTo": "generated threat" },
+    { "code": "more_threat_when_taking_damage", "namePattern": "More Threat When Taking Damage", "category": "threat", "operation": "more", "percent": true, "appliesTo": "damage-taken threat" }
+  ]
+}

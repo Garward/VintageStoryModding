@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:max_blood",
+  "name": "Maximum Blood",
+  "description": "Maximum blood resource for blood-mage gamechangers. Hidden until unlocked unless configured otherwise.",
+  "category": "resource",
+  "baseValue": 100,
+  "minValue": 0,
+  "maxValue": 100000
+}

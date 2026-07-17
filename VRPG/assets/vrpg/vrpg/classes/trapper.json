@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:trapper",
+  "name": "Trapper",
+  "description": "A dexterity ranged class built around crossbows, traps, bleed, and controlling enemy movement.",
+  "icon": "trap",
+  "color": "#8bcf55",
+  "tags": ["ranged", "dexterity", "control"],
+  "sortOrder": 20
+}

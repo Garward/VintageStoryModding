@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:max_mana",
+  "name": "Maximum Mana",
+  "description": "Maximum mana for active skills, spells, support fittings, and cast costs.",
+  "category": "resource",
+  "baseValue": 100,
+  "minValue": 0,
+  "maxValue": 100000
+}

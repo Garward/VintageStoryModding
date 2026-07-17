@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:temporal_aegis",
+  "name": "Temporal Aegis",
+  "description": "Increase the maximum protection supplied by magic shield.",
+  "x": 0,
+  "y": -270,
+  "links": ["vrpg:shield_conduit"],
+  "modifiers": [
+    { "stat": "vrpg:max_magic_shield", "min": 10, "max": 10, "operation": "percent" }
+  ],
+  "cost": 2,
+  "keystone": true,
+  "visualTier": "gamechanger",
+  "foundation": "intelligence"
+}

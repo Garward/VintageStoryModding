@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:untouchable_moment",
+  "name": "Untouchable Moment",
+  "description": "Extend the invulnerable window of Evasive Step slightly.",
+  "x": 235,
+  "y": 135,
+  "links": ["vrpg:slipstream"],
+  "modifiers": [
+    { "stat": "vrpg:evasive_step_invulnerability", "min": 0.05, "max": 0.05, "operation": "add" }
+  ],
+  "cost": 2,
+  "keystone": true,
+  "visualTier": "gamechanger",
+  "foundation": "dexterity"
+}

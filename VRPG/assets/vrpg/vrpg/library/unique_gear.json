@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:unique_gear",
+  "name": "Unique Gear",
+  "category": "unique_gear",
+  "summary": "Unique gear has named item identities, fixed or curated modifier packages, build-defining tradeoffs, and acquisition rules grounded in Vintage Story.",
+  "tags": ["unique", "gear", "item"]
+}

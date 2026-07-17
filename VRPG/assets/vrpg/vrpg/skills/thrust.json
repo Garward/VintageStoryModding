@@ -1,0 +1,55 @@
+{
+  "code": "vrpg:thrust",
+  "name": "Thrust",
+  "description": "Drive force through a narrow authored line in front of you, striking up to five enemies without using vanilla weapon reach.",
+  "classCode": "vrpg:warden",
+  "icon": "thrust",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "melee_line",
+  "cooldownSeconds": 1.35,
+  "range": 5.0,
+  "radius": 0.0,
+  "maxTargets": 5,
+  "color": "#67bfc6c0",
+  "tags": ["attack", "physical", "melee", "area", "close"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 8.0,
+    "perLevel": 2.5,
+    "weaponDamagePercent": 105.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "cast"
+  },
+  "melee": {
+    "arcDegrees": 25.0,
+    "width": 1.2,
+    "verticalTolerance": 2.25
+  },
+  "timing": {
+    "mode": "instant",
+    "hitCount": 1,
+    "hitIntervalSeconds": 0.2,
+    "maxDurationSeconds": 1.0
+  },
+  "particles": {
+    "model": "quad",
+    "burstQuantity": 5.0,
+    "trailQuantity": 0.8,
+    "lifetimeSeconds": 0.25,
+    "trailLifetimeSeconds": 0.12,
+    "gravity": 0.0,
+    "scale": 0.17,
+    "velocity": 0.35,
+    "originVerticalOffset": -0.42,
+    "originHorizontalOffset": 0.1,
+    "originForwardOffset": 0.3
+  }
+}

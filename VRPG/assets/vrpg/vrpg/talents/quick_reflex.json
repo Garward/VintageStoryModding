@@ -1,0 +1,14 @@
+{
+  "code": "vrpg:quick_reflex",
+  "name": "Quick Reflex",
+  "description": "Choose the Dexterity foundation and shorten Evasive Step's recovery.",
+  "x": 95,
+  "y": 55,
+  "links": ["vrpg:slipstream"],
+  "modifiers": [
+    { "stat": "vrpg:evasive_step_cooldown", "min": -10, "max": -10, "operation": "percent" }
+  ],
+  "cost": 1,
+  "starter": true,
+  "foundation": "dexterity"
+}

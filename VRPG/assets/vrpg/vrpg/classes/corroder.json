@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:corroder",
+  "name": "Corroder",
+  "description": "An intelligence caster built around rust damage, fire as a secondary element, and temporary rust-wrought summons.",
+  "icon": "rust",
+  "color": "#c66b31",
+  "tags": ["caster", "intelligence", "rust"],
+  "sortOrder": 50
+}

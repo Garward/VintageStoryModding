@@ -1,0 +1,18 @@
+{
+  "code": "vrpg:shatter",
+  "name": "Shatter",
+  "description": "A cold ailment proc that detonates stacked status damage on a frozen target. Shatter does not tick; it resolves stored status pressure immediately.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "triggerDamageType": "vrpg:cold",
+  "procMode": "detonate_stacked_status_damage",
+  "chanceStat": "shatter_chance",
+  "durationStat": "shatter_window",
+  "damageProfile": "instant_status_detonation",
+  "stackMode": "instant",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 0,
+  "tickSeconds": 0,
+  "tags": ["ailment", "cold", "cold_damage", "shatter", "shatter_chance", "shatter_window", "detonation"],
+  "visualHint": "bursting ice shards"
+}

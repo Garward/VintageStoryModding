@@ -1,0 +1,19 @@
+{
+  "code": "vrpg:bleed",
+  "name": "Bleed",
+  "description": "A physical ailment triggered by physical damage. Bleed sits between Burn and Poison: medium duration, medium burst, and extra pressure while the target moves.",
+  "kind": "ailment",
+  "polarity": "harmful",
+  "triggerDamageType": "vrpg:physical",
+  "procMode": "damage_over_time",
+  "chanceStat": "bleed_chance",
+  "durationStat": "bleed_duration",
+  "damageProfile": "medium_burst_medium_duration",
+  "stackMode": "strongest_refresh",
+  "maxStacks": 1,
+  "defaultDurationSeconds": 5,
+  "tickSeconds": 1,
+  "tags": ["ailment", "physical", "physical_damage", "bleed", "bleed_chance", "bleed_duration", "damage_over_time", "movement"],
+  "visualHint": "red cut",
+  "visual": { "icon": "bleed", "color": "#b81c2e", "aura": "drips" }
+}

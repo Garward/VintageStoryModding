@@ -1,0 +1,47 @@
+{
+  "code": "vrpg:grinding_sweep",
+  "name": "Grinding Sweep",
+  "description": "Hold the skill to repeatedly strike everything around you, ending on release or after four seconds.",
+  "classCode": "vrpg:smith",
+  "icon": "grinding-sweep",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "circle",
+  "cooldownSeconds": 3.0,
+  "range": 0.0,
+  "radius": 3.0,
+  "maxTargets": 0,
+  "color": "#c77732b0",
+  "tags": ["attack", "physical", "melee", "area", "channel"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 4.0,
+    "perLevel": 1.25,
+    "weaponDamagePercent": 45.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": true
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "per_second"
+  },
+  "timing": {
+    "mode": "channel",
+    "hitCount": 1,
+    "hitIntervalSeconds": 0.25,
+    "maxDurationSeconds": 4.0
+  },
+  "particles": {
+    "model": "cube",
+    "burstQuantity": 14.0,
+    "trailQuantity": 0.0,
+    "lifetimeSeconds": 0.22,
+    "trailLifetimeSeconds": 0.1,
+    "gravity": 0.15,
+    "scale": 0.17,
+    "velocity": 0.45
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:living_bulwark",
+  "name": "Living Bulwark",
+  "description": "Turn the Strength path into a larger health multiplier.",
+  "x": -235,
+  "y": 135,
+  "links": ["vrpg:steady_heart"],
+  "modifiers": [
+    { "stat": "vrpg:max_health_percent", "min": 8, "max": 8, "operation": "percent" }
+  ],
+  "cost": 2,
+  "keystone": true,
+  "visualTier": "gamechanger",
+  "foundation": "strength"
+}

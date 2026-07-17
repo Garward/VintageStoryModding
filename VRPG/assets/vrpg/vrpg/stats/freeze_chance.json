@@ -1,0 +1,10 @@
+{
+  "code": "freeze_chance",
+  "name": "Freeze Chance",
+  "description": "Chance for cold damage to apply Freeze.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": 0,
+  "maxValue": 100,
+  "percent": true
+}

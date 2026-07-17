@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:rust",
+  "name": "Rust",
+  "description": "Corrosive, tainted damage tied to decay, aged machinery, and temporal rot. Rust damage can trigger Poison.",
+  "colorHex": "#b86a2a",
+  "tags": ["damage", "rust", "corrosion", "temporal_decay", "poison_source"]
+}

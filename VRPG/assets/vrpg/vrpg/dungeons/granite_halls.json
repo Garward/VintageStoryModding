@@ -1,0 +1,12 @@
+{
+  "code": "vrpg:granite_halls",
+  "name": "Rust-Worn Granite Halls",
+  "summary": "A stable starter rift: old granite corridors stained by rust, temporal wear, and broken machine remnants.",
+  "tags": ["rift", "temporal", "rust", "starter"],
+  "floorBlock": "game:rock-granite",
+  "wallBlock": "game:rock-andesite",
+  "accentBlock": "game:rock-basalt",
+  "floorY": 24,
+  "roomHeight": 7,
+  "doorWidth": 6
+}

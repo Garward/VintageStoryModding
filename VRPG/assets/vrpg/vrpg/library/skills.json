@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:skills",
+  "name": "Skills",
+  "category": "skills",
+  "summary": "Skills include active abilities, passive talents, and fitted effects that change how a build plays.",
+  "tags": ["skill", "talent", "ability"]
+}

@@ -1,0 +1,14 @@
+{
+  "code": "vrpg:shield_conduit",
+  "name": "Shield Conduit",
+  "description": "Restore magic shield continuously between incoming hits.",
+  "x": 0,
+  "y": -190,
+  "links": ["vrpg:arcane_shelter", "vrpg:temporal_aegis"],
+  "modifiers": [
+    { "stat": "vrpg:magic_shield_regen", "min": 0.5, "max": 0.5, "operation": "add" }
+  ],
+  "cost": 1,
+  "visualTier": "major",
+  "foundation": "intelligence"
+}

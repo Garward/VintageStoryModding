@@ -1,0 +1,7 @@
+{
+  "code": "vrpg:lightning",
+  "name": "Lightning",
+  "description": "Electrical burst damage. Lightning damage can trigger Shock.",
+  "colorHex": "#72a7ff",
+  "tags": ["damage", "elemental", "lightning", "shock_source"]
+}

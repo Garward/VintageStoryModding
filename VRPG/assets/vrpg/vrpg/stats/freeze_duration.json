@@ -1,0 +1,9 @@
+{
+  "code": "freeze_duration",
+  "name": "Freeze Duration",
+  "description": "Increases Freeze duration.",
+  "category": "ailment",
+  "baseValue": 0,
+  "minValue": -100,
+  "percent": true
+}
