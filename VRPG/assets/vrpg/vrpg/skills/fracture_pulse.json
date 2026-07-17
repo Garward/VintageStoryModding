@@ -1,18 +1,30 @@
 {
   "code": "vrpg:fracture_pulse",
-  "name": "Fracture Pulse",
-  "description": "Drive force into the ground and release a close circular shockwave around yourself.",
+  "name": "Fracture",
+  "description": "Slam the ground, consuming owned Stagger to expose nearby enemies.",
   "classCode": "vrpg:smith",
   "icon": "fracture-pulse",
   "requiredLevel": 1,
   "maxLevel": 10,
   "delivery": "circle",
-  "cooldownSeconds": 4.0,
+  "cooldownSeconds": 5.0,
   "range": 0.0,
-  "radius": 4.5,
+  "radius": 4.0,
   "maxTargets": 0,
   "color": "#d8a35ba0",
-  "tags": ["attack", "physical", "area", "self"],
+  "tags": ["attack", "physical", "area", "self", "payoff"],
+  "onHitEffects": [
+    {
+      "statusCode": "vrpg:stagger",
+      "operation": "consume_buildup",
+      "primaryMagnitude": 60.0,
+      "secondaryMagnitude": 60.0,
+      "triggerThreshold": 40.0,
+      "triggerEvent": "consume",
+      "resultStatusCode": "vrpg:vulnerable",
+      "resultDurationSeconds": 4.0
+    }
+  ],
   "damage": {
     "type": "vrpg:physical",
     "base": 9.0,

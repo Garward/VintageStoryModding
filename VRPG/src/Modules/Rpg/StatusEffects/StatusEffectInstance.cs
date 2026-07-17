@@ -36,4 +36,21 @@ public sealed class StatusEffectInstance
     {
         Magnitude = System.Math.Clamp(Magnitude + amount, 0f, 10000f);
     }
+
+    public void AddMagnitude(float amount, float maximum)
+    {
+        Magnitude = System.Math.Clamp(Magnitude + amount, 0f, System.Math.Max(0f, maximum));
+    }
+
+    public float RemoveMagnitude(float amount)
+    {
+        float removed = amount <= 0f ? Magnitude : System.Math.Min(Magnitude, amount);
+        Magnitude -= removed;
+        return removed;
+    }
+
+    public void AddStacks(int amount)
+    {
+        Stacks = System.Math.Clamp(Stacks + amount, 1, System.Math.Max(1, Definition.MaxStacks));
+    }
 }

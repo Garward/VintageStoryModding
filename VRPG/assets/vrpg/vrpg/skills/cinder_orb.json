@@ -13,7 +13,15 @@
   "maxTargets": 0,
   "model": "vrpg:entity/skill/cinder-orb",
   "color": "#f06a28b8",
-  "tags": ["spell", "fire", "projectile", "area"],
+  "tags": ["spell", "fire", "projectile", "area", "ailment", "damaging_ailment"],
+  "onHitEffects": [
+    {
+      "statusCode": "vrpg:burn",
+      "operation": "apply",
+      "stacks": 1,
+      "durationSeconds": 4.0
+    }
+  ],
   "damage": {
     "type": "vrpg:fire",
     "base": 16.0,

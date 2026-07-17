@@ -38,6 +38,23 @@ public static class SkillDefinitionValidator
         "blood"
     };
 
+    private static readonly HashSet<string> OnHitOperations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "apply",
+        "add_stacks",
+        "add_buildup",
+        "consume_buildup"
+    };
+
+    private static readonly HashSet<string> TriggerEvents = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "break",
+        "counter",
+        "consume",
+        "mark",
+        "windowopen"
+    };
+
     public static void Validate(ICoreAPI api, VRPGDataRegistry data)
     {
         var errors = new List<string>();
@@ -173,6 +190,16 @@ public static class SkillDefinitionValidator
         }
 
         ValidateMeleeAndTiming(skill, label, errors);
+        ValidateOnHitEffects(data, skill, label, errors);
+
+        if (skill.GroundArea?.Enabled == true
+            && (skill.GroundArea.DurationSeconds <= 0f
+                || skill.GroundArea.DurationSeconds > 120f
+                || skill.GroundArea.Radius < 0f
+                || skill.GroundArea.Radius > 32f))
+        {
+            errors.Add(label + ": enabled groundArea needs durationSeconds within 0-120 and radius within 0-32 blocks; zero radius inherits the skill radius.");
+        }
 
         if (!TryParseColor(skill.Color, out _))
         {
@@ -304,6 +331,58 @@ public static class SkillDefinitionValidator
             && !skill.Damage.IgnoreInvFrames)
         {
             errors.Add(label + ": intentional repeated-hit skills must set damage.ignoreInvFrames true so every authored hit can resolve.");
+        }
+    }
+
+    private static void ValidateOnHitEffects(
+        VRPGDataRegistry data,
+        SkillDefinition skill,
+        string label,
+        List<string> errors)
+    {
+        SkillOnHitEffectDefinition[] effects = skill.OnHitEffects ?? Array.Empty<SkillOnHitEffectDefinition>();
+        for (int i = 0; i < effects.Length; i++)
+        {
+            SkillOnHitEffectDefinition effect = effects[i];
+            string effectLabel = label + $": onHitEffects[{i}]";
+            if (data.StatusEffects.Get(NormalizeCode(effect.StatusCode)) == null)
+            {
+                errors.Add(effectLabel + ": unknown statusCode " + effect.StatusCode + ".");
+            }
+
+            if (!OnHitOperations.Contains(effect.Operation))
+            {
+                errors.Add(effectLabel + ": operation must be apply, add_stacks, add_buildup, or consume_buildup.");
+            }
+
+            if (effect.Stacks < 1
+                || effect.PrimaryMagnitude < 0f
+                || effect.SecondaryMagnitude < 0f
+                || effect.DurationSeconds < 0f
+                || effect.MaximumMagnitude <= 0f
+                || effect.TriggerThreshold < 0f
+                || effect.ResultDurationSeconds < 0f)
+            {
+                errors.Add(effectLabel + ": stacks and all duration/magnitude fields must use valid non-negative values, with stacks and maximumMagnitude above zero.");
+            }
+
+            if ((string.Equals(effect.Operation, "add_buildup", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(effect.Operation, "consume_buildup", StringComparison.OrdinalIgnoreCase))
+                && effect.PrimaryMagnitude <= 0f)
+            {
+                errors.Add(effectLabel + ": buildup operations require primaryMagnitude above zero.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(effect.TriggerEvent) && !TriggerEvents.Contains(effect.TriggerEvent))
+            {
+                errors.Add(effectLabel + ": unknown triggerEvent " + effect.TriggerEvent + ".");
+            }
+
+            if (!string.IsNullOrWhiteSpace(effect.ResultStatusCode)
+                && data.StatusEffects.Get(NormalizeCode(effect.ResultStatusCode)) == null)
+            {
+                errors.Add(effectLabel + ": unknown resultStatusCode " + effect.ResultStatusCode + ".");
+            }
         }
     }
 

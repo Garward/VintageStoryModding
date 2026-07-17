@@ -12,5 +12,6 @@
   "modifiers": [
     { "stat": "dmg_received", "min": 15, "max": 15, "operation": "increased" }
   ],
-  "visualHint": "cracked mark"
+  "visualHint": "cracked mark",
+  "visual": { "icon": "fracture_pulse", "color": "#ffd166", "aura": "mark" }
 }

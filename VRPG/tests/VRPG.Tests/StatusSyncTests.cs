@@ -56,6 +56,21 @@ public sealed class StatusSyncTests
     }
 
     [Fact]
+    public void MultipleOwnersAggregateForCompactPresentation()
+    {
+        var definition = new StatusEffectDefinition { Code = "vrpg:corrosion", MaxStacks = 10 };
+        var first = new StatusEffectInstance(definition, 100, 8f, 4);
+        var second = new StatusEffectInstance(definition, 200, 5f, 2);
+        var attributes = new TreeAttribute();
+
+        StatusSync.Write(attributes, new List<StatusEffectInstance> { first, second });
+
+        SyncedStatus status = Assert.Single(StatusSync.Read(attributes));
+        Assert.Equal(6, status.Stacks);
+        Assert.Equal(8000, status.RemainingMs);
+    }
+
+    [Fact]
     public void CacheCountsDownLocallyBetweenRevisions()
     {
         var attributes = new TreeAttribute();

@@ -11,7 +11,7 @@
   "damageProfile": "short_high_burst",
   "stackMode": "strongest_refresh",
   "maxStacks": 1,
-  "defaultDurationSeconds": 3,
+  "defaultDurationSeconds": 4,
   "tickSeconds": 1,
   "tags": ["ailment", "fire", "fire_damage", "burn", "burn_chance", "burn_duration", "damage_over_time"],
   "visualHint": "orange flame",

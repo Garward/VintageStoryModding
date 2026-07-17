@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Vintagestory.API.Datastructures;
 
 namespace VRPG.Modules.Rpg.StatusEffects;
@@ -18,15 +19,30 @@ public static class StatusSync
         var tree = new TreeAttribute();
         tree.SetInt("rev", rev);
         var list = new TreeAttribute();
+        var aggregate = new Dictionary<string, SyncedStatus>(StringComparer.OrdinalIgnoreCase);
         for (int i = 0; i < effects.Count; i++)
         {
             StatusEffectInstance effect = effects[i];
+            if (!aggregate.TryGetValue(effect.Definition.Code, out SyncedStatus? status))
+            {
+                status = new SyncedStatus { Code = effect.Definition.Code };
+                aggregate[effect.Definition.Code] = status;
+            }
+
+            status.Stacks += effect.Stacks;
+            status.Magnitude = System.Math.Max(status.Magnitude, effect.Magnitude);
+            status.RemainingMs = System.Math.Max(status.RemainingMs, (int)(System.Math.Max(0f, effect.RemainingSeconds) * 1000f));
+            status.DurationMs = System.Math.Max(status.DurationMs, (int)(System.Math.Max(0f, effect.DurationSeconds) * 1000f));
+        }
+
+        foreach (SyncedStatus status in aggregate.Values)
+        {
             var node = new TreeAttribute();
-            node.SetInt("stacks", effect.Stacks);
-            node.SetFloat("magnitude", effect.Magnitude);
-            node.SetInt("remainingMs", (int)(System.Math.Max(0f, effect.RemainingSeconds) * 1000f));
-            node.SetInt("durationMs", (int)(System.Math.Max(0f, effect.DurationSeconds) * 1000f));
-            list[effect.Definition.Code] = node;
+            node.SetInt("stacks", status.Stacks);
+            node.SetFloat("magnitude", status.Magnitude);
+            node.SetInt("remainingMs", status.RemainingMs);
+            node.SetInt("durationMs", status.DurationMs);
+            list[status.Code] = node;
         }
 
         tree["effects"] = list;

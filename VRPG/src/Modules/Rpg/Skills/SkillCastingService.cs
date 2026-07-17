@@ -5,6 +5,7 @@ using VRPG.Data.Definitions;
 using VRPG.Modules.Rpg.Combat;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Stats;
+using VRPG.Modules.Rpg.StatusEffects;
 using VRPG.Network;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -24,6 +25,7 @@ public sealed class SkillCastingService
     private readonly SkillDamageResolver damageResolver;
     private readonly CombatVisualBroadcaster visuals;
     private readonly GroundAreaService groundAreas;
+    private readonly SkillStatusEffectService statusEffects;
     private readonly Dictionary<string, Dictionary<string, long>> cooldownEnds = new Dictionary<string, Dictionary<string, long>>(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ActiveTimedCast> activeChannels = new Dictionary<string, ActiveTimedCast>(StringComparer.OrdinalIgnoreCase);
     private readonly List<ActiveTimedCast> activeSequences = new List<ActiveTimedCast>();
@@ -36,7 +38,8 @@ public sealed class SkillCastingService
         RpgResourceService resources,
         SkillDamageResolver damageResolver,
         CombatVisualBroadcaster visuals,
-        GroundAreaService groundAreas)
+        GroundAreaService groundAreas,
+        StatusEffectTracker statusTracker)
     {
         this.api = api;
         this.data = data;
@@ -45,6 +48,7 @@ public sealed class SkillCastingService
         this.damageResolver = damageResolver;
         this.visuals = visuals;
         this.groundAreas = groundAreas;
+        statusEffects = new SkillStatusEffectService(statusTracker, visuals);
     }
 
     public void SetEmpowered(string playerUid, string skillCode, bool on)
@@ -330,6 +334,19 @@ public sealed class SkillCastingService
         Vec3d center = projectile.ExplosionPosition;
         ApplyAreaDamage(player, skill, projectile.SkillLevel, center, projectile);
         visuals.Send(Event(CombatVisualKind.Burst, skill, center));
+        if (skill.GroundArea?.Enabled == true)
+        {
+            float radius = skill.GroundArea.Radius > 0f ? skill.GroundArea.Radius : skill.Radius;
+            groundAreas.Place(
+                player.PlayerUID,
+                skill.Code,
+                GroundAreaShape.Disc,
+                center,
+                radius,
+                GroundAreaState.Active,
+                skill.GroundArea.DurationSeconds);
+        }
+
         return true;
     }
 
@@ -661,7 +678,7 @@ public sealed class SkillCastingService
         for (int i = 0; i < limit; i++)
         {
             Entity target = candidates[i].Entity;
-            target.ReceiveDamage(new DamageSource
+            bool damaged = target.ReceiveDamage(new DamageSource
             {
                 Source = EnumDamageSource.Player,
                 SourceEntity = player.Entity,
@@ -672,6 +689,11 @@ public sealed class SkillCastingService
                 IgnoreInvFrames = skill.Damage.IgnoreInvFrames,
                 KnockbackStrength = 0.25f
             }, damage);
+
+            if (damaged && target.Alive)
+            {
+                statusEffects.ApplyOnHit(player.Entity, target, skill, primaryTarget: i == 0);
+            }
 
             Vec3d targetCenter = EntityCenter(target);
             CombatVisualEventPacket damageEvent = Event(CombatVisualKind.Damage, skill, targetCenter);
@@ -846,7 +868,7 @@ public sealed class SkillCastingService
         for (int i = 0; i < limit; i++)
         {
             Entity target = nearby[i];
-            target.ReceiveDamage(new DamageSource
+            bool damaged = target.ReceiveDamage(new DamageSource
             {
                 Source = EnumDamageSource.Player,
                 SourceEntity = sourceEntity,
@@ -857,6 +879,11 @@ public sealed class SkillCastingService
                 IgnoreInvFrames = skill.Damage.IgnoreInvFrames,
                 KnockbackStrength = 0.25f
             }, damage);
+
+            if (damaged && target.Alive)
+            {
+                statusEffects.ApplyOnHit(player.Entity, target, skill, primaryTarget: i == 0);
+            }
 
             Vec3d targetCenter = EntityCenter(target);
             CombatVisualEventPacket damageEvent = Event(CombatVisualKind.Damage, skill, targetCenter);

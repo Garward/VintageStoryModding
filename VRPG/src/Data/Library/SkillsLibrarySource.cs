@@ -36,6 +36,17 @@ public sealed class SkillsLibrarySource : ILibrarySource
             fields.Add(new LibraryField("Projectile impact", skill.Projectile.ImpactMode));
         }
 
+        if (skill.GroundArea.Enabled)
+        {
+            float areaRadius = skill.GroundArea.Radius > 0f ? skill.GroundArea.Radius : skill.Radius;
+            fields.Add(new LibraryField("Ground area", $"{areaRadius:0.##}m for {skill.GroundArea.DurationSeconds:0.##}s"));
+        }
+
+        if (skill.OnHitEffects.Length > 0)
+        {
+            fields.Add(new LibraryField("On hit", string.Join("; ", Array.ConvertAll(skill.OnHitEffects, EffectSummary))));
+        }
+
         fields.Add(new LibraryField("Damage", $"{skill.Damage.Base:0.##} + {skill.Damage.PerLevel:0.##}/level {skill.Damage.Type}"));
         string resourceRate = string.Equals(skill.Resource.CostMode, "per_second", StringComparison.OrdinalIgnoreCase) ? "/second" : "";
         fields.Add(new LibraryField("Resource", $"{skill.Resource.Base:0.##} + {skill.Resource.PerLevel:0.##}/level {skill.Resource.Type}{resourceRate}"));
@@ -46,6 +57,17 @@ public sealed class SkillsLibrarySource : ILibrarySource
         fields.Add(new LibraryField("Model", string.IsNullOrWhiteSpace(skill.Model) ? "none" : skill.Model));
         fields.Add(new LibraryField("Color", skill.Color));
         return fields.ToArray();
+    }
+
+    private static string EffectSummary(SkillOnHitEffectDefinition effect)
+    {
+        return effect.Operation switch
+        {
+            "add_stacks" => $"+{effect.Stacks} {effect.StatusCode}",
+            "add_buildup" => $"+{effect.PrimaryMagnitude:0.##}/{effect.SecondaryMagnitude:0.##} {effect.StatusCode}",
+            "consume_buildup" => $"consume up to {effect.PrimaryMagnitude:0.##} {effect.StatusCode}",
+            _ => $"apply {effect.StatusCode}"
+        };
     }
 
     private static string TimingSummary(SkillDefinition skill)

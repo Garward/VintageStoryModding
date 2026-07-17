@@ -9,5 +9,6 @@
   "defaultDurationSeconds": 0.75,
   "tickSeconds": 0,
   "tags": ["control", "interrupt"],
-  "visualHint": "gold burst"
+  "visualHint": "gold burst",
+  "visual": { "icon": "stun", "color": "#ffe66d", "aura": "sparks" }
 }

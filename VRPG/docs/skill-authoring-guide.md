@@ -1,6 +1,6 @@
 # VRPG Skill Authoring and Modeling Guide
 
-This guide covers the first playable, data-driven skill runtime. A skill definition owns delivery, level scaling, resource cost, cooldown, targeting dimensions, model selection, particles, and color. C# owns execution and validation; adding another skill within the supported delivery types should require JSON and, for a projectile, an optional shape.
+This guide covers the first playable, data-driven skill runtime. A skill definition owns delivery, level scaling, resource cost, cooldown, targeting dimensions, on-hit status operations, persistent ground presentation, model selection, particles, and color. C# owns execution and validation; adding another skill within the supported contracts should require JSON and, for a projectile, an optional shape.
 
 ## Current runtime contract
 
@@ -92,6 +92,77 @@ The held-input protocol is server authoritative: the client sends only slot pres
 and release state. The server owns tick cadence, resources, damage, maximum
 duration, and cooldown. Losing the release packet cannot create a permanent
 channel because every channel has a validated maximum duration.
+
+## On-hit statuses and payoff events
+
+`onHitEffects` run only after the server confirms that a skill damaged a living
+target. Status instances are owned by the casting entity: two players may build
+or consume their own Corrosion or Stagger on the same enemy without spending one
+another's setup. Compact enemy presentation aggregates matching statuses while
+the server retains separate ownership.
+
+Supported operations are:
+
+| Operation | Behavior |
+| --- | --- |
+| `apply` | Apply or refresh an ordinary status such as Burn. |
+| `add_stacks` | Add owned stacks up to the status definition's `maxStacks`. |
+| `add_buildup` | Add primary/secondary magnitude toward `maximumMagnitude`; reaching the maximum clears the buildup and may apply a result status and event. |
+| `consume_buildup` | Remove up to the authored primary/secondary magnitude; a sufficiently large consumption may apply a result status. |
+
+Rust Lance's two owned Corrosion stacks are the smallest example:
+
+```json
+"onHitEffects": [
+  {
+    "statusCode": "vrpg:corrosion",
+    "operation": "add_stacks",
+    "stacks": 2,
+    "durationSeconds": 8.0
+  }
+]
+```
+
+Hammer Blow demonstrates target priority and a confirmed payoff. The nearest,
+most centered target selected by the delivery is primary; other targets are
+secondary. At 100 Stagger, the buildup clears, Stun is applied, and the client
+receives the rare `BREAK` event:
+
+```json
+"onHitEffects": [
+  {
+    "statusCode": "vrpg:stagger",
+    "operation": "add_buildup",
+    "primaryMagnitude": 18.0,
+    "secondaryMagnitude": 9.0,
+    "durationSeconds": 6.0,
+    "maximumMagnitude": 100.0,
+    "triggerEvent": "break",
+    "resultStatusCode": "vrpg:stun",
+    "resultDurationSeconds": 1.25
+  }
+]
+```
+
+Trigger events are deliberately sparse: `break`, `counter`, `consume`, `mark`,
+and `windowopen`. Do not emit one merely because a status refreshed. Event words
+are reserved for a confirmed decision or payoff.
+
+`groundArea` adds synchronized persistent presentation after a projectile impact.
+Zero radius inherits the skill's ordinary impact radius:
+
+```json
+"groundArea": {
+  "enabled": true,
+  "durationSeconds": 2.25,
+  "radius": 3.0
+}
+```
+
+This contract currently owns visual state and expiry. Burning-area periodic
+damage, Corrosion/Burn damage-over-time ticks, Stun AI interruption, and
+Vulnerable damage amplification remain combat-mechanics work; do not describe
+those numerical effects as executable until their resolvers are wired.
 
 ## Definition example
 
@@ -254,6 +325,9 @@ VRPG validates every skill after assets load and throws one aggregated startup e
 - positive projectile speed and lifetime;
 - projectile `impactMode` of `entity` or `ground`;
 - an existing model asset for projectile skills;
+- known on-hit status/result codes, supported operations and events, and
+  non-negative stack, buildup, threshold, and duration values;
+- bounded persistent ground-area duration and radius;
 - conservative hard caps of 32 blocks for radius and 128 blocks for range.
 
 This is intentional: content errors should stop startup with a useful list rather than become delayed null-reference failures during combat.
@@ -293,3 +367,9 @@ Cast visible slots with `Alt+1` through `Alt+8` by default, or use `/vrpg skill 
 Use `/vrpg skill remove <code>` to remove a skill from yourself and clear any slot containing it.
 
 Check each skill in first and third person, against one target and a dense group, beside walls and low ceilings, at minimum and maximum skill level, with insufficient resources, and while rapidly pressing the hotkey during cooldown. An `entity` projectile must hit a creature along the complete swept flight path, hit terrain when it misses, and expire at range. A `ground` projectile must pass through creatures, reach the aimed surface, respect intervening terrain, and detonate at the authored point. Melee must stop at walls, include target collision size, tolerate ordinary slopes, and remain unchanged when the held vanilla weapon has a different native range. Sequence tests must count actual health changes for every hit. Channel tests must cover tap, hold, release, depletion, death, four-second safety termination, and multiplayer latency. Test all delivery types across a multiplayer connection.
+
+For the first status-feedback pass, verify that Rust Lance adds two Corrosion
+stacks, Cinder applies Burn, Hammer Blow advances Stagger by 18 on its primary
+target and 9 on secondary targets, 100 Stagger emits `BREAK`, and Fracture
+consumes at most 60 Stagger while emitting `CONSUMED`. Cinder Bombardment should
+leave a synchronized disc that enters its expiring presentation before removal.

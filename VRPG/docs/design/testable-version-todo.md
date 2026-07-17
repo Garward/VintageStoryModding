@@ -131,9 +131,11 @@ Twelve reusable [gamechanger coverage targets](initial-class-skill-roster.md#gam
 The [first six class skill specification](first-six-class-skill-spec.md) now
 defines five actives, nine passives with eight ranks each, three intended loops,
 survival layers, boss/mob strengths, numeric seeds, cross-class states, and acceptance tests for
-Smith, Trapper, Pilferer, Warden, Corroder, and Handler. Implementation remains
-blocked on the shared status, critical, barrier, control, minion, and placed-
-effect runtime contracts listed there.
+Smith, Trapper, Pilferer, Warden, Corroder, and Handler. The first shared status
+slice now supports owner-specific stacks and buildup, threshold/consume payoffs,
+synced compact presentation, and projectile ground-area presentation. Critical,
+barrier, authoritative control, damage-over-time, minion, and damaging placed-
+effect contracts remain.
 
 - [x] Confirm six mutually exclusive global starts in a wide hexagon near the center of the full tree, covering every ordered STR/DEX/INT dominant-secondary pairing with no direct links between starts.
 - [x] Set the full-tree scale target at roughly 400 meaningful nodes, balanced around approximately 100 normal complete-build points and 125 late-game points.
@@ -270,6 +272,7 @@ The current entity predicate is broader than the accepted design and can pull wi
 ## P2 — Playground Content and Feedback
 
 - [ ] Decide the minimum playable class pair for Gate A. Current recommendation: Smith + Corroder, with temporary Pilferer/Warden grants used to exercise single-target sequence and line delivery until the normal class-acquisition path exists.
+- [ ] **Partial — implemented, awaiting in-game acceptance:** Rust Lance applies two owned Corrosion stacks, Cinder applies Burn, Hammer Blow builds primary/secondary Stagger and breaks at 100, Fracture consumes up to 60 Stagger and applies the exposure presentation after consuming 40, and Cinder Bombardment leaves a synchronized ground disc. Damage-over-time, authoritative Stun interruption, Vulnerable amplification, and Fracture's consumed-Stagger damage multiplier remain.
 - [ ] Give each playground class enough skills to test a primary skill plus support/utility interaction rather than only isolated buttons.
 - [ ] Keep the other four class candidates visible only if the UI clearly labels them as prototypes; empty class pages should not appear finished.
 - [ ] Add at least one single-target pressure case, one clustered group, and one large telegraphed hit for Evasive Step testing.

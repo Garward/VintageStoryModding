@@ -90,7 +90,7 @@ public sealed class RpgModule : IVrpgModule
         skillDamage = new SkillDamageResolver(talentTree);
         visualBroadcaster = new CombatVisualBroadcaster(api, channel);
         groundAreas = new GroundAreaService(api, channel);
-        skills = new SkillCastingService(api, data, playerStore, resources, skillDamage, visualBroadcaster, groundAreas);
+        skills = new SkillCastingService(api, data, playerStore, resources, skillDamage, visualBroadcaster, groundAreas, statusEffects);
         talentAllocation = new TalentAllocationService(talentTree, playerStore, resources, combatStates);
         failureNotifications = new AbilityFailureNotificationService(api, playerStore);
         activeTalentTree = CreateTalentTreeSnapshot();

@@ -12,7 +12,20 @@
   "radius": 0.0,
   "maxTargets": 0,
   "color": "#d98b3ac0",
-  "tags": ["attack", "physical", "melee", "area", "close"],
+  "tags": ["attack", "physical", "melee", "area", "close", "setup"],
+  "onHitEffects": [
+    {
+      "statusCode": "vrpg:stagger",
+      "operation": "add_buildup",
+      "primaryMagnitude": 18.0,
+      "secondaryMagnitude": 9.0,
+      "durationSeconds": 6.0,
+      "maximumMagnitude": 100.0,
+      "triggerEvent": "break",
+      "resultStatusCode": "vrpg:stun",
+      "resultDurationSeconds": 1.25
+    }
+  ],
   "damage": {
     "type": "vrpg:physical",
     "base": 8.0,

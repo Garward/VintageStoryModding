@@ -26,6 +26,8 @@ public sealed class SkillDefinition : IVrpgDataRecord
     public SkillTimingDefinition Timing { get; set; } = new SkillTimingDefinition();
     public SkillProjectileDefinition Projectile { get; set; } = new SkillProjectileDefinition();
     public SkillParticleDefinition Particles { get; set; } = new SkillParticleDefinition();
+    public SkillGroundAreaDefinition GroundArea { get; set; } = new SkillGroundAreaDefinition();
+    public SkillOnHitEffectDefinition[] OnHitEffects { get; set; } = Array.Empty<SkillOnHitEffectDefinition>();
 
     public float DamageAtLevel(int level)
     {
@@ -105,4 +107,30 @@ public sealed class SkillParticleDefinition
     public float OriginVerticalOffset { get; set; } = -0.48f;
     public float OriginHorizontalOffset { get; set; } = 0.18f;
     public float OriginForwardOffset { get; set; } = 0.35f;
+}
+
+public sealed class SkillGroundAreaDefinition
+{
+    public bool Enabled { get; set; }
+    public float DurationSeconds { get; set; }
+    public float Radius { get; set; }
+}
+
+/// <summary>
+/// Data-authored status mutation performed after a skill successfully damages
+/// a target. Operations are interpreted by SkillStatusEffectService.
+/// </summary>
+public sealed class SkillOnHitEffectDefinition
+{
+    public string StatusCode { get; set; } = "";
+    public string Operation { get; set; } = "apply";
+    public int Stacks { get; set; } = 1;
+    public float PrimaryMagnitude { get; set; }
+    public float SecondaryMagnitude { get; set; }
+    public float DurationSeconds { get; set; }
+    public float MaximumMagnitude { get; set; } = 100f;
+    public float TriggerThreshold { get; set; }
+    public string TriggerEvent { get; set; } = "";
+    public string ResultStatusCode { get; set; } = "";
+    public float ResultDurationSeconds { get; set; }
 }

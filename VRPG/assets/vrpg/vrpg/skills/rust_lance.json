@@ -12,7 +12,15 @@
   "radius": 1.8,
   "maxTargets": 0,
   "color": "#b86a2aa6",
-  "tags": ["spell", "rust", "area", "aimed"],
+  "tags": ["spell", "rust", "area", "aimed", "ailment", "damaging_ailment", "setup"],
+  "onHitEffects": [
+    {
+      "statusCode": "vrpg:corrosion",
+      "operation": "add_stacks",
+      "stacks": 2,
+      "durationSeconds": 8.0
+    }
+  ],
   "damage": {
     "type": "vrpg:rust",
     "base": 11.0,
