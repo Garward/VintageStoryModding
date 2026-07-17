@@ -728,23 +728,30 @@ public sealed class VRPGModSystem : ModSystem
                 keys[i],
                 HotkeyType.CharacterControls,
                 altPressed: true);
-            api.Input.SetHotKeyHandler(VrpgHotkeys.SkillCodes[i], _ => OnSkillHotkey(slot));
+            HotKey hotKey = api.Input.GetHotKeyByCode(VrpgHotkeys.SkillCodes[i]);
+            hotKey.TriggerOnUpAlso = true;
+            api.Input.SetHotKeyHandler(
+                VrpgHotkeys.SkillCodes[i],
+                keyCombination => OnSkillHotkey(slot, pressed: !keyCombination.OnKeyUp));
         }
     }
 
-    private bool OnSkillHotkey(int slot)
+    private bool OnSkillHotkey(int slot, bool pressed)
     {
         if (!config.Modules.Rpg.Enabled)
         {
             return false;
         }
 
-        if (!heldSkillSlots.Add(slot))
+        bool stateChanged = pressed
+            ? heldSkillSlots.Add(slot)
+            : heldSkillSlots.Remove(slot);
+        if (!stateChanged)
         {
             return true;
         }
 
-        clientChannel?.SendPacket(new SkillCastRequestPacket { Slot = slot, Pressed = true });
+        clientChannel?.SendPacket(new SkillCastRequestPacket { Slot = slot, Pressed = pressed });
         return true;
     }
 

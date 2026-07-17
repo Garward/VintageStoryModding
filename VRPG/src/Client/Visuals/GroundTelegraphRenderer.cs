@@ -60,7 +60,12 @@ public sealed class GroundTelegraphRenderer : IRenderer
             VisualStyle style = styles.Resolve(area.StyleCode, 0, area.Radius);
             Vec4f tint = Tint(style.ColorRgba, Alpha(area, ownUid, nowMs));
             prog.RgbaTint = tint;
-            prog.ExtraGlow = 40;
+            // These generated meshes intentionally have no normals. Disabling
+            // normal shading prevents the standard shader from interpreting
+            // missing normal data as the severe RGB quadrant gradient seen on
+            // large ground discs.
+            prog.NormalShaded = 0;
+            prog.ExtraGlow = 16;
             prog.ModelMatrix = modelMat
                 .Identity()
                 .Translate(position.X - cameraPos.X, position.Y - cameraPos.Y + 0.06, position.Z - cameraPos.Z)
@@ -105,10 +110,10 @@ public sealed class GroundTelegraphRenderer : IRenderer
         float sinceChange = (nowMs - area.StateChangedAtMs) / 1000f;
         float baseAlpha = area.State switch
         {
-            GroundAreaState.Armed => own ? 0.26f : 0.10f,
-            GroundAreaState.Triggered => Math.Max(0f, 0.8f - sinceChange * 1.6f),
-            GroundAreaState.Expiring => 0.18f + 0.16f * (float)Math.Sin(nowMs / 90.0),
-            _ => 0.32f
+            GroundAreaState.Armed => own ? 0.16f : 0.08f,
+            GroundAreaState.Triggered => Math.Max(0f, 0.46f - sinceChange * 1.05f),
+            GroundAreaState.Expiring => 0.09f + 0.05f * (float)Math.Sin(nowMs / 90.0),
+            _ => own ? 0.14f : 0.10f
         };
         return baseAlpha * config.TelegraphOpacity;
     }
