@@ -137,11 +137,21 @@ pass only; applying them to the actual JSON assets is a separate, future pass.
 | Element: `chaos` | `Rust` | Rust-bleed | Raw, undiluted Rust World exposure | still reads as corruption/DoT damage |
 | Element: `lightning` | `Discharge` | Rust-bleed | Overtaxed mechanical/temporal charge venting | still reads as a shock/burst effect |
 | Element: `elemental` / `all` | `Bleed` | Rust-bleed | General permeation across every symptom class | still reads as "the one that touches everything" |
+| Ailment: `poison` | `Corrosion` | Rust-bleed | Rust-driven deterioration that persists after the hit | still reads as a harmful damage-over-time condition |
+| Debuff category: `curse` | `Corruption` | Rust-bleed | A deliberately imposed temporal flaw that opens a named vulnerability | still reads as a hostile weakening effect |
 | Library category: `gems` | `Fittings` | Clockwork/mechanism | Socketable augment, framed as an engineering part | still reads as "the socket item" |
 | Library category: `support_gems` | `Support Fittings` | Clockwork/mechanism | Same bucket, modifies an active skill's Fittings | still reads as "the one that modifies the other one" |
 | Library category: `runewords` | `Mechanisms` | Clockwork/mechanism | An assembled multi-part combo bonus, same shape as a runeword | still reads as "the combo bonus you build" |
 | Library category: `runes` (individual runeword components) | `Cogs` | Clockwork/mechanism | Individual socketable components that assemble into a Mechanism | still reads as "the small piece that goes into the big one" |
 | Library category: `currency` | `Tender` | Clockwork/mechanism | Extends the existing rusty/temporal gear economy rather than inventing new money | still reads as "what you pay with" |
+
+`Rust`, `Corrosion`, and `Corruption` are not synonyms. Rust is a damage type,
+Corrosion is its poison-like ailment, and Corruption is the category for
+curse-like effects that make a target vulnerable to another mechanic. Write the
+mechanical vulnerability first: `Corrupted: takes 12% more Rust damage` is
+legible; `The Rust World knows you` is flavor without an effect. A Corruption
+does not need to deal damage, and an ordinary slow, stun, or armor break does not
+become a Corruption merely because it is a debuff.
 
 ## Index
 

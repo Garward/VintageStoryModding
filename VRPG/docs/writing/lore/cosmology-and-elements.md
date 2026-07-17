@@ -40,6 +40,35 @@ Do not invent a seventh element. If a future system needs one, it must trace bac
 to a specific, nameable cause the way the six above do. "Because it's a cool
 element" is not a cause.
 
+## Rust, Corrosion, and Corruption
+
+These terms describe three different layers of the same phenomenon and must not
+be used interchangeably:
+
+- **Rust** is an elemental damage type. It is direct exposure to the Rust World
+  and answers the combat question "what kind of damage was dealt?"
+- **Corrosion** is the primary Rust ailment. A Corroded target continues to
+  deteriorate after exposure and answers "what harmful condition did Rust
+  leave behind?" Corrosion occupies the familiar poison-like damage-over-time
+  role without making poison a seventh element.
+- **Corruption** is VRPG's lore-native counterpart to an ARPG curse. To Corrupt
+  a target is to impose a deliberate temporal flaw that makes some other attack,
+  ailment, element, or combat interaction more effective against it. Corruption
+  answers "what vulnerability has this build opened?" It is a mechanic category,
+  not a damage type and not another name for Corrosion.
+
+A Corruption need not deal damage by itself. Its identity comes from changing
+what the target is vulnerable to: opening armor to Physical force, making Rust
+take hold more readily, preventing recovery, or enabling a class interaction are
+all valid directions. Individual Corruptions should state the vulnerability they
+create in plain combat language before adding flavor.
+
+The word also appears in the established drifter progression, including the
+corrupt drifter tier. That precedent supports the mechanic: the target has been
+pushed toward a worse Rust-World state. It does not mean every Rust-touched
+creature is automatically affected by a player-applied Corruption, nor that
+every debuff should be placed in this category.
+
 ## What Stays Out of This Myth
 
 Rarity tiers, currency, affixes, and runewords/gems are **not** Rust-bleed
