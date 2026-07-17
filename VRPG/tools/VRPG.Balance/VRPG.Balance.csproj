@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>12.0</LangVersion>
+    <PackageOnRelease>false</PackageOnRelease>
+    <UseVintageStoryReferences>false</UseVintageStoryReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../src/Data/IVrpgDataRecord.cs" Link="Shared/IVrpgDataRecord.cs" />
+    <Compile Include="../../src/Data/Definitions/ScalingDefinition.cs" Link="Shared/ScalingDefinition.cs" />
+    <Compile Include="../../src/Data/Definitions/SkillDefinition.cs" Link="Shared/SkillDefinition.cs" />
+    <Compile Include="../../src/Data/Definitions/GearRarityDefinition.cs" Link="Shared/GearRarityDefinition.cs" />
+    <Compile Include="../../src/Modules/Rpg/Scaling/ScalingMath.cs" Link="Shared/ScalingMath.cs" />
+    <Compile Include="../../src/Modules/Rpg/Balance/DamageScalingSimulator.cs" Link="Shared/DamageScalingSimulator.cs" />
+  </ItemGroup>
+
+</Project>
