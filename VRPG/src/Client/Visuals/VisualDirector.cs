@@ -69,6 +69,10 @@ public sealed class VisualDirector : IDisposable
                 skillFx.Ray(style, RayStart(packet, style), position);
                 Budget.Record(style.Particles.TrailQuantity * 9f * skillFx.QuantityScale, nowMs);
                 break;
+            case CombatVisualKind.Circle:
+                skillFx.Circle(style, position);
+                Budget.Record(style.Particles.BurstQuantity * skillFx.QuantityScale, nowMs);
+                break;
             case CombatVisualKind.Damage:
                 if (Config.CombatTextEnabled && Config.DamageNumbers)
                 {

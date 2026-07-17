@@ -13,6 +13,7 @@
     <ReferenceVintagestoryAPI>true</ReferenceVintagestoryAPI>
     <ReferenceVintagestoryLib>true</ReferenceVintagestoryLib>
     <ReferenceVSEssentials>true</ReferenceVSEssentials>
+    <ReferenceProtobufNet>true</ReferenceProtobufNet>
   </PropertyGroup>
 
   <ItemGroup>

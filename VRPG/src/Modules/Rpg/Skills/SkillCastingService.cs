@@ -23,6 +23,7 @@ public sealed class SkillCastingService
     private readonly RpgPlayerStore playerStore;
     private readonly RpgResourceService resources;
     private readonly SkillDamageResolver damageResolver;
+    private readonly IServerNetworkChannel channel;
     private readonly CombatVisualBroadcaster visuals;
     private readonly GroundAreaService groundAreas;
     private readonly SkillStatusEffectService statusEffects;
@@ -37,6 +38,7 @@ public sealed class SkillCastingService
         RpgPlayerStore playerStore,
         RpgResourceService resources,
         SkillDamageResolver damageResolver,
+        IServerNetworkChannel channel,
         CombatVisualBroadcaster visuals,
         GroundAreaService groundAreas,
         StatusEffectTracker statusTracker)
@@ -46,6 +48,7 @@ public sealed class SkillCastingService
         this.playerStore = playerStore;
         this.resources = resources;
         this.damageResolver = damageResolver;
+        this.channel = channel;
         this.visuals = visuals;
         this.groundAreas = groundAreas;
         statusEffects = new SkillStatusEffectService(statusTracker, visuals);
@@ -378,7 +381,6 @@ public sealed class SkillCastingService
         }
         else if (IsTimingMode(skill, "channel"))
         {
-            long groundAreaId = CreateChannelGroundArea(player, skill);
             activeChannels[player.PlayerUID] = new ActiveTimedCast
             {
                 PlayerUid = player.PlayerUID,
@@ -387,9 +389,9 @@ public sealed class SkillCastingService
                 SkillLevel = skillLevel,
                 RemainingHits = -1,
                 NextHitMilliseconds = now + IntervalMilliseconds(skill),
-                EndMilliseconds = now + (long)(skill.Timing.MaxDurationSeconds * 1000f),
-                GroundAreaId = groundAreaId
+                EndMilliseconds = now + (long)(skill.Timing.MaxDurationSeconds * 1000f)
             };
+            SendChannelState(player, skill, slot, active: true);
         }
 
         return true;
@@ -529,16 +531,28 @@ public sealed class SkillCastingService
             return;
         }
 
-        if (cast.GroundAreaId != 0)
-        {
-            groundAreas.Remove(cast.GroundAreaId);
-        }
-
         SkillDefinition? skill = data.Skills.Get(cast.SkillCode);
         if (skill != null)
         {
             SetCooldown(playerUid, skill.Code, now + (long)(skill.CooldownSeconds * 1000f));
+            if (api.World.PlayerByUid(playerUid) is IServerPlayer player)
+            {
+                SendChannelState(player, skill, cast.Slot, active: false);
+            }
         }
+    }
+
+    private void SendChannelState(IServerPlayer player, SkillDefinition skill, int slot, bool active)
+    {
+        channel.SendPacket(new SkillChannelStatePacket
+        {
+            Active = active,
+            Slot = slot,
+            SkillCode = skill.Code,
+            SkillName = skill.Name,
+            Color = skill.Color,
+            MaxDurationSeconds = skill.Timing.MaxDurationSeconds
+        }, player);
     }
 
     private static bool IsTimingMode(SkillDefinition skill, string mode)
@@ -594,30 +608,9 @@ public sealed class SkillCastingService
     {
         Vec3d center = player.Entity.Pos.XYZ.Clone().Add(0, 0.2, 0);
         ApplyAreaDamage(player, skill, skillLevel, center, player.Entity);
-        visuals.Send(Event(CombatVisualKind.Burst, skill, center));
-        if (!IsTimingMode(skill, "channel"))
-        {
-            groundAreas.Place(player.PlayerUID, skill.Code, GroundAreaShape.Ring, center, skill.Radius, GroundAreaState.Triggered, durationSeconds: 0.45f);
-        }
-    }
-
-    private long CreateChannelGroundArea(IServerPlayer player, SkillDefinition skill)
-    {
-        if (!string.Equals(skill.Delivery, "circle", StringComparison.OrdinalIgnoreCase))
-        {
-            return 0;
-        }
-
-        Vec3d center = player.Entity.Pos.XYZ.Clone().Add(0, 0.2, 0);
-        return groundAreas.Place(
-            player.PlayerUID,
-            skill.Code,
-            GroundAreaShape.Ring,
-            center,
-            skill.Radius,
-            GroundAreaState.Active,
-            skill.Timing.MaxDurationSeconds,
-            followEntityId: player.Entity.EntityId);
+        CombatVisualEventPacket circle = Event(CombatVisualKind.Circle, skill, center);
+        circle.SourceEntityId = player.Entity.EntityId;
+        visuals.Send(circle);
     }
 
     private void CastMelee(IServerPlayer player, SkillDefinition skill, int skillLevel, MeleeShape shape)
@@ -1048,6 +1041,5 @@ public sealed class SkillCastingService
         public int RemainingHits { get; set; }
         public long NextHitMilliseconds { get; set; }
         public long EndMilliseconds { get; init; }
-        public long GroundAreaId { get; init; }
     }
 }

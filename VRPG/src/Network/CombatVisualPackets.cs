@@ -15,7 +15,8 @@ public enum CombatVisualKind : byte
     Counter = 7,
     Consume = 8,
     WindowOpen = 9,
-    Mark = 10
+    Mark = 10,
+    Circle = 11
 }
 
 [Flags]

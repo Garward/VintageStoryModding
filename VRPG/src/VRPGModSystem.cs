@@ -40,6 +40,7 @@ public sealed class VRPGModSystem : ModSystem
     private VisualDirector? visualDirector;
     private HudElementVRPGCombatText? clientCombatText;
     private HudElementVRPGWindowPulse? clientWindowPulse;
+    private HudElementVRPGChannelBar? clientChannelBar;
     private GroundTelegraphRenderer? telegraphRenderer;
     private AuraEmitterSystem? auraEmitters;
     private Harmony? clientHarmony;
@@ -138,6 +139,7 @@ public sealed class VRPGModSystem : ModSystem
             .SetMessageHandler<RpgResourcePacket>(packet => OpenResourceHudPacket(api, packet))
             .SetMessageHandler<SkillLoadoutPacket>(packet => OpenSkillHotbarPacket(api, packet))
             .SetMessageHandler<EvasiveStepActivatedPacket>(packet => ApplyEvasiveStepMotion(api, packet))
+            .SetMessageHandler<SkillChannelStatePacket>(packet => clientChannelBar?.SetState(packet))
             .SetMessageHandler<CombatVisualEventPacket>(packet => visualDirector?.HandleEvent(packet))
             .SetMessageHandler<GroundAreaUpsertPacket>(packet => visualDirector?.HandleAreaUpsert(packet))
             .SetMessageHandler<GroundAreaRemovePacket>(packet => visualDirector?.HandleAreaRemove(packet));
@@ -166,6 +168,7 @@ public sealed class VRPGModSystem : ModSystem
         {
             clientWindowPulse = new HudElementVRPGWindowPulse(api);
             visualDirector.WindowPulse = clientWindowPulse;
+            clientChannelBar = new HudElementVRPGChannelBar(api);
         }
 
         if (config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
@@ -241,6 +244,8 @@ public sealed class VRPGModSystem : ModSystem
         clientCombatText = null;
         clientWindowPulse?.Dispose();
         clientWindowPulse = null;
+        clientChannelBar?.Dispose();
+        clientChannelBar = null;
         if (telegraphRenderer != null)
         {
             clientApi?.Event.UnregisterRenderer(telegraphRenderer, EnumRenderStage.OIT);

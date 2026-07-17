@@ -9,5 +9,5 @@ public sealed class SkillCastRequestPacket
     public int Slot { get; set; }
 
     [ProtoMember(2)]
-    public bool Pressed { get; set; } = true;
+    public bool Pressed { get; set; }
 }

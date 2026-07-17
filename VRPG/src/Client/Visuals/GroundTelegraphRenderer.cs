@@ -60,11 +60,6 @@ public sealed class GroundTelegraphRenderer : IRenderer
             VisualStyle style = styles.Resolve(area.StyleCode, 0, area.Radius);
             Vec4f tint = Tint(style.ColorRgba, Alpha(area, ownUid, nowMs));
             prog.RgbaTint = tint;
-            // These generated meshes intentionally have no normals. Disabling
-            // normal shading prevents the standard shader from interpreting
-            // missing normal data as the severe RGB quadrant gradient seen on
-            // large ground discs.
-            prog.NormalShaded = 0;
             prog.ExtraGlow = 16;
             prog.ModelMatrix = modelMat
                 .Identity()
@@ -129,7 +124,7 @@ public sealed class GroundTelegraphRenderer : IRenderer
 
     private static MeshData BuildDisc(int segments)
     {
-        var mesh = new MeshData(segments + 2, segments * 3, false, true, true, false);
+        var mesh = new MeshData(segments + 2, segments * 3, true, true, true, false);
         AddVertex(mesh, 0f, 0f, 0f);
         for (int i = 0; i <= segments; i++)
         {
@@ -147,7 +142,7 @@ public sealed class GroundTelegraphRenderer : IRenderer
 
     private static MeshData BuildRing(int segments, float inner)
     {
-        var mesh = new MeshData((segments + 1) * 2, segments * 6, false, true, true, false);
+        var mesh = new MeshData((segments + 1) * 2, segments * 6, true, true, true, false);
         for (int i = 0; i <= segments; i++)
         {
             double angle = Math.PI * 2 * i / segments;
@@ -169,6 +164,7 @@ public sealed class GroundTelegraphRenderer : IRenderer
     private static void AddVertex(MeshData mesh, float x, float y, float z)
     {
         mesh.AddVertexWithFlags(x, y, z, 0.5f, 0.5f, unchecked((int)0xffffffff), 0);
+        mesh.AddNormal(0f, 1f, 0f);
     }
 
     public void Dispose()
