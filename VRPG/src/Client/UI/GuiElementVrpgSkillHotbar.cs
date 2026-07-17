@@ -191,6 +191,17 @@ public sealed class GuiElementVrpgSkillHotbar : GuiElement
         ctx.LineWidth = 2;
         ctx.Stroke();
 
+        if (entry?.Empowered == true)
+        {
+            ctx.SetSourceRGBA(1.0, 0.82, 0.4, 0.95);
+            ctx.LineWidth = 3.0;
+            ctx.Rectangle(x + 1.5, y + 1.5, size - 3.0, size - 3.0);
+            ctx.Stroke();
+            ctx.SetSourceRGBA(1.0, 0.82, 0.4, 0.28);
+            ctx.Rectangle(x + 3.0, y + 3.0, size - 6.0, size - 6.0);
+            ctx.Fill();
+        }
+
         string binding = api.Input.GetHotKeyByCode(VrpgHotkeys.SkillCodes[index])?.CurrentMapping?.ToString() ?? (index + 1).ToString();
         DrawText(ctx, binding, x + size / 2.0, y + 12, 8, true, 0.84, 0.74, 0.62, true);
         if (entry == null || string.IsNullOrWhiteSpace(entry.Code))

@@ -36,7 +36,12 @@ public sealed class VRPGModSystem : ModSystem
     private HudElementVRPGResources? clientResourceHud;
     private HudElementVRPGEntityHealthBars? clientEntityHud;
     private HudElementVRPGSkillHotbar? clientSkillHotbar;
+    private HudElementVRPGPlayerStatus? clientPlayerStatusHud;
     private VisualDirector? visualDirector;
+    private HudElementVRPGCombatText? clientCombatText;
+    private HudElementVRPGWindowPulse? clientWindowPulse;
+    private GroundTelegraphRenderer? telegraphRenderer;
+    private AuraEmitterSystem? auraEmitters;
     private Harmony? clientHarmony;
     private Harmony? serverHarmony;
     private TalentTreeSnapshotPacket clientTalentTree = new TalentTreeSnapshotPacket();
@@ -133,7 +138,9 @@ public sealed class VRPGModSystem : ModSystem
             .SetMessageHandler<RpgResourcePacket>(packet => OpenResourceHudPacket(api, packet))
             .SetMessageHandler<SkillLoadoutPacket>(packet => OpenSkillHotbarPacket(api, packet))
             .SetMessageHandler<EvasiveStepActivatedPacket>(packet => ApplyEvasiveStepMotion(api, packet))
-            .SetMessageHandler<CombatVisualEventPacket>(packet => visualDirector?.HandleEvent(packet));
+            .SetMessageHandler<CombatVisualEventPacket>(packet => visualDirector?.HandleEvent(packet))
+            .SetMessageHandler<GroundAreaUpsertPacket>(packet => visualDirector?.HandleAreaUpsert(packet))
+            .SetMessageHandler<GroundAreaRemovePacket>(packet => visualDirector?.HandleAreaRemove(packet));
 
         api.Input.RegisterHotKey(VrpgHotkeys.Hub, "VRPG — Open Hub", GlKeys.V, HotkeyType.GUIOrOtherControls);
         api.Input.SetHotKeyHandler(VrpgHotkeys.Hub, OnHubHotkey);
@@ -143,6 +150,22 @@ public sealed class VRPGModSystem : ModSystem
         if (config.Modules.Rpg.Enabled)
         {
             visualDirector = new VisualDirector(api, DataRegistry, config.Modules.Rpg.CombatVisuals);
+            telegraphRenderer = new GroundTelegraphRenderer(api, visualDirector.Areas, visualDirector.Styles, config.Modules.Rpg.CombatVisuals);
+            api.Event.RegisterRenderer(telegraphRenderer, EnumRenderStage.OIT, "vrpg-telegraphs");
+            auraEmitters = new AuraEmitterSystem(api, DataRegistry, config.Modules.Rpg.CombatVisuals, visualDirector.Budget);
+            auraEmitters.Start();
+            clientPlayerStatusHud = new HudElementVRPGPlayerStatus(api, DataRegistry);
+        }
+
+        if (visualDirector != null)
+        {
+            clientCombatText = new HudElementVRPGCombatText(api, visualDirector);
+        }
+
+        if (visualDirector != null)
+        {
+            clientWindowPulse = new HudElementVRPGWindowPulse(api);
+            visualDirector.WindowPulse = clientWindowPulse;
         }
 
         if (config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
@@ -153,7 +176,7 @@ public sealed class VRPGModSystem : ModSystem
 
         if (config.Modules.Rpg.Enabled && config.Modules.Rpg.EntityHud.Enabled)
         {
-            clientEntityHud = new HudElementVRPGEntityHealthBars(api, config.Modules.Rpg.EntityHud);
+            clientEntityHud = new HudElementVRPGEntityHealthBars(api, config.Modules.Rpg.EntityHud, DataRegistry);
             clientEntityHud.TryOpen();
         }
 
@@ -212,8 +235,22 @@ public sealed class VRPGModSystem : ModSystem
         clientEntityHud = null;
         clientSkillHotbar?.Dispose();
         clientSkillHotbar = null;
+        clientPlayerStatusHud?.Dispose();
+        clientPlayerStatusHud = null;
+        clientCombatText?.Dispose();
+        clientCombatText = null;
+        clientWindowPulse?.Dispose();
+        clientWindowPulse = null;
+        if (telegraphRenderer != null)
+        {
+            clientApi?.Event.UnregisterRenderer(telegraphRenderer, EnumRenderStage.OIT);
+            telegraphRenderer.Dispose();
+            telegraphRenderer = null;
+        }
         visualDirector?.Dispose();
         visualDirector = null;
+        auraEmitters?.Dispose();
+        auraEmitters = null;
         if (clientApi != null && skillInputTickListenerId != 0)
         {
             clientApi.Event.UnregisterGameTickListener(skillInputTickListenerId);
@@ -342,7 +379,176 @@ public sealed class VRPGModSystem : ModSystem
             .BeginSubCommand("statfamilies")
                 .WithDescription("List VRPG stat-family definition files.")
                 .HandleWith(_ => TextCommandResult.Success(DataRegistry.StatFamilies.FormatList("Stat families")))
+            .EndSubCommand()
+            .BeginSubCommand("vfx")
+                .WithDescription("Fire synthetic combat visuals for testing.")
+                .RequiresPrivilege(Privilege.controlserver)
+                .BeginSubCommand("event")
+                    .WithDescription("Fire a combat visual event at the aimed point (kinds: impact, burst, ray, damage, heal, shield, break, counter, consume, windowopen, mark).")
+                    .RequiresPlayer()
+                    .WithArgs(api.ChatCommands.Parsers.Word("kind"), api.ChatCommands.Parsers.OptionalWord("style"))
+                    .HandleWith(args => HandleVfxEvent(api, args))
+                .EndSubCommand()
+                .BeginSubCommand("status")
+                    .WithDescription("Apply a status effect to the looked-at entity (or yourself).")
+                    .RequiresPlayer()
+                    .WithArgs(
+                        api.ChatCommands.Parsers.Word("code"),
+                        api.ChatCommands.Parsers.OptionalInt("stacks", 1),
+                        api.ChatCommands.Parsers.OptionalFloat("magnitude", 0f),
+                        api.ChatCommands.Parsers.OptionalFloat("seconds", 8f))
+                    .HandleWith(args => HandleVfxStatus(args))
+                .EndSubCommand()
+                .BeginSubCommand("area")
+                    .WithDescription("Place a ground area at the aimed block (states: armed, triggered, active, expiring).")
+                    .RequiresPlayer()
+                    .WithArgs(
+                        api.ChatCommands.Parsers.Word("style"),
+                        api.ChatCommands.Parsers.OptionalWord("state"),
+                        api.ChatCommands.Parsers.OptionalFloat("radius", 3f),
+                        api.ChatCommands.Parsers.OptionalFloat("seconds", 20f))
+                    .HandleWith(args => HandleVfxArea(args))
+                .EndSubCommand()
+                .BeginSubCommand("empower")
+                    .WithDescription("Toggle the empowered glow on a loadout slot.")
+                    .RequiresPlayer()
+                    .WithArgs(api.ChatCommands.Parsers.Int("slot"), api.ChatCommands.Parsers.Word("onoff"))
+                    .HandleWith(args => HandleVfxEmpower(args))
+                .EndSubCommand()
+                .BeginSubCommand("stress")
+                    .WithDescription("Spray synthetic damage events around you to verify budgets.")
+                    .RequiresPlayer()
+                    .WithArgs(api.ChatCommands.Parsers.OptionalInt("eventsPerSecond", 60), api.ChatCommands.Parsers.OptionalInt("seconds", 10))
+                    .HandleWith(args => HandleVfxStress(api, args))
+                .EndSubCommand()
             .EndSubCommand();
+    }
+
+    private TextCommandResult HandleVfxEvent(ICoreServerAPI api, TextCommandCallingArgs args)
+    {
+        if (args.Caller.Player is not IServerPlayer player || rpgModule?.VisualBroadcaster == null)
+        {
+            return TextCommandResult.Error("The VRPG visual runtime is not available.");
+        }
+
+        if (!Enum.TryParse((string)args[0], true, out CombatVisualKind kind))
+        {
+            return TextCommandResult.Error("Unknown visual kind: " + args[0]);
+        }
+
+        Vintagestory.API.MathTools.Vec3d position =
+            player.CurrentBlockSelection?.FullPosition
+            ?? player.Entity.Pos.XYZ.AheadCopy(4, 0, player.Entity.Pos.Yaw);
+        long targetId = player.CurrentEntitySelection?.Entity?.EntityId ?? player.Entity.EntityId;
+
+        rpgModule.VisualBroadcaster.Send(new CombatVisualEventPacket
+        {
+            Kind = (byte)kind,
+            StyleCode = (args.Parsers[1].IsMissing ? "" : (string)args[1]) ?? "",
+            SourceEntityId = player.Entity.EntityId,
+            TargetEntityId = targetId,
+            X = position.X,
+            Y = position.Y,
+            Z = position.Z,
+            Radius = 2.5f,
+            Magnitude = 17f,
+            FallbackColorRgba = unchecked((int)0xccf2ede4)
+        });
+        return TextCommandResult.Success("Fired " + kind + ".");
+    }
+
+    private TextCommandResult HandleVfxStatus(TextCommandCallingArgs args)
+    {
+        if (args.Caller.Player is not IServerPlayer player || rpgModule == null)
+        {
+            return TextCommandResult.Error("The VRPG rpg runtime is not available.");
+        }
+
+        long entityId = player.CurrentEntitySelection?.Entity?.EntityId ?? player.Entity.EntityId;
+        bool applied = rpgModule.ApplyStatus(entityId, (string)args[0], (int)args[1], (float)args[2], (float)args[3]);
+        return applied
+            ? TextCommandResult.Success("Applied " + args[0] + " to entity " + entityId + ".")
+            : TextCommandResult.Error("Unknown status effect: " + args[0]);
+    }
+
+    private TextCommandResult HandleVfxArea(TextCommandCallingArgs args)
+    {
+        if (args.Caller.Player is not IServerPlayer player || rpgModule?.GroundAreas == null)
+        {
+            return TextCommandResult.Error("The VRPG area runtime is not available.");
+        }
+
+        Vintagestory.API.MathTools.Vec3d position =
+            player.CurrentBlockSelection?.FullPosition ?? player.Entity.Pos.XYZ;
+        string stateWord = args.Parsers[1].IsMissing ? "active" : (string)args[1];
+        if (!Enum.TryParse(stateWord, true, out GroundAreaState state))
+        {
+            return TextCommandResult.Error("Unknown area state: " + stateWord);
+        }
+
+        long id = rpgModule.GroundAreas.Place(
+            player.PlayerUID, (string)args[0], GroundAreaShape.Disc, position,
+            (float)args[2], state, (float)args[3]);
+        return TextCommandResult.Success("Placed area " + id + " (" + state + ").");
+    }
+
+    private TextCommandResult HandleVfxEmpower(TextCommandCallingArgs args)
+    {
+        if (args.Caller.Player is not IServerPlayer player || rpgModule == null)
+        {
+            return TextCommandResult.Error("The VRPG rpg runtime is not available.");
+        }
+
+        int slot = (int)args[0] - 1;
+        SkillLoadoutPacket loadout = rpgModule.BuildSkillLoadout(player);
+        if (slot < 0 || slot >= loadout.Slots.Length || string.IsNullOrEmpty(loadout.Slots[slot].Code))
+        {
+            return TextCommandResult.Error("Slot " + args[0] + " has no equipped skill.");
+        }
+
+        bool on = string.Equals((string)args[1], "on", StringComparison.OrdinalIgnoreCase);
+        rpgModule.SetSkillEmpowered(player, loadout.Slots[slot].Code, on);
+        return TextCommandResult.Success((on ? "Empowered " : "Cleared ") + loadout.Slots[slot].Name + ".");
+    }
+
+    private TextCommandResult HandleVfxStress(ICoreServerAPI api, TextCommandCallingArgs args)
+    {
+        if (args.Caller.Player is not IServerPlayer player || rpgModule?.VisualBroadcaster == null)
+        {
+            return TextCommandResult.Error("The VRPG visual runtime is not available.");
+        }
+
+        int eventsPerSecond = Math.Clamp((int)args[0], 1, 500);
+        int seconds = Math.Clamp((int)args[1], 1, 60);
+        var random = new Random();
+        long endAtMs = api.World.ElapsedMilliseconds + seconds * 1000L;
+        long listenerId = 0;
+        listenerId = api.Event.RegisterGameTickListener(_ =>
+        {
+            if (api.World.ElapsedMilliseconds >= endAtMs)
+            {
+                api.Event.UnregisterGameTickListener(listenerId);
+                return;
+            }
+
+            var pos = player.Entity.Pos.XYZ;
+            for (int i = 0; i < Math.Max(1, eventsPerSecond / 4); i++)
+            {
+                rpgModule!.VisualBroadcaster!.Send(new CombatVisualEventPacket
+                {
+                    Kind = (byte)(random.NextDouble() < 0.7 ? CombatVisualKind.Damage : CombatVisualKind.Burst),
+                    StyleCode = "",
+                    FallbackColorRgba = unchecked((int)0xccf2ede4),
+                    DamageType = (byte)random.Next(0, 6),
+                    Magnitude = random.Next(1, 40),
+                    X = pos.X + random.NextDouble() * 12 - 6,
+                    Y = pos.Y + 1,
+                    Z = pos.Z + random.NextDouble() * 12 - 6,
+                    Radius = 1.5f
+                });
+            }
+        }, 250);
+        return TextCommandResult.Success("Stressing " + eventsPerSecond + " events/s for " + seconds + "s.");
     }
 
     private string BuildStatus()
@@ -709,7 +915,9 @@ public sealed class VRPGModSystem : ModSystem
             (locked, slotCount) => SetClientHotbarOptions(api, locked, slotCount),
             (slot, skillCode) => clientChannel?.SendPacket(new SkillEquipRequestPacket { Slot = slot, SkillCode = skillCode }),
             (allocate, refund) => clientChannel?.SendPacket(new TalentPlanRequestPacket { Allocate = allocate, Refund = refund }),
-            () => clientChannel?.SendPacket(new TalentEditorOpenRequestPacket()));
+            () => clientChannel?.SendPacket(new TalentEditorOpenRequestPacket()),
+            config.Modules.Rpg.CombatVisuals,
+            () => PersistClientConfig(api));
         clientHubDialog.TryOpen();
     }
 

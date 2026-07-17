@@ -191,6 +191,17 @@ public sealed class RpgModule : IVrpgModule
         return skills?.BuildLoadout(player) ?? new SkillLoadoutPacket();
     }
 
+    public void SetSkillEmpowered(IServerPlayer player, string skillCode, bool on)
+    {
+        skills?.SetEmpowered(player.PlayerUID, skillCode, on);
+        SendLoadout(player);
+    }
+
+    public bool ApplyStatus(long entityId, string code, int stacks, float magnitude, float seconds)
+    {
+        return statusEffects.Apply(entityId, code, 0, seconds, stacks, magnitude);
+    }
+
     private void SendLoadout(IServerPlayer player)
     {
         if (skills != null)

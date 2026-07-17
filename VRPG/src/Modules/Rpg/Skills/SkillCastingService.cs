@@ -27,6 +27,7 @@ public sealed class SkillCastingService
     private readonly Dictionary<string, Dictionary<string, long>> cooldownEnds = new Dictionary<string, Dictionary<string, long>>(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ActiveTimedCast> activeChannels = new Dictionary<string, ActiveTimedCast>(StringComparer.OrdinalIgnoreCase);
     private readonly List<ActiveTimedCast> activeSequences = new List<ActiveTimedCast>();
+    private readonly Dictionary<string, HashSet<string>> empoweredSkills = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
     public SkillCastingService(
         ICoreServerAPI api,
@@ -44,6 +45,25 @@ public sealed class SkillCastingService
         this.damageResolver = damageResolver;
         this.visuals = visuals;
         this.groundAreas = groundAreas;
+    }
+
+    public void SetEmpowered(string playerUid, string skillCode, bool on)
+    {
+        if (!empoweredSkills.TryGetValue(playerUid, out HashSet<string>? codes))
+        {
+            codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            empoweredSkills[playerUid] = codes;
+        }
+
+        string normalized = NormalizeCode(skillCode);
+        if (on)
+        {
+            codes.Add(normalized);
+        }
+        else
+        {
+            codes.Remove(normalized);
+        }
     }
 
     public bool TryCastSlot(IServerPlayer player, int slot, out string error)
@@ -283,7 +303,10 @@ public sealed class SkillCastingService
                 ResourceCost = skill == null || level <= 0 ? 0f : skill.ResourceCostAtLevel(level),
                 TimingMode = skill?.Timing.Mode ?? "instant",
                 ResourceCostMode = skill?.Resource.CostMode ?? "cast",
-                HitIntervalSeconds = skill?.Timing.HitIntervalSeconds ?? 0f
+                HitIntervalSeconds = skill?.Timing.HitIntervalSeconds ?? 0f,
+                Empowered = skill != null
+                    && empoweredSkills.TryGetValue(player.PlayerUID, out HashSet<string>? playerEmpowered)
+                    && playerEmpowered.Contains(skill.Code)
             };
         }
 

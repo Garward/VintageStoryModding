@@ -17,6 +17,8 @@ public sealed class GuiDialogVRPGHub : GuiDialog
     private readonly Action<int, string> equipSkill;
     private readonly Action<string[], string[]> applyTalentPlan;
     private readonly Action openTalentEditor;
+    private readonly VRPG.Client.Visuals.CombatVisualsConfig combatVisuals;
+    private readonly Action combatVisualsChanged;
     private GuiElementVrpgHub? hubElement;
 
     public override string? ToggleKeyCombinationCode => null;
@@ -31,7 +33,9 @@ public sealed class GuiDialogVRPGHub : GuiDialog
         Action<bool, int> updateHotbar,
         Action<int, string> equipSkill,
         Action<string[], string[]> applyTalentPlan,
-        Action openTalentEditor) : base(capi)
+        Action openTalentEditor,
+        VRPG.Client.Visuals.CombatVisualsConfig combatVisuals,
+        Action combatVisualsChanged) : base(capi)
     {
         this.packet = packet;
         this.talentTree = talentTree;
@@ -42,6 +46,8 @@ public sealed class GuiDialogVRPGHub : GuiDialog
         this.equipSkill = equipSkill;
         this.applyTalentPlan = applyTalentPlan;
         this.openTalentEditor = openTalentEditor;
+        this.combatVisuals = combatVisuals;
+        this.combatVisualsChanged = combatVisualsChanged;
         Compose();
     }
 
@@ -87,7 +93,7 @@ public sealed class GuiDialogVRPGHub : GuiDialog
         {
             TryClose();
             openLibrary(entries);
-        }, adjustStat, updateOptions, updateHotbar, equipSkill, applyTalentPlan, openTalentEditor);
+        }, adjustStat, updateOptions, updateHotbar, equipSkill, applyTalentPlan, openTalentEditor, combatVisuals, combatVisualsChanged);
 
         SingleComposer = capi.Gui
             .CreateCompo("vrpg-hub", ElementStdBounds.AutosizedMainDialog)

@@ -50,4 +50,9 @@ public sealed class SkillLoadoutSlotPacket
 
     [ProtoMember(13)]
     public float HitIntervalSeconds { get; set; }
+
+    // Brief specifies [ProtoMember(11)], but 11 is already used by TimingMode
+    // (added by another workstream). Using the next free slot instead.
+    [ProtoMember(14)]
+    public bool Empowered { get; set; }
 }

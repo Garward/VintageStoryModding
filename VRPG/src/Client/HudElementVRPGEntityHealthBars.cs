@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Cairo;
+using VRPG.Client.UI;
+using VRPG.Client.Visuals;
 using VRPG.Config;
+using VRPG.Data;
+using VRPG.Data.Definitions;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -14,6 +18,8 @@ public sealed class HudElementVRPGEntityHealthBars : HudElement
 {
     private const string HealthTreeName = "health";
     private readonly RpgEntityHudConfig config;
+    private readonly VRPGDataRegistry data;
+    private readonly EntityStatusCache statusCache = new EntityStatusCache();
     private LoadedTexture texture;
     private readonly List<EntityHudEntry> entries = new List<EntityHudEntry>();
     private long lastRefreshMs;
@@ -23,9 +29,10 @@ public sealed class HudElementVRPGEntityHealthBars : HudElement
     public override string? ToggleKeyCombinationCode => null;
     public override bool Focusable => false;
 
-    public HudElementVRPGEntityHealthBars(ICoreClientAPI capi, RpgEntityHudConfig config) : base(capi)
+    public HudElementVRPGEntityHealthBars(ICoreClientAPI capi, RpgEntityHudConfig config, VRPGDataRegistry data) : base(capi)
     {
         this.config = config;
+        this.data = data;
         texture = new LoadedTexture(capi);
         TryOpen();
     }
@@ -129,6 +136,8 @@ public sealed class HudElementVRPGEntityHealthBars : HudElement
         {
             entries.RemoveRange(maxShown, entries.Count - maxShown);
         }
+
+        statusCache.Prune(capi.ElapsedMilliseconds);
     }
 
     private bool IsCandidate(Entity entity)
@@ -190,6 +199,125 @@ public sealed class HudElementVRPGEntityHealthBars : HudElement
         }
 
         DrawHealthBar(ctx, x, y, width, barHeight, health, maxHealth, readable || detailed || entry.Targeted);
+
+        DrawStatusOverlay(ctx, entity, x, y + barHeight + 3 * scale, width, scale);
+    }
+
+    private void DrawStatusOverlay(Context ctx, Entity entity, double x, double y, double width, double scale)
+    {
+        IReadOnlyList<Visuals.ActiveStatus> statuses = statusCache.Update(entity.EntityId, entity.WatchedAttributes, capi.ElapsedMilliseconds);
+        DrawShieldOverlay(ctx, entity, x, y - 3 * scale, width, scale);
+
+        double iconSize = 15 * scale;
+        double iconX = x;
+        foreach (Visuals.ActiveStatus status in statuses)
+        {
+            StatusEffectDefinition? definition = data.StatusEffects.Get(status.Code);
+            if (definition == null)
+            {
+                continue;
+            }
+
+            if (definition.Visual.Buildup?.ShowBar == true)
+            {
+                DrawBuildupBar(ctx, definition, status, x, y, width, scale);
+                y += 7 * scale;
+                continue;
+            }
+
+            if (iconX + iconSize > x + width)
+            {
+                continue;
+            }
+
+            DrawStatusIcon(ctx, definition, status, iconX, y, iconSize, scale);
+            iconX += iconSize + 3 * scale;
+        }
+    }
+
+    private void DrawStatusIcon(Context ctx, StatusEffectDefinition definition, Visuals.ActiveStatus status, double x, double y, double size, double scale)
+    {
+        if (!Data.SkillDefinitionValidator.TryParseColor(definition.Visual.Color, out int color))
+        {
+            color = unchecked((int)0xfff2ede4);
+        }
+
+        double r = ((color >> 16) & 0xff) / 255.0;
+        double g = ((color >> 8) & 0xff) / 255.0;
+        double b = (color & 0xff) / 255.0;
+
+        // Duration wipe: darken the spent fraction of a backing plate.
+        double remaining = status.DurationMs <= 0 ? 1.0 : Math.Clamp(status.RemainingSeconds(capi.ElapsedMilliseconds) * 1000.0 / status.DurationMs, 0, 1);
+        SetColor(ctx, 0, 0, 0, 0.6);
+        ctx.Rectangle(x, y, size, size);
+        ctx.Fill();
+        SetColor(ctx, r * 0.35, g * 0.35, b * 0.35, 0.85);
+        ctx.Rectangle(x, y + size * (1 - remaining), size, size * remaining);
+        ctx.Fill();
+
+        VrpgIconPainter.Draw(ctx, string.IsNullOrWhiteSpace(definition.Visual.Icon) ? definition.Code : definition.Visual.Icon, x, y, size, r, g, b);
+
+        if (definition.Visual.ShowStacks && status.Stacks > 1)
+        {
+            ctx.SelectFontFace("Arial", FontSlant.Normal, FontWeight.Bold);
+            ctx.SetFontSize(Math.Max(8.0, size * 0.52));
+            string stacks = status.Stacks.ToString();
+            TextExtents ext = ctx.TextExtents(stacks);
+            SetColor(ctx, 0, 0, 0, 0.9);
+            ctx.MoveTo(x + size - ext.Width + 0.5, y + size - 0.5);
+            ctx.ShowText(stacks);
+            SetColor(ctx, 1, 1, 1, 0.98);
+            ctx.MoveTo(x + size - ext.Width - 0.5, y + size - 1.5);
+            ctx.ShowText(stacks);
+        }
+    }
+
+    private void DrawBuildupBar(Context ctx, StatusEffectDefinition definition, Visuals.ActiveStatus status, double x, double y, double width, double scale)
+    {
+        StatusBuildupVisualDefinition buildup = definition.Visual.Buildup!;
+        double barHeight = 5 * scale;
+        double fill = Math.Clamp(status.Magnitude / Math.Max(1f, buildup.Threshold), 0, 1);
+        bool atThreshold = fill >= 1.0;
+
+        if (!Data.SkillDefinitionValidator.TryParseColor(definition.Visual.Color, out int color))
+        {
+            color = unchecked((int)0xffffd166);
+        }
+
+        SetColor(ctx, 0, 0, 0, 0.72);
+        ctx.Rectangle(x - 1, y - 1, width + 2, barHeight + 2);
+        ctx.Fill();
+        SetColor(ctx, 0.15, 0.12, 0.08, 0.9);
+        ctx.Rectangle(x, y, width, barHeight);
+        ctx.Fill();
+
+        double flash = atThreshold && buildup.FlashAtThreshold
+            ? 0.65 + 0.35 * Math.Sin(capi.ElapsedMilliseconds / 80.0)
+            : 0.95;
+        SetColor(ctx, ((color >> 16) & 0xff) / 255.0 * flash, ((color >> 8) & 0xff) / 255.0 * flash, (color & 0xff) / 255.0 * flash, 0.95);
+        ctx.Rectangle(x, y, width * fill, barHeight);
+        ctx.Fill();
+
+        // Threshold notch.
+        SetColor(ctx, 1, 1, 1, 0.85);
+        ctx.Rectangle(x + width - 1.5, y - 1, 1.5, barHeight + 2);
+        ctx.Fill();
+    }
+
+    private void DrawShieldOverlay(Context ctx, Entity entity, double barX, double barBottomY, double width, double scale)
+    {
+        float shield = entity.WatchedAttributes.GetFloat("vrpgShieldCurrent");
+        float shieldMax = entity.WatchedAttributes.GetFloat("vrpgShieldMax");
+        if (shield <= 0f || shieldMax <= 0f || !TryReadHealth(entity, out _, out float maxHealth) || maxHealth <= 0f)
+        {
+            return;
+        }
+
+        double fraction = Math.Min(1.0, shield / maxHealth);
+        double overlayHeight = 3 * scale;
+        SetColor(ctx, 0.47, 0.94, 1.0, 0.9);
+        ctx.Rectangle(barX, barBottomY - overlayHeight, width * fraction, overlayHeight);
+        ctx.Fill();
     }
 
     private void DrawLabel(Context ctx, Entity entity, EntityHudEntry entry, double x, double y, double width, double height, bool readable)

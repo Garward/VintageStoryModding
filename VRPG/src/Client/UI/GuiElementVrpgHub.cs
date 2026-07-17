@@ -24,6 +24,8 @@ public sealed class GuiElementVrpgHub : GuiElement
     private readonly Action<int, string> equipSkill;
     private readonly Action<string[], string[]> applyTalentPlan;
     private readonly Action openTalentEditor;
+    private readonly VRPG.Client.Visuals.CombatVisualsConfig combatVisuals;
+    private readonly Action combatVisualsChanged;
     private readonly List<ClickRegion> clickRegions = new List<ClickRegion>();
     private readonly List<HoverRegion> hoverRegions = new List<HoverRegion>();
     private int textureId;
@@ -49,7 +51,7 @@ public sealed class GuiElementVrpgHub : GuiElement
 
     private static readonly string[] Tabs = { "Stats", "Skills", "Talents", "Library", "Options" };
     private static readonly string[] BaseStatCodes = { "strength", "dexterity", "intelligence" };
-    private static readonly string[] OptionsCategories = { "Notifications", "Combat Hotbar" };
+    private static readonly string[] OptionsCategories = { "Notifications", "Combat Hotbar", "Combat Visuals" };
 
     public GuiElementVrpgHub(
         ICoreClientAPI api,
@@ -63,7 +65,9 @@ public sealed class GuiElementVrpgHub : GuiElement
         Action<bool, int> updateHotbar,
         Action<int, string> equipSkill,
         Action<string[], string[]> applyTalentPlan,
-        Action openTalentEditor)
+        Action openTalentEditor,
+        VRPG.Client.Visuals.CombatVisualsConfig combatVisuals,
+        Action combatVisualsChanged)
         : base(api, bounds)
     {
         this.packet = packet;
@@ -75,6 +79,8 @@ public sealed class GuiElementVrpgHub : GuiElement
         this.equipSkill = equipSkill;
         this.applyTalentPlan = applyTalentPlan;
         this.openTalentEditor = openTalentEditor;
+        this.combatVisuals = combatVisuals;
+        this.combatVisualsChanged = combatVisualsChanged;
         this.packet.Options ??= new HubOptionsPacket();
         talentGraph.SetTree(talentTree);
         UpdateTalentGraphPlayerState();
@@ -455,6 +461,40 @@ public sealed class GuiElementVrpgHub : GuiElement
                 case ClickKind.OptionsCategory:
                     selectedOptionsCategory = GameMath.Clamp(region.Index, 0, OptionsCategories.Length - 1);
                     break;
+                case ClickKind.ToggleCombatText:
+                    combatVisuals.CombatTextEnabled = !combatVisuals.CombatTextEnabled;
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.ToggleDamageNumbers:
+                    combatVisuals.DamageNumbers = !combatVisuals.DamageNumbers;
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.ToggleEventWords:
+                    combatVisuals.EventWords = !combatVisuals.EventWords;
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.ToggleMergeNumbers:
+                    combatVisuals.MergeNumbers = !combatVisuals.MergeNumbers;
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.ToggleStatusAuras:
+                    combatVisuals.StatusAuras = !combatVisuals.StatusAuras;
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.ToggleDegradationPolicy:
+                    combatVisuals.DegradationPolicy = IsOwnFirst() ? "uniform" : "own-first";
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.CycleTelegraphOpacity:
+                    combatVisuals.TelegraphOpacity = combatVisuals.TelegraphOpacity > 0.75f ? 0.5f
+                        : combatVisuals.TelegraphOpacity > 0.35f ? 0.25f : 1f;
+                    combatVisualsChanged();
+                    break;
+                case ClickKind.CycleIntensity:
+                    combatVisuals.Intensity = combatVisuals.Intensity > 0.9f ? 0.75f
+                        : combatVisuals.Intensity > 0.6f ? 0.5f : 1f;
+                    combatVisualsChanged();
+                    break;
             }
 
             Redraw();
@@ -646,10 +686,62 @@ public sealed class GuiElementVrpgHub : GuiElement
             case 1:
                 DrawHotbarOptions(ctx, pageX, bodyY, pageW, bodyH);
                 break;
+            case 2:
+                DrawCombatVisualOptions(ctx, pageX, bodyY, pageW, bodyH);
+                break;
             default:
                 DrawNotificationOptions(ctx, pageX, bodyY, pageW, bodyH);
                 break;
         }
+    }
+
+    private void DrawCombatVisualOptions(Context ctx, double x, double y, double width, double height)
+    {
+        // Compact layout: 8 rows must fit inside a body as short as ~435 logical px
+        // (dialog min height 560) — see GuiDialogVRPGHub.Compose. A compact row height
+        // is passed to DrawOptionRow so this page alone uses a tighter rhythm than the
+        // other options pages, which only have 1-2 rows and keep the default 76px rows.
+        DrawText(ctx, "Combat Visuals", x, y + scaled(22.0), scaled(16.0), bold: true, ColorGold(), maxWidth: width);
+        DrawText(
+            ctx,
+            "Client-side visuals only. Gameplay-critical telegraphs and timing cues are never hidden.",
+            x, y + scaled(38.0), scaled(10.0), bold: false, ColorMuted(), maxWidth: width);
+
+        double rowY = y + scaled(50.0);
+        double rowH = scaled(42.0);
+        double step = scaled(46.0);
+        DrawOptionRow(ctx, x, rowY, width, "Combat text",
+            "Master switch for floating damage numbers and event words.",
+            combatVisuals.CombatTextEnabled, ClickKind.ToggleCombatText, rowH);
+        DrawOptionRow(ctx, x, rowY + step, width, "Damage numbers",
+            "Show merged damage and healing numbers over targets.",
+            combatVisuals.DamageNumbers, ClickKind.ToggleDamageNumbers, rowH);
+        DrawOptionRow(ctx, x, rowY + step * 2, width, "Event words",
+            "Show BREAK, COUNTER, and similar state words over targets.",
+            combatVisuals.EventWords, ClickKind.ToggleEventWords, rowH);
+        DrawOptionRow(ctx, x, rowY + step * 3, width, "Merge rapid hits",
+            "Combine rapid hits on one target into a single growing number.",
+            combatVisuals.MergeNumbers, ClickKind.ToggleMergeNumbers, rowH);
+        DrawOptionRow(ctx, x, rowY + step * 4, width, "Status auras",
+            "Loop subtle particles around enemies carrying statuses.",
+            combatVisuals.StatusAuras, ClickKind.ToggleStatusAuras, rowH);
+        DrawOptionRow(ctx, x, rowY + step * 5, width, "Protect my own effects: "
+            + (IsOwnFirst() ? "on" : "off (uniform)"),
+            "Under heavy load, degrade cosmetic and other players' effects before your own.",
+            IsOwnFirst(), ClickKind.ToggleDegradationPolicy, rowH);
+        DrawOptionRow(ctx, x, rowY + step * 6, width, "Telegraph opacity: "
+            + (int)Math.Round(combatVisuals.TelegraphOpacity * 100) + "%",
+            "Strength of ground discs and rings. Click to cycle 100 / 50 / 25%.",
+            combatVisuals.TelegraphOpacity > 0.3f, ClickKind.CycleTelegraphOpacity, rowH);
+        DrawOptionRow(ctx, x, rowY + step * 7, width, "Effect intensity: "
+            + (int)Math.Round(combatVisuals.Intensity * 100) + "%",
+            "Overall particle quantity. Click to cycle 100 / 75 / 50%.",
+            combatVisuals.Intensity > 0.6f, ClickKind.CycleIntensity, rowH);
+    }
+
+    private bool IsOwnFirst()
+    {
+        return !string.Equals(combatVisuals.DegradationPolicy, "uniform", StringComparison.OrdinalIgnoreCase);
     }
 
     private void DrawHotbarOptions(Context ctx, double x, double y, double width, double height)
@@ -776,20 +868,32 @@ public sealed class GuiElementVrpgHub : GuiElement
         string title,
         string description,
         bool enabled,
-        ClickKind clickKind)
+        ClickKind clickKind,
+        double? compactRowHeight = null)
     {
-        double rowH = scaled(76.0);
+        // compactRowHeight lets a page with more rows than the default 76px/row rhythm
+        // allows (e.g. Combat Visuals, which has 8 rows) shrink this row's footprint
+        // while keeping title, description and the toggle hit-region all aligned to
+        // the same drawn rectangle.
+        bool compact = compactRowHeight.HasValue;
+        double rowH = compactRowHeight ?? scaled(76.0);
         RoundedRectangle(ctx, x, y, width, rowH, scaled(3.0));
         ctx.SetSourceRGBA(0.08, 0.025, 0.01, 0.52);
         ctx.FillPreserve();
         ctx.SetSourceRGBA(VrpgGuiTheme.GoldR, VrpgGuiTheme.GoldG, VrpgGuiTheme.GoldB, 0.34);
         ctx.Stroke();
 
-        DrawText(ctx, title, x + scaled(14.0), y + scaled(27.0), scaled(15.0), bold: true, ColorText(), maxWidth: width - scaled(150.0));
-        DrawText(ctx, description, x + scaled(14.0), y + scaled(53.0), scaled(11.0), bold: false, ColorMuted(), maxWidth: width - scaled(150.0));
+        double titleSize = compact ? scaled(13.0) : scaled(15.0);
+        double titleY = y + (compact ? scaled(15.0) : scaled(27.0));
+        double descSize = compact ? scaled(10.0) : scaled(11.0);
+        double descY = y + (compact ? scaled(30.0) : scaled(53.0));
+        DrawText(ctx, title, x + scaled(14.0), titleY, titleSize, bold: true, ColorText(), maxWidth: width - scaled(150.0));
+        DrawText(ctx, description, x + scaled(14.0), descY, descSize, bold: false, ColorMuted(), maxWidth: width - scaled(150.0));
 
         double toggleW = scaled(92.0);
-        double toggleH = scaled(36.0);
+        double toggleH = compact ? scaled(28.0) : scaled(36.0);
+        double toggleFontSize = compact ? scaled(11.0) : scaled(13.0);
+        double toggleTextYOffset = compact ? scaled(19.0) : scaled(24.0);
         double toggleX = x + width - toggleW - scaled(14.0);
         double toggleY = y + (rowH - toggleH) / 2.0;
         RoundedRectangle(ctx, toggleX, toggleY, toggleW, toggleH, scaled(3.0));
@@ -797,7 +901,7 @@ public sealed class GuiElementVrpgHub : GuiElement
         ctx.FillPreserve();
         ctx.SetSourceRGBA(enabled ? VrpgGuiTheme.GreenR : VrpgGuiTheme.GoldR, enabled ? VrpgGuiTheme.GreenG : VrpgGuiTheme.GoldG, enabled ? VrpgGuiTheme.GreenB : VrpgGuiTheme.GoldB, 0.72);
         ctx.Stroke();
-        DrawText(ctx, enabled ? "ON" : "OFF", toggleX + toggleW / 2.0, toggleY + scaled(24.0), scaled(13.0), bold: true, enabled ? ColorGreen() : ColorMuted(), center: true, maxWidth: toggleW);
+        DrawText(ctx, enabled ? "ON" : "OFF", toggleX + toggleW / 2.0, toggleY + toggleTextYOffset, toggleFontSize, bold: true, enabled ? ColorGreen() : ColorMuted(), center: true, maxWidth: toggleW);
         clickRegions.Add(new ClickRegion(clickKind, 0, x, y, width, rowH));
     }
 
@@ -2216,7 +2320,15 @@ public sealed class GuiElementVrpgHub : GuiElement
         ToggleResourceNotifications,
         ToggleHotbarLock,
         DecreaseHotbarSlots,
-        IncreaseHotbarSlots
+        IncreaseHotbarSlots,
+        ToggleCombatText,
+        ToggleDamageNumbers,
+        ToggleEventWords,
+        ToggleMergeNumbers,
+        ToggleStatusAuras,
+        ToggleDegradationPolicy,
+        CycleTelegraphOpacity,
+        CycleIntensity
     }
 
     private sealed class ClickRegion
