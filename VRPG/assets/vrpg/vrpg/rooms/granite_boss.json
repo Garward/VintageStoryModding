@@ -1,0 +1,22 @@
+{
+  "code": "vrpg:granite_boss",
+  "name": "Granite Rift Heart",
+  "schematic": "vrpg:schematics/dungeons/granite/boss.json",
+  "themes": ["vrpg:granite_halls"],
+  "roles": ["boss"],
+  "weight": 100,
+  "footprint": { "widthCells": 1, "lengthCells": 1 },
+  "allowedRotations": [0, 90, 180, 270],
+  "completionWeight": 0,
+  "countsForBossUnlock": false,
+  "connectors": [
+    { "id": "south", "side": "south", "socket": "vrpg:standard", "offset": 16, "floorOffset": 1, "width": 6, "height": 5 }
+  ],
+  "zones": [
+    { "id": "boss", "kind": "boss", "min": [2, 1, 2], "max": [29, 12, 29], "encounterPool": "vrpg:granite_halls_boss", "requiredForCompletion": true }
+  ],
+  "anchors": [
+    { "id": "boss-center", "kind": "mob-spawn", "position": [16, 1, 16], "facing": "south", "tags": ["boss"] },
+    { "id": "boss-gate", "kind": "gate", "position": [16, 1, 30], "facing": "south", "tags": ["boss-gate"] }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "code": "vrpg:granite_halls_boss",
+  "name": "Granite Rift Heart",
+  "themes": ["vrpg:granite_halls"],
+  "variants": [
+    {
+      "id": "placeholder-heart",
+      "weight": 100,
+      "waves": [
+        {
+          "id": "boss",
+          "startMode": "immediate",
+          "delaySeconds": 0,
+          "spawns": [
+            { "creatureCode": "game:drifter-doubleheaded", "count": 1, "levelOffset": 3, "rarity": "boss", "anchorTags": ["boss"], "perAnchorCap": 1, "concurrentCap": 1, "minimumPlayerDistance": 8, "avoidPlayerLineOfSight": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

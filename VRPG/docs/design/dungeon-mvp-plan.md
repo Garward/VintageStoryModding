@@ -1,5 +1,13 @@
 # Dungeon MVP Plan
 
+> Implementation status — 2026-07-19: data contracts, fail-loud internal
+> validation, connector/footprint rotation geometry, immutable transformed
+> layouts, and deterministic connector-frontier backtracking are implemented.
+> The shipped four-piece Granite Halls metadata and encounter pools are covered
+> by asset parsing plus multi-seed generation tests. Schematic placement,
+> engine-owned asset/entity validation, Manifold hosting, encounter execution,
+> progress, and authoring commands remain.
+
 ## Purpose
 
 The dungeon MVP exists to make the RPG systems testable inside a repeatable

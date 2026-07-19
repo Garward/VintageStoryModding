@@ -1,6 +1,6 @@
 # Testable Version Live TODO
 
-Last reconciled with code and design: **2026-07-17**
+Last reconciled with code and design: **2026-07-19**
 
 This is the living implementation checklist for getting VRPG into players' hands. The initial list supplied during development is a set of immediate observations, **not** the scope boundary or a claim that those are the only remaining tasks. This checklist is audit-driven from the design documents, executable code, data assets, UI, persistence, networking, and playtest requirements, and it must expand whenever implementation or testing exposes another dependency.
 
@@ -393,6 +393,17 @@ These items are required for the high-level-design vertical slice, not the immed
 
 ### Rift Activity
 
+**Dungeon foundation status:** strongly typed theme, room, connector, zone,
+anchor, encounter, variant, wave, and spawn records now load through the VRPG
+registry. Startup validation rejects malformed topology data and broken internal
+references. The pure deterministic backtracking generator supports rotated 1x1
+and 1x2 footprints, bidirectional connector restrictions, occupied-cell bounds,
+branches, compatible loops, boss distance/gate rules, and transformed layout
+zones/anchors. The shipped four-piece Granite Halls metadata passes a 100-seed
+asset sweep, while the synthetic four-piece pool passes 2,000 seeds. Schematic
+existence/dimensions and creature-code resolution intentionally remain engine-
+integration checks for the placement/encounter phase.
+
 - [ ] Decide Rift Chart acquisition, upgrading, modifiers, consumption, and failure downgrade/refund.
 - [x] Audit Manifold 0.4.2 and choose it for dimension allocation, bounded
       pre-generation, transit, relighting, reconnect safety, and ephemeral
@@ -401,9 +412,12 @@ These items are required for the high-level-design vertical slice, not the immed
       companion host while keeping the RPG core independent.
 - [ ] Add ephemeral per-run dimensions, safe party entry/exit, reconnect, and
       teardown behavior.
-- [ ] Define and validate data-only themes, 32×16×32 room pieces, later 1×2
-      pieces, connectors, zones, spawn anchors, and encounter pools.
-- [ ] Implement the deterministic connector-frontier layout generator with
+- [ ] **Partial:** define and validate data-only themes, 32×16×32 room pieces,
+      later 1×2 pieces, connectors, zones, spawn anchors, and encounter pools.
+      Contracts, bounds, IDs, internal references, restrictions, spawn-anchor
+      capacity, and shipped JSON are validated; schematic dimensions/assets and
+      creature codes require the engine integration phase.
+- [x] Implement the deterministic connector-frontier layout generator with
       rotations, branches, loops, restrictions, boss-distance rules, and
       property tests using a four-piece room pool.
 - [ ] Load, rotate, bulk-paste, and relight vanilla schematic JSON after

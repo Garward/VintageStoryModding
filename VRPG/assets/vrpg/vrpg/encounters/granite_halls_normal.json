@@ -1,0 +1,29 @@
+{
+  "code": "vrpg:granite_halls_normal",
+  "name": "Granite Halls Patrols",
+  "themes": ["vrpg:granite_halls"],
+  "variants": [
+    {
+      "id": "pressure-patrol",
+      "weight": 100,
+      "waves": [
+        {
+          "id": "opening",
+          "startMode": "immediate",
+          "delaySeconds": 0,
+          "spawns": [
+            { "creatureCode": "game:drifter-normal", "count": 4, "levelOffset": 0, "rarity": "normal", "anchorTags": ["melee"], "perAnchorCap": 2, "concurrentCap": 8, "minimumPlayerDistance": 6, "avoidPlayerLineOfSight": true }
+          ]
+        },
+        {
+          "id": "reinforcement",
+          "startMode": "previous_clear",
+          "delaySeconds": 1.5,
+          "spawns": [
+            { "creatureCode": "game:drifter-deep", "count": 2, "levelOffset": 1, "rarity": "normal", "anchorTags": ["ranged"], "perAnchorCap": 1, "concurrentCap": 4, "minimumPlayerDistance": 7, "avoidPlayerLineOfSight": true }
+          ]
+        }
+      ]
+    }
+  ]
+}

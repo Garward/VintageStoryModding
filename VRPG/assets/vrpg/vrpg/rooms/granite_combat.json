@@ -1,0 +1,25 @@
+{
+  "code": "vrpg:granite_combat",
+  "name": "Rust-Worn Combat Hall",
+  "schematic": "vrpg:schematics/dungeons/granite/combat.json",
+  "themes": ["vrpg:granite_halls"],
+  "roles": ["normal", "combat"],
+  "weight": 100,
+  "footprint": { "widthCells": 1, "lengthCells": 1 },
+  "allowedRotations": [0, 90, 180, 270],
+  "completionWeight": 1,
+  "countsForBossUnlock": true,
+  "connectors": [
+    { "id": "north", "side": "north", "socket": "vrpg:standard", "offset": 16, "floorOffset": 1, "width": 6, "height": 5 },
+    { "id": "south", "side": "south", "socket": "vrpg:standard", "offset": 16, "floorOffset": 1, "width": 6, "height": 5 }
+  ],
+  "zones": [
+    { "id": "fight", "kind": "encounter", "min": [3, 1, 3], "max": [28, 12, 28], "encounterPool": "vrpg:granite_halls_normal", "requiredForCompletion": true }
+  ],
+  "anchors": [
+    { "id": "spawn-north", "kind": "mob-spawn", "position": [16, 1, 5], "facing": "south", "tags": ["melee", "north-lane"] },
+    { "id": "spawn-south", "kind": "mob-spawn", "position": [16, 1, 26], "facing": "north", "tags": ["melee", "south-lane"] },
+    { "id": "spawn-west", "kind": "mob-spawn", "position": [5, 1, 16], "facing": "east", "tags": ["ranged"] },
+    { "id": "spawn-east", "kind": "mob-spawn", "position": [26, 1, 16], "facing": "west", "tags": ["ranged"] }
+  ]
+}

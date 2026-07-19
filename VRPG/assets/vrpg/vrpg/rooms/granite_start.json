@@ -1,0 +1,21 @@
+{
+  "code": "vrpg:granite_start",
+  "name": "Granite Rift Threshold",
+  "schematic": "vrpg:schematics/dungeons/granite/start.json",
+  "themes": ["vrpg:granite_halls"],
+  "roles": ["start"],
+  "weight": 100,
+  "footprint": { "widthCells": 1, "lengthCells": 1 },
+  "allowedRotations": [0, 90, 180, 270],
+  "completionWeight": 0,
+  "countsForBossUnlock": false,
+  "connectors": [
+    { "id": "north", "side": "north", "socket": "vrpg:standard", "edgeCell": 0, "offset": 16, "floorOffset": 1, "width": 6, "height": 5 }
+  ],
+  "zones": [
+    { "id": "entry", "kind": "discovery", "min": [2, 1, 2], "max": [29, 12, 29] }
+  ],
+  "anchors": [
+    { "id": "party-start", "kind": "player-start", "position": [16, 1, 16], "facing": "north", "tags": ["party"] }
+  ]
+}
