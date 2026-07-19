@@ -37,7 +37,7 @@ namespace VintageKinematics.BlockEntities
             UpdateKineticState(triggerRebuild: false);
             if (Api?.Side == EnumAppSide.Server)
             {
-                RebuildChain();
+                RegisterDelayedCallback(_ => RebuildChain(), 50);
                 RegisterDelayedCallback(_ =>
                 {
                     Api?.ModLoader.GetModSystem<KineticNetworkManager>()?.OnPlaced(Pos);

@@ -30,6 +30,12 @@ namespace VintageKinematics.BlockEntities
             }
         }
 
+        public void RepairChainSoon()
+        {
+            if (Api?.Side != EnumAppSide.Server) return;
+            RegisterDelayedCallback(_ => RebuildChain(), 0);
+        }
+
         /// <summary>
         /// Walks backward to find the chain start, then forward to assign indices. Each segment
         /// writes its own state (controllerPos, index, chainLength, part). Side-effect: marks

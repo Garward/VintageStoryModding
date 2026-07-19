@@ -19,7 +19,7 @@
     "blockdesc-kineticclutch-*": "Toggleable shaft coupler. Right click to connect or split the shaft line.",
     "blockdesc-kineticreverser-*": "Toggleable inline reverser. Right click to switch between straight shaft and reversed output.",
     "blockdesc-kineticactivator-*": "Powered block activator. Takes rotation from the back and activates the block in front.",
-    "blockdesc-kineticsensor-*": "Event based kinetic logic sensor. Takes rotation from the back and triggers the VK activatable block in front when its selected condition turns true.",
+    "blockdesc-kineticsensor-*": "Event based kinetic logic sensor. Takes rotation from the back and triggers the VK activatable block in front when its selected condition matches its trigger timing.",
     "blockdesc-creativemotor-*": "Spins forever with no input. Creative use only.",
     "blockdesc-coalmotor-*": "Burns fuel to spin a connected network. Right click any side to fuel it, or feed it with a funnel.",
     "blockdesc-treadwheel-*": "Player powered kinetic source. Stand inside and move to drive it.",

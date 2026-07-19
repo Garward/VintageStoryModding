@@ -61,6 +61,7 @@ namespace VintageKinematics
             api.RegisterBlockBehaviorClass("CanonicalDrop", typeof(Blocks.BlockBehaviorCanonicalDrop));
             api.RegisterBlockBehaviorClass("RequireEmptyInventoryOnBreak", typeof(Blocks.BlockBehaviorRequireEmptyInventoryOnBreak));
             api.RegisterBlockBehaviorClass("RequireBoreRetractedOnBreak", typeof(Blocks.BlockBehaviorRequireBoreRetractedOnBreak));
+            api.RegisterBlockBehaviorClass("RequireStorageCapacityOnRemove", typeof(Blocks.BlockBehaviorRequireStorageCapacityOnRemove));
             api.RegisterBlockEntityClass("Kinetic", typeof(BlockEntities.BEKinetic));
             api.RegisterBlockEntityClass("HandCrank", typeof(BlockEntities.BEHandCrank));
             api.RegisterBlockEntityClass("KineticAnimated", typeof(BlockEntities.BEKineticAnimated));

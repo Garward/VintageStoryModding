@@ -90,6 +90,7 @@ namespace VintageKinematics.Blocks
         public override void OnNeighbourBlockChange(IWorldAccessor world, BlockPos pos, BlockPos neibpos)
         {
             base.OnNeighbourBlockChange(world, pos, neibpos);
+            if (EnsureBeltRunEntities(world, pos)) return;
             if (world.BlockAccessor.GetBlockEntity(pos) is BEBelt belt)
             {
                 belt.OnAxisNeighborChanged(neibpos);
@@ -98,6 +99,7 @@ namespace VintageKinematics.Blocks
 
         public override void OnEntityInside(IWorldAccessor world, Entity entity, BlockPos pos)
         {
+            if (EnsureBeltRunEntities(world, pos)) return;
             if (world.BlockAccessor.GetBlockEntity(pos) is BEBelt belt)
             {
                 belt.PushRiderInBlock(entity);
@@ -118,6 +120,8 @@ namespace VintageKinematics.Blocks
             }
 
             if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
+
+            if (EnsureBeltRunEntities(world, blockSel.Position)) return true;
 
             if (world.BlockAccessor.GetBlockEntity(blockSel.Position) is not BEBelt belt)
             {
@@ -180,6 +184,75 @@ namespace VintageKinematics.Blocks
             }
 
             return base.OnBlockInteractStart(world, byPlayer, blockSel);
+        }
+
+        public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
+        {
+            if (world?.BlockAccessor.GetBlockEntity(pos) is BEBelt)
+            {
+                base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
+                return;
+            }
+
+            if (world?.Side == EnumAppSide.Server && (byPlayer == null || byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative))
+            {
+                Item beltItem = world.GetItem(new AssetLocation("vintagekinematics", "belt"));
+                if (beltItem != null)
+                {
+                    world.SpawnItemEntity(new ItemStack(beltItem), pos.ToVec3d().Add(0.5, 0.5, 0.5));
+                }
+            }
+
+            world?.BlockAccessor.RemoveBlockEntity(pos);
+            world?.BlockAccessor.SetBlock(0, pos);
+        }
+
+        private static bool EnsureBeltRunEntities(IWorldAccessor world, BlockPos pos)
+        {
+            if (world?.Side != EnumAppSide.Server || pos == null) return false;
+            Block block = world.BlockAccessor.GetBlock(pos);
+            if (block is not BlockBelt) return false;
+
+            string direction = block.Variant?["direction"];
+            if (string.IsNullOrEmpty(direction)) return false;
+
+            Vec3i fwd = HeadOffset(direction);
+            BlockPos start = pos.Copy();
+            int safety = BEBelt.MaxChainLength;
+            while (safety-- > 0)
+            {
+                BlockPos behind = start.AddCopy(-fwd.X, 0, -fwd.Z);
+                if (!IsSameDirectionBelt(world, behind, direction)) break;
+                start = behind;
+            }
+
+            bool repaired = false;
+            BlockPos cursor = start.Copy();
+            safety = BEBelt.MaxChainLength;
+            while (safety-- > 0 && IsSameDirectionBelt(world, cursor, direction))
+            {
+                if (world.BlockAccessor.GetBlockEntity(cursor) is not BEBelt belt || belt.Direction != direction)
+                {
+                    world.BlockAccessor.RemoveBlockEntity(cursor);
+                    world.BlockAccessor.SpawnBlockEntity("Belt", cursor);
+                    repaired = true;
+                }
+                world.BlockAccessor.MarkBlockDirty(cursor);
+                cursor = cursor.AddCopy(fwd.X, 0, fwd.Z);
+            }
+
+            if (repaired && world.BlockAccessor.GetBlockEntity(start) is BEBelt startBelt)
+            {
+                startBelt.RepairChainSoon();
+            }
+
+            return repaired;
+        }
+
+        private static bool IsSameDirectionBelt(IWorldAccessor world, BlockPos pos, string direction)
+        {
+            return world?.BlockAccessor.GetBlock(pos) is BlockBelt block
+                && block.Variant?["direction"] == direction;
         }
     }
 }

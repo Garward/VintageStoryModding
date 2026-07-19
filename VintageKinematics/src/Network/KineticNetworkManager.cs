@@ -315,7 +315,26 @@ namespace VintageKinematics.Network
                 networks.Remove(id);
                 foreach (var pos in removed.Nodes.Keys) posToNetwork.Remove(pos);
             }
+            ClearNetworkState(removed);
             NetworkRemoved?.Invoke(removed);
+        }
+
+        private void ClearNetworkState(KineticNetwork net)
+        {
+            foreach (BlockPos pos in net.Nodes.Keys)
+            {
+                BlockEntity be = api.World.BlockAccessor.GetBlockEntity(pos);
+                Api.BEBehaviorKinetic beh = be?.GetBehavior<Api.BEBehaviorKinetic>();
+                if (beh == null) continue;
+
+                beh.ClearNetworkState();
+                be.MarkDirty(true);
+
+                if (be is IKineticConsumer cons)
+                {
+                    cons.OnNetworkRPMChanged(0f, null);
+                }
+            }
         }
 
         internal void NotifyConflictChanged(KineticNetwork net)

@@ -25,6 +25,13 @@ namespace VintageKinematics.Blocks
             if (face == EnumAxis.X) return "z"; // ports east/west + up/down
             if (face == EnumAxis.Z) return "x"; // ports north/south + up/down
 
+            if (byPlayer != null)
+            {
+                BlockFacing facing = BlockFacing.HorizontalFromYaw(byPlayer.Entity.Pos.Yaw);
+                if (facing == BlockFacing.EAST || facing == BlockFacing.WEST) return "z";
+                if (facing == BlockFacing.NORTH || facing == BlockFacing.SOUTH) return "x";
+            }
+
             return heldAxis == "z" ? "z" : "x";
         }
 

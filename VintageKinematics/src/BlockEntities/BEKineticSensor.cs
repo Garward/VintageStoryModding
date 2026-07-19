@@ -19,6 +19,7 @@ namespace VintageKinematics.BlockEntities
         private bool lastTriggerWorked;
 
         public KineticSensorMode Mode { get; private set; } = KineticSensorMode.Overstressed;
+        public KineticSensorTriggerMode TriggerMode { get; private set; } = KineticSensorTriggerMode.RisingEdge;
 
         public override void Initialize(ICoreAPI api)
         {
@@ -44,9 +45,12 @@ namespace VintageKinematics.BlockEntities
         {
             if (Api?.Side != EnumAppSide.Server) return;
 
-            Mode = Mode == KineticSensorMode.Overstressed
-                ? KineticSensorMode.StorageFull
-                : KineticSensorMode.Overstressed;
+            Mode = Mode switch
+            {
+                KineticSensorMode.Overstressed => KineticSensorMode.StorageFull,
+                KineticSensorMode.StorageFull => KineticSensorMode.Powered,
+                _ => KineticSensorMode.Overstressed
+            };
 
             if (Mode == KineticSensorMode.StorageFull)
             {
@@ -57,6 +61,23 @@ namespace VintageKinematics.BlockEntities
                 ClearMonitoredInventories();
                 SetActive(EvaluateCondition(), trigger: false);
             }
+
+            Api.World.PlaySoundAt(ToggleSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, byPlayer, randomizePitch: true, range: 12, volume: 0.45f);
+            MarkDirty(true);
+        }
+
+        public void CycleTriggerMode(IPlayer byPlayer)
+        {
+            if (Api?.Side != EnumAppSide.Server) return;
+
+            TriggerMode = TriggerMode switch
+            {
+                KineticSensorTriggerMode.RisingEdge => KineticSensorTriggerMode.FallingEdge,
+                KineticSensorTriggerMode.FallingEdge => KineticSensorTriggerMode.AnyEdge,
+                KineticSensorTriggerMode.AnyEdge => KineticSensorTriggerMode.WhileTrue,
+                KineticSensorTriggerMode.WhileTrue => KineticSensorTriggerMode.WhileFalse,
+                _ => KineticSensorTriggerMode.RisingEdge
+            };
 
             Api.World.PlaySoundAt(ToggleSound, Pos.X + 0.5, Pos.Y + 0.5, Pos.Z + 0.5, byPlayer, randomizePitch: true, range: 12, volume: 0.45f);
             MarkDirty(true);
@@ -96,7 +117,7 @@ namespace VintageKinematics.BlockEntities
         private void OnNetworkChanged(KineticNetwork net)
         {
             if (net == null || !net.Nodes.ContainsKey(Pos)) return;
-            if (Mode == KineticSensorMode.Overstressed)
+            if (Mode == KineticSensorMode.Overstressed || Mode == KineticSensorMode.Powered)
             {
                 SetActive(EvaluateCondition(), trigger: true);
             }
@@ -108,7 +129,7 @@ namespace VintageKinematics.BlockEntities
             Api.Event.RegisterCallback(_ =>
             {
                 if (Api?.World?.BlockAccessor.GetBlockEntity(Pos) != this) return;
-                SetActive(EvaluateCondition(), trigger: false);
+                SetActive(EvaluateCondition(), trigger: Mode == KineticSensorMode.Powered);
             }, 0);
         }
 
@@ -120,6 +141,14 @@ namespace VintageKinematics.BlockEntities
             }
 
             BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
+            if (Mode == KineticSensorMode.Powered)
+            {
+                return kinetic != null
+                    && MathF.Abs(kinetic.ActualRPM) >= KineticNetwork.MinAbsRPM
+                    && !kinetic.IsConflicted
+                    && !(kinetic.EffectiveNetwork?.IsOverstressed ?? false);
+            }
+
             return KineticConditionEvaluator.Evaluate(
                 kinetic?.EffectiveNetwork,
                 new KineticConditionSettings(KineticConditionType.Overstressed));
@@ -170,12 +199,31 @@ namespace VintageKinematics.BlockEntities
 
         private void SetActive(bool next, bool trigger)
         {
-            if (next == active) return;
+            bool previous = active;
+            bool changed = next != previous;
+            bool rising = next && !previous;
+            bool falling = !next && previous;
 
-            bool rising = next && !active;
             active = next;
-            if (trigger && rising) TryTriggerFrontTarget();
-            MarkDirty(true);
+            if (trigger && ShouldTrigger(next, changed, rising, falling))
+            {
+                TryTriggerFrontTarget();
+            }
+
+            if (changed) MarkDirty(true);
+        }
+
+        private bool ShouldTrigger(bool conditionActive, bool changed, bool rising, bool falling)
+        {
+            return TriggerMode switch
+            {
+                KineticSensorTriggerMode.RisingEdge => rising,
+                KineticSensorTriggerMode.FallingEdge => falling,
+                KineticSensorTriggerMode.AnyEdge => changed,
+                KineticSensorTriggerMode.WhileTrue => conditionActive,
+                KineticSensorTriggerMode.WhileFalse => !conditionActive,
+                _ => rising
+            };
         }
 
         private bool TryTriggerFrontTarget()
@@ -239,6 +287,7 @@ namespace VintageKinematics.BlockEntities
         {
             base.ToTreeAttributes(tree);
             tree.SetInt("sensorMode", (int)Mode);
+            tree.SetInt("sensorTriggerMode", (int)TriggerMode);
             tree.SetBool("sensorActive", active);
             tree.SetBool("lastTriggerWorked", lastTriggerWorked);
         }
@@ -247,6 +296,7 @@ namespace VintageKinematics.BlockEntities
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
             Mode = (KineticSensorMode)tree.GetInt("sensorMode", (int)KineticSensorMode.Overstressed);
+            TriggerMode = (KineticSensorTriggerMode)tree.GetInt("sensorTriggerMode", (int)KineticSensorTriggerMode.RisingEdge);
             active = tree.GetBool("sensorActive", false);
             lastTriggerWorked = tree.GetBool("lastTriggerWorked", false);
         }
@@ -295,6 +345,7 @@ namespace VintageKinematics.BlockEntities
         {
             base.GetBlockInfo(forPlayer, dsc);
             dsc.AppendLine($"Sensor mode: {ModeName()}");
+            dsc.AppendLine($"Trigger mode: {TriggerModeName()}");
             dsc.AppendLine(active ? "Sensor: active" : "Sensor: inactive");
             if (Mode == KineticSensorMode.StorageFull)
             {
@@ -305,7 +356,25 @@ namespace VintageKinematics.BlockEntities
 
         private string ModeName()
         {
-            return Mode == KineticSensorMode.StorageFull ? "storage full" : "overstressed network";
+            return Mode switch
+            {
+                KineticSensorMode.StorageFull => "storage full",
+                KineticSensorMode.Powered => "powered",
+                _ => "overstressed network"
+            };
+        }
+
+        private string TriggerModeName()
+        {
+            return TriggerMode switch
+            {
+                KineticSensorTriggerMode.RisingEdge => "turns true",
+                KineticSensorTriggerMode.FallingEdge => "turns false",
+                KineticSensorTriggerMode.AnyEdge => "changes",
+                KineticSensorTriggerMode.WhileTrue => "while true",
+                KineticSensorTriggerMode.WhileFalse => "while false",
+                _ => "turns true"
+            };
         }
     }
 }

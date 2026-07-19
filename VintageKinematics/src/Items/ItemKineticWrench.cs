@@ -37,9 +37,9 @@ namespace VintageKinematics.Items
 
             if (api.Side != EnumAppSide.Server) return;
 
+            if (player?.Entity?.Controls?.Sneak == true && TryRemoveCasing(player, blockSel)) return;
             if (player?.Entity?.Controls?.Sneak == true && TryPickupKineticBlock(player, blockSel)) return;
             if (TryHandleBeltInteraction(player, blockSel)) return;
-            if (TryRemoveCasing(player, blockSel)) return;
 
             if (TryRotateBlock(player, blockSel))
             {
@@ -132,7 +132,10 @@ namespace VintageKinematics.Items
 
             string path = block.Code.Path ?? "";
             return !path.StartsWith("belt-")
-                && !path.StartsWith("kineticboreshaft-");
+                && !path.StartsWith("kineticboreshaft-")
+                && !path.StartsWith("encasedshaft-")
+                && !path.StartsWith("encasedcogwheel-")
+                && !path.StartsWith("encasedlargecogwheel-");
         }
 
         private static IInventory InventoryOf(BlockEntity be)

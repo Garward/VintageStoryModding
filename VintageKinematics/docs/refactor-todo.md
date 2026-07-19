@@ -2,6 +2,8 @@
 
 Goal: keep moving VK machines toward reusable public API primitives, with machine-specific code limited to actual unique behavior.
 
+Future platform plan: [`kinetic-storage-plan.md`](kinetic-storage-plan.md) outlines the proposed VK-native indexed warehouse/storage system, including multiblock capacity, automation, and data-loss safety requirements.
+
 ## 1. JSON Machine Platform
 
 - [x] Add a public JSON-defined kinetic processor.

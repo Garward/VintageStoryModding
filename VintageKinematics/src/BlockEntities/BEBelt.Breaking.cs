@@ -21,6 +21,7 @@ namespace VintageKinematics.BlockEntities
             base.OnBlockRemoved();
             if (Api?.Side != EnumAppSide.Server) return;
             if (Direction == null) return;
+            if (Api.World.BlockAccessor.GetBlock(Pos) is BlockBelt) return;
 
             DumpAllItems();
 

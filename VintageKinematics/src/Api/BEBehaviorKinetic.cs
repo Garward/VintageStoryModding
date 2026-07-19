@@ -110,6 +110,22 @@ namespace VintageKinematics.Api
 
         internal void RaiseRPMChanged(float newRPM) => OnRPMChanged?.Invoke(newRPM);
 
+        internal void ClearNetworkState()
+        {
+            bool rpmChanged = MathF.Abs(CurrentRPM) > 0.0001f;
+            NetworkId = 0;
+            Ratio = 1f;
+            Direction = 1;
+            PhaseOffset = 0f;
+            CurrentRPM = 0f;
+            NetworkConflicted = false;
+            NetStressTotal = 0f;
+            NetStressCapacity = 0f;
+            NetOverstressed = false;
+            NetNodeCount = 0;
+            if (rpmChanged) RaiseRPMChanged(0f);
+        }
+
         /// <summary>Standard BlockEntityBehavior constructor.</summary>
         public BEBehaviorKinetic(BlockEntity blockentity) : base(blockentity) { }
 
@@ -252,6 +268,16 @@ namespace VintageKinematics.Api
                 mgr?.OnRemoved(Pos);
             }
             base.OnBlockBroken(byPlayer);
+        }
+
+        public override void OnBlockRemoved()
+        {
+            if (Api?.Side == EnumAppSide.Server)
+            {
+                var mgr = Api.ModLoader.GetModSystem<KineticNetworkManager>();
+                mgr?.OnRemoved(Pos);
+            }
+            base.OnBlockRemoved();
         }
 
         public override void OnBlockUnloaded()

@@ -21,6 +21,12 @@ namespace VintageKinematics.Blocks
                 {
                     ActionLangCode = "vintagekinematics:blockhelp-kineticsensor-mode",
                     MouseButton = EnumMouseButton.Right
+                },
+                new WorldInteraction
+                {
+                    ActionLangCode = "vintagekinematics:blockhelp-kineticsensor-trigger",
+                    MouseButton = EnumMouseButton.Right,
+                    HotKeyCode = "sneak"
                 }
             };
         }
@@ -35,7 +41,14 @@ namespace VintageKinematics.Blocks
             if (blockSel == null) return false;
             if (KineticInteractionHelper.ShouldDeferToHeldWrench(byPlayer)) return false;
             if (world.BlockAccessor.GetBlockEntity(blockSel.Position) is not BEKineticSensor sensor) return false;
-            sensor.CycleMode(byPlayer);
+            if (byPlayer?.Entity?.Controls?.Sneak == true || byPlayer?.Entity?.Controls?.ShiftKey == true)
+            {
+                sensor.CycleTriggerMode(byPlayer);
+            }
+            else
+            {
+                sensor.CycleMode(byPlayer);
+            }
             return true;
         }
 

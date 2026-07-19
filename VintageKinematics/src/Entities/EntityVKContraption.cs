@@ -48,6 +48,10 @@ namespace VintageKinematics.Entities
         private const double RestoreRecentSupportBelowTolerance = 4.0;
         private const double RestoreRecentSupportHorizontalSkin = 0.35;
         private const long RestoreRecentSupportMs = 2500;
+        private const long RiderSupportGraceMs = 350;
+        private const double RiderSupportHorizontalSkin = 0.15;
+        private const double RiderAnchorHorizontalTolerance = 0.75;
+        private const double RiderAnchorVerticalTolerance = 0.03125;
 
         public override bool IsInteractable => true;
         public override bool ApplyGravity => false;
@@ -66,6 +70,7 @@ namespace VintageKinematics.Entities
         private readonly Dictionary<long, Vec3d> lastSupportContraptionPositions = new Dictionary<long, Vec3d>();
         private readonly Dictionary<long, Vec3d> recentSupportContraptionPositions = new Dictionary<long, Vec3d>();
         private readonly Dictionary<long, long> recentSupportMs = new Dictionary<long, long>();
+        private readonly Dictionary<long, RiderSupportState> riderSupportStates = new Dictionary<long, RiderSupportState>();
         private readonly Dictionary<long, Entity> hookedEntities = new Dictionary<long, Entity>();
         private readonly Dictionary<long, Action> afterPhysicsHooks = new Dictionary<long, Action>();
         private readonly HashSet<long> entitiesSeenThisTick = new HashSet<long>();
@@ -82,6 +87,12 @@ namespace VintageKinematics.Entities
         private bool snapshotRestored;
 
         public bool SnapshotRestored => snapshotRestored;
+
+        private sealed class RiderSupportState
+        {
+            public Vec3d LocalEntityPos;
+            public long LastSupportMs;
+        }
 
         public void Configure(BlockPos controllerPos, int capturedBlockCount)
         {
@@ -376,6 +387,7 @@ namespace VintageKinematics.Entities
             lastEntityPositions.Remove(entityId);
             lastCollisionDebugMs.Remove(entityId);
             lastSupportContraptionPositions.Remove(entityId);
+            riderSupportStates.Remove(entityId);
         }
 
         private void RemoveAllAfterPhysicsHooks()
@@ -1158,6 +1170,13 @@ namespace VintageKinematics.Entities
                 AddTrackedMovementCarriedEntity(World.GetEntityById(entityId), entities, entityIds);
             }
 
+            CleanupExpiredRiderSupportStates();
+            List<long> riderEntityIds = new List<long>(riderSupportStates.Keys);
+            for (int i = 0; i < riderEntityIds.Count; i++)
+            {
+                AddRecentRiderMovementCarriedEntity(World.GetEntityById(riderEntityIds[i]), entities, entityIds);
+            }
+
             return entities;
         }
 
@@ -1178,6 +1197,16 @@ namespace VintageKinematics.Entities
             entities.Add(entity);
         }
 
+        private void AddRecentRiderMovementCarriedEntity(Entity entity, List<Entity> entities, HashSet<long> entityIds)
+        {
+            if (!ShouldCollideWith(entity)) return;
+            if (!IsRecentRiderSupport(entity.EntityId)) return;
+            if (entity.SidedPos.Motion != null && entity.SidedPos.Motion.Y > 0.01) return;
+            if (!entityIds.Add(entity.EntityId)) return;
+
+            entities.Add(entity);
+        }
+
         private void CarryEntitiesByMovement(List<Entity> carriedEntities, double dx, double dy, double dz)
         {
             if (carriedEntities == null || carriedEntities.Count == 0) return;
@@ -1188,9 +1217,7 @@ namespace VintageKinematics.Entities
                 Entity entity = carriedEntities[i];
                 if (!ShouldCollideWith(entity)) continue;
 
-                entity.SidedPos.X += dx;
-                entity.SidedPos.Y += dy;
-                entity.SidedPos.Z += dz;
+                MoveCarriedEntity(entity, dx, dy, dz);
 
                 SnapEntityToRestoredTop(entity, movedBoxes, RestoreMovingSupportBelowTolerance, RestoreMovingSupportAboveTolerance);
 
@@ -1203,6 +1230,85 @@ namespace VintageKinematics.Entities
                 recentSupportContraptionPositions[entity.EntityId] = SidedPos.XYZ.Clone();
                 recentSupportMs[entity.EntityId] = World.ElapsedMilliseconds;
                 lastEntityPositions[entity.EntityId] = entity.SidedPos.XYZ.Clone();
+                RecordRiderSupport(entity);
+            }
+        }
+
+        private void MoveCarriedEntity(Entity entity, double dx, double dy, double dz)
+        {
+            entity.SidedPos.X += dx;
+            entity.SidedPos.Y += dy;
+            entity.SidedPos.Z += dz;
+
+            TrySnapRiderToLocalSupportAnchor(entity);
+        }
+
+        private bool TrySnapRiderToLocalSupportAnchor(Entity entity)
+        {
+            if (entity == null || !IsRecentRiderSupport(entity.EntityId)) return false;
+            if (entity.SidedPos.Motion != null && entity.SidedPos.Motion.Y > 0.01) return false;
+            if (!riderSupportStates.TryGetValue(entity.EntityId, out RiderSupportState state) || state?.LocalEntityPos == null) return false;
+
+            double targetX = SidedPos.X + state.LocalEntityPos.X;
+            double targetY = SidedPos.InternalY + state.LocalEntityPos.Y;
+            double targetZ = SidedPos.Z + state.LocalEntityPos.Z;
+            bool closeHorizontally = Math.Abs(entity.SidedPos.X - targetX) <= RiderAnchorHorizontalTolerance
+                && Math.Abs(entity.SidedPos.Z - targetZ) <= RiderAnchorHorizontalTolerance;
+            if (!closeHorizontally) return false;
+
+            double verticalDelta = targetY - entity.SidedPos.Y;
+            if (Math.Abs(verticalDelta) < RiderAnchorVerticalTolerance) return false;
+
+            entity.SidedPos.Y = targetY;
+            if (entity.SidedPos.Motion != null && entity.SidedPos.Motion.Y < 0)
+            {
+                entity.SidedPos.Motion.Y = 0;
+            }
+            entity.CollidedVertically = true;
+            entity.OnGround = true;
+            entity.PositionBeforeFalling.Set(entity.SidedPos.X, entity.SidedPos.InternalY, entity.SidedPos.Z);
+            return true;
+        }
+
+        private void RecordRiderSupport(Entity entity)
+        {
+            if (entity == null || World == null) return;
+
+            riderSupportStates[entity.EntityId] = new RiderSupportState
+            {
+                LocalEntityPos = new Vec3d(
+                    entity.SidedPos.X - SidedPos.X,
+                    entity.SidedPos.InternalY - SidedPos.InternalY,
+                    entity.SidedPos.Z - SidedPos.Z),
+                LastSupportMs = World.ElapsedMilliseconds
+            };
+        }
+
+        private bool IsRecentRiderSupport(long entityId)
+        {
+            return World != null
+                && riderSupportStates.TryGetValue(entityId, out RiderSupportState state)
+                && state != null
+                && World.ElapsedMilliseconds - state.LastSupportMs <= RiderSupportGraceMs;
+        }
+
+        private void CleanupExpiredRiderSupportStates()
+        {
+            if (World == null || riderSupportStates.Count == 0) return;
+
+            long now = World.ElapsedMilliseconds;
+            List<long> staleIds = null;
+            foreach (KeyValuePair<long, RiderSupportState> pair in riderSupportStates)
+            {
+                if (pair.Value != null && now - pair.Value.LastSupportMs <= RiderSupportGraceMs) continue;
+                staleIds ??= new List<long>();
+                staleIds.Add(pair.Key);
+            }
+
+            if (staleIds == null) return;
+            for (int i = 0; i < staleIds.Count; i++)
+            {
+                riderSupportStates.Remove(staleIds[i]);
             }
         }
 
@@ -1847,6 +1953,10 @@ namespace VintageKinematics.Entities
             Vec3d startMotion = entity.SidedPos.Motion?.Clone();
 
             bool supported = TryApplyTopSurfaceSupport(entity, entityBox, collisionBoxes, ref debug);
+            if (!supported && IsRecentRiderSupport(entity.EntityId))
+            {
+                supported = TryApplyRecentTopSurfaceSupport(entity, entityBox, collisionBoxes, ref debug);
+            }
             if (supported)
             {
                 entityBox = GetWorldCollisionBox(entity);
@@ -1892,6 +2002,7 @@ namespace VintageKinematics.Entities
                 lastSupportContraptionPositions[entity.EntityId] = SidedPos.XYZ.Clone();
                 recentSupportContraptionPositions[entity.EntityId] = SidedPos.XYZ.Clone();
                 recentSupportMs[entity.EntityId] = World.ElapsedMilliseconds;
+                RecordRiderSupport(entity);
             }
             else
             {
@@ -1908,6 +2019,7 @@ namespace VintageKinematics.Entities
             if (entity.SidedPos.Motion != null && entity.SidedPos.Motion.Y > 0.01)
             {
                 lastSupportContraptionPositions.Remove(entity.EntityId);
+                riderSupportStates.Remove(entity.EntityId);
                 return false;
             }
 
@@ -2031,6 +2143,50 @@ namespace VintageKinematics.Entities
             debug.SupportCorrection = correction >= TopSupportSnapThreshold ? correction : 0;
             debug.SupportTopY = supportBox.Y2;
             if (correction >= TopSupportSnapThreshold)
+            {
+                targetPos.Y += correction;
+            }
+
+            if (targetPos.Motion != null && targetPos.Motion.Y < 0)
+            {
+                targetPos.Motion.Y = 0;
+            }
+
+            entity.CollidedVertically = true;
+            entity.OnGround = true;
+            entity.PositionBeforeFalling.Set(targetPos.X, targetPos.InternalY, targetPos.Z);
+            return true;
+        }
+
+        private static bool TryApplyRecentTopSurfaceSupport(Entity entity, Cuboidd entityBox, Cuboidd[] collisionBoxes, ref CollisionDebugInfo debug)
+        {
+            if (entity.SidedPos.Motion != null && entity.SidedPos.Motion.Y > 0.01) return false;
+
+            Cuboidd supportBox = null;
+            double bestDelta = double.MaxValue;
+            for (int i = 0; i < collisionBoxes.Length; i++)
+            {
+                Cuboidd box = collisionBoxes[i];
+                if (!OverlapsXZ(entityBox, box, RiderSupportHorizontalSkin)) continue;
+
+                double feetDelta = entityBox.Y1 - box.Y2;
+                if (feetDelta < -RestoreMovingSupportBelowTolerance || feetDelta > RestoreMovingSupportAboveTolerance) continue;
+
+                double absDelta = Math.Abs(feetDelta);
+                if (absDelta >= bestDelta) continue;
+
+                bestDelta = absDelta;
+                supportBox = box;
+            }
+
+            if (supportBox == null) return false;
+
+            EntityPos targetPos = entity.SidedPos;
+            double correction = supportBox.Y2 - entityBox.Y1;
+            debug.SupportFeetDelta = entityBox.Y1 - supportBox.Y2;
+            debug.SupportCorrection = Math.Abs(correction) >= TopSupportSnapThreshold ? correction : 0;
+            debug.SupportTopY = supportBox.Y2;
+            if (Math.Abs(correction) >= TopSupportSnapThreshold)
             {
                 targetPos.Y += correction;
             }

@@ -66,6 +66,19 @@ namespace VintageKinematics.BlockEntities
             }
 
             Entity linked = GetLinkedEntity();
+            if (linked is EntityVKContraption contraption)
+            {
+                if (!contraption.TryRestoreToWorld(byPlayer, overwrite: false))
+                {
+                    Notify(byPlayer, "Contraption cannot disassemble: target space is blocked.");
+                    return true;
+                }
+
+                linkedEntityId = 0;
+                assembled = false;
+                MarkDirty(true);
+                return true;
+            }
             if (linked != null) return true;
 
             TryAssemble(byPlayer, notify: true);
@@ -422,13 +435,19 @@ namespace VintageKinematics.BlockEntities
 
                 Entity linked = GetLinkedEntity();
                 SyncSnapshotFromEntity(linked);
+                bool restored = !assembled;
                 if (assembled)
                 {
-                    RestoreSnapshotBlocks(false, linked as EntityVKContraption);
-                    assembled = false;
+                    restored = linked is EntityVKContraption contraption
+                        ? contraption.TryRestoreToWorld(null, overwrite: false)
+                        : TryRestoreSnapshotBlocks(false, linked as EntityVKContraption);
+                    assembled = !restored;
                 }
-                linked?.Die(EnumDespawnReason.Removed);
-                linkedEntityId = 0;
+                if (restored)
+                {
+                    if (linked is not EntityVKContraption) linked?.Die(EnumDespawnReason.Removed);
+                    linkedEntityId = 0;
+                }
             }
             base.OnBlockRemoved();
         }
@@ -624,12 +643,17 @@ namespace VintageKinematics.BlockEntities
         {
             SyncSnapshotFromEntity(linked);
 
+            bool restored = !assembled;
             if (assembled)
             {
-                RestoreSnapshotBlocks(false, linked as EntityVKContraption);
+                restored = linked is EntityVKContraption contraption
+                    ? contraption.TryRestoreToWorld(null, overwrite: false)
+                    : TryRestoreSnapshotBlocks(false, linked as EntityVKContraption);
             }
 
-            linked?.Die(EnumDespawnReason.Removed);
+            if (!restored) return;
+
+            if (linked is not EntityVKContraption) linked?.Die(EnumDespawnReason.Removed);
             linkedEntityId = 0;
             assembled = false;
         }
@@ -1154,12 +1178,14 @@ namespace VintageKinematics.BlockEntities
             }
         }
 
-        private void RestoreSnapshotBlocks(bool overwrite, EntityVKContraption contraption = null)
+        private bool TryRestoreSnapshotBlocks(bool overwrite, EntityVKContraption contraption = null)
         {
-            if (snapshotOffsets == null || snapshotBlockCodes == null) return;
+            if (snapshotOffsets == null || snapshotBlockCodes == null) return false;
 
             int count = Math.Min(snapshotOffsets.Length, snapshotBlockCodes.Length);
             snapshotBlockEntityTrees = NormalizeBlockEntityTrees(snapshotBlockEntityTrees, count);
+            BlockPos[] restorePositions = new BlockPos[count];
+            HashSet<string> occupiedTargets = new HashSet<string>();
             for (int i = 0; i < count; i++)
             {
                 if (string.IsNullOrEmpty(snapshotBlockCodes[i])) continue;
@@ -1168,13 +1194,34 @@ namespace VintageKinematics.BlockEntities
                 if (block == null || block.Id == 0) continue;
 
                 BlockPos blockPos = WorldPosFromOffset(snapshotOffsets[i], contraption);
-                Block existing = Api.World.BlockAccessor.GetBlock(blockPos);
-                if (!overwrite && existing != null && existing.Id != 0) continue;
+                restorePositions[i] = blockPos;
+                if (blockPos == null) continue;
+                if (!occupiedTargets.Add(WorldPositionKey(blockPos))) return false;
 
+                Block existing = Api.World.BlockAccessor.GetBlock(blockPos);
+                if (!overwrite && existing != null && existing.Id != 0) return false;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (string.IsNullOrEmpty(snapshotBlockCodes[i])) continue;
+
+                Block block = Api.World.GetBlock(new AssetLocation(snapshotBlockCodes[i]));
+                if (block == null || block.Id == 0) continue;
+
+                BlockPos blockPos = restorePositions[i];
+                if (blockPos == null) continue;
                 Api.World.BlockAccessor.SetBlock(block.Id, blockPos);
                 RestoreBlockEntityTree(blockPos, snapshotBlockEntityTrees[i]);
                 Api.World.BlockAccessor.MarkBlockDirty(blockPos);
             }
+
+            return true;
+        }
+
+        private static string WorldPositionKey(BlockPos pos)
+        {
+            return pos.dimension + ":" + pos.X + "," + pos.InternalY + "," + pos.Z;
         }
 
         private void RestoreBlockEntityTree(BlockPos blockPos, TreeAttribute savedTree)

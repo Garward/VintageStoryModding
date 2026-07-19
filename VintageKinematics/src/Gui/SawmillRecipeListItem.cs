@@ -177,24 +177,47 @@ namespace VintageKinematics.Gui
 
         private static string OutputLabel(JsonItemStack output)
         {
-            string label = StackLabel(output?.ResolvedItemstack, output?.Code?.ToString());
+            string label = OutputStackLabel(output?.ResolvedItemstack, output?.Code?.ToString());
             int quantity = Math.Max(1, output?.StackSize ?? 1);
             return quantity == 1 ? label : quantity + "x " + label;
         }
 
         private static string IngredientLabel(JsonItemStack ingredient)
         {
-            string label = StackLabel(ingredient?.ResolvedItemstack, ingredient?.Code?.ToString());
+            string label = IngredientStackLabel(ingredient?.ResolvedItemstack, ingredient?.Code?.ToString());
             int quantity = Math.Max(1, ingredient?.StackSize ?? 1);
             return quantity == 1 ? label : quantity + "x " + label;
         }
 
-        private static string StackLabel(ItemStack stack, string fallback)
+        private static string OutputStackLabel(ItemStack stack, string fallback)
         {
             if (stack != null) return stack.GetName();
             if (fallback != null && fallback.Contains("plank-*")) return Lang.Get("vintagekinematics:kineticsawmill-matching-planks");
             if (fallback != null && fallback.Contains('*')) return Lang.Get("vintagekinematics:kineticsawmill-matching-output");
             return string.IsNullOrEmpty(fallback) ? "unknown" : fallback;
+        }
+
+        private static string IngredientStackLabel(ItemStack stack, string fallback)
+        {
+            if (stack != null) return stack.GetName();
+            if (string.IsNullOrEmpty(fallback)) return "unknown";
+
+            string path = fallback;
+            int colon = path.IndexOf(':');
+            if (colon >= 0 && colon + 1 < path.Length) path = path.Substring(colon + 1);
+
+            if (path.Contains("logsection-placed")) return "Any log section";
+            if (path.Contains("log-placed")) return "Any log";
+            if (path.Contains("plank-*")) return "Any boards";
+            if (fallback.Contains('*')) return HumanizeWildcardIngredient(path);
+            return fallback;
+        }
+
+        private static string HumanizeWildcardIngredient(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return "unknown";
+            string label = path.Replace("-placed", "").Replace('-', ' ').Replace("*", "any").Trim();
+            return string.IsNullOrEmpty(label) ? "unknown" : label;
         }
 
         private static string ModeLabel(SawmillMode mode)

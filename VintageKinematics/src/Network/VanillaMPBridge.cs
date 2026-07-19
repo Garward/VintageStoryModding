@@ -149,10 +149,25 @@ namespace VintageKinematics.Network
                     break;
             }
 
+            // Prefer load-independent source potential (TorqueFactor × effective speed across rotors)
+            // over Network.TotalAvailableTorque. TotalAvailableTorque decays whenever the vanilla
+            // network has unused power — for a windmill driving only VK-side consumers, the
+            // vanilla network sees no resistance and TotalAvailableTorque collapses, giving the
+            // bridge a tiny capacity reading despite a big windmill upstream. The reflection sum
+            // matches what players intuit: more sails / higher wind = more SU, regardless of load.
+            float potential = ComputeSourcePotentialTorque(mp.Network);
+            float totalAvailableTorque = mp.Network?.TotalAvailableTorque ?? 0f;
+            networkTorque = potential != 0f ? potential : totalAvailableTorque;
+
+            // Vanilla MP can leave a disconnected clutch/transmission segment with stale nonzero
+            // Network.Speed for a short window. Do not let that cached motion drive VK unless the
+            // vanilla network still has detectable source potential behind it.
+            bool hasSourcePotential = System.MathF.Abs(potential) > 0.0001f || System.MathF.Abs(totalAvailableTorque) > 0.0001f;
+
             // VK's signed RPM convention is opposite vanilla's local MP angle convention.
             // Normalize once at the source boundary so every coaxial axle/shaft bridge can
             // pass direction through unchanged.
-            float vanillaSpeed = -ReadLocalSignedSpeed(mp, axis);
+            float vanillaSpeed = hasSourcePotential ? -ReadLocalSignedSpeed(mp, axis) : 0f;
             if (System.MathF.Abs(vanillaSpeed) < StoppedThreshold)
             {
                 signedRPM = 0f;
@@ -162,14 +177,6 @@ namespace VintageKinematics.Network
                 signedRPM = vanillaSpeed >= 0f ? StableRPM : -StableRPM;
             }
 
-            // Prefer load-independent source potential (TorqueFactor × effective speed across rotors)
-            // over Network.TotalAvailableTorque. TotalAvailableTorque decays whenever the vanilla
-            // network has unused power — for a windmill driving only VK-side consumers, the
-            // vanilla network sees no resistance and TotalAvailableTorque collapses, giving the
-            // bridge a tiny capacity reading despite a big windmill upstream. The reflection sum
-            // matches what players intuit: more sails / higher wind = more SU, regardless of load.
-            float potential = ComputeSourcePotentialTorque(mp.Network);
-            networkTorque = potential != 0f ? potential : (mp.Network?.TotalAvailableTorque ?? 0f);
             vanillaNetworkId = mp.Network?.networkId ?? 0L;
             return true;
         }
