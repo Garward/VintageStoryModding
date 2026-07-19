@@ -394,8 +394,26 @@ These items are required for the high-level-design vertical slice, not the immed
 ### Rift Activity
 
 - [ ] Decide Rift Chart acquisition, upgrading, modifiers, consumption, and failure downgrade/refund.
-- [ ] Complete Manifold entry/exit handoff and safe party transfer.
-- [ ] Assemble curated rooms semi-procedurally with readable enemy staging.
+- [x] Audit Manifold 0.4.2 and choose it for dimension allocation, bounded
+      pre-generation, transit, relighting, reconnect safety, and ephemeral
+      cleanup behind a VRPG-owned dungeon-host interface.
+- [ ] Replace the reflection proof of concept with a strongly typed Manifold
+      companion host while keeping the RPG core independent.
+- [ ] Add ephemeral per-run dimensions, safe party entry/exit, reconnect, and
+      teardown behavior.
+- [ ] Define and validate data-only themes, 32×16×32 room pieces, later 1×2
+      pieces, connectors, zones, spawn anchors, and encounter pools.
+- [ ] Implement the deterministic connector-frontier layout generator with
+      rotations, branches, loops, restrictions, boss-distance rules, and
+      property tests using a four-piece room pool.
+- [ ] Load, rotate, bulk-paste, and relight vanilla schematic JSON after
+      Manifold pre-generates the complete bounded destination.
+- [ ] Add in-game room selection/export commands that produce both a vanilla
+      schematic and editable VRPG room metadata JSON.
+- [ ] Trigger encounters from authored room zones and spawn enemies only at
+      readable authored anchors.
+- [ ] Track shared party discovery and encounter completion by room placement;
+      open the boss room at 80% eligible completion.
 - [ ] Implement one elimination objective ending in a boss.
 - [ ] Implement completion, extraction, failure, retry, and cleanup rules.
 - [ ] Add party-size/highest-level/chart-level difficulty and reward scaling.

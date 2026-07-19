@@ -107,6 +107,8 @@ Rifts are the primary concentrated test of a build. Manifold-backed custom dimen
 
 The core RPG remains self-contained. Manifold integration belongs behind the optional dungeon-module boundary so failure or absence does not disable unrelated progression systems.
 
+The dungeon MVP standardizes its custom-dimension host on Manifold 0.4.2 or newer rather than duplicating dimension allocation, pre-generation, transit, relighting, reconnect safety, and ephemeral cleanup. Room definitions, schematic assembly, layout generation, encounters, exploration, and objectives remain VRPG-owned and depend only on a narrow dungeon-host interface. The preferred release boundary is a `vrpgdungeons` companion package that depends on both `vrpg` and Manifold, preserving a self-contained RPG core while using Manifold through its strongly typed API instead of the current reflection proof of concept. See [Dungeon MVP Plan](dungeon-mvp-plan.md).
+
 Rifts use semi-procedural generation assembled from curated room and corridor pieces. Authored pieces provide encounter quality and readable spaces; procedural assembly supplies route, layout, and replay variation.
 
 Initial theme differences are primarily spatial and tactical:
