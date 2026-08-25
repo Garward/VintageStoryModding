@@ -1,0 +1,119 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 64,
+    "textureHeight": 64,
+    "textureSizes": {},
+    "textures": {
+        "panel": "game:block/metal/plate/iron",
+        "trim": "game:block/metal/plate/steel",
+        "route": "game:block/metal/plate/copper",
+        "recess": "game:block/coal/charcoal",
+        "controller": "game:block/metal/plate/tinbronze",
+        "belt": "vintagekinematics:block/belt",
+        "shaft": "vintagekinematics:block/shaft"
+    },
+    "elements": [
+        {
+            "name": "edge-x-up-south",
+            "from": [
+                0,
+                14.75,
+                14.75
+            ],
+            "to": [
+                16,
+                16,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-x-up-south-cap-west",
+            "from": [
+                0.01,
+                14.75,
+                14.75
+            ],
+            "to": [
+                0.02,
+                16,
+                16
+            ],
+            "faces": {
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-x-up-south-cap-east",
+            "from": [
+                15.98,
+                14.75,
+                14.75
+            ],
+            "to": [
+                15.99,
+                16,
+                16
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        }
+    ]
+}

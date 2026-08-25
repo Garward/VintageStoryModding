@@ -26,13 +26,19 @@ namespace VintageKinematics.BlockEntities
         public bool TryInsertItem(ItemStack stack, float progress)
         {
             if (stack == null || stack.StackSize <= 0) return true;
+            if (!CanInsertItem(progress)) return false;
 
+            InsertItem(stack, progress);
+            return true;
+        }
+
+        /// <summary>Non-mutating insertion preflight for authoritative automation producers.</summary>
+        public bool CanInsertItem(float progress)
+        {
             for (int i = 0; i < items.Count; i++)
             {
                 if (MathF.Abs(items[i].Progress - progress) < ItemInsertClearance) return false;
             }
-
-            InsertItem(stack, progress);
             return true;
         }
 

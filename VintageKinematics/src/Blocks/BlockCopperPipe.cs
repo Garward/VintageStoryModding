@@ -1,44 +1,14 @@
 using System;
-using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
+using VintageKinematics.Connections;
 
 namespace VintageKinematics.Blocks
 {
     public class BlockCopperPipe : Block
     {
-        private static readonly BlockFacing[] PipeFaces =
-        {
-            BlockFacing.NORTH,
-            BlockFacing.EAST,
-            BlockFacing.SOUTH,
-            BlockFacing.WEST,
-            BlockFacing.UP,
-            BlockFacing.DOWN
-        };
-
-        private static readonly Dictionary<string, string> Opposites = new()
-        {
-            ["n"] = "s",
-            ["e"] = "w",
-            ["s"] = "n",
-            ["w"] = "e",
-            ["u"] = "d",
-            ["d"] = "u"
-        };
-
-        private static readonly Dictionary<string, string> YRotated = new()
-        {
-            ["n"] = "e",
-            ["e"] = "s",
-            ["s"] = "w",
-            ["w"] = "n",
-            ["u"] = "u",
-            ["d"] = "d"
-        };
-
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemStack, BlockSelection blockSel, ref string failureCode)
         {
             string initial = InitialMask(blockSel);
@@ -71,7 +41,7 @@ namespace VintageKinematics.Blocks
             int turns = ((angle % 360) + 360) % 360 / 90;
             for (int i = 0; i < turns; i++)
             {
-                mask = RotateMaskY(mask);
+                mask = FaceConnectionMask.RotateY(mask);
             }
 
             return CodeWithVariant("conn", mask);
@@ -90,7 +60,7 @@ namespace VintageKinematics.Blocks
         private static void UpdatePipeAndNeighbors(IWorldAccessor world, BlockPos pos)
         {
             UpdatePipeAt(world, pos);
-            foreach (BlockFacing face in PipeFaces)
+            foreach (BlockFacing face in FaceConnectionMask.Faces)
             {
                 BlockPos neighbor = pos.AddCopy(face);
                 UpdatePipeAt(world, neighbor);
@@ -114,40 +84,35 @@ namespace VintageKinematics.Blocks
 
         private static string DesiredMask(IWorldAccessor world, BlockPos pos, Block current)
         {
-            HashSet<string> faces = new();
-            foreach (BlockFacing face in PipeFaces)
+            string mask = WorldFaceConnectionScanner.Scan(
+                world,
+                pos,
+                (face, neighborPos, neighbor) => IsCopperPipe(neighbor)
+                    || BlockCopperPump.HasPipePort(
+                        neighbor,
+                        FaceConnectionMask.Opposite(FaceConnectionMask.Code(face)))
+                    || IsLiquidEndpoint(world, neighborPos, neighbor));
+
+            if (string.IsNullOrEmpty(mask))
             {
-                string faceCode = FaceCode(face);
-                BlockPos neighborPos = pos.AddCopy(face);
-                Block neighbor = world.BlockAccessor.GetBlock(neighborPos);
-                if (IsCopperPipe(neighbor)
-                    || BlockCopperPump.HasPipePort(neighbor, Opposites[faceCode])
-                    || IsLiquidEndpoint(world, neighborPos, neighbor))
-                {
-                    faces.Add(faceCode);
-                }
+                return FaceConnectionMask.Normalize(current.Variant?["conn"]) ?? "ns";
             }
 
-            if (faces.Count == 0)
+            if (mask.Length == 1)
             {
-                return NormalizeMask(current.Variant?["conn"]) ?? "ns";
+                mask = FaceConnectionMask.Add(
+                    mask,
+                    FaceConnectionMask.Opposite(mask));
             }
 
-            if (faces.Count == 1)
-            {
-                string onlyFace = null;
-                foreach (string face in faces) onlyFace = face;
-                if (onlyFace != null) faces.Add(Opposites[onlyFace]);
-            }
-
-            return SortMask(faces);
+            return mask;
         }
 
         internal static void UpdatePipeNeighbors(IWorldAccessor world, BlockPos pos)
         {
             if (world == null || pos == null) return;
 
-            foreach (BlockFacing face in PipeFaces)
+            foreach (BlockFacing face in FaceConnectionMask.Faces)
             {
                 UpdatePipeAt(world, pos.AddCopy(face));
             }
@@ -194,62 +159,12 @@ namespace VintageKinematics.Blocks
         internal static bool HasPipeConnection(Block block, string face)
         {
             if (!IsCopperPipe(block) || string.IsNullOrEmpty(face)) return false;
-            string mask = block.Variant?["conn"];
-            return !string.IsNullOrEmpty(mask) && mask.Contains(face);
+            return FaceConnectionMask.Contains(block.Variant?["conn"], face);
         }
 
         internal static string FaceCode(BlockFacing face)
         {
-            if (face == BlockFacing.NORTH) return "n";
-            if (face == BlockFacing.EAST) return "e";
-            if (face == BlockFacing.SOUTH) return "s";
-            if (face == BlockFacing.WEST) return "w";
-            if (face == BlockFacing.UP) return "u";
-            return "d";
-        }
-
-        private static string RotateMaskY(string mask)
-        {
-            HashSet<string> rotated = new();
-            foreach (char ch in mask)
-            {
-                string face = ch.ToString();
-                if (YRotated.TryGetValue(face, out string next))
-                {
-                    rotated.Add(next);
-                }
-            }
-            return SortMask(rotated);
-        }
-
-        private static string NormalizeMask(string mask)
-        {
-            if (string.IsNullOrEmpty(mask)) return null;
-            HashSet<string> faces = new();
-            foreach (char ch in mask)
-            {
-                string face = ch.ToString();
-                if (Opposites.ContainsKey(face))
-                {
-                    faces.Add(face);
-                }
-            }
-            return faces.Count == 0 ? null : SortMask(faces);
-        }
-
-        private static string SortMask(HashSet<string> faces)
-        {
-            Span<char> order = stackalloc[] { 'n', 'e', 's', 'w', 'u', 'd' };
-            char[] result = new char[faces.Count];
-            int index = 0;
-            foreach (char face in order)
-            {
-                if (faces.Contains(face.ToString()))
-                {
-                    result[index++] = face;
-                }
-            }
-            return new string(result);
+            return FaceConnectionMask.Code(face);
         }
     }
 }

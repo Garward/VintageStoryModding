@@ -1,0 +1,2459 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 64,
+    "textureHeight": 64,
+    "textureSizes": {},
+    "textures": {
+        "panel": "game:block/metal/plate/iron",
+        "trim": "game:block/metal/plate/steel",
+        "route": "game:block/metal/plate/copper",
+        "recess": "game:block/coal/charcoal",
+        "controller": "game:block/metal/plate/tinbronze",
+        "belt": "vintagekinematics:block/belt",
+        "shaft": "vintagekinematics:block/shaft"
+    },
+    "elements": [
+        {
+            "name": "casing-core",
+            "from": [
+                1.6,
+                1.6,
+                1.6
+            ],
+            "to": [
+                14.4,
+                14.4,
+                14.4
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#panel",
+                    "uv": [
+                        0,
+                        0,
+                        12.8,
+                        12.8
+                    ]
+                },
+                "east": {
+                    "texture": "#panel",
+                    "uv": [
+                        0,
+                        0,
+                        12.8,
+                        12.8
+                    ]
+                },
+                "south": {
+                    "texture": "#panel",
+                    "uv": [
+                        0,
+                        0,
+                        12.8,
+                        12.8
+                    ]
+                },
+                "west": {
+                    "texture": "#panel",
+                    "uv": [
+                        0,
+                        0,
+                        12.8,
+                        12.8
+                    ]
+                },
+                "up": {
+                    "texture": "#panel",
+                    "uv": [
+                        0,
+                        0,
+                        12.8,
+                        12.8
+                    ]
+                },
+                "down": {
+                    "texture": "#panel",
+                    "uv": [
+                        0,
+                        0,
+                        12.8,
+                        12.8
+                    ]
+                }
+            }
+        },
+        {
+            "name": "east-framed-panel",
+            "from": [
+                14.4,
+                1.25,
+                1.25
+            ],
+            "to": [
+                14.75,
+                14.75,
+                14.75
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#panel",
+                    "uv": [
+                        1.25,
+                        1.25,
+                        14.75,
+                        14.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "south-framed-panel",
+            "from": [
+                1.25,
+                1.25,
+                14.4
+            ],
+            "to": [
+                14.75,
+                14.75,
+                14.75
+            ],
+            "faces": {
+                "south": {
+                    "texture": "#panel",
+                    "uv": [
+                        1.25,
+                        1.25,
+                        14.75,
+                        14.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "west-framed-panel",
+            "from": [
+                1.25,
+                1.25,
+                1.25
+            ],
+            "to": [
+                1.6,
+                14.75,
+                14.75
+            ],
+            "faces": {
+                "west": {
+                    "texture": "#panel",
+                    "uv": [
+                        1.25,
+                        1.25,
+                        14.75,
+                        14.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "up-framed-panel",
+            "from": [
+                1.25,
+                14.4,
+                1.25
+            ],
+            "to": [
+                14.75,
+                14.75,
+                14.75
+            ],
+            "faces": {
+                "up": {
+                    "texture": "#panel",
+                    "uv": [
+                        1.25,
+                        1.25,
+                        14.75,
+                        14.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "down-framed-panel",
+            "from": [
+                1.25,
+                1.25,
+                1.25
+            ],
+            "to": [
+                14.75,
+                1.6,
+                14.75
+            ],
+            "faces": {
+                "down": {
+                    "texture": "#panel",
+                    "uv": [
+                        1.25,
+                        1.25,
+                        14.75,
+                        14.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-front",
+            "from": [
+                1.25,
+                1.25,
+                1.25
+            ],
+            "to": [
+                14.75,
+                14.75,
+                1.6
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#panel",
+                    "uv": [
+                        1.25,
+                        1.25,
+                        14.75,
+                        14.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-plate",
+            "from": [
+                2,
+                2,
+                0.65
+            ],
+            "to": [
+                14,
+                14,
+                1.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        2,
+                        2,
+                        14,
+                        14
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        12
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.45,
+                        12
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        0.45
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        12,
+                        0.45
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-recess",
+            "from": [
+                3.25,
+                3.25,
+                0.15
+            ],
+            "to": [
+                12.75,
+                12.75,
+                0.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#recess",
+                    "uv": [
+                        3.25,
+                        3.25,
+                        12.75,
+                        12.75
+                    ]
+                },
+                "west": {
+                    "texture": "#recess",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        9.5
+                    ]
+                },
+                "east": {
+                    "texture": "#recess",
+                    "uv": [
+                        0,
+                        0,
+                        0.5,
+                        9.5
+                    ]
+                },
+                "down": {
+                    "texture": "#recess",
+                    "uv": [
+                        0,
+                        0,
+                        9.5,
+                        0.5
+                    ]
+                },
+                "up": {
+                    "texture": "#recess",
+                    "uv": [
+                        0,
+                        0,
+                        9.5,
+                        0.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-mouth",
+            "from": [
+                4,
+                11.05,
+                0.08
+            ],
+            "to": [
+                12,
+                13.25,
+                0.55
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#recess",
+                    "uv": [
+                        4,
+                        11.05,
+                        12,
+                        13.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-rear-left",
+            "from": [
+                3,
+                11.05,
+                -1
+            ],
+            "to": [
+                4,
+                13.25,
+                0
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        2.2
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        2.2
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-rear-top",
+            "from": [
+                3,
+                13.25,
+                -1
+            ],
+            "to": [
+                13,
+                14.25,
+                0
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        1
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-rear-right",
+            "from": [
+                12,
+                11.05,
+                -1
+            ],
+            "to": [
+                13,
+                13.25,
+                0
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        2.2
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        2.2
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-shoulder-left",
+            "from": [
+                3,
+                11.05,
+                -1.75
+            ],
+            "to": [
+                5.25,
+                12.75,
+                -1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        2.25,
+                        1.7
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        1.7
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        2.25,
+                        1.7
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        1.7
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        2.25,
+                        0.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-shoulder-top",
+            "from": [
+                3,
+                12.75,
+                -1.75
+            ],
+            "to": [
+                13,
+                14.25,
+                -1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        1.5
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        1.5
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        1.5
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        1.5
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        0.75
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        10,
+                        0.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-shoulder-right",
+            "from": [
+                10.75,
+                11.05,
+                -1.75
+            ],
+            "to": [
+                13,
+                12.75,
+                -1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        2.25,
+                        1.7
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        1.7
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        2.25,
+                        1.7
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.75,
+                        1.7
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        2.25,
+                        0.75
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-front-left",
+            "from": [
+                4.25,
+                11.05,
+                -3
+            ],
+            "to": [
+                5.25,
+                12.75,
+                -1.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.7
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.7
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.7
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-front-top",
+            "from": [
+                4.25,
+                12.75,
+                -3
+            ],
+            "to": [
+                11.75,
+                13.75,
+                -1.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        7.5,
+                        1
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        7.5,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        7.5,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-chute-front-right",
+            "from": [
+                10.75,
+                11.05,
+                -3
+            ],
+            "to": [
+                11.75,
+                12.75,
+                -1.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.7
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.7
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.7
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-arrow-tip",
+            "from": [
+                7.5,
+                13.76,
+                -2.85
+            ],
+            "to": [
+                8.5,
+                13.86,
+                -2.35
+            ],
+            "faces": {
+                "up": {
+                    "texture": "#route",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        0.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-arrow-wings",
+            "from": [
+                6.5,
+                13.76,
+                -2.35
+            ],
+            "to": [
+                9.5,
+                13.86,
+                -1.85
+            ],
+            "faces": {
+                "up": {
+                    "texture": "#route",
+                    "uv": [
+                        0,
+                        0,
+                        3,
+                        0.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "belt-output-arrow-shaft",
+            "from": [
+                7.5,
+                13.76,
+                -1.85
+            ],
+            "to": [
+                8.5,
+                13.86,
+                -1.55
+            ],
+            "faces": {
+                "up": {
+                    "texture": "#route",
+                    "uv": [
+                        0,
+                        0,
+                        1,
+                        0.3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-x-down-north-item",
+            "from": [
+                1.25,
+                0,
+                0
+            ],
+            "to": [
+                14.75,
+                1.25,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-x-down-south-item",
+            "from": [
+                1.25,
+                0,
+                14.75
+            ],
+            "to": [
+                14.75,
+                1.25,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-x-up-north-item",
+            "from": [
+                1.25,
+                14.75,
+                0
+            ],
+            "to": [
+                14.75,
+                16,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-x-up-south-item",
+            "from": [
+                1.25,
+                14.75,
+                14.75
+            ],
+            "to": [
+                14.75,
+                16,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-y-west-north-item",
+            "from": [
+                0,
+                1.25,
+                0
+            ],
+            "to": [
+                1.25,
+                14.75,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-y-west-south-item",
+            "from": [
+                0,
+                1.25,
+                14.75
+            ],
+            "to": [
+                1.25,
+                14.75,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-y-east-north-item",
+            "from": [
+                14.75,
+                1.25,
+                0
+            ],
+            "to": [
+                16,
+                14.75,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-y-east-south-item",
+            "from": [
+                14.75,
+                1.25,
+                14.75
+            ],
+            "to": [
+                16,
+                14.75,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-z-down-west-item",
+            "from": [
+                0,
+                0,
+                1.25
+            ],
+            "to": [
+                1.25,
+                1.25,
+                14.75
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-z-down-east-item",
+            "from": [
+                14.75,
+                0,
+                1.25
+            ],
+            "to": [
+                16,
+                1.25,
+                14.75
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-z-up-west-item",
+            "from": [
+                0,
+                14.75,
+                1.25
+            ],
+            "to": [
+                1.25,
+                16,
+                14.75
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "edge-z-up-east-item",
+            "from": [
+                14.75,
+                14.75,
+                1.25
+            ],
+            "to": [
+                16,
+                16,
+                14.75
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.5,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        13.5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-west-down-north",
+            "from": [
+                0,
+                0,
+                0
+            ],
+            "to": [
+                1.25,
+                1.25,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-west-down-south",
+            "from": [
+                0,
+                0,
+                14.75
+            ],
+            "to": [
+                1.25,
+                1.25,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-west-up-north",
+            "from": [
+                0,
+                14.75,
+                0
+            ],
+            "to": [
+                1.25,
+                16,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-west-up-south",
+            "from": [
+                0,
+                14.75,
+                14.75
+            ],
+            "to": [
+                1.25,
+                16,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-east-down-north",
+            "from": [
+                14.75,
+                0,
+                0
+            ],
+            "to": [
+                16,
+                1.25,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-east-down-south",
+            "from": [
+                14.75,
+                0,
+                14.75
+            ],
+            "to": [
+                16,
+                1.25,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-east-up-north",
+            "from": [
+                14.75,
+                14.75,
+                0
+            ],
+            "to": [
+                16,
+                16,
+                1.25
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "corner-east-up-south",
+            "from": [
+                14.75,
+                14.75,
+                14.75
+            ],
+            "to": [
+                16,
+                16,
+                16
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        1.25,
+                        1.25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "south-support-band-lower",
+            "from": [
+                1.35,
+                3.1,
+                14.75
+            ],
+            "to": [
+                14.65,
+                4.45,
+                15.65
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        1.35
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        0.9
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        0.9
+                    ]
+                }
+            }
+        },
+        {
+            "name": "south-support-band-upper",
+            "from": [
+                1.35,
+                11.3,
+                14.75
+            ],
+            "to": [
+                14.65,
+                12.65,
+                15.65
+            ],
+            "faces": {
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        1.35
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        0.9
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        0.9
+                    ]
+                }
+            }
+        },
+        {
+            "name": "west-support-band-lower",
+            "from": [
+                0.35,
+                3.1,
+                1.35
+            ],
+            "to": [
+                1.25,
+                4.45,
+                14.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "west-support-band-upper",
+            "from": [
+                0.35,
+                11.3,
+                1.35
+            ],
+            "to": [
+                1.25,
+                12.65,
+                14.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "west": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "east-support-band-lower",
+            "from": [
+                14.75,
+                3.1,
+                1.35
+            ],
+            "to": [
+                15.65,
+                4.45,
+                14.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                }
+            }
+        },
+        {
+            "name": "east-support-band-upper",
+            "from": [
+                14.75,
+                11.3,
+                1.35
+            ],
+            "to": [
+                15.65,
+                12.65,
+                14.65
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "east": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        13.3,
+                        1.35
+                    ]
+                },
+                "south": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        1.35
+                    ]
+                },
+                "up": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                },
+                "down": {
+                    "texture": "#trim",
+                    "uv": [
+                        0,
+                        0,
+                        0.9,
+                        13.3
+                    ]
+                }
+            }
+        }
+    ]
+}

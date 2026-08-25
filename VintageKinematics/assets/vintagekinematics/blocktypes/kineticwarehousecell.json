@@ -1,0 +1,50 @@
+{
+    "code": "kineticwarehousecell",
+    "class": "BlockKineticWarehouseMember",
+    "entityClass": "KineticWarehouseCell",
+    "variantgroups": [
+        {
+            "code": "material",
+            "states": ["wood", "reinforced"]
+        }
+    ],
+    "shape": { "base": "block/storage/storagecell-item" },
+    "attributes": {
+        "vkStorageMember": true
+    },
+    "textures": {
+        "panel": { "base": "game:block/wood/planks/generic" },
+        "trim": { "base": "game:block/metal/plate/iron" },
+        "route": { "base": "game:block/metal/plate/copper" },
+        "recess": { "base": "game:block/coal/charcoal" },
+        "controller": { "base": "game:block/metal/plate/tinbronze" }
+    },
+    "texturesByType": {
+        "*-reinforced": {
+            "panel": { "base": "game:block/metal/plate/steel" },
+            "trim": { "base": "game:block/metal/plate/iron" }
+        }
+    },
+    "blockmaterial": "Metal",
+    "lightAbsorption": 0,
+    "sideopaque": {
+        "all": "false"
+    },
+    "resistance": 8,
+    "creativeinventory": {
+        "general": ["*-wood", "*-reinforced"],
+        "vintagekinematics": ["*-wood", "*-reinforced"]
+    },
+    "sidesolid": { "all": true },
+    "collisionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "selectionbox": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 },
+    "behaviors": [
+        {
+            "name": "RequireStorageOwnershipOnPlace",
+            "properties": { "role": "cell" }
+        },
+        {
+            "name": "RequireStorageCapacityOnRemove"
+        }
+    ]
+}
