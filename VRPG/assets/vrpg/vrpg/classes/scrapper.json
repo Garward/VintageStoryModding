@@ -1,0 +1,9 @@
+{
+  "code": "vrpg:scrapper",
+  "name": "Rust Scrapper",
+  "description": "A rough engineer who weaponizes salvaged machinery, thrown junk, and unstable scrap charges.",
+  "icon": "gear",
+  "color": "#c58a48",
+  "tags": ["ranged", "strength", "engineering", "scrap", "physical"],
+  "sortOrder": 70
+}

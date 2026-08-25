@@ -56,4 +56,21 @@ public sealed class VisualBudgetTests
         Assert.True(budget.QuantityScale(VisualPriority.Cosmetic, 100) < 0.01f);
         Assert.Equal(1f, budget.QuantityScale(VisualPriority.Cosmetic, 1300));
     }
+
+    [Fact]
+    public void SlidingWindowIsIndependentOfArbitrarySecondBoundaries()
+    {
+        var earlyPhase = new VisualBudget(1000) { OwnFirst = false };
+        earlyPhase.Record(400f, nowMs: 50);
+
+        var latePhase = new VisualBudget(1000) { OwnFirst = false };
+        latePhase.Record(400f, nowMs: 950);
+
+        Assert.Equal(
+            earlyPhase.QuantityScale(VisualPriority.Others, 500),
+            latePhase.QuantityScale(VisualPriority.Others, 1400));
+        Assert.Equal(
+            earlyPhase.QuantityScale(VisualPriority.Others, 1051),
+            latePhase.QuantityScale(VisualPriority.Others, 1951));
+    }
 }

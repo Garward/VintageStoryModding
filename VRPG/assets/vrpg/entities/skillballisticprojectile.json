@@ -1,0 +1,37 @@
+{
+  "code": "skillballisticprojectile",
+  "class": "EntityVrpgSkillProjectile",
+  "tags": ["inanimate", "projectile", "vrpg", "ballistic"],
+  "hitboxSize": { "x": 0.38, "y": 0.38 },
+  "attributes": {
+    "isProjectile": true,
+    "collectible": false,
+    "shouldSwivelFromMotion": false
+  },
+  "client": {
+    "renderer": "Shape",
+    "shape": { "base": "entity/skill/scrap-bomb" },
+    "behaviors": [
+      {
+        "code": "passivephysics",
+        "groundDragFactor": 1.0,
+        "airDragFactor": 0.0,
+        "gravityFactor": 1.0
+      },
+      { "code": "interpolateposition" }
+    ]
+  },
+  "server": {
+    "behaviors": [
+      {
+        "code": "passivephysics",
+        "groundDragFactor": 1.0,
+        "airDragFactor": 0.0,
+        "gravityFactor": 1.0
+      },
+      { "code": "despawn", "minSeconds": 10 },
+      { "code": "entitystatetags" }
+    ]
+  },
+  "sounds": {}
+}

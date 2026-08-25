@@ -1,0 +1,22 @@
+{
+  "code": "skilltargeteddrop",
+  "class": "EntityVrpgTargetedDrop",
+  "tags": ["inanimate", "vrpg"],
+  "hitboxSize": { "x": 0.32, "y": 0.32 },
+  "attributes": {
+    "collectible": false,
+    "shouldSwivelFromMotion": false
+  },
+  "client": {
+    "renderer": "Shape",
+    "shape": { "base": "entity/skill/cinder-orb" },
+    "behaviors": []
+  },
+  "server": {
+    "behaviors": [
+      { "code": "despawn", "minSeconds": 30 },
+      { "code": "entitystatetags" }
+    ]
+  },
+  "sounds": {}
+}

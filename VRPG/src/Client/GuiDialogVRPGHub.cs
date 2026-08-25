@@ -1,5 +1,6 @@
 using System;
 using VRPG.Client.UI;
+using VRPG.Config;
 using VRPG.Network;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
@@ -14,6 +15,11 @@ public sealed class GuiDialogVRPGHub : GuiDialog
     private readonly Action<string, int> adjustStat;
     private readonly Action<bool, bool> updateOptions;
     private readonly Action<bool, int> updateHotbar;
+    private readonly Action<bool> updateAutoThrow;
+    private readonly RpgHudConfig resourceHud;
+    private readonly Action<bool> setResourceHudLocked;
+    private readonly Action<int, int> resizeResourceHud;
+    private readonly Action resetResourceHud;
     private readonly Action<int, string> equipSkill;
     private readonly Action<string[], string[]> applyTalentPlan;
     private readonly Action openTalentEditor;
@@ -31,6 +37,11 @@ public sealed class GuiDialogVRPGHub : GuiDialog
         Action<string, int> adjustStat,
         Action<bool, bool> updateOptions,
         Action<bool, int> updateHotbar,
+        Action<bool> updateAutoThrow,
+        RpgHudConfig resourceHud,
+        Action<bool> setResourceHudLocked,
+        Action<int, int> resizeResourceHud,
+        Action resetResourceHud,
         Action<int, string> equipSkill,
         Action<string[], string[]> applyTalentPlan,
         Action openTalentEditor,
@@ -43,6 +54,11 @@ public sealed class GuiDialogVRPGHub : GuiDialog
         this.adjustStat = adjustStat;
         this.updateOptions = updateOptions;
         this.updateHotbar = updateHotbar;
+        this.updateAutoThrow = updateAutoThrow;
+        this.resourceHud = resourceHud;
+        this.setResourceHudLocked = setResourceHudLocked;
+        this.resizeResourceHud = resizeResourceHud;
+        this.resetResourceHud = resetResourceHud;
         this.equipSkill = equipSkill;
         this.applyTalentPlan = applyTalentPlan;
         this.openTalentEditor = openTalentEditor;
@@ -93,7 +109,8 @@ public sealed class GuiDialogVRPGHub : GuiDialog
         {
             TryClose();
             openLibrary(entries);
-        }, adjustStat, updateOptions, updateHotbar, equipSkill, applyTalentPlan, openTalentEditor, combatVisuals, combatVisualsChanged);
+        }, adjustStat, updateOptions, updateHotbar, updateAutoThrow, resourceHud, setResourceHudLocked, resizeResourceHud, resetResourceHud,
+            equipSkill, applyTalentPlan, openTalentEditor, combatVisuals, combatVisualsChanged);
 
         SingleComposer = capi.Gui
             .CreateCompo("vrpg-hub", ElementStdBounds.AutosizedMainDialog)

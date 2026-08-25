@@ -13,6 +13,7 @@ public sealed class VRPGDataRegistry
     public VrpgDataStore<TalentNodeDefinition> Talents { get; } = new VrpgDataStore<TalentNodeDefinition>("vrpg/talents/");
     public VrpgDataStore<TalentTreeTemplateDefinition> TalentTreeTemplates { get; } = new VrpgDataStore<TalentTreeTemplateDefinition>("vrpg/talenttemplates/");
     public VrpgDataStore<SkillDefinition> Skills { get; } = new VrpgDataStore<SkillDefinition>("vrpg/skills/");
+    public VrpgDataStore<SkillFxPresetDefinition> SkillFxPresets { get; } = new VrpgDataStore<SkillFxPresetDefinition>("vrpg/fx/impact/");
     public VrpgDataStore<StatusEffectDefinition> StatusEffects { get; } = new VrpgDataStore<StatusEffectDefinition>("vrpg/statuseffects/");
     public VrpgDataStore<StatFamilyDefinition> StatFamilies { get; } = new VrpgDataStore<StatFamilyDefinition>("vrpg/statfamilies/");
     public VrpgDataStore<ScalingDefinition> Scaling { get; } = new VrpgDataStore<ScalingDefinition>("vrpg/scaling/");
@@ -31,6 +32,7 @@ public sealed class VRPGDataRegistry
         Talents.Load(api);
         TalentTreeTemplates.Load(api);
         Skills.Load(api);
+        SkillFxPresets.Load(api);
         StatusEffects.Load(api);
         StatFamilies.Load(api);
         Scaling.Load(api);
@@ -44,6 +46,6 @@ public sealed class VRPGDataRegistry
 
     public string Summary()
     {
-        return $"{Stats.Count} stats, {StatFamilies.Count} stat-family files, {Scaling.Count} scaling files, {DamageTypes.Count} damage types, {Classes.Count} classes, {Rarities.Count} rarities, {Affixes.Count} affixes, {Talents.Count} talents, {TalentTreeTemplates.Count} talent templates, {Skills.Count} skills, {StatusEffects.Count} status effects, {Library.Count} library entries, {DungeonThemes.Count} dungeon themes, {DungeonRooms.Count} dungeon rooms, {DungeonEncounters.Count} dungeon encounters";
+        return $"{Stats.Count} stats, {StatFamilies.Count} stat-family files, {Scaling.Count} scaling files, {DamageTypes.Count} damage types, {Classes.Count} classes, {Rarities.Count} rarities, {Affixes.Count} affixes, {Talents.Count} talents, {TalentTreeTemplates.Count} talent templates, {Skills.Count} skills, {SkillFxPresets.Count} impact FX presets, {StatusEffects.Count} status effects, {Library.Count} library entries, {DungeonThemes.Count} dungeon themes, {DungeonRooms.Count} dungeon rooms, {DungeonEncounters.Count} dungeon encounters";
     }
 }

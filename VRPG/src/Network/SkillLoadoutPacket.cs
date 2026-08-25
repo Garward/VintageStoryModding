@@ -55,4 +55,10 @@ public sealed class SkillLoadoutSlotPacket
     // (added by another workstream). Using the next free slot instead.
     [ProtoMember(14)]
     public bool Empowered { get; set; }
+
+    [ProtoMember(15)]
+    public int CurrentCharges { get; set; }
+
+    [ProtoMember(16)]
+    public int MaximumCharges { get; set; }
 }

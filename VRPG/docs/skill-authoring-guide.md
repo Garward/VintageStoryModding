@@ -9,7 +9,8 @@ Skill definitions live under `assets/<domain>/vrpg/skills/*.json`. VRPG currentl
 | Delivery | Targeting | Behavior |
 | --- | --- | --- |
 | `raycast_aoe` | Aim up to `range` blocks | Resolves the first selected block or entity and applies an instant area hit at that point. |
-| `projectile_aoe` | Current look direction or aimed surface | Spawns a physical projectile using `projectile.speed`; `projectile.impactMode` determines whether creatures intercept it or it travels through them to the aimed surface. |
+| `projectile_aoe` | Current look direction, or a held arc preview when ballistic | Spawns a physical projectile using `projectile.speed`; `projectile.impactMode` determines whether creatures intercept it or it travels through them to the aimed surface. |
+| `targeted_drop` | Aimed surface preview while held | Shows the local impact circle while the hotkey is held. Releasing re-resolves the server-authoritative aimed surface and drops the configured model from above. |
 | `circle` | Caster-centered | Applies a circular area hit around the caster. `range` may be zero. |
 | `melee_arc` | Forward sector | Instantly hits valid creatures in an authored `range` and `melee.arcDegrees`. It never reads vanilla weapon reach. |
 | `melee_line` | Forward capsule | Instantly hits creatures along an authored `range` and `melee.width`, ordered from near to far. It never reads vanilla weapon reach. |
@@ -60,6 +61,7 @@ Every skill owns a `timing` block. The three modes are deliberately distinct:
 | `instant` | Exactly one hit. A larger coefficient is still one hit. |
 | `sequence` | `hitCount` independent hits separated by `hitIntervalSeconds`. Resource cost and cooldown are committed on activation. |
 | `channel` | One immediate hit, then repeated hits every `hitIntervalSeconds` while the hotkey remains held. It ends on release, resource failure, death/disconnect, or `maxDurationSeconds`; cooldown begins when it ends. |
+| `targeted_release` | Press begins a client-side targeting preview without paying the cost. Release validates the current server-side aim, pays once, executes once, and begins cooldown. |
 
 ```json
 {
@@ -92,6 +94,52 @@ The held-input protocol is server authoritative: the client sends only slot pres
 and release state. The server owns tick cadence, resources, damage, maximum
 duration, and cooldown. Losing the release packet cannot create a permanent
 channel because every channel has a validated maximum duration.
+
+## Stored charges and hold-to-repeat
+
+`charges.maximum` turns a normal cooldown into sequential charge recovery. A new
+reservoir starts full, every successful activation spends one charge, and
+`cooldownSeconds` restores one charge at a time. Available charges may be spent
+back-to-back while an earlier charge is recovering. Omitting `charges`, or using a
+maximum of one, preserves ordinary cooldown behavior.
+
+```json
+{
+  "cooldownSeconds": 1.8,
+  "charges": {
+    "maximum": 5
+  },
+  "timing": {
+    "mode": "targeted_release",
+    "repeatWhileHeld": true,
+    "holdRepeatDelaySeconds": 0.35,
+    "holdRepeatIntervalSeconds": 0.3
+  }
+}
+```
+
+For a targeted-release skill, a quick tap still previews locally and casts once
+on physical release. With `repeatWhileHeld`, crossing the authored delay commits
+the first cast and then commits another at each interval while the key remains
+down. Releasing after repetition starts never adds an extra cast. The held burst
+stops after spending the charges that were available when the hold began; it does
+not become an endless channel as charges recover.
+
+For a burst that is expected to visibly reach zero, keep
+`holdRepeatIntervalSeconds * (charges.maximum - 1)` below `cooldownSeconds`.
+Otherwise the first spent charge recovers before the final stored activation and
+the authoritative counter correctly finishes above zero.
+
+The preview remains entirely client-side before the first commit. Every repeated
+cast is a normal server-authoritative request: the server revalidates the current
+aim, charge count, resource cost, and delivery. Hold repeat is currently valid
+only for multi-charge `targeted_release` skills. Channels deliberately cannot use
+stored activations because their cooldown begins at the end of the hold.
+
+Players can disable the repeated-cast gesture under **VRPG → Options → Combat
+Hotbar → Hold to auto-throw charged skills**. This is a persisted client
+accessibility preference. It does not alter server charge recovery or whether the
+skill is authored to support repetition.
 
 ## On-hit statuses and payoff events
 
@@ -266,8 +314,141 @@ Projectile launch offsets are measured from the player's eye position. A negativ
 | --- | --- |
 | `entity` | A swept server-side collision test lets a living creature intercept the projectile. If nothing is hit, terrain remains the fallback impact. The launch socket converges toward the crosshair at `aimConvergenceDistance`. |
 | `ground` | Creature collision is disabled. The camera ray resolves the aimed solid surface up to `range`, and the launch socket fires toward that exact point. The projectile detonates when it reaches the point or collides with intervening terrain. |
+| `either` | The aimed ground point remains the destination, but a creature or intervening terrain may intercept the projectile first. This is appropriate for bombs and thrown physical objects. |
 
 Use `entity` for bolts, arrows, or orbs that should reward hitting a moving target. Use `ground` for bombardments, traps, persistent zones, and effects whose placement matters more than interception. Both modes remain physical projectiles with travel time; neither is a disguised instant raycast.
+
+### Held ballistic projectiles
+
+A `projectile_aoe` with `projectile.ballistic: true` pairs with
+`timing.mode: targeted_release`. Pressing displays a client-only dotted trajectory
+and the exact impact-radius circle without sending a packet. Release sends one slot
+request; the server independently raycasts the surface and solves the same gravity
+curve before spawning the authoritative projectile.
+
+```json
+"model": "game:item/gear-rusty",
+"timing": { "mode": "targeted_release" },
+"projectile": {
+  "impactMode": "either",
+  "speed": 0.3,
+  "lifetimeSeconds": 4.5,
+  "ballistic": true,
+  "minimumFlightSeconds": 0.55,
+  "rotationMode": "tumble",
+  "modelVariants": [
+    "game:item/scrapweaponkit",
+    "game:item/tool/blade/scrap"
+  ]
+}
+```
+
+`minimumFlightSeconds` keeps close throws readable instead of snapping almost
+horizontally into the floor. `rotationMode` accepts `flight`, `tumble`, or `stable`.
+`creatureCollisionRadius` expands creature hitboxes for the projectile sweep and
+should roughly match the visible carrier's bulk; it does not change terrain
+collision or area damage radius. `either` projectiles check creature interception
+before resolving their ground destination.
+The primary `model` and every `modelVariants` entry are shape asset codes, never
+numeric collectible IDs. The server selects a variant once per cast and syncs that
+path on the projectile, so every client renders the same piece of junk without
+depending on registry ordering. Junk Toss and Scrap Bomb are executable references.
+
+## Held targeting and dropped models
+
+`targeted_drop` pairs with `timing.mode: targeted_release`. Pressing the skill sends
+no packet: the hotkey may be held as long as needed while a purely client-side disc
+follows the selected surface. Release sends one packet containing only the equipped
+slot; the server independently raycasts the player's current view before spending
+resources or spawning anything.
+
+```json
+{
+  "delivery": "targeted_drop",
+  "range": 20.0,
+  "radius": 2.8,
+  "model": "game:block/metal/anvil/iron",
+  "timing": { "mode": "targeted_release" },
+  "targetedDrop": {
+    "height": 9.0,
+    "fallSpeed": 1.25,
+    "gravity": 18.0,
+    "lifetimeSeconds": 10.0
+  }
+}
+```
+
+`height` is the spawn distance above the selected point. `fallSpeed` is the initial
+downward speed in blocks per second, `gravity` is downward acceleration in blocks
+per second squared, and `lifetimeSeconds` bounds orphaned entities. Validation
+requires enough lifetime for the complete accelerated fall plus a safety margin.
+The model can reference a VRPG shape or an existing game shape. In either case the
+path omits `shapes/` and `.json`. Skyfall Anvil is the executable reference skill.
+
+### Procedural impact layers
+
+Skills that emit an impact or burst can replace the generic particle ring with a
+bounded client-side composition. This does not call the game's destructive
+explosion API and does not create another entity:
+
+```json
+"impactVisual": {
+  "enabled": true,
+  "preset": "vrpg:stone_slam",
+  "overrides": {
+    "sparks": { "color": "#88ccffff", "quantity": 40 }
+  },
+  "particleDurationScale": 0.9,
+  "expansionSpeedScale": 1.35,
+  "shockwave": true,
+  "shockwaveDurationSeconds": 0.24,
+  "cameraShake": 0.42,
+  "cameraShakeRange": 18,
+  "sounds": ["game:sounds/effect/crusher-impact"],
+  "soundRange": 28,
+  "soundVolume": 0.85
+}
+```
+
+Impact presets live under `assets/<domain>/vrpg/fx/impact/*.json`. Each preset owns a
+`layers` array; supported roles are `debris`, `dust`, `sparks`, `fire`, `rim`, and
+`custom`. A layer authors its model, color, quantity, size range, lifetime, gravity,
+travel `coverage`, initial `originCoverage`, glow, delay, terrain collision,
+informative status, and optional opacity/size evolution. `originCoverage` is a 0-1
+fraction of the resolved layer extent and lets broad blasts begin across their area
+instead of forcing every particle through the central 0.8 blocks. Colors accept
+`$skill`, `$ground`, or `#RRGGBB[AA]`.
+
+`overrides` merges only the supplied fields into the preset layer with the matching
+role. A skill can instead provide `layers` directly, which replaces the preset list;
+supplying both is rejected. This keeps shared effects concise while allowing a frost,
+fire, or physical spell to have its own identity without changing C#.
+
+The `rim` role is contractual: it spawns immediately at the exact resolved gameplay
+radius, ignores coverage and taste scales, and bypasses the degradable particle
+budget. Interior layers are clamped so they never cross that rim. The optional unlit
+shockwave is likewise pinned to the true radius and respects the alpha authored in
+the skill color. Treat it as an optional impact flourish rather than the primary
+range cue; a short translucent `$skill`-colored particle rim usually gives a softer,
+more integrated silhouette. Large rims scale sample count with circumference and cap
+at 96 particles.
+
+Vintage Story changes particle lifetime with calendar speed. VRPG inverts the actual
+world multiplier before applying `particleDurationScale`, so a scale of `1` represents
+the intended real-time profile on every world.
+`expansionSpeedScale` changes the outward and upward particle velocities without
+changing quantity. The resolved `radius` in the visual event is authoritative:
+impact origins, radial travel speed, and shockwave size derive from it, so the
+same authored effect expands across the actual gameplay footprint.
+
+Targeted drops tag that packet with the visual carrier entity ID. Server damage is
+resolved immediately at authoritative contact, while each client holds the cosmetic
+burst until its locally simulated carrier reaches the same rendered ground height.
+Every visual event also carries the server event timestamp. Use `.vrpg fx trace on`
+to write `VRPG/fx-trace.ndjson` under the game data directory. Each impact records
+requested/output quantities, resolved colors and extents, clamp decisions, budget
+load, carrier scheduling drift, and per-skill median/p95/max timing. Trace failures
+disable tracing and never interrupt rendering.
 
 ## Projectile models
 
@@ -306,7 +487,15 @@ Use particles to communicate timing and area, not to hide the battlefield.
 - Positive `gravity` pulls particles down; negative values make them rise.
 - `quad` reads as energy, smoke, or glow. `cube` reads as debris, fragments, or physical force.
 
-Circle skills use `burstQuantity` to choose a 12-40 point perimeter at `radius`. Raycast skills draw nine trail samples between the configured visual socket and just before the resolved impact point. Near samples have shorter lifetimes than distant samples, clearing the line progressively toward the target; the impact ring owns the endpoint. Treat these counts as a shared performance budget when increasing per-sample quantities.
+Circle skills place their perimeter at the resolved event `radius`. `burstQuantity`
+describes ring density at a three-block reference radius; runtime sample count
+scales with circumference and is capped at 96. This lets repeated circle events
+form correctly sized totem-like pulses without making large areas sparse or
+unbounded. Raycast skills draw nine trail samples between the configured visual
+socket and just before the resolved impact point. Near samples have shorter
+lifetimes than distant samples, clearing the line progressively toward the target;
+the impact ring owns the endpoint. Treat these counts as a shared performance
+budget when increasing per-sample quantities.
 
 ## Validation and failure policy
 

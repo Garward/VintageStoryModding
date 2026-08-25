@@ -18,6 +18,8 @@ namespace VRPG.Modules.Rpg.Skills;
 public sealed class SkillCastingService
 {
     private static readonly AssetLocation ProjectileEntityCode = new AssetLocation("vrpg:skillprojectile");
+    private static readonly AssetLocation BallisticProjectileEntityCode = new AssetLocation("vrpg:skillballisticprojectile");
+    private static readonly AssetLocation TargetedDropEntityCode = new AssetLocation("vrpg:skilltargeteddrop");
     private readonly ICoreServerAPI api;
     private readonly VRPGDataRegistry data;
     private readonly RpgPlayerStore playerStore;
@@ -27,6 +29,7 @@ public sealed class SkillCastingService
     private readonly CombatVisualBroadcaster visuals;
     private readonly GroundAreaService groundAreas;
     private readonly SkillStatusEffectService statusEffects;
+    private readonly SkillChargeTracker chargeTracker = new SkillChargeTracker();
     private readonly Dictionary<string, Dictionary<string, long>> cooldownEnds = new Dictionary<string, Dictionary<string, long>>(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ActiveTimedCast> activeChannels = new Dictionary<string, ActiveTimedCast>(StringComparer.OrdinalIgnoreCase);
     private readonly List<ActiveTimedCast> activeSequences = new List<ActiveTimedCast>();
@@ -80,6 +83,11 @@ public sealed class SkillCastingService
 
     public bool TryCastSlot(IServerPlayer player, int slot, out string error, out AbilityFailureKind failureKind)
     {
+        if (TryGetTargetedReleaseSkill(player, slot, out SkillDefinition? targetedSkill))
+        {
+            return CommitTargetedCast(player, targetedSkill, out error, out failureKind);
+        }
+
         return TryHandleSlotInput(player, slot, true, out error, out failureKind);
     }
 
@@ -94,6 +102,11 @@ public sealed class SkillCastingService
         failureKind = AbilityFailureKind.Other;
         if (!pressed)
         {
+            if (TryGetTargetedReleaseSkill(player, slot, out SkillDefinition? targetedSkill))
+            {
+                return CommitTargetedCast(player, targetedSkill, out error, out failureKind);
+            }
+
             StopChannel(player.PlayerUID, slot);
             return true;
         }
@@ -141,19 +154,29 @@ public sealed class SkillCastingService
         }
 
         long now = api.World.ElapsedMilliseconds;
-        long cooldownEnd = GetCooldownEnd(player.PlayerUID, skill.Code);
-        if (cooldownEnd > now)
+        if (!IsReady(player.PlayerUID, skill, now, out float readyInSeconds))
         {
-            error = $"{skill.Name} is ready in {(cooldownEnd - now) / 1000f:0.0}s.";
+            error = ReadyError(skill, readyInSeconds);
             failureKind = AbilityFailureKind.Cooldown;
             return false;
         }
 
-        if (string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
-            && api.World.GetEntityType(ProjectileEntityCode) == null)
+        AssetLocation? requiredEntityCode = string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
+            ? (skill.Projectile?.Ballistic == true ? BallisticProjectileEntityCode : ProjectileEntityCode)
+            : string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase)
+                ? TargetedDropEntityCode
+                : null;
+        if (requiredEntityCode != null && api.World.GetEntityType(requiredEntityCode) == null)
         {
-            error = "VRPG projectile entity type is not loaded.";
+            error = "VRPG skill model entity type is not loaded.";
             return false;
+        }
+
+        if (IsTimingMode(skill, "targeted_release"))
+        {
+            // Targeted-release skills preview entirely on the client. Current
+            // clients send only release, but tolerate a press from older ones.
+            return true;
         }
 
         bool channel = IsTimingMode(skill, "channel");
@@ -189,7 +212,7 @@ public sealed class SkillCastingService
 
         if (!channel)
         {
-            SetCooldown(player.PlayerUID, skill.Code, now + (long)(skill.CooldownSeconds * 1000f));
+            CommitRecovery(player.PlayerUID, skill, now);
         }
         return true;
     }
@@ -296,6 +319,20 @@ public sealed class SkillCastingService
             string code = state.EquippedSkills[i] ?? "";
             SkillDefinition? skill = data.Skills.Get(code);
             int level = skill == null ? 0 : state.GetSkillLevel(skill.Code);
+            int maximumCharges = MaximumCharges(skill);
+            SkillChargeSnapshot chargeSnapshot = skill != null && maximumCharges > 1
+                ? chargeTracker.Snapshot(
+                    player.PlayerUID,
+                    skill.Code,
+                    maximumCharges,
+                    CooldownMilliseconds(skill),
+                    now)
+                : new SkillChargeSnapshot(1, 1, 0);
+            float cooldownRemaining = skill == null
+                ? 0f
+                : maximumCharges > 1
+                    ? chargeSnapshot.RechargeRemainingSeconds(now)
+                    : Math.Max(0f, (GetCooldownEnd(player.PlayerUID, skill.Code) - now) / 1000f);
             slots[i] = new SkillLoadoutSlotPacket
             {
                 Slot = i + 1,
@@ -305,12 +342,14 @@ public sealed class SkillCastingService
                 Color = skill?.Color ?? "#ff9f0d",
                 LearnedLevel = Math.Max(0, level),
                 CooldownSeconds = Math.Max(0f, skill?.CooldownSeconds ?? 0f),
-                CooldownRemainingSeconds = skill == null ? 0f : Math.Max(0f, (GetCooldownEnd(player.PlayerUID, skill.Code) - now) / 1000f),
+                CooldownRemainingSeconds = cooldownRemaining,
                 ResourceType = skill?.Resource.Type ?? "none",
                 ResourceCost = skill == null || level <= 0 ? 0f : skill.ResourceCostAtLevel(level),
                 TimingMode = skill?.Timing.Mode ?? "instant",
                 ResourceCostMode = skill?.Resource.CostMode ?? "cast",
                 HitIntervalSeconds = skill?.Timing.HitIntervalSeconds ?? 0f,
+                CurrentCharges = chargeSnapshot.Current,
+                MaximumCharges = chargeSnapshot.Maximum,
                 Empowered = skill != null
                     && empoweredSkills.TryGetValue(player.PlayerUID, out HashSet<string>? playerEmpowered)
                     && playerEmpowered.Contains(skill.Code)
@@ -334,9 +373,48 @@ public sealed class SkillCastingService
             return false;
         }
 
-        Vec3d center = projectile.ExplosionPosition;
-        ApplyAreaDamage(player, skill, projectile.SkillLevel, center, projectile);
-        visuals.Send(Event(CombatVisualKind.Burst, skill, center));
+        // Clients can still be rendering an interpolated projectile behind the
+        // authoritative server position. Defer every impact layer until that
+        // visible carrier reaches the contact point or its despawn arrives.
+        ResolveModelImpact(player, skill, projectile.SkillLevel, projectile.ExplosionPosition, projectile, true);
+        return true;
+    }
+
+    public bool HandleTargetedDropImpact(EntityVrpgTargetedDrop drop, Vec3d target)
+    {
+        if (drop.FiredBy is not EntityPlayer entityPlayer
+            || entityPlayer.Player is not IServerPlayer player)
+        {
+            return false;
+        }
+
+        SkillDefinition? skill = data.Skills.Get(drop.SkillCode);
+        if (skill == null || !string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        ResolveModelImpact(player, skill, drop.SkillLevel, target, drop, true);
+        return true;
+    }
+
+    private void ResolveModelImpact(
+        IServerPlayer player,
+        SkillDefinition skill,
+        int skillLevel,
+        Vec3d center,
+        Entity sourceEntity,
+        bool synchronizeVisualToCarrier)
+    {
+        ApplyAreaDamage(player, skill, skillLevel, center, sourceEntity);
+        CombatVisualEventPacket burst = Event(CombatVisualKind.Burst, skill, center.Clone().Add(0, 0.12, 0));
+        burst.SourceEntityId = player.Entity.EntityId;
+        if (synchronizeVisualToCarrier)
+        {
+            burst.TargetEntityId = sourceEntity.EntityId;
+            burst.Flags |= (int)CombatVisualFlags.SynchronizeToCarrier;
+        }
+        visuals.Send(burst);
         if (skill.GroundArea?.Enabled == true)
         {
             float radius = skill.GroundArea.Radius > 0f ? skill.GroundArea.Radius : skill.Radius;
@@ -349,8 +427,6 @@ public sealed class SkillCastingService
                 GroundAreaState.Active,
                 skill.GroundArea.DurationSeconds);
         }
-
-        return true;
     }
 
     private bool ExecuteInitial(
@@ -407,6 +483,8 @@ public sealed class SkillCastingService
                 return true;
             case "projectile_aoe":
                 return SpawnProjectile(player, skill, skillLevel, out error);
+            case "targeted_drop":
+                return SpawnTargetedDrop(player, skill, skillLevel, out error);
             case "circle":
                 CastCircle(player, skill, skillLevel);
                 return true;
@@ -790,7 +868,8 @@ public sealed class SkillCastingService
     private bool SpawnProjectile(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error)
     {
         error = "";
-        EntityProperties? entityType = api.World.GetEntityType(ProjectileEntityCode);
+        AssetLocation entityCode = skill.Projectile.Ballistic ? BallisticProjectileEntityCode : ProjectileEntityCode;
+        EntityProperties? entityType = api.World.GetEntityType(entityCode);
         if (entityType == null)
         {
             error = "VRPG projectile entity type is not loaded.";
@@ -804,8 +883,47 @@ public sealed class SkillCastingService
         }
 
         projectile.FiredBy = player.Entity;
-        projectile.Configure(skill, skillLevel);
+        projectile.Configure(skill, skillLevel, SelectProjectileModel(skill));
         LaunchProjectile(player.Entity, projectile, skill);
+        return true;
+    }
+
+    private string SelectProjectileModel(SkillDefinition skill)
+    {
+        string[] variants = skill.Projectile.ModelVariants ?? Array.Empty<string>();
+        int selected = api.World.Rand.Next(variants.Length + 1);
+        return selected == 0 ? skill.Model : variants[selected - 1];
+    }
+
+    private bool SpawnTargetedDrop(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error)
+    {
+        error = "";
+        Vec3d eye = EyePosition(player.Entity);
+        Vec3f view = player.Entity.Pos.GetViewVector();
+        if (!TryResolveGroundTarget(eye, view, skill.Range, out Vec3d target))
+        {
+            error = "Aim at a solid surface within range.";
+            return false;
+        }
+
+        EntityProperties? entityType = api.World.GetEntityType(TargetedDropEntityCode);
+        if (entityType == null)
+        {
+            error = "VRPG targeted-drop entity type is not loaded.";
+            return false;
+        }
+
+        if (api.World.ClassRegistry.CreateEntity(entityType) is not EntityVrpgTargetedDrop drop)
+        {
+            error = "VRPG targeted-drop entity class could not be created.";
+            return false;
+        }
+
+        Vec3d start = target.Clone().Add(0, skill.TargetedDrop.Height, 0);
+        drop.Configure(player.Entity, skill, skillLevel, target);
+        drop.Pos.SetPosWithDimension(start);
+        drop.World = player.Entity.World;
+        player.Entity.World.SpawnPriorityEntity(drop);
         return true;
     }
 
@@ -822,7 +940,8 @@ public sealed class SkillCastingService
             eye.Z + horizontalZ + view.Z * settings.ForwardOffset);
 
         Vec3d target;
-        if (string.Equals(settings.ImpactMode, "ground", StringComparison.OrdinalIgnoreCase))
+        if (settings.Ballistic
+            || string.Equals(settings.ImpactMode, "ground", StringComparison.OrdinalIgnoreCase))
         {
             target = ResolveGroundProjectileTarget(eye, view, skill.Range);
             projectile.SetGroundTarget(target);
@@ -835,22 +954,47 @@ public sealed class SkillCastingService
                 eye.Y + view.Y * convergence,
                 eye.Z + view.Z * convergence);
         }
-        double directionX = target.X - start.X;
-        double directionY = target.Y - start.Y;
-        double directionZ = target.Z - start.Z;
-        double length = Math.Max(0.0001, Math.Sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ));
-
         projectile.Pos.SetPosWithDimension(start);
-        projectile.Pos.Motion.Set(
-            directionX / length * settings.Speed,
-            directionY / length * settings.Speed,
-            directionZ / length * settings.Speed);
+        if (settings.Ballistic)
+        {
+            BallisticSolution solution = BallisticTrajectory.Solve(
+                start,
+                target,
+                settings.Speed,
+                settings.MinimumFlightSeconds);
+            projectile.Pos.Motion.Set(solution.InitialMotion);
+        }
+        else
+        {
+            double directionX = target.X - start.X;
+            double directionY = target.Y - start.Y;
+            double directionZ = target.Z - start.Z;
+            double length = Math.Max(0.0001, Math.Sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ));
+            projectile.Pos.Motion.Set(
+                directionX / length * settings.Speed,
+                directionY / length * settings.Speed,
+                directionZ / length * settings.Speed);
+        }
         projectile.World = caster.World;
         ((IProjectile)projectile).PreInitialize();
         caster.World.SpawnPriorityEntity(projectile);
     }
 
     private Vec3d ResolveGroundProjectileTarget(Vec3d eye, Vec3f view, float range)
+    {
+        if (TryResolveGroundTarget(eye, view, range, out Vec3d target))
+        {
+            return target;
+        }
+
+        double distance = Math.Max(1f, range);
+        return new Vec3d(
+            eye.X + view.X * distance,
+            eye.Y + view.Y * distance,
+            eye.Z + view.Z * distance);
+    }
+
+    private bool TryResolveGroundTarget(Vec3d eye, Vec3f view, float range, out Vec3d target)
     {
         double distance = Math.Max(1f, range);
         var end = new Vec3d(
@@ -866,7 +1010,93 @@ public sealed class SkillCastingService
             ref entitySelection,
             null,
             _ => false);
-        return blockSelection?.FullPosition?.Clone() ?? end;
+        target = blockSelection?.FullPosition?.Clone() ?? end;
+        return blockSelection != null;
+    }
+
+    private bool CommitTargetedCast(
+        IServerPlayer player,
+        SkillDefinition skill,
+        out string error,
+        out AbilityFailureKind failureKind)
+    {
+        error = "";
+        failureKind = AbilityFailureKind.Other;
+        RpgPlayerState state = playerStore.GetOrCreate(player);
+        int skillLevel = state.GetSkillLevel(skill.Code);
+        if (skillLevel <= 0 || !UsesTargetedRelease(skill))
+        {
+            error = "The targeted skill is no longer available.";
+            return false;
+        }
+
+        if (state.Level < skill.RequiredLevel)
+        {
+            error = $"{skill.Name} requires player level {skill.RequiredLevel}.";
+            return false;
+        }
+
+        long now = api.World.ElapsedMilliseconds;
+        if (!IsReady(player.PlayerUID, skill, now, out float readyInSeconds))
+        {
+            error = ReadyError(skill, readyInSeconds);
+            failureKind = AbilityFailureKind.Cooldown;
+            return false;
+        }
+
+        Vec3d eye = EyePosition(player.Entity);
+        Vec3f view = player.Entity.Pos.GetViewVector();
+        if (!TryResolveGroundTarget(eye, view, skill.Range, out _))
+        {
+            error = "Aim at a solid surface within range.";
+            return false;
+        }
+
+        float cost = skill.ResourceCostAtLevel(skillLevel);
+        if (!resources.TrySpend(player, skill.Resource.Type, cost, out error, out bool insufficientResource))
+        {
+            if (insufficientResource)
+            {
+                failureKind = AbilityFailureKind.InsufficientResource;
+            }
+
+            return false;
+        }
+
+        if (!ExecuteHit(player, skill, skillLevel, out error))
+        {
+            return false;
+        }
+
+        CommitRecovery(player.PlayerUID, skill, now);
+        return true;
+    }
+
+    private bool TryGetTargetedReleaseSkill(IServerPlayer player, int slot, out SkillDefinition skill)
+    {
+        skill = null!;
+        RpgPlayerState state = playerStore.GetOrCreate(player);
+        if (slot < 0 || slot >= state.EquippedSkills.Length)
+        {
+            return false;
+        }
+
+        SkillDefinition? equipped = data.Skills.Get(state.EquippedSkills[slot] ?? "");
+        if (equipped == null || !UsesTargetedRelease(equipped))
+        {
+            return false;
+        }
+
+        skill = equipped;
+        return true;
+    }
+
+    private static bool UsesTargetedRelease(SkillDefinition skill)
+    {
+        return IsTimingMode(skill, "targeted_release")
+            && (string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase)
+                || (string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
+                    && skill.Projectile?.Ballistic == true));
     }
 
     private void ApplyAreaDamage(IServerPlayer player, SkillDefinition skill, int skillLevel, Vec3d center, Entity sourceEntity)
@@ -958,6 +1188,63 @@ public sealed class SkillCastingService
         playerCooldowns[skillCode] = end;
     }
 
+    private bool IsReady(string playerUid, SkillDefinition skill, long now, out float readyInSeconds)
+    {
+        int maximum = MaximumCharges(skill);
+        if (maximum > 1)
+        {
+            SkillChargeSnapshot snapshot = chargeTracker.Snapshot(
+                playerUid,
+                skill.Code,
+                maximum,
+                CooldownMilliseconds(skill),
+                now);
+            readyInSeconds = snapshot.RechargeRemainingSeconds(now);
+            return snapshot.Current > 0;
+        }
+
+        long cooldownEnd = GetCooldownEnd(playerUid, skill.Code);
+        readyInSeconds = Math.Max(0f, (cooldownEnd - now) / 1000f);
+        return cooldownEnd <= now;
+    }
+
+    private void CommitRecovery(string playerUid, SkillDefinition skill, long now)
+    {
+        int maximum = MaximumCharges(skill);
+        if (maximum > 1)
+        {
+            // Readiness was checked immediately before execution on the same
+            // server thread, so a successful activation always owns a charge.
+            chargeTracker.TryConsume(
+                playerUid,
+                skill.Code,
+                maximum,
+                CooldownMilliseconds(skill),
+                now,
+                out _);
+            return;
+        }
+
+        SetCooldown(playerUid, skill.Code, now + CooldownMilliseconds(skill));
+    }
+
+    private static int MaximumCharges(SkillDefinition? skill)
+    {
+        return Math.Max(1, skill?.Charges?.Maximum ?? 1);
+    }
+
+    private static long CooldownMilliseconds(SkillDefinition skill)
+    {
+        return Math.Max(100L, (long)(skill.CooldownSeconds * 1000f));
+    }
+
+    private static string ReadyError(SkillDefinition skill, float readyInSeconds)
+    {
+        return MaximumCharges(skill) > 1
+            ? $"{skill.Name} restores a charge in {readyInSeconds:0.0}s."
+            : $"{skill.Name} is ready in {readyInSeconds:0.0}s.";
+    }
+
     private static Vec3d EyePosition(EntityPlayer entity)
     {
         return new Vec3d(
@@ -1042,4 +1329,5 @@ public sealed class SkillCastingService
         public long NextHitMilliseconds { get; set; }
         public long EndMilliseconds { get; init; }
     }
+
 }

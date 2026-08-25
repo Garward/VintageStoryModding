@@ -5,7 +5,8 @@
   "hitboxSize": { "x": 0.32, "y": 0.32 },
   "attributes": {
     "isProjectile": true,
-    "collectible": false
+    "collectible": false,
+    "shouldSwivelFromMotion": false
   },
   "client": {
     "renderer": "Shape",

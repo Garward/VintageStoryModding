@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace VRPG.Client.Visuals;
 
@@ -11,18 +12,18 @@ public enum VisualPriority
 }
 
 /// <summary>
-/// Sliding one-second particle budget. Non-critical priorities degrade in
-/// order (cosmetic, then others, then own) under the own-first policy, or all
-/// together under the uniform policy. Critical (P0) always returns 1 — and P0
-/// renderers do not consult the budget at all.
+/// True sliding one-second particle budget. Critical range communication is
+/// never scaled and is deliberately not recorded as degradable load.
 /// </summary>
 public sealed class VisualBudget
 {
+    private const long WindowMs = 1000;
     private readonly int particlesPerSecond;
-    private long windowStartMs;
+    private readonly Queue<Spend> spends = new Queue<Spend>();
     private float spent;
 
     public bool OwnFirst { get; set; } = true;
+    public int ParticlesPerSecond => particlesPerSecond;
 
     public VisualBudget(int particlesPerSecond = 900)
     {
@@ -31,8 +32,12 @@ public sealed class VisualBudget
 
     public void Record(float particleCost, long nowMs)
     {
-        RollWindow(nowMs);
-        spent += Math.Max(0f, particleCost);
+        Prune(nowMs);
+        float cost = Math.Max(0f, particleCost);
+        if (cost <= 0f) return;
+
+        spends.Enqueue(new Spend(nowMs, cost));
+        spent += cost;
     }
 
     public float QuantityScale(VisualPriority priority, long nowMs)
@@ -42,7 +47,7 @@ public sealed class VisualBudget
             return 1f;
         }
 
-        RollWindow(nowMs);
+        Prune(nowMs);
         float load = spent / particlesPerSecond;
         if (!OwnFirst)
         {
@@ -57,12 +62,24 @@ public sealed class VisualBudget
         };
     }
 
-    private void RollWindow(long nowMs)
+    public VisualBudgetSnapshot Snapshot(long nowMs)
     {
-        if (nowMs - windowStartMs >= 1000)
-        {
-            windowStartMs = nowMs;
-            spent = 0f;
-        }
+        Prune(nowMs);
+        return new VisualBudgetSnapshot(spent, particlesPerSecond, spent / particlesPerSecond);
     }
+
+    private void Prune(long nowMs)
+    {
+        long cutoff = nowMs - WindowMs;
+        while (spends.Count > 0 && spends.Peek().AtMs <= cutoff)
+        {
+            spent -= spends.Dequeue().Cost;
+        }
+
+        if (spent < 0.0001f) spent = 0f;
+    }
+
+    private readonly record struct Spend(long AtMs, float Cost);
 }
+
+public readonly record struct VisualBudgetSnapshot(float Spent, int PerSecond, float Load);

@@ -12,6 +12,7 @@ public static class SkillDefinitionValidator
     {
         "raycast_aoe",
         "projectile_aoe",
+        "targeted_drop",
         "circle",
         "melee_arc",
         "melee_line",
@@ -22,7 +23,8 @@ public static class SkillDefinitionValidator
     {
         "instant",
         "sequence",
-        "channel"
+        "channel",
+        "targeted_release"
     };
 
     private static readonly HashSet<string> ResourceCostModes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -55,9 +57,20 @@ public static class SkillDefinitionValidator
         "windowopen"
     };
 
+    private static readonly HashSet<string> FxRoles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "debris", "dust", "sparks", "fire", "rim", "custom"
+    };
+
+    private static readonly HashSet<string> FxEvolveFunctions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "linear", "quadratic", "root", "sinus", "clamp", "identical"
+    };
+
     public static void Validate(ICoreAPI api, VRPGDataRegistry data)
     {
         var errors = new List<string>();
+        ValidateFxPresets(data, errors);
         foreach (SkillDefinition skill in data.Skills.All)
         {
             ValidateSkill(api, data, skill, errors);
@@ -111,6 +124,23 @@ public static class SkillDefinitionValidator
         return true;
     }
 
+    public static bool IsFxRole(string value) => FxRoles.Contains(value ?? "");
+
+    public static bool IsParticleModel(string value)
+    {
+        return string.Equals(value, "quad", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "cube", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool IsFxColor(string value)
+    {
+        return string.Equals(value, "$skill", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "$ground", StringComparison.OrdinalIgnoreCase)
+            || TryParseColor(value, out _);
+    }
+
+    public static bool IsFxEvolveFunction(string value) => FxEvolveFunctions.Contains(value ?? "");
+
     private static void ValidateSkill(ICoreAPI api, VRPGDataRegistry data, SkillDefinition skill, List<string> errors)
     {
         string label = string.IsNullOrWhiteSpace(skill.Code) ? "<missing code>" : skill.Code;
@@ -136,7 +166,7 @@ public static class SkillDefinitionValidator
 
         if (!Deliveries.Contains(skill.Delivery))
         {
-            errors.Add(label + ": delivery must be raycast_aoe, projectile_aoe, circle, melee_arc, melee_line, or melee_single.");
+            errors.Add(label + ": delivery must be raycast_aoe, projectile_aoe, targeted_drop, circle, melee_arc, melee_line, or melee_single.");
         }
 
         if (skill.RequiredLevel < 1 || skill.MaxLevel < 1)
@@ -149,8 +179,14 @@ public static class SkillDefinitionValidator
             errors.Add(label + ": cooldownSeconds must be at least 0.1 to bound network and combat spam.");
         }
 
+        if (skill.Charges == null || skill.Charges.Maximum < 1 || skill.Charges.Maximum > 20)
+        {
+            errors.Add(label + ": charges.maximum must be between 1 and 20.");
+        }
+
         bool radiusDelivery = string.Equals(skill.Delivery, "raycast_aoe", StringComparison.OrdinalIgnoreCase)
             || string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase)
             || string.Equals(skill.Delivery, "circle", StringComparison.OrdinalIgnoreCase);
         if ((radiusDelivery && skill.Radius <= 0f) || skill.Radius < 0f || skill.Radius > 32f)
         {
@@ -225,41 +261,89 @@ public static class SkillDefinitionValidator
             errors.Add(label + ": particles need model quad/cube, valid quantities/scale/velocity/lifetime, origin offsets within 2 blocks, and originForwardOffset within 0-3.");
         }
 
-        if (!string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase))
+        SkillImpactVisualDefinition? impact = skill.ImpactVisual;
+        if (impact == null)
+        {
+            errors.Add(label + ": impactVisual cannot be null.");
+        }
+        else if (impact.Enabled)
+        {
+            ValidateImpactVisual(api, data, skill, label, impact, errors);
+        }
+
+        bool modelDelivery = string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase);
+        if (!modelDelivery)
         {
             return;
         }
 
         if (string.IsNullOrWhiteSpace(skill.Model))
         {
-            errors.Add(label + ": projectile_aoe skills require a model shape path.");
+            errors.Add(label + ": model projectile and targeted-drop skills require a model shape path.");
         }
         else
         {
-            try
-            {
-                AssetLocation shapeLocation = ShapeLocation(skill.Model);
-                if (api.Assets.TryGet(shapeLocation) == null)
-                {
-                    errors.Add(label + ": model asset not found at " + shapeLocation + ".");
-                }
-            }
-            catch (Exception ex)
-            {
-                errors.Add(label + ": model path is invalid (" + ex.Message + ").");
-            }
+            ValidateShapeAsset(api, label + "/model", skill.Model, errors);
         }
 
-        if (skill.Projectile == null || skill.Projectile.Speed <= 0f || skill.Projectile.LifetimeSeconds <= 0f)
+        if (string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.Equals(skill.Timing.Mode, "targeted_release", StringComparison.OrdinalIgnoreCase))
+            {
+                errors.Add(label + ": targeted_drop requires timing.mode targeted_release.");
+            }
+
+            if (skill.TargetedDrop == null
+                || skill.TargetedDrop.Height < 1f
+                || skill.TargetedDrop.Height > 64f
+                || skill.TargetedDrop.FallSpeed <= 0f
+                || skill.TargetedDrop.FallSpeed > 64f
+                || skill.TargetedDrop.Gravity <= 0f
+                || skill.TargetedDrop.Gravity > 128f
+                || skill.TargetedDrop.LifetimeSeconds <= 0f
+                || skill.TargetedDrop.LifetimeSeconds > 60f)
+            {
+                errors.Add(label + ": targetedDrop needs height within 1-64 blocks, initial fallSpeed within 0-64 blocks per second, gravity within 0-128 blocks per second squared, and lifetimeSeconds within 0-60.");
+            }
+            else
+            {
+                double fallSeconds = (-skill.TargetedDrop.FallSpeed + Math.Sqrt(
+                    skill.TargetedDrop.FallSpeed * skill.TargetedDrop.FallSpeed
+                    + 2d * skill.TargetedDrop.Gravity * skill.TargetedDrop.Height)) / skill.TargetedDrop.Gravity;
+                if (skill.TargetedDrop.LifetimeSeconds < fallSeconds + 0.5d)
+                {
+                    errors.Add(label + ": targetedDrop lifetimeSeconds must cover the complete accelerated fall plus a 0.5 second margin.");
+                }
+            }
+
+            return;
+        }
+
+        if (skill.Projectile == null)
+        {
+            errors.Add(label + ": projectile speed and lifetimeSeconds must be greater than 0.");
+            return;
+        }
+
+        if (skill.Projectile.Speed <= 0f || skill.Projectile.LifetimeSeconds <= 0f)
         {
             errors.Add(label + ": projectile speed and lifetimeSeconds must be greater than 0.");
         }
         else if (!string.Equals(skill.Projectile.ImpactMode, "entity", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(skill.Projectile.ImpactMode, "ground", StringComparison.OrdinalIgnoreCase))
+            && !string.Equals(skill.Projectile.ImpactMode, "ground", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(skill.Projectile.ImpactMode, "either", StringComparison.OrdinalIgnoreCase))
         {
-            errors.Add(label + ": projectile impactMode must be entity or ground.");
+            errors.Add(label + ": projectile impactMode must be entity, ground, or either.");
         }
-        else if (skill.Projectile.VerticalOffset < -2f
+
+        if (skill.Projectile.CreatureCollisionRadius < 0.05f
+            || skill.Projectile.CreatureCollisionRadius > 2f)
+        {
+            errors.Add(label + ": projectile.creatureCollisionRadius must be within 0.05-2 blocks.");
+        }
+
+        if (skill.Projectile.VerticalOffset < -2f
             || skill.Projectile.VerticalOffset > 2f
             || skill.Projectile.HorizontalOffset < -2f
             || skill.Projectile.HorizontalOffset > 2f
@@ -270,6 +354,243 @@ public static class SkillDefinitionValidator
         {
             errors.Add(label + ": projectile offsets must stay within 2 blocks, forwardOffset within 0-3, and aimConvergenceDistance within 1-128.");
         }
+
+        if (skill.Projectile.Ballistic
+            && (!string.Equals(skill.Timing.Mode, "targeted_release", StringComparison.OrdinalIgnoreCase)
+                || skill.Projectile.MinimumFlightSeconds < 0.2f
+                || skill.Projectile.MinimumFlightSeconds > 3f))
+        {
+            errors.Add(label + ": ballistic projectiles require timing.mode targeted_release and minimumFlightSeconds within 0.2-3.");
+        }
+
+        if (!string.Equals(skill.Projectile.RotationMode, "flight", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(skill.Projectile.RotationMode, "tumble", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(skill.Projectile.RotationMode, "stable", StringComparison.OrdinalIgnoreCase))
+        {
+            errors.Add(label + ": projectile rotationMode must be flight, tumble, or stable.");
+        }
+
+        if (skill.Projectile.ModelVariants == null || skill.Projectile.ModelVariants.Length > 32)
+        {
+            errors.Add(label + ": projectile modelVariants must be a non-null list with at most 32 entries.");
+        }
+        else
+        {
+            for (int i = 0; i < skill.Projectile.ModelVariants.Length; i++)
+            {
+                string variant = skill.Projectile.ModelVariants[i] ?? "";
+                if (string.IsNullOrWhiteSpace(variant))
+                {
+                    errors.Add(label + $"/projectile/modelVariants[{i}]: model path is required.");
+                }
+                else
+                {
+                    ValidateShapeAsset(api, label + $"/projectile/modelVariants[{i}]", variant, errors);
+                }
+            }
+        }
+    }
+
+    private static void ValidateShapeAsset(ICoreAPI api, string label, string model, List<string> errors)
+    {
+        try
+        {
+            AssetLocation shapeLocation = ShapeLocation(model);
+            if (api.Assets.TryGet(shapeLocation) == null)
+            {
+                errors.Add(label + ": model asset not found at " + shapeLocation + ".");
+            }
+        }
+        catch (Exception ex)
+        {
+            errors.Add(label + ": model path is invalid (" + ex.Message + ").");
+        }
+    }
+
+    private static void ValidateFxPresets(VRPGDataRegistry data, List<string> errors)
+    {
+        foreach (SkillFxPresetDefinition preset in data.SkillFxPresets.All)
+        {
+            string label = string.IsNullOrWhiteSpace(preset.Code) ? "<missing FX preset code>" : preset.Code;
+            if (!label.Contains(':'))
+            {
+                errors.Add(label + ": FX preset code must be namespaced.");
+            }
+
+            ValidateFxLayers(label, preset.Layers, errors);
+        }
+    }
+
+    private static void ValidateImpactVisual(
+        ICoreAPI api,
+        VRPGDataRegistry data,
+        SkillDefinition skill,
+        string label,
+        SkillImpactVisualDefinition impact,
+        List<string> errors)
+    {
+        bool hasPreset = !string.IsNullOrWhiteSpace(impact.Preset);
+        bool hasLayers = impact.Layers is { Length: > 0 };
+        if (hasPreset && hasLayers)
+        {
+            errors.Add(label + ": impactVisual cannot supply both preset and layers; layers would replace the preset.");
+        }
+        else if (!hasPreset && !hasLayers)
+        {
+            errors.Add(label + ": enabled impactVisual needs a preset or a direct layers list.");
+        }
+
+        SkillFxLayerDefinition[] layers = impact.Layers ?? Array.Empty<SkillFxLayerDefinition>();
+        if (hasPreset)
+        {
+            SkillFxPresetDefinition? preset = data.SkillFxPresets.Get(NormalizeCode(impact.Preset));
+            if (preset == null)
+            {
+                errors.Add(label + ": unknown impact FX preset " + impact.Preset + ".");
+                layers = Array.Empty<SkillFxLayerDefinition>();
+            }
+            else
+            {
+                layers = preset.Layers;
+            }
+        }
+
+        ValidateFxLayers(label, layers, errors);
+        if (impact.Overrides == null)
+        {
+            errors.Add(label + ": impactVisual.overrides cannot be null.");
+        }
+        else
+        {
+            foreach (KeyValuePair<string, SkillFxLayerOverrideDefinition> entry in impact.Overrides)
+            {
+                bool roleExists = Array.Exists(layers, layer => layer != null && string.Equals(layer.Role, entry.Key, StringComparison.OrdinalIgnoreCase));
+                if (!roleExists)
+                {
+                    errors.Add(label + ": impact override refers to missing layer role " + entry.Key + ".");
+                }
+
+                ValidateFxOverride(label + "/" + entry.Key, entry.Value, errors);
+            }
+        }
+
+        if (impact.ParticleDurationScale < 0.2f || impact.ParticleDurationScale > 3f
+            || impact.ExpansionSpeedScale < 0.2f || impact.ExpansionSpeedScale > 3f
+            || impact.ShockwaveDurationSeconds < 0.08f || impact.ShockwaveDurationSeconds > 2f
+            || impact.CameraShake < 0f || impact.CameraShake > 2f
+            || impact.CameraShakeRange <= 0f || impact.CameraShakeRange > 128f
+            || impact.Sounds == null || impact.Sounds.Length > 4
+            || impact.SoundRange <= 0f || impact.SoundRange > 128f
+            || impact.SoundVolume < 0f || impact.SoundVolume > 2f)
+        {
+            errors.Add(label + ": enabled impactVisual needs particle duration and expansion scales within 0.2-3, bounded shockwave and camera-shake values, at most four sounds, soundRange within 0-128, and soundVolume within 0-2.");
+        }
+
+        bool hasRim = Array.Exists(layers, layer => layer != null && string.Equals(layer.Role, "rim", StringComparison.OrdinalIgnoreCase));
+        if (skill.Radius > 0f && !hasRim)
+        {
+            api.Logger.Warning("[VRPG] {0}: area impact FX has no rim layer; its gameplay radius will not be legible.", label);
+        }
+
+        foreach (SkillFxLayerDefinition layer in layers)
+        {
+            if (layer == null) continue;
+            SkillFxLayerOverrideDefinition? layerOverride = FindOverride(impact.Overrides, layer.Role);
+            bool informative = layerOverride?.Informative ?? layer.Informative;
+            float delay = layerOverride?.DelaySeconds ?? layer.DelaySeconds;
+            if (string.Equals(layer.Role, "rim", StringComparison.OrdinalIgnoreCase) && delay > 0f)
+            {
+                api.Logger.Warning("[VRPG] {0}/{1}: rim delay is ignored and pinned to zero.", label, layer.Role);
+            }
+            else if (informative && delay > 0f)
+            {
+                api.Logger.Warning(
+                    delay > 0.2f
+                        ? "[VRPG] {0}/{1}: informative delay {2:0.###}s exceeds 0.2s and will be demoted to decorative."
+                        : "[VRPG] {0}/{1}: informative delay {2:0.###}s should be zero.",
+                    label,
+                    layer.Role,
+                    delay);
+            }
+        }
+    }
+
+    private static void ValidateFxLayers(string label, SkillFxLayerDefinition[]? layers, List<string> errors)
+    {
+        if (layers == null)
+        {
+            errors.Add(label + ": layers cannot be null.");
+            return;
+        }
+
+        var roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (SkillFxLayerDefinition layer in layers)
+        {
+            string layerLabel = label + "/" + (layer?.Role ?? "<null>");
+            if (layer == null)
+            {
+                errors.Add(layerLabel + ": layer cannot be null.");
+                continue;
+            }
+
+            if (!IsFxRole(layer.Role)) errors.Add(layerLabel + ": unknown FX role.");
+            if (!roles.Add(layer.Role)) errors.Add(layerLabel + ": layer roles must be unique for role-keyed overrides.");
+            if (!IsParticleModel(layer.Model)) errors.Add(layerLabel + ": model must be quad or cube.");
+            if (!IsFxColor(layer.Color)) errors.Add(layerLabel + ": color must be $skill, $ground, #RRGGBB, or #RRGGBBAA.");
+            if (layer.Quantity < 0f || layer.Quantity > 300f) errors.Add(layerLabel + ": quantity must be within 0-300.");
+            if (layer.SizeMin <= 0f || layer.SizeMax < layer.SizeMin || layer.SizeMax > 8f) errors.Add(layerLabel + ": size range is invalid.");
+            if (layer.LifetimeSeconds <= 0f || layer.LifetimeSeconds > 5f) errors.Add(layerLabel + ": lifetimeSeconds must be within 0-5.");
+            if (layer.Coverage < 0f || layer.Coverage > 4f) errors.Add(layerLabel + ": coverage must be within 0-4.");
+            if (layer.OriginCoverage < 0f || layer.OriginCoverage > 1f) errors.Add(layerLabel + ": originCoverage must be within 0-1.");
+            if (layer.Glow < 0 || layer.Glow > 255) errors.Add(layerLabel + ": glow must be within 0-255.");
+            if (layer.DelaySeconds < 0f || layer.DelaySeconds > 5f) errors.Add(layerLabel + ": delaySeconds must be within 0-5.");
+            ValidateEvolve(layerLabel + "/opacityEvolve", layer.OpacityEvolve, errors);
+            ValidateEvolve(layerLabel + "/sizeEvolve", layer.SizeEvolve, errors);
+        }
+    }
+
+    private static void ValidateFxOverride(string label, SkillFxLayerOverrideDefinition? value, List<string> errors)
+    {
+        if (value == null)
+        {
+            errors.Add(label + ": override cannot be null.");
+            return;
+        }
+
+        if (value.Model != null && !IsParticleModel(value.Model)) errors.Add(label + ": override model must be quad or cube.");
+        if (value.Color != null && !IsFxColor(value.Color)) errors.Add(label + ": override color is invalid.");
+        if (value.Quantity is < 0f or > 300f) errors.Add(label + ": override quantity must be within 0-300.");
+        if (value.SizeMin is <= 0f or > 8f || value.SizeMax is <= 0f or > 8f) errors.Add(label + ": override sizes must be within 0-8.");
+        if (value.LifetimeSeconds is <= 0f or > 5f) errors.Add(label + ": override lifetimeSeconds must be within 0-5.");
+        if (value.Coverage is < 0f or > 4f) errors.Add(label + ": override coverage must be within 0-4.");
+        if (value.OriginCoverage is < 0f or > 1f) errors.Add(label + ": override originCoverage must be within 0-1.");
+        if (value.Glow is < 0 or > 255) errors.Add(label + ": override glow must be within 0-255.");
+        if (value.DelaySeconds is < 0f or > 5f) errors.Add(label + ": override delaySeconds must be within 0-5.");
+        ValidateEvolve(label + "/opacityEvolve", value.OpacityEvolve, errors);
+        ValidateEvolve(label + "/sizeEvolve", value.SizeEvolve, errors);
+    }
+
+    private static void ValidateEvolve(string label, SkillFxEvolveDefinition? evolve, List<string> errors)
+    {
+        if (evolve != null && !IsFxEvolveFunction(evolve.Fn))
+        {
+            errors.Add(label + ": unknown evolve function " + evolve.Fn + ".");
+        }
+    }
+
+    private static SkillFxLayerOverrideDefinition? FindOverride(
+        Dictionary<string, SkillFxLayerOverrideDefinition>? overrides,
+        string role)
+    {
+        if (overrides != null)
+        {
+            foreach (KeyValuePair<string, SkillFxLayerOverrideDefinition> entry in overrides)
+            {
+                if (string.Equals(entry.Key, role, StringComparison.OrdinalIgnoreCase)) return entry.Value;
+            }
+        }
+
+        return null;
     }
 
     private static void ValidateMeleeAndTiming(SkillDefinition skill, string label, List<string> errors)
@@ -293,7 +614,7 @@ public static class SkillDefinitionValidator
 
         if (skill.Timing == null || !TimingModes.Contains(skill.Timing.Mode))
         {
-            errors.Add(label + ": timing.mode must be instant, sequence, or channel.");
+            errors.Add(label + ": timing.mode must be instant, sequence, channel, or targeted_release.");
             return;
         }
 
@@ -317,6 +638,30 @@ public static class SkillDefinitionValidator
                 || skill.Timing.MaxDurationSeconds > 60f))
         {
             errors.Add(label + ": channel skills need hitIntervalSeconds within 0.05-2 and maxDurationSeconds from one tick through 60 seconds.");
+        }
+
+        else if (mode == "targeted_release"
+            && !string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase)
+            && !(string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
+                && skill.Projectile?.Ballistic == true))
+        {
+            errors.Add(label + ": targeted_release requires targeted_drop or a ballistic projectile_aoe delivery.");
+        }
+
+        if (skill.Timing.RepeatWhileHeld
+            && (mode != "targeted_release"
+                || (skill.Charges?.Maximum ?? 1) <= 1
+                || skill.Timing.HoldRepeatDelaySeconds < 0.15f
+                || skill.Timing.HoldRepeatDelaySeconds > 2f
+                || skill.Timing.HoldRepeatIntervalSeconds < 0.1f
+                || skill.Timing.HoldRepeatIntervalSeconds > 5f))
+        {
+            errors.Add(label + ": repeatWhileHeld requires a targeted_release skill with multiple charges, holdRepeatDelaySeconds within 0.15-2, and holdRepeatIntervalSeconds within 0.1-5.");
+        }
+
+        if (mode == "channel" && (skill.Charges?.Maximum ?? 1) > 1)
+        {
+            errors.Add(label + ": channel skills cannot store multiple activations; channel cooldown starts when the hold ends.");
         }
 
         if (skill.Resource != null

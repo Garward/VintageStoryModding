@@ -8,6 +8,7 @@ using VRPG.Client.UI;
 using VRPG.Client.Patches;
 using VRPG.Client.Visuals;
 using VRPG.Data;
+using VRPG.Data.Definitions;
 using VRPG.Data.Library;
 using VRPG.Modules.Dungeons;
 using VRPG.Modules.Rpg;
@@ -42,11 +43,15 @@ public sealed class VRPGModSystem : ModSystem
     private HudElementVRPGWindowPulse? clientWindowPulse;
     private HudElementVRPGChannelBar? clientChannelBar;
     private GroundTelegraphRenderer? telegraphRenderer;
+    private SkillTargetingPreview? skillTargetingPreview;
     private AuraEmitterSystem? auraEmitters;
     private Harmony? clientHarmony;
     private Harmony? serverHarmony;
     private TalentTreeSnapshotPacket clientTalentTree = new TalentTreeSnapshotPacket();
+    private SkillLoadoutPacket clientSkillLoadout = new SkillLoadoutPacket();
+    private long clientSkillLoadoutAtMilliseconds;
     private readonly HashSet<int> heldSkillSlots = new HashSet<int>();
+    private readonly Dictionary<int, HeldRepeatCast> heldRepeatCasts = new Dictionary<int, HeldRepeatCast>();
     private ICoreClientAPI? clientApi;
     private long skillInputTickListenerId;
 
@@ -68,6 +73,7 @@ public sealed class VRPGModSystem : ModSystem
 
         api.RegisterItemClass("vrpg.riftchart", typeof(ItemRiftChart));
         api.RegisterEntity("EntityVrpgSkillProjectile", typeof(EntityVrpgSkillProjectile));
+        api.RegisterEntity("EntityVrpgTargetedDrop", typeof(EntityVrpgTargetedDrop));
         config = VRPGConfigStore.Load(api);
         dataRegistry = new VRPGDataRegistry();
     }
@@ -152,8 +158,15 @@ public sealed class VRPGModSystem : ModSystem
         if (config.Modules.Rpg.Enabled)
         {
             visualDirector = new VisualDirector(api, DataRegistry, config.Modules.Rpg.CombatVisuals);
-            telegraphRenderer = new GroundTelegraphRenderer(api, visualDirector.Areas, visualDirector.Styles, config.Modules.Rpg.CombatVisuals);
+            skillTargetingPreview = new SkillTargetingPreview(api);
+            telegraphRenderer = new GroundTelegraphRenderer(
+                api,
+                visualDirector.Areas,
+                visualDirector.Styles,
+                config.Modules.Rpg.CombatVisuals,
+                skillTargetingPreview);
             api.Event.RegisterRenderer(telegraphRenderer, EnumRenderStage.OIT, "vrpg-telegraphs");
+            api.Event.RegisterRenderer(visualDirector.Shockwaves, EnumRenderStage.OIT, "vrpg-impact-shockwaves");
             auraEmitters = new AuraEmitterSystem(api, DataRegistry, config.Modules.Rpg.CombatVisuals, visualDirector.Budget);
             auraEmitters.Start();
             clientPlayerStatusHud = new HudElementVRPGPlayerStatus(api, DataRegistry);
@@ -173,7 +186,7 @@ public sealed class VRPGModSystem : ModSystem
 
         if (config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
         {
-            clientResourceHud = new HudElementVRPGResources(api, config.Modules.Rpg.Hud);
+            clientResourceHud = new HudElementVRPGResources(api, config.Modules.Rpg.Hud, () => PersistClientConfig(api));
             clientResourceHud.TryOpen();
         }
 
@@ -252,6 +265,12 @@ public sealed class VRPGModSystem : ModSystem
             telegraphRenderer.Dispose();
             telegraphRenderer = null;
         }
+        skillTargetingPreview?.Clear();
+        skillTargetingPreview = null;
+        if (visualDirector != null)
+        {
+            clientApi?.Event.UnregisterRenderer(visualDirector.Shockwaves, EnumRenderStage.OIT);
+        }
         visualDirector?.Dispose();
         visualDirector = null;
         auraEmitters?.Dispose();
@@ -262,6 +281,9 @@ public sealed class VRPGModSystem : ModSystem
         }
         skillInputTickListenerId = 0;
         heldSkillSlots.Clear();
+        heldRepeatCasts.Clear();
+        clientSkillLoadout = new SkillLoadoutPacket();
+        clientSkillLoadoutAtMilliseconds = 0L;
         clientApi = null;
         VrpgClientHudRuntime.HideVanillaStatbar = false;
         serverHarmony?.UnpatchAll("vrpg.server");
@@ -389,9 +411,12 @@ public sealed class VRPGModSystem : ModSystem
                 .WithDescription("Fire synthetic combat visuals for testing.")
                 .RequiresPrivilege(Privilege.controlserver)
                 .BeginSubCommand("event")
-                    .WithDescription("Fire a combat visual event at the aimed point (kinds: impact, burst, ray, damage, heal, shield, break, counter, consume, windowopen, mark).")
+                    .WithDescription("Fire a combat visual event at the aimed point with an optional resolved radius (kinds include impact, burst, ray, and circle).")
                     .RequiresPlayer()
-                    .WithArgs(api.ChatCommands.Parsers.Word("kind"), api.ChatCommands.Parsers.OptionalWord("style"))
+                    .WithArgs(
+                        api.ChatCommands.Parsers.Word("kind"),
+                        api.ChatCommands.Parsers.OptionalWord("style"),
+                        api.ChatCommands.Parsers.OptionalFloat("radius", 2.5f))
                     .HandleWith(args => HandleVfxEvent(api, args))
                 .EndSubCommand()
                 .BeginSubCommand("status")
@@ -455,11 +480,11 @@ public sealed class VRPGModSystem : ModSystem
             X = position.X,
             Y = position.Y,
             Z = position.Z,
-            Radius = 2.5f,
+            Radius = (float)args[2],
             Magnitude = 17f,
             FallbackColorRgba = unchecked((int)0xccf2ede4)
         });
-        return TextCommandResult.Success("Fired " + kind + ".");
+        return TextCommandResult.Success($"Fired {kind} at radius {(float)args[2]:0.##}.");
     }
 
     private TextCommandResult HandleVfxStatus(TextCommandCallingArgs args)
@@ -717,6 +742,11 @@ public sealed class VRPGModSystem : ModSystem
         return rpgModule?.HandleProjectileImpact(projectile) == true;
     }
 
+    public bool HandleTargetedDropImpact(EntityVrpgTargetedDrop drop, Vintagestory.API.MathTools.Vec3d target)
+    {
+        return rpgModule?.HandleTargetedDropImpact(drop, target) == true;
+    }
+
     private void RegisterSkillHotkeys(ICoreClientAPI api)
     {
         GlKeys[] keys =
@@ -756,6 +786,34 @@ public sealed class VRPGModSystem : ModSystem
             return true;
         }
 
+        if (pressed)
+        {
+            if (BeginSkillTargetingPreview(slot))
+            {
+                SkillDefinition? skill = EquippedClientSkill(slot);
+                if (skill?.Timing.RepeatWhileHeld == true
+                    && config.Modules.Rpg.SkillHotbar.HoldToRepeatChargedSkills)
+                {
+                    long now = clientApi?.World.ElapsedMilliseconds ?? 0L;
+                    heldRepeatCasts[slot] = new HeldRepeatCast
+                    {
+                        NextCastMilliseconds = now + SecondsToMilliseconds(skill.Timing.HoldRepeatDelaySeconds),
+                        RemainingBurstCharges = AvailableClientCharges(slot, now)
+                    };
+                }
+                return true;
+            }
+        }
+        else
+        {
+            skillTargetingPreview?.End(slot);
+            if (heldRepeatCasts.Remove(slot, out HeldRepeatCast? repeat)
+                && (repeat.AutomaticCastStarted || repeat.Stopped))
+            {
+                return true;
+            }
+        }
+
         clientChannel?.SendPacket(new SkillCastRequestPacket { Slot = slot, Pressed = pressed });
         return true;
     }
@@ -767,22 +825,132 @@ public sealed class VRPGModSystem : ModSystem
             return;
         }
 
+        long now = api.World.ElapsedMilliseconds;
         var released = new List<int>();
-        foreach (int slot in heldSkillSlots)
+        var held = new List<int>(heldSkillSlots);
+        foreach (int slot in held)
         {
             if (slot < 0
                 || slot >= VrpgHotkeys.SkillCodes.Length
                 || !api.Input.IsHotKeyPressed(VrpgHotkeys.SkillCodes[slot]))
             {
                 released.Add(slot);
+                continue;
             }
+
+            TickHeldRepeat(slot, now);
         }
 
         foreach (int slot in released)
         {
             heldSkillSlots.Remove(slot);
-            clientChannel?.SendPacket(new SkillCastRequestPacket { Slot = slot, Pressed = false });
+            skillTargetingPreview?.End(slot);
+            bool alreadyCast = heldRepeatCasts.Remove(slot, out HeldRepeatCast? repeat)
+                && (repeat.AutomaticCastStarted || repeat.Stopped);
+            if (!alreadyCast)
+            {
+                clientChannel?.SendPacket(new SkillCastRequestPacket { Slot = slot, Pressed = false });
+            }
         }
+    }
+
+    private void TickHeldRepeat(int slot, long now)
+    {
+        if (!heldRepeatCasts.TryGetValue(slot, out HeldRepeatCast? repeat)
+            || repeat.Stopped
+            || now < repeat.NextCastMilliseconds)
+        {
+            return;
+        }
+
+        SkillDefinition? skill = EquippedClientSkill(slot);
+        SkillLoadoutSlotPacket? loadout = EquippedClientSlot(slot);
+        if (skill?.Timing.RepeatWhileHeld != true || loadout == null)
+        {
+            repeat.Stopped = true;
+            skillTargetingPreview?.End(slot);
+            return;
+        }
+
+        if (loadout.MaximumCharges > 1 && repeat.RemainingBurstCharges <= 0)
+        {
+            repeat.Stopped = true;
+            skillTargetingPreview?.End(slot);
+            return;
+        }
+
+        skillTargetingPreview?.Update();
+        if (skillTargetingPreview?.Slot != slot || !skillTargetingPreview.HasTarget)
+        {
+            repeat.NextCastMilliseconds = now + 50L;
+            return;
+        }
+
+        clientChannel?.SendPacket(new SkillCastRequestPacket { Slot = slot, Pressed = false });
+        repeat.AutomaticCastStarted = true;
+        repeat.RemainingBurstCharges--;
+        repeat.NextCastMilliseconds = now + SecondsToMilliseconds(skill.Timing.HoldRepeatIntervalSeconds);
+    }
+
+    private bool BeginSkillTargetingPreview(int slot)
+    {
+        if (skillTargetingPreview == null)
+        {
+            return false;
+        }
+
+        SkillDefinition? skill = EquippedClientSkill(slot);
+        if (skill != null
+            && string.Equals(skill.Timing.Mode, "targeted_release", StringComparison.OrdinalIgnoreCase)
+            && (string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase)
+                || (string.Equals(skill.Delivery, "projectile_aoe", StringComparison.OrdinalIgnoreCase)
+                    && skill.Projectile?.Ballistic == true)))
+        {
+            skillTargetingPreview.Begin(slot, skill);
+            return true;
+        }
+
+        return false;
+    }
+
+    private SkillDefinition? EquippedClientSkill(int slot)
+    {
+        SkillLoadoutSlotPacket? equipped = EquippedClientSlot(slot);
+        return equipped == null ? null : DataRegistry.Skills.Get(equipped.Code);
+    }
+
+    private SkillLoadoutSlotPacket? EquippedClientSlot(int slot)
+    {
+        for (int i = 0; i < clientSkillLoadout.Slots.Length; i++)
+        {
+            if (clientSkillLoadout.Slots[i].Slot == slot + 1)
+            {
+                return clientSkillLoadout.Slots[i];
+            }
+        }
+
+        return null;
+    }
+
+    private int AvailableClientCharges(int slot, long now)
+    {
+        SkillLoadoutSlotPacket? equipped = EquippedClientSlot(slot);
+        return equipped == null
+            ? 0
+            : SkillChargeProjection.Current(equipped, clientSkillLoadoutAtMilliseconds, now);
+    }
+
+    private static long SecondsToMilliseconds(float seconds)
+    {
+        return Math.Max(1L, (long)(seconds * 1000f));
+    }
+
+    private sealed class HeldRepeatCast
+    {
+        public long NextCastMilliseconds { get; set; }
+        public int RemainingBurstCharges { get; set; }
+        public bool AutomaticCastStarted { get; set; }
+        public bool Stopped { get; set; }
     }
 
     private static void ApplyEvasiveStepMotion(ICoreClientAPI api, EvasiveStepActivatedPacket packet)
@@ -892,6 +1060,7 @@ public sealed class VRPGModSystem : ModSystem
     {
         packet.Options.SkillHotbarLocked = config.Modules.Rpg.SkillHotbar.Locked;
         packet.Options.SkillHotbarSlots = config.Modules.Rpg.SkillHotbar.SlotCount;
+        packet.Options.HoldToRepeatChargedSkills = config.Modules.Rpg.SkillHotbar.HoldToRepeatChargedSkills;
         bool treeMissing = !string.Equals(clientTalentTree.TreeCode, packet.TalentTreeCode, StringComparison.OrdinalIgnoreCase)
             || !string.Equals(clientTalentTree.ContentHash, packet.TalentTreeHash, StringComparison.Ordinal);
         if (treeMissing)
@@ -925,6 +1094,11 @@ public sealed class VRPGModSystem : ModSystem
                 ShowResourceNotifications = showResources
             }),
             (locked, slotCount) => SetClientHotbarOptions(api, locked, slotCount),
+            enabled => SetClientAutoThrow(api, enabled),
+            config.Modules.Rpg.Hud,
+            locked => SetClientResourceHudLocked(api, locked),
+            (widthDelta, heightDelta) => ResizeClientResourceHud(api, widthDelta, heightDelta),
+            () => ResetClientResourceHud(api),
             (slot, skillCode) => clientChannel?.SendPacket(new SkillEquipRequestPacket { Slot = slot, SkillCode = skillCode }),
             (allocate, refund) => clientChannel?.SendPacket(new TalentPlanRequestPacket { Allocate = allocate, Refund = refund }),
             () => clientChannel?.SendPacket(new TalentEditorOpenRequestPacket()),
@@ -980,7 +1154,7 @@ public sealed class VRPGModSystem : ModSystem
 
         if (clientResourceHud == null && config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
         {
-            clientResourceHud = new HudElementVRPGResources(api, config.Modules.Rpg.Hud);
+            clientResourceHud = new HudElementVRPGResources(api, config.Modules.Rpg.Hud, () => PersistClientConfig(api));
             clientResourceHud.TryOpen();
         }
 
@@ -990,13 +1164,16 @@ public sealed class VRPGModSystem : ModSystem
 
     private void OpenSkillHotbarPacket(ICoreClientAPI api, SkillLoadoutPacket packet)
     {
+        SkillLoadoutPacket snapshot = packet ?? new SkillLoadoutPacket();
+        clientSkillLoadout = snapshot;
+        clientSkillLoadoutAtMilliseconds = api.World.ElapsedMilliseconds;
         if (clientSkillHotbar == null && config.Modules.Rpg.Enabled && config.Modules.Rpg.SkillHotbar.Enabled)
         {
             clientSkillHotbar = new HudElementVRPGSkillHotbar(api, config.Modules.Rpg.SkillHotbar, () => PersistClientConfig(api));
             clientSkillHotbar.TryOpen();
         }
 
-        clientSkillHotbar?.SetSnapshot(packet);
+        clientSkillHotbar?.SetSnapshot(snapshot);
     }
 
     private void SetClientHotbarOptions(ICoreClientAPI api, bool locked, int slotCount)
@@ -1006,6 +1183,56 @@ public sealed class VRPGModSystem : ModSystem
         clientSkillHotbar?.SetSlotCount(normalizedSlotCount);
         config.Modules.Rpg.SkillHotbar.Locked = locked;
         config.Modules.Rpg.SkillHotbar.SlotCount = normalizedSlotCount;
+        PersistClientConfig(api);
+    }
+
+    private void SetClientAutoThrow(ICoreClientAPI api, bool enabled)
+    {
+        config.Modules.Rpg.SkillHotbar.HoldToRepeatChargedSkills = enabled;
+        heldRepeatCasts.Clear();
+        PersistClientConfig(api);
+    }
+
+    private void SetClientResourceHudLocked(ICoreClientAPI api, bool locked)
+    {
+        if (clientResourceHud != null)
+        {
+            clientResourceHud.SetLocked(locked);
+            return;
+        }
+
+        config.Modules.Rpg.Hud.Locked = locked;
+        PersistClientConfig(api);
+    }
+
+    private void ResizeClientResourceHud(ICoreClientAPI api, int widthDelta, int barHeightDelta)
+    {
+        if (clientResourceHud != null)
+        {
+            clientResourceHud.Resize(widthDelta, barHeightDelta);
+            return;
+        }
+
+        RpgHudConfig hud = config.Modules.Rpg.Hud;
+        hud.Width = ResourceHudLayout.ClampWidth(hud.Width + widthDelta);
+        hud.BarHeight = ResourceHudLayout.ClampBarHeight(hud.BarHeight + barHeightDelta);
+        PersistClientConfig(api);
+    }
+
+    private void ResetClientResourceHud(ICoreClientAPI api)
+    {
+        if (clientResourceHud != null)
+        {
+            clientResourceHud.ResetLayout();
+            return;
+        }
+
+        RpgHudConfig hud = config.Modules.Rpg.Hud;
+        hud.Anchor = "left-bottom";
+        hud.X = 14;
+        hud.Y = 112;
+        hud.Width = ResourceHudLayout.DefaultWidth;
+        hud.BarHeight = ResourceHudLayout.DefaultBarHeight;
         PersistClientConfig(api);
     }
 

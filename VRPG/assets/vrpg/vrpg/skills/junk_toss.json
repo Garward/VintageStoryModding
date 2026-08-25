@@ -1,0 +1,93 @@
+{
+  "code": "vrpg:junk_toss",
+  "name": "Junk Toss",
+  "description": "Hold to preview the arc, then hurl a random piece of salvaged junk at the marked point.",
+  "classCode": "vrpg:scrapper",
+  "icon": "junk-toss",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "projectile_aoe",
+  "cooldownSeconds": 1.8,
+  "charges": {
+    "maximum": 5
+  },
+  "range": 22.0,
+  "radius": 1.6,
+  "maxTargets": 0,
+  "model": "game:item/gear-rusty",
+  "color": "#c58a4890",
+  "tags": ["attack", "physical", "ranged", "area", "projectile", "ballistic", "release", "scrap"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 13.0,
+    "perLevel": 4.0,
+    "weaponDamagePercent": 130.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 0,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "cast"
+  },
+  "timing": {
+    "mode": "targeted_release",
+    "hitCount": 1,
+    "hitIntervalSeconds": 0.2,
+    "maxDurationSeconds": 1.0,
+    "repeatWhileHeld": true,
+    "holdRepeatDelaySeconds": 0.35,
+    "holdRepeatIntervalSeconds": 0.3
+  },
+  "projectile": {
+    "impactMode": "either",
+    "speed": 0.3,
+    "lifetimeSeconds": 4.5,
+    "verticalOffset": -0.48,
+    "horizontalOffset": 0.25,
+    "forwardOffset": 0.6,
+    "aimConvergenceDistance": 12.0,
+    "creatureCollisionRadius": 0.55,
+    "ballistic": true,
+    "minimumFlightSeconds": 0.55,
+    "rotationMode": "tumble",
+    "modelVariants": [
+      "game:item/scrapweaponkit",
+      "game:item/tool/blade/scrap",
+      "game:item/tool/club/scrapmace",
+      "game:item/tool/axe/scrap"
+    ]
+  },
+  "particles": {
+    "model": "cube",
+    "burstQuantity": 24.0,
+    "trailQuantity": 0.45,
+    "lifetimeSeconds": 0.48,
+    "trailLifetimeSeconds": 0.16,
+    "gravity": 0.5,
+    "scale": 0.12,
+    "velocity": 0.75
+  },
+  "impactVisual": {
+    "enabled": true,
+    "preset": "vrpg:scrap_blast",
+    "overrides": {
+      "fire": { "quantity": 8.0, "sizeMin": 0.18, "sizeMax": 0.4, "coverage": 0.35, "originCoverage": 0.08 },
+      "rim": { "quantity": 22.0, "lifetimeSeconds": 0.12 },
+      "sparks": { "quantity": 16.0, "coverage": 0.65, "originCoverage": 0.1 },
+      "debris": { "quantity": 26.0, "sizeMin": 0.09, "sizeMax": 0.18, "coverage": 0.65, "originCoverage": 0.1 },
+      "dust": { "quantity": 18.0, "sizeMin": 0.04, "sizeMax": 0.25, "coverage": 0.55, "originCoverage": 0.16 }
+    },
+    "particleDurationScale": 0.8,
+    "expansionSpeedScale": 1.1,
+    "shockwave": false,
+    "shockwaveDurationSeconds": 0.18,
+    "cameraShake": 0.12,
+    "cameraShakeRange": 10.0,
+    "sounds": ["game:sounds/effect/toolbreak"],
+    "soundRange": 18.0,
+    "soundVolume": 0.75
+  }
+}

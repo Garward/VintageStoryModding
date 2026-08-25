@@ -51,6 +51,11 @@ public sealed class SkillsLibrarySource : ILibrarySource
         string resourceRate = string.Equals(skill.Resource.CostMode, "per_second", StringComparison.OrdinalIgnoreCase) ? "/second" : "";
         fields.Add(new LibraryField("Resource", $"{skill.Resource.Base:0.##} + {skill.Resource.PerLevel:0.##}/level {skill.Resource.Type}{resourceRate}"));
         fields.Add(new LibraryField("Cooldown", skill.CooldownSeconds.ToString("0.##") + "s"));
+        int maximumCharges = skill.Charges?.Maximum ?? 1;
+        if (maximumCharges > 1)
+        {
+            fields.Add(new LibraryField("Charges", $"{maximumCharges} · one restored every {skill.CooldownSeconds:0.##}s"));
+        }
         fields.Add(new LibraryField("Timing", TimingSummary(skill)));
         fields.Add(new LibraryField("Targeting", TargetingSummary(skill)));
         fields.Add(new LibraryField("Max level", skill.MaxLevel.ToString()));

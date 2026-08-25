@@ -35,6 +35,7 @@ public sealed class RpgSkillHotbarConfig
 {
     public bool Enabled { get; set; } = true;
     public bool Locked { get; set; } = true;
+    public bool HoldToRepeatChargedSkills { get; set; } = true;
     public int SlotCount { get; set; } = 4;
     public int X { get; set; } = -1;
     public int Y { get; set; } = -1;
@@ -44,13 +45,21 @@ public sealed class RpgSkillHotbarConfig
 
 public sealed class RpgHudConfig
 {
+    public const int MinimumWidth = 180;
+    public const int MaximumWidth = 700;
+    public const int MinimumBarHeight = 14;
+    public const int MaximumBarHeight = 42;
+    public const int DefaultWidth = 350;
+    public const int DefaultBarHeight = 22;
+
     public bool Enabled { get; set; } = true;
+    public bool Locked { get; set; } = true;
     public bool HideVanillaStatbar { get; set; } = true;
     public string Anchor { get; set; } = "left-bottom";
     public int X { get; set; } = 14;
     public int Y { get; set; } = 112;
-    public int Width { get; set; } = 350;
-    public int BarHeight { get; set; } = 22;
+    public int Width { get; set; } = DefaultWidth;
+    public int BarHeight { get; set; } = DefaultBarHeight;
     public int Gap { get; set; } = 7;
     public bool ShowExperience { get; set; } = true;
     public bool ShowMagicShieldWhenEmpty { get; set; } = false;
@@ -191,6 +200,8 @@ public static class VRPGConfigStore
     {
         config.Modules.Rpg.SkillHotbar.SlotCount = Math.Clamp(config.Modules.Rpg.SkillHotbar.SlotCount, 4, 8);
         RpgHudConfig hud = config.Modules.Rpg.Hud;
+        hud.Width = Math.Clamp(hud.Width, RpgHudConfig.MinimumWidth, RpgHudConfig.MaximumWidth);
+        hud.BarHeight = Math.Clamp(hud.BarHeight, RpgHudConfig.MinimumBarHeight, RpgHudConfig.MaximumBarHeight);
         hud.ShowExperience = true;
 
         RpgEntityHudConfig entityHud = config.Modules.Rpg.EntityHud;

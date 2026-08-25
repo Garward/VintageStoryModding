@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cairo;
+using VRPG.Config;
 using VRPG.Network;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -21,6 +22,11 @@ public sealed class GuiElementVrpgHub : GuiElement
     private readonly Action<string, int> adjustStat;
     private readonly Action<bool, bool> updateOptions;
     private readonly Action<bool, int> updateHotbar;
+    private readonly Action<bool> updateAutoThrow;
+    private readonly RpgHudConfig resourceHud;
+    private readonly Action<bool> setResourceHudLocked;
+    private readonly Action<int, int> resizeResourceHud;
+    private readonly Action resetResourceHud;
     private readonly Action<int, string> equipSkill;
     private readonly Action<string[], string[]> applyTalentPlan;
     private readonly Action openTalentEditor;
@@ -51,7 +57,7 @@ public sealed class GuiElementVrpgHub : GuiElement
 
     private static readonly string[] Tabs = { "Stats", "Skills", "Talents", "Library", "Options" };
     private static readonly string[] BaseStatCodes = { "strength", "dexterity", "intelligence" };
-    private static readonly string[] OptionsCategories = { "Notifications", "Combat Hotbar", "Combat Visuals" };
+    private static readonly string[] OptionsCategories = { "Notifications", "Combat Hotbar", "Resource HUD", "Combat Visuals" };
 
     public GuiElementVrpgHub(
         ICoreClientAPI api,
@@ -63,6 +69,11 @@ public sealed class GuiElementVrpgHub : GuiElement
         Action<string, int> adjustStat,
         Action<bool, bool> updateOptions,
         Action<bool, int> updateHotbar,
+        Action<bool> updateAutoThrow,
+        RpgHudConfig resourceHud,
+        Action<bool> setResourceHudLocked,
+        Action<int, int> resizeResourceHud,
+        Action resetResourceHud,
         Action<int, string> equipSkill,
         Action<string[], string[]> applyTalentPlan,
         Action openTalentEditor,
@@ -76,6 +87,11 @@ public sealed class GuiElementVrpgHub : GuiElement
         this.adjustStat = adjustStat;
         this.updateOptions = updateOptions;
         this.updateHotbar = updateHotbar;
+        this.updateAutoThrow = updateAutoThrow;
+        this.resourceHud = resourceHud;
+        this.setResourceHudLocked = setResourceHudLocked;
+        this.resizeResourceHud = resizeResourceHud;
+        this.resetResourceHud = resetResourceHud;
         this.equipSkill = equipSkill;
         this.applyTalentPlan = applyTalentPlan;
         this.openTalentEditor = openTalentEditor;
@@ -458,6 +474,28 @@ public sealed class GuiElementVrpgHub : GuiElement
                     packet.Options.SkillHotbarSlots = Math.Min(8, VisibleHotbarSlots() + 1);
                     updateHotbar(packet.Options.SkillHotbarLocked, packet.Options.SkillHotbarSlots);
                     break;
+                case ClickKind.ToggleAutoThrow:
+                    packet.Options.HoldToRepeatChargedSkills = !packet.Options.HoldToRepeatChargedSkills;
+                    updateAutoThrow(packet.Options.HoldToRepeatChargedSkills);
+                    break;
+                case ClickKind.ToggleResourceHudLock:
+                    setResourceHudLocked(!resourceHud.Locked);
+                    break;
+                case ClickKind.DecreaseResourceHudWidth:
+                    resizeResourceHud(-25, 0);
+                    break;
+                case ClickKind.IncreaseResourceHudWidth:
+                    resizeResourceHud(25, 0);
+                    break;
+                case ClickKind.DecreaseResourceHudHeight:
+                    resizeResourceHud(0, -2);
+                    break;
+                case ClickKind.IncreaseResourceHudHeight:
+                    resizeResourceHud(0, 2);
+                    break;
+                case ClickKind.ResetResourceHud:
+                    resetResourceHud();
+                    break;
                 case ClickKind.OptionsCategory:
                     selectedOptionsCategory = GameMath.Clamp(region.Index, 0, OptionsCategories.Length - 1);
                     break;
@@ -687,12 +725,95 @@ public sealed class GuiElementVrpgHub : GuiElement
                 DrawHotbarOptions(ctx, pageX, bodyY, pageW, bodyH);
                 break;
             case 2:
+                DrawResourceHudOptions(ctx, pageX, bodyY, pageW, bodyH);
+                break;
+            case 3:
                 DrawCombatVisualOptions(ctx, pageX, bodyY, pageW, bodyH);
                 break;
             default:
                 DrawNotificationOptions(ctx, pageX, bodyY, pageW, bodyH);
                 break;
         }
+    }
+
+    private void DrawResourceHudOptions(Context ctx, double x, double y, double width, double height)
+    {
+        DrawText(ctx, "Resource HUD", x, y + scaled(31.0), scaled(20.0), bold: true, ColorGold(), maxWidth: width);
+        DrawText(ctx, "HP, MP, and XP layout is saved only on this client.", x, y + scaled(58.0), scaled(12.0), bold: false, ColorMuted(), maxWidth: width);
+        DrawOptionRow(
+            ctx,
+            x,
+            y + scaled(92.0),
+            width,
+            "Lock resource bar position",
+            resourceHud.Locked
+                ? "Locked against accidental movement. Right-click the bars or unlock them here."
+                : "Unlocked. Left-drag the bars while a cursor is visible, then lock them again.",
+            resourceHud.Locked,
+            ClickKind.ToggleResourceHudLock);
+
+        DrawResourceHudSizeRow(ctx, x, y + scaled(180.0), width, "Bar width", resourceHud.Width, true);
+        DrawResourceHudSizeRow(ctx, x, y + scaled(268.0), width, "Each bar height", resourceHud.BarHeight, false);
+
+        DrawText(ctx, "Right-clicking directly on the bars opens the same controls beside the HUD.", x, y + scaled(380.0), scaled(11.0), bold: false, ColorMuted(), maxWidth: width - scaled(150.0));
+        DrawSmallActionButton(ctx, x + width - scaled(132.0), y + scaled(358.0), scaled(132.0), "Reset layout", ClickKind.ResetResourceHud);
+    }
+
+    private void DrawResourceHudSizeRow(Context ctx, double x, double y, double width, string label, int value, bool widthControl)
+    {
+        double rowHeight = scaled(76.0);
+        RoundedRectangle(ctx, x, y, width, rowHeight, scaled(3.0));
+        ctx.SetSourceRGBA(0.08, 0.025, 0.01, 0.52);
+        ctx.FillPreserve();
+        ctx.SetSourceRGBA(VrpgGuiTheme.GoldR, VrpgGuiTheme.GoldG, VrpgGuiTheme.GoldB, 0.34);
+        ctx.Stroke();
+
+        DrawText(ctx, label, x + scaled(14.0), y + scaled(30.0), scaled(15.0), bold: true, ColorText(), maxWidth: width - scaled(190.0));
+        DrawText(ctx, value + " px", x + scaled(14.0), y + scaled(54.0), scaled(11.0), bold: false, ColorMuted(), maxWidth: width - scaled(190.0));
+
+        bool canDecrease = widthControl
+            ? value > ResourceHudLayout.MinimumWidth
+            : value > ResourceHudLayout.MinimumBarHeight;
+        bool canIncrease = widthControl
+            ? value < ResourceHudLayout.MaximumWidth
+            : value < ResourceHudLayout.MaximumBarHeight;
+        double plusX = x + width - scaled(48.0);
+        double minusX = plusX - scaled(86.0);
+        double buttonY = y + scaled(22.0);
+        DrawStatButton(ctx, minusX, buttonY, "−", canDecrease, false);
+        DrawStatButton(ctx, plusX, buttonY, "+", canIncrease, false);
+        if (canDecrease)
+        {
+            clickRegions.Add(new ClickRegion(
+                widthControl ? ClickKind.DecreaseResourceHudWidth : ClickKind.DecreaseResourceHudHeight,
+                0,
+                minusX,
+                buttonY,
+                scaled(34.0),
+                scaled(32.0)));
+        }
+        if (canIncrease)
+        {
+            clickRegions.Add(new ClickRegion(
+                widthControl ? ClickKind.IncreaseResourceHudWidth : ClickKind.IncreaseResourceHudHeight,
+                0,
+                plusX,
+                buttonY,
+                scaled(34.0),
+                scaled(32.0)));
+        }
+    }
+
+    private void DrawSmallActionButton(Context ctx, double x, double y, double width, string label, ClickKind kind)
+    {
+        double height = scaled(34.0);
+        RoundedRectangle(ctx, x, y, width, height, scaled(3.0));
+        ctx.SetSourceRGBA(0.12, 0.04, 0.01, 0.82);
+        ctx.FillPreserve();
+        ctx.SetSourceRGBA(VrpgGuiTheme.GoldR, VrpgGuiTheme.GoldG, VrpgGuiTheme.GoldB, 0.70);
+        ctx.Stroke();
+        DrawText(ctx, label, x + width / 2.0, y + scaled(23.0), scaled(12.0), bold: true, ColorGold(), center: true, maxWidth: width - scaled(12.0));
+        clickRegions.Add(new ClickRegion(kind, 0, x, y, width, height));
     }
 
     private void DrawCombatVisualOptions(Context ctx, double x, double y, double width, double height)
@@ -761,11 +882,18 @@ public sealed class GuiElementVrpgHub : GuiElement
             ClickKind.ToggleHotbarLock);
 
         DrawHotbarSlotCountRow(ctx, x, y + scaled(180.0), width);
+        DrawOptionRow(
+            ctx,
+            x,
+            y + scaled(268.0),
+            width,
+            "Hold to auto-throw charged skills",
+            "For supported aimed skills: tap to throw once on release, or hold to spend the charges available when the hold began.",
+            packet.Options.HoldToRepeatChargedSkills,
+            ClickKind.ToggleAutoThrow);
 
-        DrawText(ctx, "Assignment", x, y + scaled(279.0), scaled(15.0), bold: true, ColorGold(), maxWidth: width);
-        DrawWrappedText(ctx, "Open Skills, select any learned ability, and click a visible Combat Loadout slot. Hidden slots retain their assignments.", x, y + scaled(306.0), width, scaled(12.0), ColorText(), 3);
-        DrawText(ctx, "Bindings", x, y + scaled(371.0), scaled(15.0), bold: true, ColorGold(), maxWidth: width);
-        DrawWrappedText(ctx, "Find the VRPG-prefixed skill-slot controls in Vintage Story's Controls menu. The Skills page and HUD resolve the current bindings automatically.", x, y + scaled(398.0), width, scaled(12.0), ColorText(), 3);
+        DrawText(ctx, "Assignment & bindings", x, y + scaled(365.0), scaled(15.0), bold: true, ColorGold(), maxWidth: width);
+        DrawWrappedText(ctx, "Assign learned skills from the Skills page. Configure the VRPG-prefixed slot keys in Vintage Story's Controls menu; hidden hotbar slots retain their assignments.", x, y + scaled(392.0), width, scaled(12.0), ColorText(), 3);
     }
 
     private void DrawHotbarSlotCountRow(Context ctx, double x, double y, double width)
@@ -2321,6 +2449,13 @@ public sealed class GuiElementVrpgHub : GuiElement
         ToggleHotbarLock,
         DecreaseHotbarSlots,
         IncreaseHotbarSlots,
+        ToggleAutoThrow,
+        ToggleResourceHudLock,
+        DecreaseResourceHudWidth,
+        IncreaseResourceHudWidth,
+        DecreaseResourceHudHeight,
+        IncreaseResourceHudHeight,
+        ResetResourceHud,
         ToggleCombatText,
         ToggleDamageNumbers,
         ToggleEventWords,

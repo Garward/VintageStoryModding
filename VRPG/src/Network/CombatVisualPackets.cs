@@ -24,7 +24,8 @@ public enum CombatVisualFlags
 {
     None = 0,
     Crit = 1,
-    Threshold = 2
+    Threshold = 2,
+    SynchronizeToCarrier = 4
 }
 
 [ProtoContract]
@@ -66,6 +67,13 @@ public sealed class CombatVisualEventPacket
     // Used only when StyleCode is empty (effects with no data definition, e.g. Evasive Step).
     [ProtoMember(12)]
     public int FallbackColorRgba { get; set; }
+
+    /// <summary>
+    /// Server-world elapsed time when the represented gameplay event resolved.
+    /// Zero means an older or mixed-version sender and disables sync metrics.
+    /// </summary>
+    [ProtoMember(13)]
+    public long ServerEventMs { get; set; }
 }
 
 public static class VisualDamageTypes

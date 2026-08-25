@@ -1,0 +1,78 @@
+{
+  "code": "vrpg:scrap_bomb",
+  "name": "Scrap Bomb",
+  "description": "Hold to preview the arc, then throw a riveted charge that erupts in sparks and jagged scrap.",
+  "classCode": "vrpg:scrapper",
+  "icon": "scrap-bomb",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "projectile_aoe",
+  "cooldownSeconds": 4.2,
+  "range": 24.0,
+  "radius": 4.0,
+  "maxTargets": 0,
+  "model": "vrpg:entity/skill/scrap-bomb",
+  "color": "#d58b42a0",
+  "tags": ["attack", "physical", "ranged", "area", "projectile", "ballistic", "release", "scrap", "bomb"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 22.0,
+    "perLevel": 5.5,
+    "weaponDamagePercent": 145.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 1,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "cast"
+  },
+  "timing": {
+    "mode": "targeted_release",
+    "hitCount": 1,
+    "hitIntervalSeconds": 0.2,
+    "maxDurationSeconds": 1.0
+  },
+  "projectile": {
+    "impactMode": "either",
+    "speed": 0.255,
+    "lifetimeSeconds": 5.0,
+    "verticalOffset": -0.46,
+    "horizontalOffset": 0.26,
+    "forwardOffset": 0.62,
+    "aimConvergenceDistance": 12.0,
+    "creatureCollisionRadius": 0.65,
+    "ballistic": true,
+    "minimumFlightSeconds": 0.62,
+    "rotationMode": "tumble",
+    "modelVariants": []
+  },
+  "particles": {
+    "model": "quad",
+    "burstQuantity": 56.0,
+    "trailQuantity": 0.7,
+    "lifetimeSeconds": 0.6,
+    "trailLifetimeSeconds": 0.18,
+    "gravity": -0.05,
+    "scale": 0.12,
+    "velocity": 1.0
+  },
+  "impactVisual": {
+    "enabled": true,
+    "preset": "vrpg:scrap_blast",
+    "particleDurationScale": 0.95,
+    "expansionSpeedScale": 1.55,
+    "shockwave": false,
+    "shockwaveDurationSeconds": 0.24,
+    "cameraShake": 0.55,
+    "cameraShakeRange": 17.0,
+    "sounds": [
+      "game:sounds/effect/crusher-impact",
+      "game:sounds/effect/toolbreak"
+    ],
+    "soundRange": 28.0,
+    "soundVolume": 1.1
+  }
+}

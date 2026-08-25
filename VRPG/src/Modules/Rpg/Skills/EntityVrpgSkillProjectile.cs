@@ -1,6 +1,7 @@
 using System;
 using VRPG.Data;
 using VRPG.Data.Definitions;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
@@ -14,25 +15,34 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
     private long lastTrailMs;
     private Vec3d? previousServerPosition;
     private Vec3d? explosionPosition;
+    private string preparedTextureModel = "";
 
     public string SkillCode => WatchedAttributes.GetString("vrpgSkillCode", "");
     public int SkillLevel => Math.Max(1, WatchedAttributes.GetInt("vrpgSkillLevel", 1));
     public Vec3d ExplosionPosition => explosionPosition?.Clone() ?? Pos.XYZ.Clone();
-    public override bool ApplyGravity => false;
+    public override bool ApplyGravity => WatchedAttributes.GetBool("vrpgBallistic");
 
-    public void Configure(SkillDefinition skill, int skillLevel)
+    public void Configure(SkillDefinition skill, int skillLevel, string model)
     {
         WatchedAttributes.SetString("vrpgSkillCode", skill.Code);
         WatchedAttributes.SetInt("vrpgSkillLevel", skillLevel);
-        WatchedAttributes.SetString("vrpgSkillModel", skill.Model);
+        WatchedAttributes.SetString("vrpgSkillModel", model);
         WatchedAttributes.SetString("vrpgSkillColor", skill.Color);
         WatchedAttributes.SetString("vrpgParticleModel", skill.Particles.Model);
         WatchedAttributes.SetFloat("vrpgParticleTrail", skill.Particles.TrailQuantity);
         WatchedAttributes.SetFloat("vrpgParticleLife", skill.Particles.TrailLifetimeSeconds);
         WatchedAttributes.SetFloat("vrpgParticleScale", skill.Particles.Scale);
-        WatchedAttributes.SetFloat("vrpgLifetime", skill.Projectile.LifetimeSeconds);
-        WatchedAttributes.SetFloat("vrpgRange", skill.Range);
+        WatchedAttributes.SetBool("vrpgBallistic", skill.Projectile.Ballistic);
+        WatchedAttributes.SetString("vrpgRotationMode", skill.Projectile.RotationMode);
+        bool targetedDrop = string.Equals(skill.Delivery, "targeted_drop", StringComparison.OrdinalIgnoreCase);
+        WatchedAttributes.SetBool("vrpgTargetedDrop", targetedDrop);
+        WatchedAttributes.SetFloat("vrpgLifetime", targetedDrop ? skill.TargetedDrop.LifetimeSeconds : skill.Projectile.LifetimeSeconds);
+        float despawnRange = targetedDrop
+            ? Math.Max(skill.Range, skill.TargetedDrop.Height + 2f)
+            : skill.Projectile.Ballistic ? skill.Range + 12f : skill.Range;
+        WatchedAttributes.SetFloat("vrpgRange", despawnRange);
         WatchedAttributes.SetString("vrpgImpactMode", skill.Projectile.ImpactMode);
+        WatchedAttributes.SetFloat("vrpgCreatureCollisionRadius", skill.Projectile.CreatureCollisionRadius);
         Collectible = false;
         Damage = 0f;
         DropOnImpactChance = 0f;
@@ -46,6 +56,15 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
     public override void OnGameTick(float dt)
     {
         base.OnGameTick(dt);
+        if (IsTargetedDrop())
+        {
+            // EntityProjectile aligns roll to its flight vector. That is useful
+            // for arrows, but turns an upright block model sideways while falling.
+            Pos.Pitch = 0f;
+            Pos.Yaw = 0f;
+            Pos.Roll = 0f;
+        }
+
         if (!Alive)
         {
             return;
@@ -59,7 +78,14 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
 
         Vec3d current = Pos.XYZ.Clone();
         Vec3d previous = previousServerPosition ?? current;
-        if (IsGroundImpact())
+        // "either" means a creature intercepts the carrier before its authored
+        // ground destination wins. Ground-only projectiles skip this branch.
+        if (CanImpactCreatures() && TryFindSweptCreature(previous, current, out Entity hit))
+        {
+            ImpactOnEntity(hit);
+            return;
+        }
+        if (HasImpactTarget())
         {
             if (ReachedGroundTarget(previous, current, out Vec3d target))
             {
@@ -67,12 +93,6 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
                 return;
             }
         }
-        else if (TryFindSweptCreature(previous, current, out Entity hit))
-        {
-            ImpactOnEntity(hit);
-            return;
-        }
-
         previousServerPosition = current;
 
         float lifetime = Math.Max(0.1f, WatchedAttributes.GetFloat("vrpgLifetime", 5f));
@@ -117,7 +137,7 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
 
     protected override bool CanHitTarget(Entity target)
     {
-        return !IsGroundImpact()
+        return CanImpactCreatures()
             && target is EntityAgent
             && target is not EntityPlayer
             && target.Alive
@@ -126,7 +146,10 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
 
     protected override void IsColliding(EntityPos pos, double impactSpeed)
     {
-        if (impactSpeed > 0.01)
+        // Passive physics can zero motion before reporting the first collision.
+        // Ground-targeted projectiles must still resolve instead of remaining
+        // stuck until their despawn timer elapses.
+        if (IsGroundImpact() || impactSpeed > 0.01)
         {
             Explode(Pos.XYZ.Clone());
         }
@@ -140,6 +163,7 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
             Shape? customShape = Shape.TryGet(Api, SkillDefinitionValidator.ShapeLocation(model));
             if (customShape != null)
             {
+                PrepareShapeTextures(customShape, model);
                 entityShape = customShape;
                 shapePathForLogging = model;
             }
@@ -164,6 +188,76 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
     private bool IsGroundImpact()
     {
         return string.Equals(WatchedAttributes.GetString("vrpgImpactMode", "entity"), "ground", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool CanImpactCreatures()
+    {
+        string mode = WatchedAttributes.GetString("vrpgImpactMode", "entity");
+        return string.Equals(mode, "entity", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(mode, "either", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool HasImpactTarget()
+    {
+        return WatchedAttributes.GetBool("vrpgHasImpactTarget");
+    }
+
+    private bool IsTargetedDrop()
+    {
+        return WatchedAttributes.GetBool("vrpgTargetedDrop");
+    }
+
+    public override void SetInitialRotation()
+    {
+        SetRotationFromMotion();
+    }
+
+    public override void SetRotationFromMotion()
+    {
+        string mode = WatchedAttributes.GetString("vrpgRotationMode", "flight");
+        if (string.Equals(mode, "stable", StringComparison.OrdinalIgnoreCase))
+        {
+            Pos.Pitch = 0f;
+            Pos.Yaw = 0f;
+            Pos.Roll = 0f;
+            return;
+        }
+
+        if (string.Equals(mode, "tumble", StringComparison.OrdinalIgnoreCase))
+        {
+            float seconds = (World.ElapsedMilliseconds - msLaunch) / 1000f;
+            Pos.Pitch = seconds * 3.7f;
+            Pos.Yaw = seconds * 5.1f;
+            Pos.Roll = seconds * 4.3f;
+            return;
+        }
+
+        base.SetRotationFromMotion();
+    }
+
+    private void PrepareShapeTextures(Shape shape, string model)
+    {
+        if (Api is not ICoreClientAPI capi
+            || string.Equals(preparedTextureModel, model, StringComparison.Ordinal)
+            || shape.Textures == null
+            || Properties.Client?.Textures == null)
+        {
+            return;
+        }
+
+        foreach (System.Collections.Generic.KeyValuePair<string, AssetLocation> entry in shape.Textures)
+        {
+            var texture = new CompositeTexture(entry.Value.Clone());
+            texture.Bake(Api.Assets);
+            capi.EntityTextureAtlas.GetOrInsertTexture(
+                texture.Baked.TextureFilenames[0],
+                out int textureSubId,
+                out _);
+            texture.Baked.TextureSubId = textureSubId;
+            Properties.Client.Textures[entry.Key] = texture;
+        }
+
+        preparedTextureModel = model;
     }
 
     private bool ReachedGroundTarget(Vec3d start, Vec3d end, out Vec3d target)
@@ -192,18 +286,20 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
         float searchRadius = (float)Math.Max(2.0, segmentLength * 0.5 + 2.0);
         Entity[] candidates = World.GetEntitiesAround(midpoint, searchRadius, searchRadius, CanHitTarget);
         double earliest = double.MaxValue;
-        double projectileRadius = Math.Max(0.12, Math.Max(CollisionBox.XSize, CollisionBox.ZSize) * 0.5);
+        double projectileRadius = Math.Max(
+            WatchedAttributes.GetFloat("vrpgCreatureCollisionRadius", 0.2f),
+            Math.Max(CollisionBox.XSize, CollisionBox.ZSize) * 0.5);
         for (int i = 0; i < candidates.Length; i++)
         {
             Entity candidate = candidates[i];
-            Cuboidf box = candidate.CollisionBox;
-            double minX = candidate.Pos.X + box.X1 - projectileRadius;
-            double minY = candidate.Pos.Y + box.Y1 - projectileRadius;
-            double minZ = candidate.Pos.Z + box.Z1 - projectileRadius;
-            double maxX = candidate.Pos.X + box.X2 + projectileRadius;
-            double maxY = candidate.Pos.Y + box.Y2 + projectileRadius;
-            double maxZ = candidate.Pos.Z + box.Z2 + projectileRadius;
-            if (SegmentIntersectsBox(start, end, minX, minY, minZ, maxX, maxY, maxZ, out double at) && at < earliest)
+            if (ProjectileHitGeometry.Intersects(
+                    start,
+                    end,
+                    candidate.CollisionBox,
+                    candidate.Pos.XYZ,
+                    projectileRadius,
+                    out double at)
+                && at < earliest)
             {
                 earliest = at;
                 hit = candidate;
@@ -211,46 +307,6 @@ public sealed class EntityVrpgSkillProjectile : EntityProjectile
         }
 
         return earliest < double.MaxValue;
-    }
-
-    private static bool SegmentIntersectsBox(
-        Vec3d start,
-        Vec3d end,
-        double minX,
-        double minY,
-        double minZ,
-        double maxX,
-        double maxY,
-        double maxZ,
-        out double at)
-    {
-        double enter = 0.0;
-        double exit = 1.0;
-        if (!ClipAxis(start.X, end.X - start.X, minX, maxX, ref enter, ref exit)
-            || !ClipAxis(start.Y, end.Y - start.Y, minY, maxY, ref enter, ref exit)
-            || !ClipAxis(start.Z, end.Z - start.Z, minZ, maxZ, ref enter, ref exit))
-        {
-            at = 0.0;
-            return false;
-        }
-
-        at = enter;
-        return true;
-    }
-
-    private static bool ClipAxis(double origin, double delta, double minimum, double maximum, ref double enter, ref double exit)
-    {
-        if (Math.Abs(delta) < 0.000001)
-        {
-            return origin >= minimum && origin <= maximum;
-        }
-
-        double first = (minimum - origin) / delta;
-        double second = (maximum - origin) / delta;
-        if (first > second) (first, second) = (second, first);
-        enter = Math.Max(enter, first);
-        exit = Math.Min(exit, second);
-        return enter <= exit;
     }
 
     private static double DistanceSquaredToSegment(Vec3d point, Vec3d start, Vec3d end)

@@ -1,5 +1,6 @@
 using System;
 using VRPG.Data.Definitions;
+using VRPG.Config;
 using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Common;
@@ -9,22 +10,41 @@ namespace VRPG.Client.Visuals;
 public sealed class SkillFxRenderer
 {
     private readonly ICoreClientAPI capi;
+    private readonly ProceduralImpactFx impactFx;
 
-    public SkillFxRenderer(ICoreClientAPI capi)
+    public SkillFxRenderer(
+        ICoreClientAPI capi,
+        ImpactShockwaveRenderer shockwaves,
+        FxLayerResolver layerResolver,
+        VisualBudget budget,
+        CombatVisualsConfig config,
+        FxTrace trace)
     {
         this.capi = capi;
+        impactFx = new ProceduralImpactFx(capi, shockwaves, layerResolver, budget, config, trace);
     }
 
     /// <summary>Set by the VisualDirector before each dispatch; 0..1.</summary>
     public float QuantityScale = 1f;
 
-    public void Burst(VisualStyle style, Vec3d center)
+    public float Burst(
+        VisualStyle style,
+        Vec3d center,
+        VisualPriority priority,
+        string skillCode,
+        FxSyncMeasurement? sync)
     {
+        if (style.ImpactVisual.Enabled)
+        {
+            impactFx.Spawn(style, center, priority, skillCode, sync);
+            return 0f;
+        }
+
         SkillParticleDefinition particles = style.Particles;
         float quantity = particles.BurstQuantity * QuantityScale;
         if (quantity <= 0f)
         {
-            return;
+            return 0f;
         }
 
         int samples = Math.Clamp((int)Math.Ceiling(quantity / 2f), 6, 18);
@@ -52,7 +72,13 @@ public sealed class SkillFxRenderer
                 particles.Scale * 0.72f,
                 ParticleModel(particles.Model));
         }
+
+        return quantity;
     }
+
+    public void FlushScheduledImpacts() => impactFx.FlushScheduled();
+
+    public void ClearScheduledImpacts() => impactFx.ClearScheduled();
 
     public void Ray(VisualStyle style, Vec3d start, Vec3d end)
     {
@@ -86,17 +112,26 @@ public sealed class SkillFxRenderer
         }
     }
 
-    public void Circle(VisualStyle style, Vec3d center)
+    public float Circle(VisualStyle style, Vec3d center)
     {
         SkillParticleDefinition particles = style.Particles;
-        int segments = Math.Clamp((int)Math.Round(particles.BurstQuantity * QuantityScale), 12, 40);
+        float radius = ParticleEffectGeometry.EffectRadius(style.Radius);
+        int segments = ParticleEffectGeometry.RingSamples(
+            radius,
+            particles.BurstQuantity,
+            QuantityScale);
+        if (segments == 0)
+        {
+            return 0f;
+        }
+
         for (int i = 0; i < segments; i++)
         {
             double angle = Math.PI * 2 * i / segments;
             var point = new Vec3d(
-                center.X + Math.Cos(angle) * style.Radius,
+                center.X + Math.Cos(angle) * radius,
                 center.Y - 0.15,
-                center.Z + Math.Sin(angle) * style.Radius);
+                center.Z + Math.Sin(angle) * radius);
             capi.World.SpawnParticles(
                 1f,
                 style.ColorRgba,
@@ -109,6 +144,8 @@ public sealed class SkillFxRenderer
                 particles.Scale * 0.72f,
                 ParticleModel(particles.Model));
         }
+
+        return segments;
     }
 
     /// <summary>Origin for ray starts, matching the old server-side CastVisualOrigin.</summary>

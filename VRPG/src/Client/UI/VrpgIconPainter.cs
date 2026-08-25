@@ -19,6 +19,20 @@ public static class VrpgIconPainter
 
         switch (icon)
         {
+            case "gear":
+            case "junk_toss":
+                DrawGear(ctx, cx, cy, unit);
+                break;
+            case "scrap_bomb":
+                ctx.Arc(cx, cy + unit * 0.7, unit * 3.0, 0, Math.PI * 2.0);
+                ctx.Stroke();
+                ctx.MoveTo(cx - unit * 2.6, cy);
+                ctx.LineTo(cx + unit * 2.6, cy);
+                ctx.MoveTo(cx, cy - unit * 2.2);
+                ctx.CurveTo(cx + unit * 0.2, cy - unit * 3.8, cx + unit * 1.4, cy - unit * 3.4, cx + unit * 1.8, cy - unit * 4.1);
+                ctx.Stroke();
+                FillCircle(ctx, cx + unit * 1.9, cy - unit * 4.2, unit * 0.42);
+                break;
             case "anvil":
                 ctx.Rectangle(x + unit * 1.6, y + unit * 2.0, unit * 6.8, unit * 1.5);
                 ctx.Fill();
@@ -104,6 +118,21 @@ public static class VrpgIconPainter
     {
         ctx.Arc(x, y, radius, 0, Math.PI * 2.0);
         ctx.Fill();
+    }
+
+    private static void DrawGear(Context ctx, double cx, double cy, double unit)
+    {
+        ctx.Arc(cx, cy, unit * 2.9, 0, Math.PI * 2.0);
+        ctx.Stroke();
+        ctx.Arc(cx, cy, unit * 1.05, 0, Math.PI * 2.0);
+        ctx.Stroke();
+        for (int i = 0; i < 8; i++)
+        {
+            double angle = i * Math.PI / 4.0;
+            ctx.MoveTo(cx + Math.Cos(angle) * unit * 2.7, cy + Math.Sin(angle) * unit * 2.7);
+            ctx.LineTo(cx + Math.Cos(angle) * unit * 3.9, cy + Math.Sin(angle) * unit * 3.9);
+        }
+        ctx.Stroke();
     }
 
     private static void Polygon(Context ctx, params (double X, double Y)[] points)

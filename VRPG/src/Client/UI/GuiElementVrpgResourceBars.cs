@@ -3,6 +3,8 @@ using Cairo;
 using VRPG.Config;
 using VRPG.Network;
 using Vintagestory.API.Client;
+using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 namespace VRPG.Client.UI;
@@ -10,6 +12,10 @@ namespace VRPG.Client.UI;
 public sealed class GuiElementVrpgResourceBars : GuiElement
 {
     private readonly RpgHudConfig config;
+    private readonly Action<int, int, bool> moved;
+    private readonly Action<double, double> openLayoutMenu;
+    private readonly double initialTopLeftX;
+    private readonly double initialTopLeftY;
     private RpgResourcePacket snapshot = new RpgResourcePacket
     {
         Health = 100f,
@@ -26,10 +32,37 @@ public sealed class GuiElementVrpgResourceBars : GuiElement
 
     private int textureId;
     private bool hasServerSnapshot;
+    private bool dragging;
+    private double dragMouseX;
+    private double dragMouseY;
+    private double dragBoundsX;
+    private double dragBoundsY;
 
-    public GuiElementVrpgResourceBars(ICoreClientAPI api, ElementBounds bounds, RpgHudConfig config) : base(api, bounds)
+    public GuiElementVrpgResourceBars(
+        ICoreClientAPI api,
+        ElementBounds bounds,
+        RpgHudConfig config,
+        double initialTopLeftX,
+        double initialTopLeftY,
+        Action<int, int, bool> moved,
+        Action<double, double> openLayoutMenu) : base(api, bounds)
     {
         this.config = config;
+        this.initialTopLeftX = initialTopLeftX;
+        this.initialTopLeftY = initialTopLeftY;
+        this.moved = moved;
+        this.openLayoutMenu = openLayoutMenu;
+        MouseOverCursor = config.Locked ? null : "move";
+    }
+
+    public override bool Focusable => true;
+
+    public void SetLocked(bool locked)
+    {
+        config.Locked = locked;
+        dragging = false;
+        MouseOverCursor = locked ? null : "move";
+        Redraw();
     }
 
     public void SetSnapshot(RpgResourcePacket packet)
@@ -81,6 +114,60 @@ public sealed class GuiElementVrpgResourceBars : GuiElement
         }
 
         api.Render.Render2DTexturePremultipliedAlpha(textureId, Bounds);
+    }
+
+    public override void OnMouseDownOnElement(ICoreClientAPI api, MouseEvent args)
+    {
+        if (args.Button == EnumMouseButton.Right)
+        {
+            openLayoutMenu(args.X, args.Y);
+            args.Handled = true;
+            return;
+        }
+
+        if (config.Locked || args.Button != EnumMouseButton.Left)
+        {
+            return;
+        }
+
+        dragging = true;
+        dragMouseX = args.X;
+        dragMouseY = args.Y;
+        bool absolutePosition = string.Equals(config.Anchor, "left-top", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(config.Anchor, "top-left", StringComparison.OrdinalIgnoreCase);
+        dragBoundsX = absolutePosition ? config.X : initialTopLeftX;
+        dragBoundsY = absolutePosition ? config.Y : initialTopLeftY;
+        args.Handled = true;
+    }
+
+    public override void OnMouseMove(ICoreClientAPI api, MouseEvent args)
+    {
+        if (!dragging)
+        {
+            return;
+        }
+
+        ResourceHudPosition position = ResourceHudLayout.ClampTopLeft(
+            dragBoundsX + (args.X - dragMouseX) / RuntimeEnv.GUIScale,
+            dragBoundsY + (args.Y - dragMouseY) / RuntimeEnv.GUIScale,
+            api.Render.FrameWidth / RuntimeEnv.GUIScale,
+            api.Render.FrameHeight / RuntimeEnv.GUIScale,
+            Bounds.fixedWidth,
+            Bounds.fixedHeight);
+        moved((int)Math.Round(position.X), (int)Math.Round(position.Y), false);
+        args.Handled = true;
+    }
+
+    public override void OnMouseUpOnElement(ICoreClientAPI api, MouseEvent args)
+    {
+        if (!dragging)
+        {
+            return;
+        }
+
+        dragging = false;
+        moved(config.X, config.Y, true);
+        args.Handled = true;
     }
 
     public override void Dispose()
@@ -137,6 +224,15 @@ public sealed class GuiElementVrpgResourceBars : GuiElement
         if (config.ShowExperience)
         {
             DrawExperienceBar(ctx, 0, y, width, barHeight);
+        }
+
+        if (!config.Locked)
+        {
+            SetColor(ctx, 1.0, 0.62, 0.06, 0.92);
+            ctx.LineWidth = 2;
+            ctx.Rectangle(1, 1, width - 2, height - 2);
+            ctx.Stroke();
+            DrawCenteredText(ctx, "DRAG · RIGHT-CLICK OPTIONS", 0, Math.Max(0, height - 13), width, 12);
         }
     }
 

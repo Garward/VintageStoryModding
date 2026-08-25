@@ -1,6 +1,7 @@
 using System;
 using VRPG.Network;
 using Vintagestory.API.Client;
+using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 
@@ -8,12 +9,17 @@ namespace VRPG.Client.Visuals;
 
 public sealed class GroundTelegraphRenderer : IRenderer
 {
+    private const int TrajectorySegments = 30;
     private readonly ICoreClientAPI capi;
     private readonly GroundAreaStore store;
     private readonly VisualStyleResolver styles;
     private readonly CombatVisualsConfig config;
+    private readonly SkillTargetingPreview targeting;
     private readonly MeshRef discMesh;
     private readonly MeshRef ringMesh;
+    private readonly MeshRef targetingRingMesh;
+    private readonly MeshRef trajectoryMesh;
+    private readonly MeshData trajectoryUpdate;
     private readonly Matrixf modelMat = new Matrixf();
 
     // The disc/ring meshes tag every vertex with UV (0.5, 0.5) so a single solid
@@ -24,23 +30,35 @@ public sealed class GroundTelegraphRenderer : IRenderer
     public double RenderOrder => 0.5;
     public int RenderRange => 90;
 
-    public GroundTelegraphRenderer(ICoreClientAPI capi, GroundAreaStore store, VisualStyleResolver styles, CombatVisualsConfig config)
+    public GroundTelegraphRenderer(
+        ICoreClientAPI capi,
+        GroundAreaStore store,
+        VisualStyleResolver styles,
+        CombatVisualsConfig config,
+        SkillTargetingPreview targeting)
     {
         this.capi = capi;
         this.store = store;
         this.styles = styles;
         this.config = config;
+        this.targeting = targeting;
         discMesh = capi.Render.UploadMesh(BuildDisc(48));
         ringMesh = capi.Render.UploadMesh(BuildRing(48, 0.92f));
-        whiteTexture = new LoadedTexture(capi);
-        capi.Render.LoadOrUpdateTextureFromRgba(new[] { unchecked((int)0xffffffff) }, false, 0, ref whiteTexture);
+        targetingRingMesh = capi.Render.UploadMesh(BuildTargetingRing(64));
+        trajectoryUpdate = BuildTrajectory(TrajectorySegments);
+        trajectoryMesh = capi.Render.UploadMesh(trajectoryUpdate);
+        trajectoryUpdate.Indices = null;
+        trajectoryUpdate.Rgba = null;
+        whiteTexture = new LoadedTexture(capi, 0, 1, 1);
+        capi.Render.LoadOrUpdateTextureFromRgba(new[] { unchecked((int)0xffffffff) }, false, 1, ref whiteTexture);
     }
 
     public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
     {
         long nowMs = capi.ElapsedMilliseconds;
         store.Prune(nowMs);
-        if (store.All.Count == 0 || config.TelegraphOpacity <= 0.01f)
+        targeting.Update();
+        if ((store.All.Count == 0 && !targeting.HasTarget) || config.TelegraphOpacity <= 0.01f)
         {
             return;
         }
@@ -57,6 +75,7 @@ public sealed class GroundTelegraphRenderer : IRenderer
             Vec3d position = ResolvePosition(area);
             IStandardShaderProgram prog = rpi.PreparedStandardShader((int)position.X, (int)position.Y, (int)position.Z);
             prog.Tex2D = whiteTexture.TextureId;
+            prog.NormalShaded = 0;
             VisualStyle style = styles.Resolve(area.StyleCode, 0, area.Radius);
             Vec4f tint = Tint(style.ColorRgba, Alpha(area, ownUid, nowMs));
             prog.RgbaTint = tint;
@@ -79,6 +98,51 @@ public sealed class GroundTelegraphRenderer : IRenderer
             }
 
             prog.Stop();
+        }
+
+        if (targeting.HasTarget)
+        {
+            Vec3d position = targeting.Target;
+            VisualStyle style = styles.Resolve(targeting.StyleCode, 0, targeting.Radius);
+            modelMat
+                .Identity()
+                .Set(rpi.CameraMatrixOrigin)
+                .Translate(position.X - cameraPos.X, position.Y - cameraPos.Y + 0.065, position.Z - cameraPos.Z)
+                .Scale(targeting.Radius, 1f, targeting.Radius);
+
+            // World lighting and render flags in the Standard shader can tint
+            // different vertices independently. The held prediction uses the
+            // unlit wireframe shader so one uniform controls the entire circle.
+            IShaderProgram prog = rpi.GetEngineShader(EnumShaderProgram.Wireframe);
+            prog.Use();
+            rpi.LineWidth = 3f;
+            rpi.GLEnableDepthTest();
+            rpi.GLDepthMask(false);
+            prog.Uniform("origin", new Vec3f(0f, 0f, 0f));
+            prog.Uniform("colorIn", Tint(style.ColorRgba, 0.88f * config.TelegraphOpacity));
+            prog.UniformMatrix("projectionMatrix", rpi.CurrentProjectionMatrix);
+            prog.UniformMatrix("modelViewMatrix", modelMat.Values);
+            rpi.RenderMesh(targetingRingMesh);
+
+            if (targeting.ShowsTrajectory && targeting.FlightSeconds > 0f)
+            {
+                UpdateTrajectoryMesh();
+                modelMat
+                    .Identity()
+                    .Set(rpi.CameraMatrixOrigin)
+                    .Translate(
+                        targeting.LaunchOrigin.X - cameraPos.X,
+                        targeting.LaunchOrigin.Y - cameraPos.Y,
+                        targeting.LaunchOrigin.Z - cameraPos.Z);
+                rpi.LineWidth = 2.2f;
+                prog.Uniform("colorIn", Tint(style.ColorRgba, 0.72f * config.TelegraphOpacity));
+                prog.UniformMatrix("modelViewMatrix", modelMat.Values);
+                rpi.RenderMesh(trajectoryMesh);
+            }
+
+            prog.Stop();
+            rpi.LineWidth = 1.6f;
+            rpi.GLDepthMask(true);
         }
 
         rpi.GlToggleBlend(false);
@@ -124,7 +188,7 @@ public sealed class GroundTelegraphRenderer : IRenderer
 
     private static MeshData BuildDisc(int segments)
     {
-        var mesh = new MeshData(segments + 2, segments * 3, true, true, true, false);
+        var mesh = new MeshData(segments + 2, segments * 3, true, true, true, true);
         AddVertex(mesh, 0f, 0f, 0f);
         for (int i = 0; i <= segments; i++)
         {
@@ -142,7 +206,7 @@ public sealed class GroundTelegraphRenderer : IRenderer
 
     private static MeshData BuildRing(int segments, float inner)
     {
-        var mesh = new MeshData((segments + 1) * 2, segments * 6, true, true, true, false);
+        var mesh = new MeshData((segments + 1) * 2, segments * 6, true, true, true, true);
         for (int i = 0; i <= segments; i++)
         {
             double angle = Math.PI * 2 * i / segments;
@@ -161,9 +225,91 @@ public sealed class GroundTelegraphRenderer : IRenderer
         return mesh;
     }
 
+    private static MeshData BuildTargetingRing(int segments)
+    {
+        const int tickCount = 4;
+        int vertexCount = segments + tickCount * 2;
+        int indexCount = segments * 2 + tickCount * 2;
+        var mesh = new MeshData();
+        mesh.SetMode(EnumDrawMode.Lines);
+        mesh.xyz = new float[vertexCount * 3];
+        mesh.Rgba = new byte[vertexCount * 4];
+        mesh.Indices = new int[indexCount];
+
+        for (int i = 0; i < segments; i++)
+        {
+            double angle = Math.PI * 2 * i / segments;
+            LineMeshUtil.AddVertex(
+                mesh,
+                (float)Math.Cos(angle),
+                0f,
+                (float)Math.Sin(angle),
+                ColorUtil.WhiteArgb);
+            mesh.Indices[mesh.IndicesCount++] = i;
+            mesh.Indices[mesh.IndicesCount++] = (i + 1) % segments;
+        }
+
+        for (int i = 0; i < tickCount; i++)
+        {
+            double angle = Math.PI * 2 * i / tickCount;
+            int start = mesh.VerticesCount;
+            LineMeshUtil.AddVertex(mesh, (float)Math.Cos(angle) * 0.82f, 0f, (float)Math.Sin(angle) * 0.82f, ColorUtil.WhiteArgb);
+            LineMeshUtil.AddVertex(mesh, (float)Math.Cos(angle), 0f, (float)Math.Sin(angle), ColorUtil.WhiteArgb);
+            mesh.Indices[mesh.IndicesCount++] = start;
+            mesh.Indices[mesh.IndicesCount++] = start + 1;
+        }
+
+        return mesh;
+    }
+
+    private static MeshData BuildTrajectory(int segments)
+    {
+        var mesh = new MeshData();
+        mesh.SetMode(EnumDrawMode.Lines);
+        mesh.xyz = new float[(segments + 1) * 3];
+        mesh.Rgba = new byte[(segments + 1) * 4];
+        mesh.Indices = new int[segments * 2];
+        for (int i = 0; i <= segments; i++)
+        {
+            LineMeshUtil.AddVertex(mesh, 0f, 0f, 0f, ColorUtil.WhiteArgb);
+        }
+
+        // Two segments on, one off: readable as prediction rather than geometry.
+        for (int i = 0; i < segments; i++)
+        {
+            if (i % 3 == 2) continue;
+            mesh.Indices[mesh.IndicesCount++] = i;
+            mesh.Indices[mesh.IndicesCount++] = i + 1;
+        }
+
+        return mesh;
+    }
+
+    private void UpdateTrajectoryMesh()
+    {
+        Vec3d origin = targeting.LaunchOrigin;
+        for (int i = 0; i <= TrajectorySegments; i++)
+        {
+            Vec3d point = targeting.TrajectoryPosition(i / (float)TrajectorySegments);
+            int index = i * 3;
+            trajectoryUpdate.xyz[index] = (float)(point.X - origin.X);
+            trajectoryUpdate.xyz[index + 1] = (float)(point.Y - origin.Y);
+            trajectoryUpdate.xyz[index + 2] = (float)(point.Z - origin.Z);
+        }
+
+        capi.Render.UpdateMesh(trajectoryMesh, trajectoryUpdate);
+    }
+
     private static void AddVertex(MeshData mesh, float x, float y, float z)
     {
-        mesh.AddVertexWithFlags(x, y, z, 0.5f, 0.5f, unchecked((int)0xffffffff), 0);
+        mesh.AddVertexWithFlags(
+            x,
+            y,
+            z,
+            0.5f,
+            0.5f,
+            unchecked((int)0xffffffff),
+            VertexFlags.PackNormal(0f, 1f, 0f));
         mesh.AddNormal(0f, 1f, 0f);
     }
 
@@ -171,6 +317,8 @@ public sealed class GroundTelegraphRenderer : IRenderer
     {
         discMesh.Dispose();
         ringMesh.Dispose();
+        targetingRingMesh.Dispose();
+        trajectoryMesh.Dispose();
         whiteTexture.Dispose();
     }
 }

@@ -18,6 +18,10 @@ public sealed class HubOptionsPacket
     // Client-local presentation state. Hidden slots retain their server loadout assignments.
     [ProtoMember(4)]
     public int SkillHotbarSlots { get; set; } = 4;
+
+    // Client-local accessibility preference. Skill data still decides eligibility.
+    [ProtoMember(5)]
+    public bool HoldToRepeatChargedSkills { get; set; } = true;
 }
 
 [ProtoContract]

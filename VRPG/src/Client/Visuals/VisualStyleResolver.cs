@@ -8,6 +8,7 @@ public sealed class VisualStyle
 {
     public int ColorRgba;
     public SkillParticleDefinition Particles = new SkillParticleDefinition();
+    public SkillImpactVisualDefinition ImpactVisual = new SkillImpactVisualDefinition();
     public float Radius;
 }
 
@@ -32,6 +33,7 @@ public sealed class VisualStyleResolver
             {
                 ColorRgba = skillColor,
                 Particles = skill.Particles,
+                ImpactVisual = skill.ImpactVisual,
                 Radius = radius > 0f ? radius : skill.Radius
             };
         }

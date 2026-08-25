@@ -123,7 +123,16 @@ public sealed class RpgModule : IVrpgModule
 
     public bool TryCastSkill(IServerPlayer player, int slot, out string error, out AbilityFailureKind failureKind)
     {
-        return TryHandleSkillInput(player, slot, true, out error, out failureKind);
+        if (skills == null)
+        {
+            error = "The VRPG skill runtime is not available.";
+            failureKind = AbilityFailureKind.Other;
+            return false;
+        }
+
+        bool cast = skills.TryCastSlot(player, slot, out error, out failureKind);
+        SendLoadout(player);
+        return cast;
     }
 
     public bool TryHandleSkillInput(
@@ -171,6 +180,11 @@ public sealed class RpgModule : IVrpgModule
     public bool HandleProjectileImpact(EntityVrpgSkillProjectile projectile)
     {
         return skills?.HandleProjectileImpact(projectile) == true;
+    }
+
+    public bool HandleTargetedDropImpact(EntityVrpgTargetedDrop drop, Vintagestory.API.MathTools.Vec3d target)
+    {
+        return skills?.HandleTargetedDropImpact(drop, target) == true;
     }
 
     public bool TryEquipSkill(IServerPlayer player, int slot, string skillCode, out string message)

@@ -1,0 +1,79 @@
+{
+  "code": "vrpg:skyfall_anvil",
+  "name": "Skyfall Anvil",
+  "description": "Hold to place the impact circle, then release to drop an iron anvil onto the selected ground.",
+  "classCode": "vrpg:smith",
+  "icon": "hammer-blow",
+  "requiredLevel": 1,
+  "maxLevel": 10,
+  "delivery": "targeted_drop",
+  "cooldownSeconds": 5.0,
+  "range": 20.0,
+  "radius": 2.8,
+  "maxTargets": 0,
+  "model": "game:block/metal/anvil/iron",
+  "color": "#d8a35bc0",
+  "tags": ["attack", "physical", "area", "ground-targeted", "model-projectile", "release"],
+  "damage": {
+    "type": "vrpg:physical",
+    "base": 18.0,
+    "perLevel": 5.0,
+    "weaponDamagePercent": 155.0,
+    "weaponDamagePerLevelPercent": 4.0,
+    "tier": 1,
+    "ignoreInvFrames": false
+  },
+  "resource": {
+    "type": "none",
+    "base": 0.0,
+    "perLevel": 0.0,
+    "costMode": "cast"
+  },
+  "timing": {
+    "mode": "targeted_release",
+    "hitCount": 1,
+    "hitIntervalSeconds": 0.2,
+    "maxDurationSeconds": 1.0
+  },
+  "targetedDrop": {
+    "height": 9.0,
+    "fallSpeed": 1.25,
+    "gravity": 18.0,
+    "lifetimeSeconds": 10.0
+  },
+  "particles": {
+    "model": "cube",
+    "burstQuantity": 72.0,
+    "trailQuantity": 4.0,
+    "lifetimeSeconds": 0.7,
+    "trailLifetimeSeconds": 0.28,
+    "gravity": 0.7,
+    "scale": 0.28,
+    "velocity": 1.2
+  },
+  "impactVisual": {
+    "enabled": true,
+    "preset": "vrpg:stone_slam",
+    "overrides": {
+      "rim": {
+        "color": "#d8a35b70",
+        "quantity": 32.0,
+        "sizeMin": 0.08,
+        "sizeMax": 0.16,
+        "lifetimeSeconds": 0.15
+      }
+    },
+    "particleDurationScale": 0.9,
+    "expansionSpeedScale": 1.35,
+    "shockwave": false,
+    "shockwaveDurationSeconds": 0.24,
+    "cameraShake": 0.42,
+    "cameraShakeRange": 18.0,
+    "sounds": [
+      "game:sounds/effect/crusher-impact",
+      "game:sounds/creature/eidolon/rockfallslam"
+    ],
+    "soundRange": 28.0,
+    "soundVolume": 0.85
+  }
+}

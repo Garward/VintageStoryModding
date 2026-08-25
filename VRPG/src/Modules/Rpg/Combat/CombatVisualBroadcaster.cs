@@ -19,6 +19,11 @@ public sealed class CombatVisualBroadcaster
 
     public void Send(CombatVisualEventPacket packet)
     {
+        if (packet.ServerEventMs == 0)
+        {
+            packet.ServerEventMs = api.World.ElapsedMilliseconds;
+        }
+
         double rangeSquared = BroadcastRange * BroadcastRange;
         foreach (IPlayer player in api.World.AllOnlinePlayers)
         {

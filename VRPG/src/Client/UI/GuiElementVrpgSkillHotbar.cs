@@ -214,14 +214,17 @@ public sealed class GuiElementVrpgSkillHotbar : GuiElement
         }
         if (entry != null && !string.IsNullOrWhiteSpace(entry.Code))
         {
+            long now = api.World.ElapsedMilliseconds;
+            int currentCharges = SkillChargeProjection.Current(entry, snapshotAtMilliseconds, now);
             if (entry.ResourceCost > 0f && !string.Equals(entry.ResourceType, "none", StringComparison.OrdinalIgnoreCase))
             {
                 string rate = string.Equals(entry.ResourceCostMode, "per_second", StringComparison.OrdinalIgnoreCase) ? "/s" : "";
                 DrawText(ctx, entry.ResourceCost.ToString("0.#") + " " + ResourceLabel(entry.ResourceType) + rate, x + 4, y + size - 5, 7, true,
                     insufficient ? 1.0 : 0.78, insufficient ? 0.28 : 0.78, insufficient ? 0.22 : 0.70, false);
             }
-            double remaining = Remaining(entry);
-            if (remaining > 0.01 && entry.CooldownSeconds > 0f)
+            double remaining = SkillChargeProjection.RemainingSeconds(entry, snapshotAtMilliseconds, now);
+            bool unavailable = entry.MaximumCharges <= 1 || currentCharges <= 0;
+            if (remaining > 0.01 && entry.CooldownSeconds > 0f && unavailable)
             {
                 double fraction = Math.Clamp(remaining / entry.CooldownSeconds, 0.0, 1.0);
                 ctx.SetSourceRGBA(0.0, 0.0, 0.0, 0.70);
@@ -229,11 +232,34 @@ public sealed class GuiElementVrpgSkillHotbar : GuiElement
                 ctx.Fill();
                 DrawText(ctx, remaining.ToString("0.0"), x + size / 2.0, y + size * 0.60, 14, true, 1.0, 1.0, 1.0, true);
             }
+            else if (remaining > 0.01 && entry.CooldownSeconds > 0f && entry.MaximumCharges > 1)
+            {
+                double recovered = 1.0 - Math.Clamp(remaining / entry.CooldownSeconds, 0.0, 1.0);
+                ctx.SetSourceRGBA(accent[0], accent[1], accent[2], 0.9);
+                ctx.Rectangle(x + 2, y + size - 3, (size - 4) * recovered, 2);
+                ctx.Fill();
+            }
             else if (insufficient)
             {
                 ctx.SetSourceRGBA(0.8, 0.06, 0.03, 0.24);
                 ctx.Rectangle(x + 2, y + 2, size - 4, size - 4);
                 ctx.Fill();
+            }
+
+            if (entry.MaximumCharges > 1)
+            {
+                DrawText(
+                    ctx,
+                    currentCharges + "/" + entry.MaximumCharges,
+                    x + size - 4,
+                    y + size - 5,
+                    8,
+                    true,
+                    currentCharges > 0 ? 1.0 : 0.72,
+                    currentCharges > 0 ? 0.82 : 0.28,
+                    currentCharges > 0 ? 0.42 : 0.22,
+                    false,
+                    right: true);
             }
         }
     }
@@ -281,16 +307,9 @@ public sealed class GuiElementVrpgSkillHotbar : GuiElement
     {
         for (int i = 0; i < snapshot.Slots.Length; i++)
         {
-            if (Remaining(snapshot.Slots[i], now) > 0.01) return true;
+            if (SkillChargeProjection.RemainingSeconds(snapshot.Slots[i], snapshotAtMilliseconds, now) > 0.01) return true;
         }
         return false;
-    }
-
-    private double Remaining(SkillLoadoutSlotPacket entry) => Remaining(entry, api.World.ElapsedMilliseconds);
-
-    private double Remaining(SkillLoadoutSlotPacket entry, long now)
-    {
-        return Math.Max(0.0, entry.CooldownRemainingSeconds - (now - snapshotAtMilliseconds) / 1000.0);
     }
 
     private static void DrawText(Context ctx, string text, double x, double y, double size, bool bold, double r, double g, double b, bool center, bool right = false)

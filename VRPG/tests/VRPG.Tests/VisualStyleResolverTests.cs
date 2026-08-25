@@ -10,6 +10,8 @@ public sealed class VisualStyleResolverTests
     public void ResolvesSkillColorAndParticles()
     {
         var skill = new SkillDefinition { Code = "vrpg:cinder", Color = "#f06a28", Radius = 3.2f };
+        skill.ImpactVisual.Enabled = true;
+        skill.ImpactVisual.Preset = "vrpg:fire_burst";
         var resolver = new VisualStyleResolver(
             code => code == "vrpg:cinder" ? skill : null,
             _ => null);
@@ -17,6 +19,7 @@ public sealed class VisualStyleResolverTests
         VisualStyle style = resolver.Resolve("vrpg:cinder", 0, radius: 0f);
         Assert.Equal(unchecked((int)0xfff06a28), style.ColorRgba);
         Assert.Same(skill.Particles, style.Particles);
+        Assert.Same(skill.ImpactVisual, style.ImpactVisual);
         Assert.Equal(3.2f, style.Radius);
     }
 
