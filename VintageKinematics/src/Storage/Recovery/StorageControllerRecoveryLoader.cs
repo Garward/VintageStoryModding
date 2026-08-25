@@ -28,7 +28,7 @@ namespace VintageKinematics.Storage.Recovery
                 limits,
                 out StorageLoadResult recoveryLoad);
 
-            if (CanRepairStaleHeader(validatedBlockEntity, validatedRecovery, recoveryLoad))
+            if (CanRepairMismatchedHeader(validatedBlockEntity, validatedRecovery, recoveryLoad))
             {
                 var repaired = new StorageReconciliationResult(
                     StorageReconciliationOutcome.IdenticalMirrorsWithStaleHeader,
@@ -57,7 +57,7 @@ namespace VintageKinematics.Storage.Recovery
                 : new StorageControllerRecoveryDecision(reconciliation);
         }
 
-        private static bool CanRepairStaleHeader(
+        private static bool CanRepairMismatchedHeader(
             StorageSnapshotCopy controllerCopy,
             StorageSnapshotCopy recoveryCopy,
             StorageLoadResult recoveryLoad)
@@ -72,21 +72,12 @@ namespace VintageKinematics.Storage.Recovery
                 && controllerCopy.Record.IsEquivalentTo(recoveryCopy.Record);
             if (!mirrorsAgree) return false;
 
-            StorageRecoveryIndexEntry header = controllerCopy.Header;
-            if (header == null)
-            {
-                // A missing or malformed compact header can be reconstructed when both
-                // independently persisted full mirrors prove the same valid state.
-                return true;
-            }
-
-            // A decoded header is durable evidence. Only an older live header is stale.
-            // Equal conflicting or ahead headers require explicit recovery so a Stratum
-            // incremental chunk flush can never be silently rolled back to older mirrors.
-            return !header.IsTombstone
-                && header.WarehouseId == recoveryCopy.Record.WarehouseId
-                && header.Controller == recoveryCopy.Record.Controller
-                && header.Revision < recoveryCopy.Record.Revision;
+            // The compact header contains no item payload. When both independently persisted
+            // full mirrors prove the same valid state, that state is the only recoverable item
+            // truth and the header can always be reconstructed from it. Retaining an ahead or
+            // conflicting header as authority would only lock the warehouse around data that
+            // does not exist anywhere to restore.
+            return true;
         }
 
         private static StorageSnapshotCopy ValidatePayload(

@@ -58,7 +58,7 @@ namespace VintageKinematics.BlockEntities.Storage
                 == StorageReconciliationOutcome.IdenticalMirrorsWithStaleHeader)
             {
                 Api.World.Logger.Warning(
-                    "[VintageKinematics] Repaired stale warehouse terminal header for {0} at {1}; both full mirrors agreed at revision {2}.",
+                    "[VintageKinematics] Repaired mismatched warehouse terminal header for {0} at {1}; both full item mirrors agreed at revision {2}.",
                     WarehouseId,
                     Pos,
                     decision.Record.Revision);

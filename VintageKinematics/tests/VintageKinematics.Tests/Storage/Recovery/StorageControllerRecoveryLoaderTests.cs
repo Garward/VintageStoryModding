@@ -92,7 +92,7 @@ namespace VintageKinematics.Tests.Storage.Recovery
         }
 
         [Fact]
-        public void AheadCompactHeaderCannotBeRolledBackToOlderFullMirrors()
+        public void IdenticalFullMirrorsRepairAnAheadCompactHeader()
         {
             StorageRecoveryRecord older = EmptyRecord(1);
             StorageRecoveryRecord ahead = EmptyRecord(2);
@@ -106,16 +106,16 @@ namespace VintageKinematics.Tests.Storage.Recovery
                 new KineticStoragePersistence(null),
                 Limits);
 
-            Assert.False(decision.CanOpen);
-            Assert.True(decision.RequiresRecovery);
-            Assert.NotEqual(
+            Assert.True(decision.CanOpen);
+            Assert.False(decision.RequiresRecovery);
+            Assert.Equal(
                 StorageReconciliationOutcome.IdenticalMirrorsWithStaleHeader,
                 decision.Reconciliation.Outcome);
             Assert.Equal(2, decision.Reconciliation.BlockEntityCopy.Header.Revision);
         }
 
         [Fact]
-        public void ConflictingCompactHeaderAtSameRevisionRequiresRecovery()
+        public void IdenticalFullMirrorsRepairAConflictingCompactHeader()
         {
             StorageRecoveryRecord mirror = EmptyRecord(2);
             StorageRecoveryRecord conflicting = StorageRecoveryRecord.Create(
@@ -133,8 +133,11 @@ namespace VintageKinematics.Tests.Storage.Recovery
                 new KineticStoragePersistence(null),
                 Limits);
 
-            Assert.False(decision.CanOpen);
-            Assert.True(decision.RequiresRecovery);
+            Assert.True(decision.CanOpen);
+            Assert.False(decision.RequiresRecovery);
+            Assert.Equal(
+                StorageReconciliationOutcome.IdenticalMirrorsWithStaleHeader,
+                decision.Reconciliation.Outcome);
         }
 
         private static StorageRecoveryRecord EmptyRecord(long revision = 1)
