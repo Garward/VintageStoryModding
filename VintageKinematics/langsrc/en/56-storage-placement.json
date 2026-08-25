@@ -1,0 +1,7 @@
+{
+    "placefailure-storage-placement-controllertouchesstorage": "A warehouse terminal cannot touch another warehouse structure.",
+    "placefailure-storage-placement-nowarehouseneighbor": "Warehouse cells must be placed against an online warehouse terminal or linked cell.",
+    "placefailure-storage-placement-unlinkedneighbor": "The neighboring warehouse cell is not linked to a trustworthy terminal.",
+    "placefailure-storage-placement-conflictingwarehouses": "This placement would connect two different warehouse terminals.",
+    "placefailure-storage-placement-controllerunavailable": "The warehouse terminal is still reconstructing or unavailable. Wait for it to become online before adding cells."
+}

@@ -1,0 +1,17 @@
+{
+    "ingredientPattern": "BMB,CWC,_S_",
+    "ingredients": {
+        "B": { "type": "item", "code": "pressedband-iron" },
+        "M": { "type": "item", "code": "machinebracket-iron" },
+        "C": { "type": "item", "code": "game:metalplate-copper" },
+        "W": { "type": "block", "code": "kineticwarehousecell-wood" },
+        "S": { "type": "block", "code": "shaft-y" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+        "type": "block",
+        "code": "kineticwarehouseport-kineticinput-n",
+        "quantity": 1
+    }
+}

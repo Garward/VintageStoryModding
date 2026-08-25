@@ -1,0 +1,15 @@
+{
+    "ingredientPattern": "B_B,NCN,B_B",
+    "ingredients": {
+        "B": { "type": "item", "code": "pressedband-iron" },
+        "N": { "type": "item", "code": "game:metalnailsandstrips-iron" },
+        "C": { "type": "block", "code": "kineticwarehousecell-wood" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+        "type": "block",
+        "code": "kineticwarehousecell-reinforced",
+        "quantity": 1
+    }
+}

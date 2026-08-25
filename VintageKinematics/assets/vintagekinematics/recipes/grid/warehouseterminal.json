@@ -1,0 +1,17 @@
+{
+    "ingredientPattern": "PGP,CTC,PFP",
+    "ingredients": {
+        "P": { "type": "item", "code": "*:plank-*" },
+        "G": { "type": "item", "code": "vintagekinematics:*-grit" },
+        "C": { "type": "item", "code": "game:metalplate-copper" },
+        "T": { "type": "item", "code": "game:gear-temporal" },
+        "F": { "type": "block", "code": "funnel-copper-north" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+        "type": "block",
+        "code": "kineticwarehouseterminal-n",
+        "quantity": 1
+    }
+}

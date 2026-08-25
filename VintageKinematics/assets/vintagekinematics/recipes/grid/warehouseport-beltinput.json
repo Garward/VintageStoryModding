@@ -1,0 +1,17 @@
+{
+    "ingredientPattern": "BFB,PCP,_M_",
+    "ingredients": {
+        "B": { "type": "item", "code": "belt" },
+        "F": { "type": "block", "code": "funnel-copper-north" },
+        "P": { "type": "item", "code": "pressedband-iron" },
+        "C": { "type": "block", "code": "kineticwarehousecell-wood" },
+        "M": { "type": "item", "code": "machinebracket-iron" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+        "type": "block",
+        "code": "kineticwarehouseport-beltinput-n",
+        "quantity": 1
+    }
+}

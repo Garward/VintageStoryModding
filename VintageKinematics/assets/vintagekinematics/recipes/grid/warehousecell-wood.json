@@ -1,0 +1,14 @@
+{
+    "ingredientPattern": "PNP,NPN,PNP",
+    "ingredients": {
+        "P": { "type": "item", "code": "*:plank-*" },
+        "N": { "type": "item", "code": "game:metalnailsandstrips-*" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": {
+        "type": "block",
+        "code": "kineticwarehousecell-wood",
+        "quantity": 4
+    }
+}
