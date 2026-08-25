@@ -10,63 +10,13 @@
     <LangVersion>12.0</LangVersion>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ReferenceProtobufNet>true</ReferenceProtobufNet>
+    <PackageFileName>$(AssemblyName).zip</PackageFileName>
+    <CleanModOutputBeforeDeploy>true</CleanModOutputBeforeDeploy>
   </PropertyGroup>
-
-  <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
-
-  <PropertyGroup>
-    <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
-    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MOD_OUTPUT)' != ''">$(VINTAGE_STORY_MOD_OUTPUT)</ModOutputPath>
-    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != ''">$(VINTAGE_STORY_MODS)/ServerDoctor</ModOutputPath>
-    <PackageOutputPath>$(MSBuildProjectDirectory)/dist</PackageOutputPath>
-    <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
-    <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="VintagestoryAPI">
-      <HintPath>$(VSPath)/VintagestoryAPI.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VintagestoryLib">
-      <HintPath>$(VSPath)/VintagestoryLib.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(VSPath)/Lib/protobuf-net.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="cairo-sharp">
-      <HintPath>$(VSPath)/Lib/cairo-sharp.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="modinfo.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
-
-  <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(VSPath)' == ''">
-    <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
-  </Target>
-
-  <Target Name="DeployToVS" AfterTargets="Build" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != ''">
-    <RemoveDir Directories="$(ModOutputPath)" />
-    <MakeDir Directories="$(ModOutputPath)" />
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ModOutputPath)" />
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).pdb" DestinationFolder="$(ModOutputPath)" Condition="Exists('$(OutputPath)$(AssemblyName).pdb')" />
-    <Copy SourceFiles="modinfo.json" DestinationFolder="$(ModOutputPath)" />
-  </Target>
-
-  <Target Name="PackageZip" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <MakeDir Directories="$(PackageOutputPath)" />
-    <Delete Files="$(PackageOutputPath)/ServerDoctor.zip" />
-    <Exec Command="python3 -c &quot;import zipfile, os; z=zipfile.ZipFile(r'$(PackageOutputPath)/ServerDoctor.zip','w',zipfile.ZIP_DEFLATED); paths=[(r'$(TargetPath)','ServerDoctor.dll'),(r'$(TargetDir)ServerDoctor.pdb','ServerDoctor.pdb'),(r'$(MSBuildProjectDirectory)/modinfo.json','modinfo.json')]; [z.write(p,a) for p,a in paths if os.path.exists(p)]; z.close()&quot;" />
-    <Message Text="Packaged: $(PackageOutputPath)/ServerDoctor.zip" Importance="high" />
-  </Target>
 
 </Project>

@@ -4,35 +4,19 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>./</OutputPath>
+    <OutputPath>bin/$(Configuration)/</OutputPath>
     <AssemblyName>InterestingMeFixClient</AssemblyName>
     <RootNamespace>InterestingMeFixClient</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <GameDirectory>/home/garward/Games/Games/VintageStory/vintagestory</GameDirectory>
-  </PropertyGroup>
-
   <ItemGroup>
-    <Reference Include="VintagestoryAPI">
-      <HintPath>$(GameDirectory)/VintagestoryAPI.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VintagestoryLib">
-      <HintPath>$(GameDirectory)/VintagestoryLib.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="VSSurvivalMod">
-      <HintPath>$(GameDirectory)/Mods/VSSurvivalMod.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(GameDirectory)/Lib/0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="interestingme">
       <HintPath>./lib/interestingme.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="modinfo.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>

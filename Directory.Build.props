@@ -1,0 +1,30 @@
+<Project>
+  <Import Project="$(MSBuildProjectDirectory)/Directory.Build.local.props" Condition="Exists('$(MSBuildProjectDirectory)/Directory.Build.local.props') and '$(MSBuildProjectName)' != 'ActiveFarming' and '$(MSBuildProjectName)' != 'VRPG.Tests'" />
+  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.local.props" Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.local.props')" />
+
+  <PropertyGroup>
+    <VSPath Condition="'$(VSPath)' == '' and '$(GameDirectory)' != ''">$(GameDirectory)</VSPath>
+    <VSPath Condition="'$(VSPath)' == '' and '$(VINTAGE_STORY)' != ''">$(VINTAGE_STORY)</VSPath>
+    <VintageStoryVersion Condition="'$(VintageStoryVersion)' == ''">1.22.7</VintageStoryVersion>
+    <VintageStoryCacheRoot Condition="'$(VintageStoryCacheRoot)' == ''">$(MSBuildThisFileDirectory)tmp/vs-dlls/$(VintageStoryVersion)</VintageStoryCacheRoot>
+    <UseVintageStoryDllCache Condition="'$(UseVintageStoryDllCache)' == '' and '$(VSPath)' == ''">true</UseVintageStoryDllCache>
+    <UseVintageStoryDllCache Condition="'$(UseVintageStoryDllCache)' == ''">false</UseVintageStoryDllCache>
+    <VSPath Condition="'$(VSPath)' == ''">$(VintageStoryCacheRoot)/vintagestory</VSPath>
+    <GameDirectory Condition="'$(GameDirectory)' == '' and '$(VSPath)' != ''">$(VSPath)</GameDirectory>
+    <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
+    <PythonExe Condition="'$(PythonExe)' == ''">python3</PythonExe>
+    <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildProjectDirectory)/dist</PackageOutputPath>
+    <PackageScript Condition="'$(PackageScript)' == ''">$(MSBuildThisFileDirectory)scripts/package.py</PackageScript>
+    <VintageStoryBootstrapScript Condition="'$(VintageStoryBootstrapScript)' == ''">$(MSBuildThisFileDirectory)scripts/bootstrap-vs-dlls.sh</VintageStoryBootstrapScript>
+    <BootstrapVintageStoryDlls Condition="'$(BootstrapVintageStoryDlls)' == ''">true</BootstrapVintageStoryDlls>
+    <PackageOnRelease Condition="'$(PackageOnRelease)' == '' and Exists('$(MSBuildProjectDirectory)/modinfo.json')">true</PackageOnRelease>
+    <PackageOnRelease Condition="'$(PackageOnRelease)' == ''">false</PackageOnRelease>
+    <UseVintageStoryReferences Condition="'$(UseVintageStoryReferences)' == ''">true</UseVintageStoryReferences>
+    <CopyVintageStoryReferencesLocal Condition="'$(CopyVintageStoryReferencesLocal)' == ''">false</CopyVintageStoryReferencesLocal>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'ActiveFarming' or '$(MSBuildProjectName)' == 'VRPG.Tests'">
+    <UseVintageStoryReferences>false</UseVintageStoryReferences>
+    <DisableSharedDeploy>true</DisableSharedDeploy>
+  </PropertyGroup>
+</Project>

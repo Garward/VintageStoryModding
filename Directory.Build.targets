@@ -1,0 +1,81 @@
+<Project>
+  <PropertyGroup>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MOD_OUTPUT)' != ''">$(VINTAGE_STORY_MOD_OUTPUT)</ModOutputPath>
+    <ModOutputPath Condition="'$(ModOutputPath)' == '' and '$(VINTAGE_STORY_MODS)' != '' and '$(AssemblyName)' != ''">$(VINTAGE_STORY_MODS)/$(AssemblyName)</ModOutputPath>
+    <DeployToVS Condition="'$(DeployToVS)' == '' and '$(ModOutputPath)' != ''">true</DeployToVS>
+    <DeployToVS Condition="'$(DeployToVS)' == ''">false</DeployToVS>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(UseVintageStoryReferences)' != 'false' and '$(VSPath)' != ''">
+    <Reference Include="VintagestoryAPI" Condition="'$(ReferenceVintagestoryAPI)' != 'false'">
+      <HintPath>$(VSPath)/VintagestoryAPI.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="VintagestoryLib" Condition="'$(ReferenceVintagestoryLib)' != 'false'">
+      <HintPath>$(VSPath)/VintagestoryLib.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="0Harmony" Condition="'$(ReferenceHarmony)' != 'false'">
+      <HintPath>$(VSPath)/Lib/0Harmony.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="cairo-sharp" Condition="'$(ReferenceCairoSharp)' != 'false'">
+      <HintPath>$(VSPath)/Lib/cairo-sharp.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="VSSurvivalMod" Condition="'$(ReferenceVSSurvivalMod)' != 'false'">
+      <HintPath>$(VSPath)/Mods/VSSurvivalMod.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="VSEssentials" Condition="'$(ReferenceVSEssentials)' == 'true'">
+      <HintPath>$(VSPath)/Mods/VSEssentials.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" Condition="'$(ReferenceNewtonsoftJson)' == 'true'">
+      <HintPath>$(VSPath)/Lib/Newtonsoft.Json.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+    <Reference Include="protobuf-net" Condition="'$(ReferenceProtobufNet)' == 'true'">
+      <HintPath>$(VSPath)/Lib/protobuf-net.dll</HintPath>
+      <Private>$(CopyVintageStoryReferencesLocal)</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="BootstrapVintageStoryDlls" BeforeTargets="ValidateVintageStoryPath;ResolveReferences" Condition="'$(UseVintageStoryReferences)' != 'false' and '$(BootstrapVintageStoryDlls)' == 'true' and '$(UseVintageStoryDllCache)' == 'true' and !Exists('$(VSPath)/VintagestoryAPI.dll')">
+    <Message Text="Vintage Story DLLs not found at $(VSPath); bootstrapping version $(VintageStoryVersion)." Importance="high" />
+    <Exec Command="bash &quot;$(VintageStoryBootstrapScript)&quot; --version &quot;$(VintageStoryVersion)&quot; --output &quot;$(VSPath)&quot;" />
+  </Target>
+
+  <Target Name="ValidateVintageStoryPath" BeforeTargets="ResolveReferences" Condition="'$(UseVintageStoryReferences)' != 'false' and '$(VSPath)' == ''">
+    <Error Text="Set VSPath in Directory.Build.local.props, pass /p:VSPath=..., or set the VINTAGE_STORY environment variable." />
+  </Target>
+
+  <Target Name="ValidateVintageStoryDlls" BeforeTargets="ResolveReferences" DependsOnTargets="BootstrapVintageStoryDlls" Condition="'$(UseVintageStoryReferences)' != 'false' and !Exists('$(VSPath)/VintagestoryAPI.dll')">
+    <Error Text="Vintage Story DLLs were not found at '$(VSPath)'. Set VSPath, set VINTAGE_STORY, or leave VSPath unset so the bootstrap target can download them into tmp/vs-dlls." />
+  </Target>
+
+  <Target Name="DeployToVintageStory" AfterTargets="Build" Condition="'$(DeployToVS)' == 'true' and '$(ModOutputPath)' != '' and '$(DisableSharedDeploy)' != 'true'">
+    <ItemGroup>
+      <DeployDll Include="$(TargetPath)" />
+      <DeployPdb Include="$(TargetDir)$(AssemblyName).pdb" Condition="Exists('$(TargetDir)$(AssemblyName).pdb')" />
+      <DeployDeps Include="$(TargetDir)$(AssemblyName).deps.json" Condition="Exists('$(TargetDir)$(AssemblyName).deps.json')" />
+      <DeployModInfo Include="$(MSBuildProjectDirectory)/modinfo.json" Condition="Exists('$(MSBuildProjectDirectory)/modinfo.json')" />
+      <DeployModIcon Include="$(MSBuildProjectDirectory)/modicon.png" Condition="Exists('$(MSBuildProjectDirectory)/modicon.png')" />
+      <DeployAssets Include="$(MSBuildProjectDirectory)/assets/**/*.*" Condition="Exists('$(MSBuildProjectDirectory)/assets')" />
+    </ItemGroup>
+
+    <RemoveDir Directories="$(ModOutputPath)" Condition="'$(CleanModOutputBeforeDeploy)' == 'true'" />
+    <MakeDir Directories="$(ModOutputPath)" />
+    <Copy SourceFiles="@(DeployDll)" DestinationFolder="$(ModOutputPath)" />
+    <Copy SourceFiles="@(DeployPdb)" DestinationFolder="$(ModOutputPath)" />
+    <Copy SourceFiles="@(DeployDeps)" DestinationFolder="$(ModOutputPath)" />
+    <Copy SourceFiles="@(DeployModInfo)" DestinationFolder="$(ModOutputPath)" />
+    <Copy SourceFiles="@(DeployModIcon)" DestinationFolder="$(ModOutputPath)" />
+    <Copy SourceFiles="@(DeployAssets)" DestinationFiles="@(DeployAssets->'$(ModOutputPath)/assets/%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="PackageDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(PackageOnRelease)' == 'true'">
+    <MakeDir Directories="$(PackageOutputPath)" />
+    <Exec Command="&quot;$(PythonExe)&quot; &quot;$(PackageScript)&quot; --project &quot;$(MSBuildProjectDirectory)&quot; --build-output &quot;$(TargetDir)&quot; --target-path &quot;$(TargetPath)&quot; --output-dir &quot;$(PackageOutputPath)&quot; --assembly &quot;$(AssemblyName)&quot; --package-name &quot;$(PackageFileName)&quot; --extra-files &quot;$(PackageExtraFiles)&quot;" />
+  </Target>
+</Project>

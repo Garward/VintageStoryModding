@@ -1,1 +1,4 @@
 Directory.Build.local.props
+VibrantShaders.deps.json
+VibrantShaders.dll
+VibrantShaders.pdb

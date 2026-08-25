@@ -1,6 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <VSPath>/home/garward/Games/Games/VintageStory/vintagestory</VSPath>
-    <ModOutputPath>/home/garward/.config/VintagestoryData/Mods/CropGrowthRate</ModOutputPath>
-  </PropertyGroup>
-</Project>

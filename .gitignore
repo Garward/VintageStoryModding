@@ -8,6 +8,9 @@
 *.zip
 
 # IDE / editor
+Directory.Build.local.props
+.playwright-mcp/
+**/.snapshots/
 .vs/
 .idea/
 *.suo
