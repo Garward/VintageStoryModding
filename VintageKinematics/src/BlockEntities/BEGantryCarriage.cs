@@ -8,8 +8,10 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using VintageKinematics.Api;
+using VintageKinematics.Api.Storage;
 using VintageKinematics.Entities;
 using VintageKinematics.Network;
+using VintageKinematics.Storage;
 
 #pragma warning disable CS0618
 namespace VintageKinematics.BlockEntities
@@ -248,6 +250,11 @@ namespace VintageKinematics.BlockEntities
                 if (notify) Notify(byPlayer, "Contraption selection has no blocks to assemble.");
                 return true;
             }
+            if (ContainsStorageMemberSnapshot())
+            {
+                if (notify) Notify(byPlayer, Lang.Get("vintagekinematics:storage-contraption-unsupported"));
+                return true;
+            }
             if (!CanAssembleSnapshot(byPlayer))
             {
                 if (notify) Notify(byPlayer, "Contraption selection crosses a protected claim.");
@@ -282,6 +289,25 @@ namespace VintageKinematics.BlockEntities
             assemblingEntity = true;
             RemoveSnapshotBlocksFromWorld();
             return true;
+        }
+
+        private bool ContainsStorageMemberSnapshot()
+        {
+            if (Api?.World == null || snapshotOffsets == null) return false;
+
+            for (int i = 0; i < snapshotOffsets.Length; i++)
+            {
+                Vec3i offset = snapshotOffsets[i];
+                if (offset == null) continue;
+
+                Block block = Api.World.BlockAccessor.GetBlock(WorldPosFromOffset(offset));
+                if (block?.Attributes?[KineticStorageRemovalService.StorageMemberAttribute].AsBool(false) == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool CanAssembleSnapshot(IPlayer byPlayer)
@@ -1200,6 +1226,14 @@ namespace VintageKinematics.BlockEntities
 
                 Block existing = Api.World.BlockAccessor.GetBlock(blockPos);
                 if (!overwrite && existing != null && existing.Id != 0) return false;
+                if (overwrite && existing != null && existing.Id != 0)
+                {
+                    StorageRemovalCheck replacement = KineticStorageRemovalService.Check(
+                        Api.World,
+                        blockPos,
+                        StorageRemovalKind.BlockReplacement);
+                    if (!replacement.Allowed) return false;
+                }
             }
 
             for (int i = 0; i < count; i++)

@@ -10,6 +10,8 @@ using Vintagestory.API.Server;
 using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
 using VintageKinematics.Rendering;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 #pragma warning disable CS0618
 namespace VintageKinematics.Entities
@@ -1791,7 +1793,13 @@ namespace VintageKinematics.Entities
 
             Block existing = World.BlockAccessor.GetBlock(blockPos);
             if (IsFluidBlock(existing)) return true;
-            return overwrite || existing == null || existing.Id == 0;
+            if (existing == null || existing.Id == 0) return true;
+            if (!overwrite) return false;
+            return KineticStorageRemovalService.Check(
+                World,
+                blockPos,
+                StorageRemovalKind.BlockReplacement,
+                player).Allowed;
         }
 
         public bool CanAutomationBuildOrBreakAt(BlockPos blockPos)

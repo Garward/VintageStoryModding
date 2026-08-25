@@ -8,6 +8,8 @@ using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.Gui;
 using VintageKinematics.Rendering;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 namespace VintageKinematics.BlockEntities
 {
@@ -238,6 +240,16 @@ namespace VintageKinematics.BlockEntities
                         return;
                     }
                     if (IsUnbreakable(b))
+                    {
+                        halted = true;
+                        MarkDirty(true);
+                        return;
+                    }
+                    StorageRemovalCheck removal = KineticStorageRemovalService.Check(
+                        Api.World,
+                        check,
+                        StorageRemovalKind.BlockReplacement);
+                    if (!removal.Allowed)
                     {
                         halted = true;
                         MarkDirty(true);

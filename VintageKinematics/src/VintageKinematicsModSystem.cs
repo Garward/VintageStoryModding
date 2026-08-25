@@ -62,6 +62,7 @@ namespace VintageKinematics
             api.RegisterBlockBehaviorClass("RequireEmptyInventoryOnBreak", typeof(Blocks.BlockBehaviorRequireEmptyInventoryOnBreak));
             api.RegisterBlockBehaviorClass("RequireBoreRetractedOnBreak", typeof(Blocks.BlockBehaviorRequireBoreRetractedOnBreak));
             api.RegisterBlockBehaviorClass("RequireStorageCapacityOnRemove", typeof(Blocks.BlockBehaviorRequireStorageCapacityOnRemove));
+            api.RegisterBlockBehaviorClass("RequireStorageOwnershipOnPlace", typeof(Blocks.BlockBehaviorRequireStorageOwnershipOnPlace));
             api.RegisterBlockEntityClass("Kinetic", typeof(BlockEntities.BEKinetic));
             api.RegisterBlockEntityClass("HandCrank", typeof(BlockEntities.BEHandCrank));
             api.RegisterBlockEntityClass("KineticAnimated", typeof(BlockEntities.BEKineticAnimated));
@@ -102,6 +103,15 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticReverser", typeof(BlockEntities.BEKineticReverser));
             api.RegisterBlockEntityClass("KineticActivator", typeof(BlockEntities.BEKineticActivator));
             api.RegisterBlockEntityClass("KineticSensor", typeof(BlockEntities.BEKineticSensor));
+            api.RegisterBlockEntityClass(
+                "KineticWarehouseTerminal",
+                typeof(BlockEntities.Storage.BEKineticWarehouseTerminal));
+            api.RegisterBlockEntityClass(
+                "KineticWarehouseCell",
+                typeof(BlockEntities.Storage.BEKineticWarehouseCell));
+            api.RegisterBlockEntityClass(
+                "KineticWarehousePort",
+                typeof(BlockEntities.Storage.BEKineticWarehousePort));
             api.RegisterEntity("EntityVKContraption", typeof(Entities.EntityVKContraption));
             api.RegisterBlockClass("BlockShaft", typeof(Blocks.BlockShaft));
             api.RegisterBlockClass("BlockHandCrank", typeof(Blocks.BlockHandCrank));
@@ -136,6 +146,9 @@ namespace VintageKinematics
             api.RegisterBlockClass("BlockKineticIgniter", typeof(Blocks.BlockKineticIgniter));
             api.RegisterBlockClass("BlockKineticBore", typeof(Blocks.BlockKineticBore));
             api.RegisterBlockClass("BlockCopperPipe", typeof(Blocks.BlockCopperPipe));
+            api.RegisterBlockClass(
+                "BlockKineticWarehouseMember",
+                typeof(Blocks.BlockKineticWarehouseMember));
             api.RegisterBlockClass("BlockCopperPump", typeof(Blocks.BlockCopperPump));
             api.RegisterBlockClass("BlockGeothermalPipe", typeof(Blocks.BlockGeothermalPipe));
             api.RegisterBlockClass("BlockGeothermalBore", typeof(Blocks.BlockGeothermalBore));

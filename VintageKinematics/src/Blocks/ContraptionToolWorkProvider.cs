@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 namespace VintageKinematics.Blocks
 {
@@ -388,6 +390,11 @@ namespace VintageKinematics.Blocks
         private static void BreakBlockToContraptionOutput(ContraptionWorkContext context, BlockPos pos, Block block)
         {
             if (!CanBreakAt(context, pos)) return;
+            StorageRemovalCheck removal = KineticStorageRemovalService.Check(
+                context.World,
+                pos,
+                StorageRemovalKind.ContraptionCapture);
+            if (!removal.Allowed) return;
 
             ItemStack[] drops = null;
             try

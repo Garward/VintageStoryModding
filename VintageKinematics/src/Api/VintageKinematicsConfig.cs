@@ -175,6 +175,27 @@ namespace VintageKinematics.Api
         public bool EnableTitaniumDrillWideMining { get; set; } = true;
 
         /// <summary>
+        /// If true, warehouse item mutations require at least one linked drive port on a
+        /// healthy, rotating kinetic network. Structure checks and recovery never require power.
+        /// </summary>
+        public bool StorageRequiresKineticPower { get; set; } = true;
+
+        /// <summary>Minimum absolute RPM at a warehouse drive port. Values below zero are treated as zero.</summary>
+        public float StorageMinimumRPM { get; set; } = 16f;
+
+        /// <summary>Base kinetic stress-impact coefficient of each warehouse drive port.</summary>
+        public float StorageBaseStressImpact { get; set; } = 16f;
+
+        /// <summary>
+        /// Additional stress-impact coefficient per physical capacity cell. Actual SU demand
+        /// is this coefficient multiplied by RPM, like every other VK consumer.
+        /// </summary>
+        public float StorageStressImpactPerCell { get; set; } = 0.25f;
+
+        /// <summary>Maximum distinct warehouse entries. Zero keeps the default unlimited-type behavior.</summary>
+        public int StorageMaxTypesPerNetwork { get; set; } = 0;
+
+        /// <summary>
         /// Per-output-item overrides keyed by the dropped item's full code (wildcards supported,
         /// e.g. <c>"game:nugget-*"</c> or <c>"game:gem-*-rough"</c>). Final yield multiplier =
         /// <see cref="SieveYieldMultiplier"/> × first matching entry. If no entry matches, only the
@@ -214,6 +235,11 @@ namespace VintageKinematics.Api
         /// <summary>Returns the effective stress-demand multiplier for a consumer block code.</summary>
         public float ResolveConsumerStress(string blockCode)
         {
+            if (string.Equals(blockCode, "kineticwarehouseport", StringComparison.OrdinalIgnoreCase)
+                && !StorageRequiresKineticPower)
+            {
+                return 0f;
+            }
             if (Consumers != null && blockCode != null && Consumers.TryGetValue(blockCode, out var o) && o != null)
                 return ClampStressMultiplier(o.StressUnitMultiplier);
             return 1f;

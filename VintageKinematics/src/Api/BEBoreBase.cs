@@ -8,6 +8,8 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 namespace VintageKinematics.Api
 {
@@ -244,6 +246,15 @@ namespace VintageKinematics.Api
         {
             if (blockId < 0 || columnPos == null) return false;
             if (!AutomationClaimUtil.CanAutomatedBlockAccess(Api.World, Pos, columnPos, EnumBlockAccessFlags.BuildOrBreak)) return false;
+            Block existing = Api.World.BlockAccessor.GetBlock(columnPos);
+            if (existing != null && existing.Id != 0)
+            {
+                StorageRemovalCheck replacement = KineticStorageRemovalService.Check(
+                    Api.World,
+                    columnPos,
+                    StorageRemovalKind.BlockReplacement);
+                if (!replacement.Allowed) return false;
+            }
 
             Api.World.BlockAccessor.SetBlock(blockId, columnPos);
             TrackPlacedColumnPosition(columnPos);

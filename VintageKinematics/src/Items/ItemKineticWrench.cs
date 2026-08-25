@@ -10,6 +10,8 @@ using VintageKinematics.Api;
 using VintageKinematics.Blocks;
 using VintageKinematics.BlockEntities;
 using VintageKinematics.Network;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 namespace VintageKinematics.Items
 {
@@ -89,6 +91,21 @@ namespace VintageKinematics.Items
             BlockEntity be = api.World.BlockAccessor.GetBlockEntity(pos);
 
             if (!IsKineticPickupTarget(block, be)) return false;
+
+            StorageRemovalCheck removal = KineticStorageRemovalService.Check(
+                api.World,
+                pos,
+                StorageRemovalKind.WrenchPickup,
+                player);
+            if (!removal.Allowed)
+            {
+                Notify(player, Lang.Get(
+                    removal.MessageLangCode ?? "vintagekinematics:storage-removal-would-overflow",
+                    removal.StoredItems,
+                    removal.CapacityAfterRemoval,
+                    removal.CurrentCapacity));
+                return true;
+            }
 
             IInventory inv = InventoryOf(be);
             if (inv != null && !InventoryEmpty(inv))
@@ -201,6 +218,21 @@ namespace VintageKinematics.Items
             }
 
             if (newBlock.Id == block.Id) return false;
+
+            StorageRemovalCheck removal = KineticStorageRemovalService.Check(
+                api.World,
+                pos,
+                StorageRemovalKind.BlockReplacement,
+                player);
+            if (!removal.Allowed)
+            {
+                Notify(player, Lang.Get(
+                    removal.MessageLangCode ?? "vintagekinematics:storage-removal-would-overflow",
+                    removal.StoredItems,
+                    removal.CapacityAfterRemoval,
+                    removal.CurrentCapacity));
+                return true;
+            }
 
             KineticNetworkManager networks = api.ModLoader.GetModSystem<KineticNetworkManager>();
             networks?.OnRemoved(pos);

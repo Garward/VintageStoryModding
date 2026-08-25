@@ -6,6 +6,8 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Entities;
 using VintageKinematics.Network;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 #pragma warning disable CS0618
 namespace VintageKinematics.Api
@@ -169,6 +171,7 @@ namespace VintageKinematics.Api
         {
             entity = null;
             if (api?.World == null || controllerPos == null || snapshot == null || snapshot.Count == 0) return false;
+            if (!CanCaptureSnapshot(api.World, controllerPos, snapshot)) return false;
 
             EntityProperties entityType = api.World.GetEntityType(entityCode ?? DefaultContraptionEntityCode);
             if (entityType == null) return false;
@@ -199,9 +202,45 @@ namespace VintageKinematics.Api
             return true;
         }
 
+        private static bool CanCaptureSnapshot(
+            IWorldAccessor world,
+            BlockPos controllerPos,
+            ContraptionSnapshot snapshot)
+        {
+            if (snapshot?.Offsets == null) return false;
+            foreach (Vec3i offset in snapshot.Offsets)
+            {
+                if (offset == null) continue;
+                StorageRemovalCheck check = KineticStorageRemovalService.Check(
+                    world,
+                    WorldPosFromOffset(controllerPos, offset),
+                    StorageRemovalKind.ContraptionCapture);
+                if (!check.Allowed) return false;
+            }
+            return true;
+        }
+
         public static void RemoveSnapshotBlocksFromWorld(IWorldAccessor world, BlockPos controllerPos, ContraptionSnapshot snapshot)
         {
-            if (world == null || controllerPos == null || snapshot?.Offsets == null) return;
+            TryRemoveSnapshotBlocksFromWorld(world, controllerPos, snapshot);
+        }
+
+        public static bool TryRemoveSnapshotBlocksFromWorld(
+            IWorldAccessor world,
+            BlockPos controllerPos,
+            ContraptionSnapshot snapshot)
+        {
+            if (world == null || controllerPos == null || snapshot?.Offsets == null) return false;
+
+            for (int i = 0; i < snapshot.Offsets.Length; i++)
+            {
+                BlockPos blockPos = WorldPosFromOffset(controllerPos, snapshot.Offsets[i]);
+                StorageRemovalCheck check = KineticStorageRemovalService.Check(
+                    world,
+                    blockPos,
+                    StorageRemovalKind.ContraptionCapture);
+                if (!check.Allowed) return false;
+            }
 
             List<BlockPos> kineticPositions = new List<BlockPos>();
             for (int i = 0; i < snapshot.Offsets.Length; i++)
@@ -222,6 +261,7 @@ namespace VintageKinematics.Api
             {
                 manager?.OnRemoved(kineticPositions[i]);
             }
+            return true;
         }
 
         public static BlockPos WorldPosFromOffset(BlockPos controllerPos, Vec3i offset)

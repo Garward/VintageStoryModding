@@ -270,6 +270,11 @@ namespace VintageKinematics.BlockEntities
                 return TryOutputToBelt(stack, belt);
             }
 
+            if (targetBe is IDirectionalAutomationItemSink directionalSink)
+            {
+                return directionalSink.TryAcceptFromFunnel(stack, Pos);
+            }
+
             if (targetBe is IAutomationItemSink sink)
             {
                 return sink.TryAcceptFromFunnel(stack);

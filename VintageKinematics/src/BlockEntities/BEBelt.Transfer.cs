@@ -49,6 +49,13 @@ namespace VintageKinematics.BlockEntities
             {
                 return funnel.TryAcceptFromBelt(item.Stack);
             }
+            BlockPos sourcePos = atHeadEnd
+                ? Pos.AddCopy(fwd.X * (ChainLength - 1), 0, fwd.Z * (ChainLength - 1))
+                : Pos;
+            if (nextBe is IDirectionalAutomationItemSink directionalSink)
+            {
+                return directionalSink.TryAcceptFromBelt(item.Stack, sourcePos);
+            }
             if (nextBe is IAutomationItemSink sink)
             {
                 return sink.TryAcceptFromBelt(item.Stack);
@@ -148,6 +155,10 @@ namespace VintageKinematics.BlockEntities
                 {
                     if (funnel.OutputFacing == face.Opposite) continue;
                     fullyAccepted = funnel.TryAcceptFromBelt(item.Stack);
+                }
+                else if (neighborBe is IDirectionalAutomationItemSink directionalSink)
+                {
+                    fullyAccepted = directionalSink.TryAcceptFromBelt(item.Stack, beltPos);
                 }
                 else if (neighborBe is IAutomationItemSink sink)
                 {

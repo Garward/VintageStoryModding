@@ -5,6 +5,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using VintageKinematics.Api;
 using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
 
 namespace VintageKinematics.Blocks
 {
@@ -28,46 +29,34 @@ namespace VintageKinematics.Blocks
 
         public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, ref EnumHandling handling)
         {
-            if (CanRemove(world, pos, StorageRemovalKind.PlayerBreak, byPlayer, out StorageRemovalCheck check)) return;
+            // The client has only synchronized summary fields and can never prove the live
+            // index or a post-removal topology. Let it submit the break intent; the server
+            // executes this same behavior with the authoritative controller and may deny it.
+            if (world?.Side == EnumAppSide.Client) return;
+
+            StorageRemovalCheck check = KineticStorageRemovalService.Check(
+                world,
+                pos,
+                StorageRemovalKind.PlayerBreak,
+                byPlayer);
+            if (check.Allowed) return;
 
             SendDeniedMessage(world, byPlayer, check);
+            ResynchronizeDeniedBlock(world, pos);
             handling = EnumHandling.PreventSubsequent;
         }
 
         public override void OnBlockExploded(IWorldAccessor world, BlockPos pos, BlockPos explosionCenter, EnumBlastType blastType, ref EnumHandling handling)
         {
-            if (CanRemove(world, pos, StorageRemovalKind.Explosion, null, out _)) return;
+            StorageRemovalCheck check = KineticStorageRemovalService.Check(
+                world,
+                pos,
+                StorageRemovalKind.Explosion);
+            if (check.Allowed) return;
 
             // For explosions, PreventDefault is required. PreventSubsequent only stops later
             // behaviors and would still let the base explosion code remove the block.
             handling = EnumHandling.PreventDefault;
-        }
-
-        private bool CanRemove(IWorldAccessor world, BlockPos pos, StorageRemovalKind kind, IPlayer byPlayer, out StorageRemovalCheck check)
-        {
-            check = default;
-            IVKStorageRemovalGuard guard = ResolveGuard(world, pos);
-            if (guard == null) return true;
-
-            check = guard.CanRemoveStorageBlock(pos, kind, byPlayer);
-            return check.Allowed;
-        }
-
-        private IVKStorageRemovalGuard ResolveGuard(IWorldAccessor world, BlockPos pos)
-        {
-            if (world == null || pos == null) return null;
-
-            BlockEntity local = MultiblockHelper.GetMultiblockAwareBE(world, pos)
-                ?? world.BlockAccessor.GetBlockEntity(pos);
-            if (local is IVKStorageRemovalGuard directGuard) return directGuard;
-
-            if (local is IVKStorageStructureMember member && member.ControllerPos != null)
-            {
-                BlockEntity controller = world.BlockAccessor.GetBlockEntity(member.ControllerPos);
-                if (controller is IVKStorageRemovalGuard controllerGuard) return controllerGuard;
-            }
-
-            return null;
         }
 
         private void SendDeniedMessage(IWorldAccessor world, IPlayer byPlayer, StorageRemovalCheck check)
@@ -81,6 +70,13 @@ namespace VintageKinematics.Blocks
                 GlobalConstants.InfoLogChatGroup,
                 Lang.Get(langCode, check.StoredItems, check.CapacityAfterRemoval, check.CurrentCapacity),
                 EnumChatType.Notification);
+        }
+
+        private static void ResynchronizeDeniedBlock(IWorldAccessor world, BlockPos pos)
+        {
+            if (world?.Side != EnumAppSide.Server || pos == null) return;
+            world.BlockAccessor.MarkBlockDirty(pos);
+            world.BlockAccessor.GetBlockEntity(pos)?.MarkDirty(true);
         }
     }
 }

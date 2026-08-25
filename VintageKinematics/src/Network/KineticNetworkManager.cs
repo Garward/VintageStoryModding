@@ -7,6 +7,9 @@ using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.Entities;
+using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage;
+using VintageKinematics.Storage.Recovery;
 
 namespace VintageKinematics.Network
 {
@@ -135,6 +138,15 @@ namespace VintageKinematics.Network
 
                         return TextCommandResult.Success($"Deleted {contraptions.Count} contraption entity/entities without restoring blocks.");
                     })
+                .EndSubCommand()
+                .BeginSubCommand("storagerecover")
+                    .WithDescription("Inspect or explicitly converge divergent kinetic warehouse copies")
+                    .RequiresPlayer()
+                    .WithArgs(
+                        sapi.ChatCommands.Parsers.OptionalInt("radius", 8),
+                        sapi.ChatCommands.Parsers.OptionalWordRange("source", "controller", "recovery", "empty"),
+                        sapi.ChatCommands.Parsers.OptionalWord("confirmation token"))
+                    .HandleWith(args => StorageRecoveryCommands.HandleRecover(sapi, args))
                 .EndSubCommand();
         }
 
@@ -219,6 +231,36 @@ namespace VintageKinematics.Network
             return true;
         }
 
+        /// <summary>Updates a loaded consumer's persistent demand without rebuilding topology.</summary>
+        public bool TryUpdateConsumerStressImpact(BlockPos pos, float stressImpact)
+        {
+            if (api?.Side != EnumAppSide.Server
+                || pos == null
+                || !float.IsFinite(stressImpact)
+                || stressImpact < 0f)
+            {
+                return false;
+            }
+
+            BlockEntity blockEntity = api.World.BlockAccessor.GetBlockEntity(pos);
+            BEBehaviorKinetic behavior = blockEntity?.GetBehavior<BEBehaviorKinetic>();
+            if (behavior == null) return false;
+            behavior.StressImpact = stressImpact;
+
+            KineticNetwork net = GetNetworkAt(pos);
+            if (net == null || !net.Nodes.TryGetValue(pos, out KineticNode node))
+            {
+                blockEntity.MarkDirty(true);
+                return true;
+            }
+
+            node.StressImpact = stressImpact;
+            net.Nodes[pos] = node;
+            net.RecomputeStressForRPM(net.SourceRPM);
+            PropagateNetworkState(net);
+            return true;
+        }
+
         public long AllocateNetworkId()
         {
             lock (lockObj) { return nextNetworkId++; }
@@ -259,6 +301,11 @@ namespace VintageKinematics.Network
             {
                 Block placed = api.World.BlockAccessor.GetBlock(pos);
                 if (placed == null || placed.Id == 0) return;
+                StorageRemovalCheck removal = KineticStorageRemovalService.Check(
+                    api.World,
+                    pos,
+                    StorageRemovalKind.BlockReplacement);
+                if (!removal.Allowed) return;
                 ItemStack drop = placed.OnPickBlock(api.World, pos) ?? new ItemStack(placed);
                 api.World.BlockAccessor.SetBlock(0, pos);
                 api.World.BlockAccessor.MarkBlockDirty(pos);
