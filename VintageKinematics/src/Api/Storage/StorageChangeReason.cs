@@ -9,6 +9,7 @@ namespace VintageKinematics.Api.Storage
         ManualRebuild,
         Loaded,
         Recovery,
+        ChunkLoaded,
         AdminLock,
         AdminUnlock
     }

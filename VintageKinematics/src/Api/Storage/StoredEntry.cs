@@ -3,26 +3,31 @@ using Vintagestory.API.Common;
 namespace VintageKinematics.Api.Storage
 {
     /// <summary>
-    /// Aggregated view of one stored item key. Implementations own the exemplar clone.
+    /// Immutable public snapshot of one aggregated stored entry.
+    /// Implementations must not expose their mutable internal entry objects through the API.
     /// </summary>
     public sealed class StoredEntry
     {
-        public ItemKey Key { get; set; }
-        public ItemStack Exemplar { get; set; }
-        public long Quantity { get; set; }
-        public string CachedSearchText { get; set; }
+        private readonly ItemStack exemplar;
 
-        public StoredEntry(ItemKey key, ItemStack exemplar, long quantity, string cachedSearchText = null)
+        public long EntryId { get; }
+        public ItemKey Key { get; }
+        public ItemStack Exemplar => exemplar?.Clone();
+        public long Quantity { get; }
+        public string CachedSearchText { get; }
+
+        public StoredEntry(long entryId, ItemKey key, ItemStack exemplar, long quantity, string cachedSearchText = null)
         {
+            EntryId = entryId;
             Key = key;
-            Exemplar = exemplar;
+            this.exemplar = exemplar?.Clone();
             Quantity = quantity;
             CachedSearchText = cachedSearchText ?? string.Empty;
         }
 
-        public StoredEntry CloneShallow()
+        public StoredEntry CloneSnapshot()
         {
-            return new StoredEntry(Key, Exemplar?.Clone(), Quantity, CachedSearchText);
+            return new StoredEntry(EntryId, Key, exemplar, Quantity, CachedSearchText);
         }
     }
 }

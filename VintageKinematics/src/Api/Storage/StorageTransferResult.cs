@@ -7,9 +7,15 @@ namespace VintageKinematics.Api.Storage
         Full,
         TypeLimitReached,
         Locked,
+        StructureUnknown,
+        RecoveryRequired,
+        Corrupt,
+        Busy,
         ItemRejected,
         NotFound,
-        InvalidQuantity
+        InvalidQuantity,
+        QuantityOverflow,
+        Unpowered
     }
 
     public readonly struct StorageTransferResult

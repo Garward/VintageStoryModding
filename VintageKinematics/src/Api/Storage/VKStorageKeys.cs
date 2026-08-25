@@ -1,5 +1,4 @@
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 
 namespace VintageKinematics.Api.Storage
 {
@@ -17,7 +16,12 @@ namespace VintageKinematics.Api.Storage
         {
             if (a == null || b == null) return false;
             if (a.Collectible == null || b.Collectible == null) return false;
-            return a.Equals(world, b, GlobalConstants.IgnoredStackAttributes);
+            // Storage preserves exact stack state. Vanilla ignores temperature and transition
+            // state during normal slot merging and then averages them, but indexed storage has
+            // no physical slot on which to run that merge machinery. The first storage version
+            // rejects transitionable/temperature-bearing stacks and compares every remaining
+            // persisted attribute exactly.
+            return a.Equals(world, b);
         }
 
         public static ItemStack ExtractClone(ItemStack exemplar, int quantity)

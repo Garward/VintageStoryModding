@@ -1,12 +1,15 @@
 using System;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 
 namespace VintageKinematics.Api.Storage
 {
     /// <summary>
-    /// Attribute-aware identity for aggregating stored item stacks.
-    /// Runtime ids are useful for fast in-memory lookup; code and class are the stable identity.
+    /// Coarse, attribute-aware lookup key for stored entries.
+    ///
+    /// This is not sufficient proof that two stacks may aggregate: AttributeHash can collide.
+    /// Implementations must keep collision buckets and confirm candidates with
+    /// <see cref="VKStorageKeys.CanAggregate"/>. Runtime ids are an in-session accelerator only;
+    /// code and class are the stable collectible identity.
     /// </summary>
     public readonly struct ItemKey : IEquatable<ItemKey>
     {
@@ -31,7 +34,7 @@ namespace VintageKinematics.Api.Storage
         {
             if (stack?.Collectible == null) return Empty;
 
-            int attrHash = stack.Attributes?.GetHashCode(GlobalConstants.IgnoredStackAttributes) ?? 0;
+            int attrHash = stack.Attributes?.GetHashCode() ?? 0;
             return new ItemKey(
                 stack.Class,
                 stack.Collectible.Code?.ToString() ?? string.Empty,
@@ -42,7 +45,6 @@ namespace VintageKinematics.Api.Storage
         public bool Equals(ItemKey other)
         {
             return ItemClass == other.ItemClass
-                && RuntimeCollectibleId == other.RuntimeCollectibleId
                 && AttributeHash == other.AttributeHash
                 && string.Equals(Code, other.Code, StringComparison.Ordinal);
         }
@@ -58,7 +60,6 @@ namespace VintageKinematics.Api.Storage
             {
                 int hash = 17;
                 hash = hash * 31 + (int)ItemClass;
-                hash = hash * 31 + RuntimeCollectibleId;
                 hash = hash * 31 + AttributeHash;
                 hash = hash * 31 + StringComparer.Ordinal.GetHashCode(Code ?? string.Empty);
                 return hash;

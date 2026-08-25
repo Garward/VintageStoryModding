@@ -16,8 +16,18 @@ namespace VintageKinematics.Api.Storage
 
         IReadOnlyCollection<StoredEntry> Entries { get; }
 
+        /// <summary>
+        /// Inserts up to maxQuantity without mutating stack. Remainder is a new clone containing
+        /// the unaccepted quantity, or null when the requested quantity was fully accepted.
+        /// Callers are responsible for claims/authorization before invoking the trusted backend.
+        /// </summary>
         StorageTransferResult TryInsert(ItemStack stack, out ItemStack remainder, int maxQuantity = int.MaxValue);
-        StorageTransferResult TryExtract(ItemKey key, int quantity, out ItemStack extracted);
+
+        /// <summary>
+        /// Extracts from an opaque entry id returned by an entry snapshot. A single call returns
+        /// at most one legal collectible stack. Stale or unknown ids return NotFound.
+        /// </summary>
+        StorageTransferResult TryExtract(long entryId, int quantity, out ItemStack extracted);
         StorageRemovalCheck CanRemoveStructuralBlock(BlockPos pos, long capacityContribution);
 
         void RebuildStructure(StorageChangeReason reason = StorageChangeReason.ManualRebuild);
