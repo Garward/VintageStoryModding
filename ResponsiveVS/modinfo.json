@@ -1,0 +1,14 @@
+{
+  "type": "code",
+  "side": "universal",
+  "modid": "responsivevs",
+  "name": "ResponsiveVS",
+  "authors": ["garward"],
+  "description": "Experimental transaction and diagnostics foundation for making Vintage Story inventory interactions server-authoritative without fragile client prediction.",
+  "version": "0.1.5",
+  "requiredOnClient": true,
+  "requiredOnServer": false,
+  "dependencies": {
+    "game": "1.22.0"
+  }
+}

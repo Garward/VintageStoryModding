@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin/$(Configuration)/</OutputPath>
+    <AssemblyName>ResponsiveVS</AssemblyName>
+    <RootNamespace>ResponsiveVS</RootNamespace>
+    <Version>0.1.5</Version>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <PackageFileName>$(AssemblyName)-v$(Version).zip</PackageFileName>
+    <ReferenceProtobufNet>true</ReferenceProtobufNet>
+    <ReferenceNewtonsoftJson>true</ReferenceNewtonsoftJson>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="modinfo.json" CopyToOutputDirectory="Always" />
+    <None Include="README.md" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+</Project>
