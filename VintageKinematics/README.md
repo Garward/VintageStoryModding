@@ -6,7 +6,7 @@ Vintage Kinematics is its own kinetic power system. It has shafts, stress units,
 
 ## Current Scope
 
-Version: `1.3.18`
+Version: `1.4.0`
 
 Side: universal, required on both client and server.
 
@@ -20,7 +20,7 @@ Power starts with the hand crank, treadwheel, and counterweight drive, then grow
 
 Transmission uses shafts, encased shafts, cogwheels, large cogwheels, encased cogwheels, gearboxes, clutches, reversers, gantry shafts, and gantry carriages. Placement previews, animated parts, kinetic sounds, and conflict particles are used where they make machine state easier to read.
 
-Logistics are handled by powered belts, copper and iron funnels, item filters, trashcans, machine face IO, reinforced storage, bulk crates, copper pipes, and pumps. Barrels, mixers, pumps, funnels, and belts are intended to support actual automated production lines rather than isolated machines.
+Logistics are handled by powered belts, copper and iron funnels, item filters, trashcans, machine face IO, reinforced storage, bulk crates, the Kinetic Warehouse, copper pipes, and pumps. Barrels, mixers, pumps, funnels, belts, and warehouse ports are intended to support actual automated production lines rather than isolated machines.
 
 Machines include primitive and kinetic sieves, the kinetic quern, crusher and crusher basin, kinetic sawmill, kinetic extractor, forge press, kinetic bellows, kinetic mixer, charcoal retort, kinetic igniter, kinetic activator, kinetic bore, geothermal bore, and several JSON driven machine templates for downstream mods.
 
@@ -28,15 +28,19 @@ Contraptions use gantry carriages and gantry shafts to move selected blocks as o
 
 Tools include the kinetic wrench, powered drill, powered saw, flywheel backpack, reinforced backpack, pogo rod, kinetic boots, and the Mechanical Binder.
 
-## Version 1.3.18 Highlights
+## Version 1.4.0 Highlights
 
-The Mechanical Binder was reworked with live previews, custom multi box selections, removal boxes, and connected capture validation. Fluids are ignored by contraption capture, rendering, collision, movement, and restore logic, which fixes broken behavior when contraptions are assembled around water or lava.
+This release adds the Kinetic Warehouse, a scalable shared storage system built from one searchable terminal, connected capacity cells, a kinetic drive port, and filtered belt input and output ports. Wooden cells provide inexpensive early capacity, while reinforced cells store four times as many items in the same space.
 
-Moved kinetic parts now clear stale network and source state when assembled into a contraption, preventing old SU output from lingering visually until the next network update.
+The terminal supports search, sorting, a resizable item grid, item tooltips, carried-stack deposits, single-item withdrawal, full-stack transfer, and inventory Shift-click deposits. Client prediction keeps normal interaction responsive while the server remains authoritative and corrects rejected actions.
 
-Admins now have recovery commands for stuck contraptions: `/vk contraptionset [radius]` force restores nearby contraption entities, while `/vk contraptiondelete [radius]` removes the entities without restoring blocks. Unsafe force restore is no longer exposed through normal player interaction.
+Warehouse cells automatically reshape into one readable structure with exterior framing and open internal connections. Structures can be expanded after reloading, and parts can be removed whenever the remaining cells still have enough capacity. Placement and removal guards prevent two terminals from claiming the same cell, accidental overflow, contraption capture, wrench pickup, or automated block replacement from compromising stored items.
 
-The kinetic mixer now has pump friendly dough recipes, and forge press steel timing was adjusted so the blister steel step carries the real work time.
+Storage changes use server-authoritative transactions and mirrored, checksummed recovery records. Startup reconciliation handles interrupted saves, chunk load order, missing terminals, stale copies, and older or damaged records conservatively. Empty portable containers can be stored, while containers holding items or liquid, heated items, and transitioning perishables are rejected.
+
+Warehouse item transfers require kinetic power by default. Power demand scales gradually with physical cell count, and the drive port operates from 16 RPM. Server owners can disable the power requirement, adjust its demand and minimum RPM, or set a maximum number of distinct stored item types.
+
+Belt and funnel automation now supports direction-aware warehouse inputs. The shared connection scanner used by warehouse cells also replaces duplicated copper-pipe connection logic, and the build/package pipeline now produces release archives consistently across the repository.
 
 ## Installation
 
@@ -64,7 +68,7 @@ Server config is generated at:
 ModConfig/vintagekinematics.json
 ```
 
-The config covers global consumer speed, generator stress multipliers, per block overrides, vanilla bridge behavior, sieve yields, forge press timing, coal motor fuel usage, modded nugget smelting gates, and kinetic activator target filtering. Existing config files are updated with new default keys at startup.
+The config covers global consumer speed, generator stress multipliers, per block overrides, vanilla bridge behavior, sieve yields, forge press timing, coal motor fuel usage, modded nugget smelting gates, kinetic activator target filtering, and Kinetic Warehouse power and type limits. Existing config files are updated with new default keys at startup.
 
 ## Diagnostics
 
