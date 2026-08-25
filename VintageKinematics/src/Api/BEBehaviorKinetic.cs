@@ -174,17 +174,13 @@ namespace VintageKinematics.Api
                     : AxisFromBlockFacing();
             }
 
-            // Networks live in RAM on the manager; chunk load / world load doesn't restore them.
-            // Ask the manager to ensure we're tracked once Initialize and FromTreeAttributes have
-            // both settled. Fresh placement also rebuilds through a deferred callback; this load
-            // callback is still safe because EnsureTrackedFromLoad is a no-op once the pos is tracked.
+            // Queue registration after the chunk finishes constructing its block entities.
+            // The manager also rebinds this new BE instance when its position survived a chunk
+            // unload in an existing in-memory network.
             if (api.Side == EnumAppSide.Server)
             {
-                api.Event.RegisterCallback(_ =>
-                {
-                    var mgr = api.ModLoader.GetModSystem<KineticNetworkManager>();
-                    mgr?.EnsureTrackedFromLoad(Pos);
-                }, 0);
+                var mgr = api.ModLoader.GetModSystem<KineticNetworkManager>();
+                mgr?.QueueTrackFromLoad(Pos);
             }
         }
 

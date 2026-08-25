@@ -13,7 +13,7 @@ using VintageKinematics.Storage.Recovery;
 
 namespace VintageKinematics.Network
 {
-    public class KineticNetworkManager : ModSystem
+    public partial class KineticNetworkManager : ModSystem
     {
         public override double ExecuteOrder() => 0.5;
 
@@ -47,6 +47,7 @@ namespace VintageKinematics.Network
         public override void StartServerSide(Vintagestory.API.Server.ICoreServerAPI sapi)
         {
             base.StartServerSide(sapi);
+            StartLoadTracking(sapi);
             // Poll vanilla MP bridge sources ~4×/sec. Vanilla networks change speed continuously
             // (windmill catching wind, water wheel under load) and we have no event hook into
             // them, so we sample and push updates into VK only when the change is meaningful.
@@ -670,29 +671,35 @@ namespace VintageKinematics.Network
         {
             foreach (var kvp in net.Nodes)
             {
-                BlockEntity be = api.World.BlockAccessor.GetBlockEntity(kvp.Key);
-                Api.BEBehaviorKinetic beh = be?.GetBehavior<Api.BEBehaviorKinetic>();
-                if (beh == null) continue;
-
-                beh.NetworkId = kvp.Value.NetworkId;
-                beh.Ratio = kvp.Value.Ratio;
-                beh.Direction = kvp.Value.Direction;
-                beh.PhaseOffset = kvp.Value.PhaseOffset;
-                beh.CurrentRPM = net.GetActualRPM(kvp.Key);
-                beh.NetworkConflicted = net.IsConflicted || net.IsOverstressed;
-                beh.NetStressTotal = net.StressTotal;
-                beh.NetStressCapacity = net.StressCapacity;
-                beh.NetOverstressed = net.IsOverstressed;
-                beh.NetNodeCount = net.NodeCount;
-                be.MarkDirty(true);
-                beh.RaiseRPMChanged(beh.CurrentRPM);
-
-                if (be is IKineticConsumer cons)
-                {
-                    cons.OnNetworkRPMChanged(beh.CurrentRPM, net);
-                }
+                PropagateNodeState(net, kvp.Key, kvp.Value);
             }
             NetworkStateChanged?.Invoke(net);
+        }
+
+        private bool PropagateNodeState(KineticNetwork net, BlockPos pos, KineticNode node)
+        {
+            BlockEntity be = api.World.BlockAccessor.GetBlockEntity(pos);
+            Api.BEBehaviorKinetic beh = be?.GetBehavior<Api.BEBehaviorKinetic>();
+            if (beh == null) return false;
+
+            beh.NetworkId = node.NetworkId;
+            beh.Ratio = node.Ratio;
+            beh.Direction = node.Direction;
+            beh.PhaseOffset = node.PhaseOffset;
+            beh.CurrentRPM = net.GetActualRPM(pos);
+            beh.NetworkConflicted = net.IsConflicted || net.IsOverstressed;
+            beh.NetStressTotal = net.StressTotal;
+            beh.NetStressCapacity = net.StressCapacity;
+            beh.NetOverstressed = net.IsOverstressed;
+            beh.NetNodeCount = net.NodeCount;
+            be.MarkDirty(true);
+            beh.RaiseRPMChanged(beh.CurrentRPM);
+
+            if (be is IKineticConsumer consumer)
+            {
+                consumer.OnNetworkRPMChanged(beh.CurrentRPM, net);
+            }
+            return true;
         }
 
         public void OnPlaced(BlockPos pos)
@@ -731,7 +738,7 @@ namespace VintageKinematics.Network
         public void EnsureTrackedFromLoad(BlockPos pos)
         {
             if (api.Side != EnumAppSide.Server) return;
-            lock (lockObj) { if (posToNetwork.ContainsKey(pos)) return; }
+            if (TryRebindTrackedNode(pos)) return;
 
             var prov = new WorldNodeProvider(api.World);
             if (!prov.TryGetNode(pos, out _)) return;

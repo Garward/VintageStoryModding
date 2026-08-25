@@ -6,7 +6,7 @@ Vintage Kinematics is its own kinetic power system. It has shafts, stress units,
 
 ## Current Scope
 
-Version: `1.4.0`
+Version: `1.4.1`
 
 Side: universal, required on both client and server.
 
