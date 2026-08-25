@@ -8,7 +8,7 @@ namespace RecipeExplorer
     public class ModConfig
     {
         /// <summary>
-        /// Show chat messages when auto-fill succeeds or fails
+        /// Show chat messages when auto fill succeeds or fails
         /// </summary>
         public bool ShowAutoFillMessages { get; set; } = false;
 
@@ -19,7 +19,7 @@ namespace RecipeExplorer
         public bool EnableHandbookPerformanceOptimizations { get; set; } = true;
 
         /// <summary>
-        /// Enable the grid-recipe candidate filter used while composing vanilla "Created by" handbook sections.
+        /// Enable the grid recipe candidate filter used while composing vanilla "Created by" handbook sections.
         /// </summary>
         public bool EnableCreatedByRecipeFilter { get; set; } = true;
 
@@ -29,22 +29,22 @@ namespace RecipeExplorer
         public bool EnableVariantGrouping { get; set; } = true;
 
         /// <summary>
-        /// Enable the per-mod handbook category tab and mod list.
+        /// Enable the per mod handbook category tab and mod list.
         /// </summary>
         public bool EnableModCategoryTab { get; set; } = true;
 
         /// <summary>
-        /// Enable bookmark storage, bookmark tab, and bookmark detail-page button.
+        /// Enable bookmark storage, bookmark tab, and bookmark detail page button.
         /// </summary>
         public bool EnableBookmarks { get; set; } = true;
 
         /// <summary>
-        /// Enable the locked-page detail button and automatic locked-page opening.
+        /// Enable the locked-page detail button and automatic locked page opening.
         /// </summary>
         public bool EnableLockedPage { get; set; } = true;
 
         /// <summary>
-        /// Enable the handbook Auto-Fill button.
+        /// Enable the handbook Auto Fill button.
         /// </summary>
         public bool EnableAutoFillButton { get; set; } = true;
 
@@ -64,14 +64,15 @@ namespace RecipeExplorer
         public bool EnableRecipeOverlays { get; set; } = true;
 
         /// <summary>
-        /// Enable mouse-wheel control for handbook item/recipe slideshow components.
+        /// Enable mouse wheel control for handbook item/recipe slideshow components.
         /// </summary>
         public bool EnableSlideshowScroll { get; set; } = true;
 
         /// <summary>
-        /// Enable mouse-wheel selection of alternate crafting-grid outputs when several recipes match the same inputs.
+        /// Enable mouse wheel selection of alternate crafting-grid outputs when several recipes match the same inputs.
+        /// This patches server side crafting grid recipe selection, so it is opt in for modpack compatibility.
         /// </summary>
-        public bool EnableCraftingOutputConflictScroll { get; set; } = true;
+        public bool EnableCraftingOutputConflictScroll { get; set; } = false;
 
         /// <summary>
         /// Enable the safety fix for generic typed container handbook drops with no stored type.
@@ -89,7 +90,7 @@ namespace RecipeExplorer
         public bool EnableDiagnosticLogging { get; set; } = false;
 
         /// <summary>
-        /// Log every step of shift-left-click Auto-Fill. Only enable while reproducing autofill bugs.
+        /// Log every step of shift left click Auto Fill. Only enable while reproducing autofill bugs.
         /// </summary>
         public bool EnableAutoFillTraceLogging { get; set; } = false;
 

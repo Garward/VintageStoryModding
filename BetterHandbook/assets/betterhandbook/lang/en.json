@@ -30,7 +30,7 @@
   "setting-slideshow-scroll": "Slideshow mouse wheel",
   "setting-slideshow-scroll-tooltip": "Allow mouse-wheel control of handbook item and recipe slideshow components.",
   "setting-crafting-output-conflict-scroll": "Crafting output conflict scroll",
-  "setting-crafting-output-conflict-scroll-tooltip": "Allow mouse-wheel selection of alternate crafting-grid outputs when several recipes match the same inputs.",
+  "setting-crafting-output-conflict-scroll-tooltip": "Allow mouse-wheel selection of alternate crafting-grid outputs when several recipes match the same inputs. Disabled by default because it patches server-side crafting behavior.",
   "setting-generic-container-drop-fix": "Generic container drop fix",
   "setting-generic-container-drop-fix-tooltip": "Skip unsafe handbook drop previews for generic typed containers that have no stored type.",
   "setting-show-autofill-messages": "Auto-Fill chat messages",

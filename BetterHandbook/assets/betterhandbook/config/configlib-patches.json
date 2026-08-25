@@ -95,7 +95,7 @@
     {
       "code": "EnableCraftingOutputConflictScroll",
       "type": "boolean",
-      "default": true,
+      "default": false,
       "ingui": "betterhandbook:setting-crafting-output-conflict-scroll",
       "comment": "betterhandbook:setting-crafting-output-conflict-scroll-tooltip"
     },

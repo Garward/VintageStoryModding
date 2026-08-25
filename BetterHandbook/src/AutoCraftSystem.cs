@@ -439,11 +439,20 @@ namespace RecipeExplorer
             bool shiftHeld = capi.Input.KeyboardKeyStateRaw[(int)GlKeys.ShiftLeft] ||
                              capi.Input.KeyboardKeyStateRaw[(int)GlKeys.ShiftRight];
 
+            bool success = false;
+
             foreach (GridRecipe recipe in recipes)
             {
-                if (!TryCreatePacedFillPlan(recipe, craftingGrid, shiftHeld, out PacedAutoFillPlan plan)) continue;
+                success = TryFillCraftingGrid(recipe, craftingGrid, shiftHeld);
+                if (success) break;
+            }
 
-                BeginPacedAutoFill(plan, recipes);
+            if (success)
+            {
+                HandbookRecipeOverlays.ClearFailedFill();
+                if (RecipeExplorerMod.Config.ShowAutoFillMessages)
+                    capi.ShowChatMessage(shiftHeld ? "Crafting grid filled (max)!" : "Crafting grid filled!");
+                capi.Gui.PlaySound("menubutton_press");
                 return true;
             }
 
