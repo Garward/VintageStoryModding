@@ -112,6 +112,7 @@ namespace VintageKinematics.Storage.Recovery
             int radius)
         {
             StringBuilder text = new StringBuilder();
+            text.AppendLine("Inspection only; no warehouse data was changed.");
             text.AppendLine($"Warehouse {controller.WarehouseId} at {controller.Pos}; outcome={result.Outcome}.");
             AppendCopy(text, "controller", result.BlockEntityCopy, controller.WarehouseId, result, radius);
             AppendCopy(text, "recovery", result.RecoveryCopy, controller.WarehouseId, result, radius);
@@ -133,6 +134,11 @@ namespace VintageKinematics.Storage.Recovery
                 text.Append(
                     $"No valid item copy exists and the synchronized stored count is zero; "
                     + $"explicit empty reset: /vk storagerecover {radius} empty {token}");
+            }
+            else if (result.RequiresAdminRecovery)
+            {
+                text.Append(
+                    "Recovery remains locked until one of the confirm commands shown above is run exactly.");
             }
             return text.ToString();
         }
