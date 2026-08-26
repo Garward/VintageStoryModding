@@ -9,7 +9,7 @@ using VintageKinematics.Network;
 
 namespace VintageKinematics.BlockEntities
 {
-    public class BEGantryShaft : BlockEntity
+    public class BEGantryShaft : BEKinetic
     {
         private const int MoveIntervalMs = 10;
         private const float BlocksPerRotation = 1.2f;
@@ -86,10 +86,7 @@ namespace VintageKinematics.BlockEntities
 
                 if (!CanMoveInDirection(railAnchorCoord, minRailCoord, maxRailCoord, delta))
                 {
-                    if (!ShouldHoldAsWorkingEntity(contraption, rpm, dt, pendingDx, pendingDy, pendingDz))
-                    {
-                        TryAutoRestoreAfterSettle(contraption);
-                    }
+                    HoldWorkingOrRestoreAfterSettle(contraption, rpm, dt, pendingDx, pendingDy, pendingDz);
                     continue;
                 }
 
@@ -97,10 +94,7 @@ namespace VintageKinematics.BlockEntities
                 double move = nextRailAnchorCoord - railAnchorCoord;
                 if (Math.Abs(move) < 0.000001)
                 {
-                    if (!ShouldHoldAsWorkingEntity(contraption, rpm, dt, pendingDx, pendingDy, pendingDz))
-                    {
-                        TryAutoRestoreAfterSettle(contraption);
-                    }
+                    HoldWorkingOrRestoreAfterSettle(contraption, rpm, dt, pendingDx, pendingDy, pendingDz);
                     continue;
                 }
 
@@ -257,6 +251,17 @@ namespace VintageKinematics.BlockEntities
             return contraption.GetActiveContraptionWorkStressImpact(rpm, dt, moveX, moveY, moveZ) > 0f;
         }
 
+        private void HoldWorkingOrRestoreAfterSettle(EntityVKContraption contraption, float rpm, float dt, double moveX, double moveY, double moveZ)
+        {
+            if (ShouldHoldAsWorkingEntity(contraption, rpm, dt, moveX, moveY, moveZ))
+            {
+                AutoRestoreSettleStartMs.Remove(contraption.EntityId);
+                return;
+            }
+
+            TryAutoRestoreAfterSettle(contraption);
+        }
+
         private bool TryAutoRestoreAfterSettle(EntityVKContraption contraption)
         {
             if (contraption == null) return false;
@@ -355,12 +360,12 @@ namespace VintageKinematics.BlockEntities
                 (trackMin.InternalY + trackMax.InternalY) * 0.5 + 0.5,
                 (trackMin.Z + trackMax.Z) * 0.5 + 0.5);
             float radius = Math.Max(2f, Math.Abs(AxisInt(trackMax, axis) - AxisInt(trackMin, axis)) + 2f);
-            Entity[] entities = Api.World.GetEntitiesAround(center, radius, radius, entity => entity is EntityVKContraption contraption && contraption.Alive && !contraption.SnapshotRestored);
+            Entity[] entities = Api.World.GetEntitiesAround(center, radius, radius, entity => entity is EntityVKContraption contraption && contraption.Alive && contraption.AssemblyReady && !contraption.SnapshotRestored);
 
             for (int i = 0; i < entities.Length; i++)
             {
                 if (entities[i] is not EntityVKContraption contraption) continue;
-                if (!contraption.Alive || contraption.SnapshotRestored) continue;
+                if (!contraption.Alive || !contraption.AssemblyReady || contraption.SnapshotRestored) continue;
                 if (!seen.Add(contraption.EntityId.ToString())) continue;
                 if (!contraption.TryGetControllerAxis(out EnumKineticAxis controllerAxis) || controllerAxis != axis) continue;
                 if (!TryGetContraptionAnchorBlockPos(contraption, out BlockPos anchorPos)) continue;

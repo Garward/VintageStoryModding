@@ -295,6 +295,8 @@ namespace VintageKinematics.Api
         {
             TreeAttribute tree = CaptureBlockEntityTree(world, blockPos);
             ClearKineticRuntimeState(tree);
+            Block block = world?.BlockAccessor?.GetBlock(blockPos);
+            GantrySnapshotTreeSanitizer.SanitizeCapturedBlock(block?.Code?.ToString(), tree);
             return tree;
         }
 

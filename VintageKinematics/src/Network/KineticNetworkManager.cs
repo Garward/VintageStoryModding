@@ -58,26 +58,9 @@ namespace VintageKinematics.Network
                 .WithDescription("Vintage Kinematics debug commands")
                 .RequiresPrivilege(Vintagestory.API.Server.Privilege.controlserver)
                 .BeginSubCommand("netinfo")
-                    .WithDescription("List all kinetic networks")
-                    .HandleWith(args =>
-                    {
-                        var sb = new System.Text.StringBuilder();
-                        lock (lockObj)
-                        {
-                            sb.AppendLine($"Networks: {networks.Count}");
-                            foreach (var net in networks.Values)
-                            {
-                                sb.AppendLine($"  #{net.NetworkId}: {net.NodeCount} nodes, source={net.SourceRPM:F1} RPM, stress={net.StressTotal:F0}/{net.StressCapacity:F0}, conflict={net.IsConflicted}");
-                                foreach (var kvp in net.Nodes)
-                                {
-                                    if (!kvp.Value.IsVanillaBridge) continue;
-                                    var b = kvp.Value;
-                                    sb.AppendLine($"    bridge @ {kvp.Key.X},{kvp.Key.Y},{kvp.Key.Z}: vNet={b.VanillaNetworkId}, smTorque={b.SmoothedTorque:F3}, ratedRPM={b.RatedRPM:F1}, impact={b.StressImpact:F1}");
-                                }
-                            }
-                        }
-                        return Vintagestory.API.Common.TextCommandResult.Success(sb.ToString());
-                    })
+                    .WithDescription("Summarize kinetic networks; add 'verbose' for the complete listing")
+                    .WithArgs(sapi.ChatCommands.Parsers.OptionalWordRange("detail", "summary", "verbose"))
+                    .HandleWith(HandleNetworkInfoCommand)
                 .EndSubCommand()
                 .BeginSubCommand("contraptionset")
                     .WithDescription("Emergency restore nearby VK contraption entities, overwriting target blocks")

@@ -1,0 +1,5068 @@
+{
+    "editor": {
+        "allAngles": false,
+        "entityTextureMode": false
+    },
+    "textureWidth": 32,
+    "textureHeight": 32,
+    "textureSizes": {},
+    "textures": {
+        "iron": "game:block/metal/plate/iron",
+        "band": "game:block/metal/ingot/iron",
+        "dark": "game:block/metal/plate/steel"
+    },
+    "elements": [
+        {
+            "name": "tankWall00",
+            "from": [
+                6.4284,
+                1.195,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.695,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 0
+        },
+        {
+            "name": "tankWall01",
+            "from": [
+                6.4284,
+                1.205,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.705,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 30
+        },
+        {
+            "name": "tankWall02",
+            "from": [
+                6.4284,
+                1.215,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.715,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 60
+        },
+        {
+            "name": "tankWall03",
+            "from": [
+                6.4284,
+                1.225,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.725,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 90
+        },
+        {
+            "name": "tankWall04",
+            "from": [
+                6.4284,
+                1.235,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.735,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 120
+        },
+        {
+            "name": "tankWall05",
+            "from": [
+                6.4284,
+                1.245,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.745,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 150
+        },
+        {
+            "name": "tankWall06",
+            "from": [
+                6.4284,
+                1.255,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.755,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 180
+        },
+        {
+            "name": "tankWall07",
+            "from": [
+                6.4284,
+                1.265,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.765,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 210
+        },
+        {
+            "name": "tankWall08",
+            "from": [
+                6.4284,
+                1.275,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.775,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 240
+        },
+        {
+            "name": "tankWall09",
+            "from": [
+                6.4284,
+                1.285,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.785,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 270
+        },
+        {
+            "name": "tankWall10",
+            "from": [
+                6.4284,
+                1.295,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.795,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 300
+        },
+        {
+            "name": "tankWall11",
+            "from": [
+                6.4284,
+                1.305,
+                13.425
+            ],
+            "to": [
+                9.5716,
+                14.805,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 330
+        },
+        {
+            "name": "lowerBand00",
+            "from": [
+                6.3255,
+                1.945,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                2.945,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 0
+        },
+        {
+            "name": "lowerBand01",
+            "from": [
+                6.3255,
+                1.955,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                2.955,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 30
+        },
+        {
+            "name": "lowerBand02",
+            "from": [
+                6.3255,
+                1.965,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                2.965,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 60
+        },
+        {
+            "name": "lowerBand03",
+            "from": [
+                6.3255,
+                1.975,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                2.975,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 90
+        },
+        {
+            "name": "lowerBand04",
+            "from": [
+                6.3255,
+                1.985,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                2.985,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 120
+        },
+        {
+            "name": "lowerBand05",
+            "from": [
+                6.3255,
+                1.995,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                2.995,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 150
+        },
+        {
+            "name": "lowerBand06",
+            "from": [
+                6.3255,
+                2.005,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                3.005,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 180
+        },
+        {
+            "name": "lowerBand07",
+            "from": [
+                6.3255,
+                2.015,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                3.015,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 210
+        },
+        {
+            "name": "lowerBand08",
+            "from": [
+                6.3255,
+                2.025,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                3.025,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 240
+        },
+        {
+            "name": "lowerBand09",
+            "from": [
+                6.3255,
+                2.035,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                3.035,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 270
+        },
+        {
+            "name": "lowerBand10",
+            "from": [
+                6.3255,
+                2.045,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                3.045,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 300
+        },
+        {
+            "name": "lowerBand11",
+            "from": [
+                6.3255,
+                2.055,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                3.055,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 330
+        },
+        {
+            "name": "upperBand00",
+            "from": [
+                6.3255,
+                12.845,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.845,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 0
+        },
+        {
+            "name": "upperBand01",
+            "from": [
+                6.3255,
+                12.855,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.855,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 30
+        },
+        {
+            "name": "upperBand02",
+            "from": [
+                6.3255,
+                12.865,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.865,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 60
+        },
+        {
+            "name": "upperBand03",
+            "from": [
+                6.3255,
+                12.875,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.875,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 90
+        },
+        {
+            "name": "upperBand04",
+            "from": [
+                6.3255,
+                12.885,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.885,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 120
+        },
+        {
+            "name": "upperBand05",
+            "from": [
+                6.3255,
+                12.895,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.895,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 150
+        },
+        {
+            "name": "upperBand06",
+            "from": [
+                6.3255,
+                12.905,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.905,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 180
+        },
+        {
+            "name": "upperBand07",
+            "from": [
+                6.3255,
+                12.915,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.915,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 210
+        },
+        {
+            "name": "upperBand08",
+            "from": [
+                6.3255,
+                12.925,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.925,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 240
+        },
+        {
+            "name": "upperBand09",
+            "from": [
+                6.3255,
+                12.935,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.935,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 270
+        },
+        {
+            "name": "upperBand10",
+            "from": [
+                6.3255,
+                12.945,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.945,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 300
+        },
+        {
+            "name": "upperBand11",
+            "from": [
+                6.3255,
+                12.955,
+                13.79
+            ],
+            "to": [
+                9.6745,
+                13.955,
+                14.57
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 330
+        },
+        {
+            "name": "bottomCap00",
+            "from": [
+                6.4284,
+                0.245,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.245,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 0
+        },
+        {
+            "name": "bottomCap01",
+            "from": [
+                6.4284,
+                0.255,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.255,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 30
+        },
+        {
+            "name": "bottomCap02",
+            "from": [
+                6.4284,
+                0.265,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.265,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 60
+        },
+        {
+            "name": "bottomCap03",
+            "from": [
+                6.4284,
+                0.275,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.275,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 90
+        },
+        {
+            "name": "bottomCap04",
+            "from": [
+                6.4284,
+                0.285,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.285,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 120
+        },
+        {
+            "name": "bottomCap05",
+            "from": [
+                6.4284,
+                0.295,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.295,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 150
+        },
+        {
+            "name": "bottomCap06",
+            "from": [
+                6.4284,
+                0.305,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.305,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 180
+        },
+        {
+            "name": "bottomCap07",
+            "from": [
+                6.4284,
+                0.315,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.315,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 210
+        },
+        {
+            "name": "bottomCap08",
+            "from": [
+                6.4284,
+                0.325,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.325,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 240
+        },
+        {
+            "name": "bottomCap09",
+            "from": [
+                6.4284,
+                0.335,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.335,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 270
+        },
+        {
+            "name": "bottomCap10",
+            "from": [
+                6.4284,
+                0.345,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.345,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 300
+        },
+        {
+            "name": "bottomCap11",
+            "from": [
+                6.4284,
+                0.355,
+                8
+            ],
+            "to": [
+                9.5716,
+                1.355,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 330
+        },
+        {
+            "name": "topCap00",
+            "from": [
+                6.4284,
+                14.645,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.645,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 0
+        },
+        {
+            "name": "topCap01",
+            "from": [
+                6.4284,
+                14.655,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.655,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 30
+        },
+        {
+            "name": "topCap02",
+            "from": [
+                6.4284,
+                14.665,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.665,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 60
+        },
+        {
+            "name": "topCap03",
+            "from": [
+                6.4284,
+                14.675,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.675,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 90
+        },
+        {
+            "name": "topCap04",
+            "from": [
+                6.4284,
+                14.685,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.685,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 120
+        },
+        {
+            "name": "topCap05",
+            "from": [
+                6.4284,
+                14.695,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.695,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 150
+        },
+        {
+            "name": "topCap06",
+            "from": [
+                6.4284,
+                14.705,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.705,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 180
+        },
+        {
+            "name": "topCap07",
+            "from": [
+                6.4284,
+                14.715,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.715,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 210
+        },
+        {
+            "name": "topCap08",
+            "from": [
+                6.4284,
+                14.725,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.725,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 240
+        },
+        {
+            "name": "topCap09",
+            "from": [
+                6.4284,
+                14.735,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.735,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 270
+        },
+        {
+            "name": "topCap10",
+            "from": [
+                6.4284,
+                14.745,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.745,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 300
+        },
+        {
+            "name": "topCap11",
+            "from": [
+                6.4284,
+                14.755,
+                8
+            ],
+            "to": [
+                9.5716,
+                15.755,
+                14.175
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#iron",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            },
+            "rotationOrigin": [
+                8,
+                8,
+                8
+            ],
+            "rotationY": 330
+        },
+        {
+            "name": "fillNeck",
+            "from": [
+                6.65,
+                15.72,
+                6.65
+            ],
+            "to": [
+                9.35,
+                15.87,
+                9.35
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "fillCap",
+            "from": [
+                6.25,
+                15.84,
+                6.25
+            ],
+            "to": [
+                9.75,
+                16,
+                9.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "footNorthWest",
+            "from": [
+                2.8,
+                0,
+                3.2
+            ],
+            "to": [
+                4.7,
+                1.1,
+                5.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "footNorthEast",
+            "from": [
+                11.3,
+                0,
+                3.2
+            ],
+            "to": [
+                13.2,
+                1.1,
+                5.1
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "footSouthWest",
+            "from": [
+                2.8,
+                0,
+                10.9
+            ],
+            "to": [
+                4.7,
+                1.1,
+                12.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "footSouthEast",
+            "from": [
+                11.3,
+                0,
+                10.9
+            ],
+            "to": [
+                13.2,
+                1.1,
+                12.8
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "frontPort",
+            "from": [
+                6.6,
+                6.55,
+                1.55
+            ],
+            "to": [
+                9.4,
+                9.45,
+                2.45
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#dark",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        },
+        {
+            "name": "frontPortBoss",
+            "from": [
+                7.1,
+                7.05,
+                0.75
+            ],
+            "to": [
+                8.9,
+                8.95,
+                1.75
+            ],
+            "faces": {
+                "north": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "east": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "south": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "west": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "up": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                },
+                "down": {
+                    "texture": "#band",
+                    "uv": [
+                        0,
+                        0,
+                        16,
+                        16
+                    ]
+                }
+            }
+        }
+    ]
+}

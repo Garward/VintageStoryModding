@@ -1,6 +1,7 @@
 {
     "code": "contraptionsaw",
     "class": "BlockContraptionTool",
+    "entityClass": "StationaryContraptionTool",
     "variantgroups": [
         {
             "code": "side",
@@ -63,7 +64,14 @@
                 "contraptionsaw-*"
             ]
         },
-        "contraptionTool": "saw"
+        "contraptionTool": "saw",
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 4,
+            "compactTooltip": true,
+            "axisFromSide": true,
+            "axisFromSideMode": "inline"
+        }
     },
     "blockmaterial": "Metal",
     "resistance": 4,
@@ -198,6 +206,9 @@
             "z2": 1
         }
     },
+    "entityBehaviors": [
+        { "name": "Kinetic" }
+    ],
     "behaviors": [
         {
             "name": "CanonicalDrop",

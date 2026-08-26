@@ -1,0 +1,38 @@
+{
+    "code": "ironfluidtank",
+    "class": "BlockIronFluidTank",
+    "entityClass": "IronFluidTank",
+    "shape": { "base": "block/ironfluidtank" },
+    "blockmaterial": "Metal",
+    "creativeinventory": {
+        "general": [ "*" ],
+        "vintagekinematics": [ "*" ]
+    },
+    "attributes": {
+        "capacityLitres": 100,
+        "isTopOpened": true,
+        "allowHeldLiquidTransfer": true,
+        "reinforcable": true
+    },
+    "behaviors": [
+        {
+            "name": "RequireEmptyInventoryOnBreak",
+            "properties": { "messageLangCode": "vintagekinematics:ironfluidtank-must-be-empty" }
+        }
+    ],
+    "maxstacksize": 1,
+    "resistance": 4,
+    "requiredMiningTier": 2,
+    "lightAbsorption": 0,
+    "sideopaque": { "all": false },
+    "sidesolid": { "all": false },
+    "sideao": { "all": false },
+    "collisionbox": { "x1": 0.0625, "y1": 0, "z1": 0.0625, "x2": 0.9375, "y2": 1, "z2": 0.9375 },
+    "selectionbox": { "x1": 0.0625, "y1": 0, "z1": 0.0625, "x2": 0.9375, "y2": 1, "z2": 0.9375 },
+    "sounds": {
+        "place": "game:block/anvil",
+        "break": "game:block/anvil",
+        "hit": "game:block/anvil",
+        "walk": "game:walk/stone"
+    }
+}

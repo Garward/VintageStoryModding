@@ -6,7 +6,7 @@ Vintage Kinematics is its own kinetic power system. It has shafts, stress units,
 
 ## Current Scope
 
-Version: `1.4.1`
+Version: `1.4.2`
 
 Side: universal, required on both client and server.
 
@@ -27,6 +27,16 @@ Machines include primitive and kinetic sieves, the kinetic quern, crusher and cr
 Contraptions use gantry carriages and gantry shafts to move selected blocks as one entity. The Mechanical Binder supports custom multi box selections, removal boxes, live previews, and connected block validation. Contraption drills and saws can work while moving, and carried storage can collect drops.
 
 Tools include the kinetic wrench, powered drill, powered saw, flywheel backpack, reinforced backpack, pogo rod, kinetic boots, and the Mechanical Binder.
+
+## Version 1.4.2 Highlights
+
+Contraption drills and saws can now run as stationary machines with kinetic power connected behind the tool. Their moving parts and rear input shafts animate from actual network RPM. Completed drops feed storage directly below when possible, which avoids loose-item buildup, and remaining items fall consistently from the center beneath the machine.
+
+Stationary and moving drills now handle regenerated blocks consistently and notify nearby fluids after mining, allowing vanilla basalt generators to refill normally. Saw targeting starts at the block touching the blade instead of searching for unrelated wood nearby. Tree cutting now uses the same tree-group traversal as a vanilla axe, including connected branches and leaves, with faster leaf-aware work timing at high RPM.
+
+Gantry contraptions can now contain controllers at both ends and transfer control to whichever anchor can move. The inactive anchor ignores movement commands until the contraption is placed again. Assembly also received a safer visual handoff that prevents flashing during conversion, interrupted handoffs recover according to whichever copy survived, single-carriage movement works normally, and connected gantry shafts now visibly rotate with their kinetic network.
+
+The kinetic quern now limits excessive client animation updates while retaining the same processing throughput. Pumps distinguish renewable water from finite world liquids, so water remains an infinite source while lava does not. Full lava sources can be collected as atomic 10 litre transfers only when a connected 100 litre Iron Fluid Tank has room for the complete source. Stored water, salt water, and lava can also be pumped into supported world cells in 10 litre batches. When aimed at an existing source, the pump expands horizontally across the supported layer to fill enclosed pools.
 
 ## Version 1.4.0 Highlights
 

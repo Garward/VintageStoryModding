@@ -1,0 +1,11 @@
+{
+    "ingredientPattern": "BIB,_F_,BIB",
+    "ingredients": {
+        "B": { "type": "item", "code": "pressedband-iron" },
+        "I": { "type": "item", "code": "game:metalplate-iron" },
+        "F": { "type": "item", "code": "pipeflange-iron" }
+    },
+    "width": 3,
+    "height": 3,
+    "output": { "type": "block", "code": "ironfluidtank", "quantity": 1 }
+}

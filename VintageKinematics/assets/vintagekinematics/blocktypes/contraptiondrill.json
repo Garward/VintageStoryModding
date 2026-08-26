@@ -1,6 +1,7 @@
 {
     "code": "contraptiondrill",
     "class": "BlockContraptionTool",
+    "entityClass": "StationaryContraptionTool",
     "variantgroups": [
         {
             "code": "side",
@@ -63,7 +64,14 @@
                 "contraptiondrill-*"
             ]
         },
-        "contraptionTool": "drill"
+        "contraptionTool": "drill",
+        "vkKinetic": {
+            "role": "Shaft",
+            "stressImpact": 2.5,
+            "compactTooltip": true,
+            "axisFromSide": true,
+            "axisFromSideMode": "inline"
+        }
     },
     "blockmaterial": "Metal",
     "resistance": 4,
@@ -198,6 +206,9 @@
             "z2": 1
         }
     },
+    "entityBehaviors": [
+        { "name": "Kinetic" }
+    ],
     "behaviors": [
         {
             "name": "CanonicalDrop",

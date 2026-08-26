@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using HarmonyLib;
+using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using VintageKinematics.Api;
 using VintageKinematics.BlockEntities;
@@ -19,9 +20,6 @@ namespace VintageKinematics.Patches
     [HarmonyPatch(typeof(BlockEntityQuern), "GrindSpeed", MethodType.Getter)]
     public static class QuernGrindSpeedPatch
     {
-        // Network RPM at which the kinetic quern grinds at vanilla speed (1.0).
-        private const float QuernRefRPM = 32f;
-
         private static readonly FieldInfo playersGrindingField =
             typeof(BlockEntityQuern).GetField(
                 "playersGrinding",
@@ -52,7 +50,10 @@ namespace VintageKinematics.Patches
             var cfg = kq.Api?.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
             if (cfg != null) speedMult = cfg.ResolveConsumerSpeed(kq.Block?.Code?.FirstCodePart());
 
-            __result = (rpm / QuernRefRPM) * speedMult;
+            float processingSpeed = QuernSpeedPolicy.ProcessingSpeed(rpm, speedMult);
+            __result = kq.Api?.Side == EnumAppSide.Client
+                ? QuernSpeedPolicy.ClientVisualSpeed(processingSpeed)
+                : processingSpeed;
         }
     }
 }

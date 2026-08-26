@@ -30,6 +30,14 @@ namespace VintageKinematics.Rendering
                     Pivot = new Vec3f(0.5f, 0.5f, 2.2f / 16f),
                     Axis = EnumKineticAxis.X
                 });
+
+                parts.Add(new ContraptionMovingPartDefinition
+                {
+                    ElementNames = new[] { "ShaftStub" },
+                    Pivot = new Vec3f(0.5f, 0.5f, 1f),
+                    Axis = EnumKineticAxis.Z,
+                    Ratio = 1f
+                });
                 return;
             }
 
@@ -41,6 +49,14 @@ namespace VintageKinematics.Rendering
                     Pivot = new Vec3f(0.5f, 0.5f, 0f),
                     Axis = EnumKineticAxis.Z,
                     Ratio = -1f
+                });
+
+                parts.Add(new ContraptionMovingPartDefinition
+                {
+                    ElementNames = new[] { "ShaftStub" },
+                    Pivot = new Vec3f(0.5f, 0.5f, 1f),
+                    Axis = EnumKineticAxis.Z,
+                    Ratio = 1f
                 });
             }
         }

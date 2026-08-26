@@ -16,7 +16,7 @@ using VintageKinematics.Storage;
 #pragma warning disable CS0618
 namespace VintageKinematics.Entities
 {
-    public class EntityVKContraption : Entity
+    public partial class EntityVKContraption : Entity
     {
         private const string AttrControllerPos = "vkControllerPos";
         private const string AttrCapturedBlockCount = "vkCapturedBlockCount";
@@ -133,6 +133,7 @@ namespace VintageKinematics.Entities
             WatchedAttributes.SetInt(AttrCapturedBlockCount, capturedBlockCount);
             WatchedAttributes.SetInt(AttrPlacementMode, (int)placementMode);
             WatchedAttributes.SetFloat(AttrInitialYaw, (float)SidedPos.Yaw);
+            WatchedAttributes.SetBool(AttrAssemblyReady, false);
             if (!string.IsNullOrEmpty(ownerPlayerUid)) WatchedAttributes.SetString(AttrOwnerPlayerUid, ownerPlayerUid);
             if (!string.IsNullOrEmpty(ownerPlayerName)) WatchedAttributes.SetString(AttrOwnerPlayerName, ownerPlayerName);
             if (string.IsNullOrEmpty(SnapshotId) && ControllerPos != null)
@@ -217,6 +218,7 @@ namespace VintageKinematics.Entities
         {
             base.Initialize(properties, api, chunkindex3d);
             this.api = api;
+            SchedulePendingAssemblyRecovery();
             ControllerPos = WatchedAttributes.GetBlockPos(AttrControllerPos);
             ApplySnapshotCollisionBounds(
                 WatchedAttributes.GetVec3i(AttrLocalMin, new Vec3i(0, 1, 0)),
@@ -266,7 +268,8 @@ namespace VintageKinematics.Entities
         public override void OnGameTick(float dt)
         {
             base.OnGameTick(dt);
-            if (World?.Side == EnumAppSide.Server && RetireIfWorldAlreadyRestored()) return;
+            if (World?.Side == EnumAppSide.Server && snapshotRestored) return;
+            if (World?.Side == EnumAppSide.Server && AssemblyReady && RetireIfWorldAlreadyRestored()) return;
             ResolveEntityCollisions();
         }
 
@@ -288,7 +291,7 @@ namespace VintageKinematics.Entities
                 return false;
             }
 
-            Die(EnumDespawnReason.Removed);
+            ScheduleRestoredDespawn();
             return true;
         }
 
@@ -575,7 +578,8 @@ namespace VintageKinematics.Entities
             if (World == null) return block.CollisionBoxes;
 
             BlockPos pos = GetWorldBlockPositionForOffset(offset);
-            return block.GetCollisionBoxes(World.BlockAccessor, pos) ?? block.CollisionBoxes;
+            Cuboidf[] boxes = block.GetCollisionBoxes(World.BlockAccessor, pos) ?? block.CollisionBoxes;
+            return ContraptionToolCollisionPolicy.ForAssembledEntity(block.Code?.Domain, block.Code?.Path, boxes);
         }
 
         public BlockPos GetWorldBlockPositionForOffset(Vec3i offset)
@@ -1329,21 +1333,21 @@ namespace VintageKinematics.Entities
             if (!CanAutoRestoreWhenStopped()) return false;
             if (!TryRestoreSnapshotToWorld(null, overwrite: false)) return false;
 
-            Die(EnumDespawnReason.Removed);
+            ScheduleRestoredDespawn();
             return true;
         }
 
         public bool TryRestoreToWorld(IPlayer player = null, bool overwrite = false, bool despawnOnSuccess = true)
         {
             if (!TryRestoreSnapshotToWorld(player, overwrite)) return false;
-            if (despawnOnSuccess) Die(EnumDespawnReason.Removed);
+            if (despawnOnSuccess) ScheduleRestoredDespawn();
             return true;
         }
 
         public bool TryAdminForceRestoreToWorld(bool despawnOnSuccess = true)
         {
             if (!TryRestoreSnapshotToWorld(null, overwrite: true, bypassClaims: true)) return false;
-            if (despawnOnSuccess) Die(EnumDespawnReason.Removed);
+            if (despawnOnSuccess) ScheduleRestoredDespawn();
             return true;
         }
 

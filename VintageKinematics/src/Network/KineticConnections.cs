@@ -132,6 +132,11 @@ namespace VintageKinematics.Network
 
         private static bool AllowsCoaxialShaftConnection(KineticNode node, Vec3i offsetFromNode)
         {
+            if (IsStationaryContraptionTool(node.BlockCode))
+            {
+                return IsRearToolConnection(node.BlockCode, offsetFromNode);
+            }
+
             if (node.Role != EnumKineticRole.EncasedSmallCogwheel && node.Role != EnumKineticRole.EncasedLargeCogwheel)
             {
                 return true;
@@ -151,6 +156,23 @@ namespace VintageKinematics.Network
             else if (axisVec.Z != 0) sign = Math.Sign(offsetFromNode.Z);
 
             return (sign < 0 && hasNegPort) || (sign > 0 && hasPosPort);
+        }
+
+        private static bool IsStationaryContraptionTool(string path)
+        {
+            return path?.StartsWith("contraptiondrill-", StringComparison.Ordinal) == true
+                || path?.StartsWith("contraptionsaw-", StringComparison.Ordinal) == true;
+        }
+
+        private static bool IsRearToolConnection(string path, Vec3i offset)
+        {
+            if (path.EndsWith("-n", StringComparison.Ordinal)) return offset.Z > 0;
+            if (path.EndsWith("-e", StringComparison.Ordinal)) return offset.X < 0;
+            if (path.EndsWith("-s", StringComparison.Ordinal)) return offset.Z < 0;
+            if (path.EndsWith("-w", StringComparison.Ordinal)) return offset.X > 0;
+            if (path.EndsWith("-u", StringComparison.Ordinal)) return offset.Y < 0;
+            if (path.EndsWith("-d", StringComparison.Ordinal)) return offset.Y > 0;
+            return false;
         }
 
         private static bool IsAlongAxis(Vec3i offset, Vec3i axisVec)

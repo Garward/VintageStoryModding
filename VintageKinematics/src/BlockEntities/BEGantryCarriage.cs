@@ -22,6 +22,7 @@ namespace VintageKinematics.BlockEntities
         private const int DefaultMaxSelectedBlocks = 512;
         private const int SnapshotWatchIntervalMs = 500;
         private const long GantryAutoAssembleDelayMs = 750;
+        private const int AssemblyVisualHandoffMs = 75;
 
         private long linkedEntityId;
         private Vec3i localMin = new Vec3i(0, 1, 0);
@@ -287,8 +288,23 @@ namespace VintageKinematics.BlockEntities
 
             Api.World.SpawnEntity(entity);
             assemblingEntity = true;
-            RemoveSnapshotBlocksFromWorld();
+            Api.Event.RegisterCallback(_ => CompleteAssemblyVisualHandoff(entity), AssemblyVisualHandoffMs);
             return true;
+        }
+
+        private void CompleteAssemblyVisualHandoff(EntityVKContraption entity)
+        {
+            if (entity == null || !entity.Alive) return;
+
+            Block currentController = Api.World.BlockAccessor.GetBlock(Pos);
+            if (currentController?.Code?.ToString() != Block?.Code?.ToString())
+            {
+                entity.AdminDeleteEntityOnly();
+                return;
+            }
+
+            RemoveSnapshotBlocksFromWorld();
+            entity.MarkAssemblyReady();
         }
 
         private bool ContainsStorageMemberSnapshot()
@@ -357,6 +373,7 @@ namespace VintageKinematics.BlockEntities
                 TreeAttribute tree = new TreeAttribute();
                 ToTreeAttributes(tree);
                 ContraptionApi.ClearKineticRuntimeState(tree);
+                GantrySnapshotTreeSanitizer.SanitizeCapturedBlock(Block?.Code?.ToString(), tree);
                 tree.SetLong("linkedEntityId", 0);
                 tree.SetBool("assembled", false);
                 tree.SetDouble("assembledX", Pos.X);
@@ -511,6 +528,7 @@ namespace VintageKinematics.BlockEntities
             snapshotOffsets = tree.GetVec3is("snapshotOffsets", new[] { new Vec3i(0, 1, 0) });
             snapshotBlockCodes = (tree["snapshotBlockCodes"] as StringArrayAttribute)?.value ?? Array.Empty<string>();
             snapshotBlockEntityTrees = NormalizeBlockEntityTrees((tree["snapshotBlockEntityTrees"] as TreeArrayAttribute)?.value, snapshotBlockCodes.Length);
+            GantrySnapshotTreeSanitizer.SanitizeNestedControllers(snapshotBlockCodes, snapshotBlockEntityTrees);
             assembled = tree.GetBool("assembled");
             assembledX = tree.GetDouble("assembledX", Pos?.X ?? 0);
             assembledY = tree.GetDouble("assembledY", Pos?.InternalY ?? 0);
@@ -527,25 +545,7 @@ namespace VintageKinematics.BlockEntities
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder sb)
         {
             base.GetBlockInfo(forPlayer, sb);
-
-            Entity linked = GetLinkedEntity();
-            if (linked == null)
-            {
-                sb.AppendLine(Lang.Get("vintagekinematics:gantrycarriage-status-idle"));
-            }
-            else
-            {
-                sb.AppendLine(Lang.Get("vintagekinematics:gantrycarriage-status-linked", linked.EntityId));
-            }
-
-            NormalizeBounds(ref localMin, ref localMax);
-            sb.AppendLine(Lang.Get("vintagekinematics:gantrycarriage-selection", snapshotOffsets?.Length ?? 0));
             sb.AppendLine("Placement mode: " + PlacementModeName(placementMode));
-            if (TryGetAttachedShaftPos(out BlockPos shaftPos)) sb.AppendLine($"Gantry anchor: {shaftPos.X}, {shaftPos.InternalY}, {shaftPos.Z}");
-            if (assembled) sb.AppendLine(Lang.Get("vintagekinematics:gantrycarriage-assembled"));
-            sb.AppendLine($"Gantry debug: assembled={assembled}, linked={(linked != null ? linked.EntityId.ToString() : "none")}");
-            sb.AppendLine($"Gantry pos: {assembledX:0.000}, {assembledY:0.000}, {assembledZ:0.000}");
-            sb.AppendLine($"Gantry state: {gantryDebug}");
         }
 
         private Entity GetLinkedEntity()

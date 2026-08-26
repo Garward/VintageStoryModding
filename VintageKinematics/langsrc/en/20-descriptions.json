@@ -1,7 +1,5 @@
 {
     "blockdesc-gantryshaft-*": "Powered track for Gantry Carriages. Build a straight line and drive the shaft to move linked contraptions.",
-    "blockdesc-contraptionsaw-*": "Contraption tool head that cuts trees while the assembled contraption moves into them. It searches for the lowest connected log near the blade, cuts the tree once work completes, and deposits drops into storage blocks carried by the contraption.",
-    "blockdesc-contraptiondrill-*": "Contraption tool head that mines stone, ore, soil, gravel, and sand while the assembled contraption moves into them. Active drilling adds extra SU load and deposits drops into storage blocks carried by the contraption.",
     "blockdesc-gantrycarriage": "Carriage for assembling moving contraptions on a Gantry Shaft.",
     "blockdesc-gantrycarriage-*": "Carriage for assembling moving contraptions on a Gantry Shaft.",
     "placefailure-requiregantryshaft": "Gantry Carriages must be placed on a Gantry Shaft.",
@@ -52,6 +50,7 @@
     "blockdesc-geothermalpipe": "Borehole pipe consumed by the Geothermal Bore as it installs a permanent heat tap.",
     "blockdesc-copperpipe-*": "Passive copper liquid pipe. Pumps move liquid through connected pipe runs in any direction; the pipes themselves do not store liquid.",
     "blockdesc-copperpump-*": "Powered directional liquid pump. The arrow points toward output; the opposite side is input.",
+    "blockdesc-ironfluidtank": "Heat-safe storage for up to 100 litres. Required when pumping lava from world source blocks.",
     "blockdesc-geothermalbore-*": "Powered bore. Load drill rods and geothermal pipe; it taps heat only after reaching bedrock.",
     "blockdesc-geothermalsteamengine-*": "Consumes water from adjacent liquid storage beside a tapped Geothermal Bore to produce about 65,536 SU at 16 RPM.",
     "itemdesc-wrench-kinetic": "Rotates compatible blocks. Sneak-right click encased shafts or cogs to remove their casing, or empty VK machines to pick them up.",

@@ -95,10 +95,12 @@ namespace VintageKinematics
             api.RegisterBlockEntityClass("KineticBore", typeof(BlockEntities.BEKineticBore));
             api.RegisterBlockEntityClass("CopperPipe", typeof(BlockEntities.BECopperPipe));
             api.RegisterBlockEntityClass("CopperPump", typeof(BlockEntities.BECopperPump));
+            api.RegisterBlockEntityClass("IronFluidTank", typeof(BlockEntities.BEIronFluidTank));
             api.RegisterBlockEntityClass("GeothermalBore", typeof(BlockEntities.BEGeothermalBore));
             api.RegisterBlockEntityClass("GeothermalSteamEngine", typeof(BlockEntities.BEGeothermalSteamEngine));
             api.RegisterBlockEntityClass("GantryCarriage", typeof(BlockEntities.BEGantryCarriage));
             api.RegisterBlockEntityClass("GantryShaft", typeof(BlockEntities.BEGantryShaft));
+            api.RegisterBlockEntityClass("StationaryContraptionTool", typeof(BlockEntities.BEStationaryContraptionTool));
             api.RegisterBlockEntityClass("KineticClutch", typeof(BlockEntities.BEKineticClutch));
             api.RegisterBlockEntityClass("KineticReverser", typeof(BlockEntities.BEKineticReverser));
             api.RegisterBlockEntityClass("KineticActivator", typeof(BlockEntities.BEKineticActivator));
@@ -150,6 +152,7 @@ namespace VintageKinematics
                 "BlockKineticWarehouseMember",
                 typeof(Blocks.BlockKineticWarehouseMember));
             api.RegisterBlockClass("BlockCopperPump", typeof(Blocks.BlockCopperPump));
+            api.RegisterBlockClass("BlockIronFluidTank", typeof(Blocks.BlockIronFluidTank));
             api.RegisterBlockClass("BlockGeothermalPipe", typeof(Blocks.BlockGeothermalPipe));
             api.RegisterBlockClass("BlockGeothermalBore", typeof(Blocks.BlockGeothermalBore));
             api.RegisterBlockClass("BlockGeothermalSteamEngine", typeof(Blocks.BlockGeothermalSteamEngine));

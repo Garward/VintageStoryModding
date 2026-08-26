@@ -10,39 +10,14 @@ namespace VintageKinematics.Blocks
 {
     public sealed class ContraptionToolWorkProvider : IContraptionWorkProvider
     {
-        private const float DrillWorkPerResistance = 85f;
-        private const float DrillMinimumWork = 160f;
-        private const float DrillSlowRpm = 8f;
-        private const float DrillFastRpm = 256f;
-        private const float DrillSlowSeconds = 3f;
-        private const float DrillFastSeconds = 0.5f;
-        private const float DrillRpmCurveExponent = 0.55f;
         private const float DrillActiveStressImpact = 2.5f;
-        private const float SawWorkPerBlock = 18f;
-        private const float SawMinimumWork = 260f;
-        private const float SawLeafMinimumWork = 55f;
         private const float SawActiveStressImpact = 4f;
         private const long ToolParticleIntervalMs = 120;
         private const long ToolDecalIntervalMs = 90;
         private const long ToolSoundIntervalMs = 220;
         private const string ToolMovementPauseKey = "toolwork";
-        private const int SawTreeSearchDown = 12;
-        private const int SawTreeSearchUp = 8;
-        private const int MaxSawTreeBlocks = 384;
-        private const int MaxSawLeafBlocks = 192;
-        private const int MaxDrillMiningTier = 3;
-        private static readonly AssetLocation DrillFallbackSound = new AssetLocation("survival:sounds/block/rock-hit-pickaxe");
-        private static readonly AssetLocation SawFallbackSound = new AssetLocation("survival:sounds/block/chop1");
-
-        private static readonly Vec3i[] CardinalNeighbors =
-        {
-            new Vec3i(1, 0, 0),
-            new Vec3i(-1, 0, 0),
-            new Vec3i(0, 1, 0),
-            new Vec3i(0, -1, 0),
-            new Vec3i(0, 0, 1),
-            new Vec3i(0, 0, -1)
-        };
+        private static readonly AssetLocation DrillFallbackSound = new AssetLocation("sounds/block/rock-hit-pickaxe");
+        private static readonly AssetLocation SawFallbackSound = new AssetLocation("sounds/block/chop1");
 
         public float GetActiveStressImpact(ContraptionWorkContext context)
         {
@@ -65,8 +40,7 @@ namespace VintageKinematics.Blocks
                 BlockPos frontPos = GetToolTargetPos(context, facing);
                 Block frontBlock = context.World.BlockAccessor.GetBlock(frontPos);
                 if (IsSawBreakableLeaves(context, frontBlock, frontPos)) return SawActiveStressImpact;
-
-                return TryFindLowestTreeBlock(context, frontPos, out _) ? SawActiveStressImpact : 0f;
+                return IsSawBreakableWood(context, frontBlock, frontPos) ? SawActiveStressImpact : 0f;
             }
 
             return 0f;
@@ -100,8 +74,8 @@ namespace VintageKinematics.Blocks
             if (!CanDrillBreak(context, target, targetPos)) return;
 
             string key = WorkKey("drill", targetPos, target);
-            float required = MathF.Max(DrillMinimumWork, MathF.Max(1f, target.Resistance) * DrillWorkPerResistance);
-            float workAmount = DrillWorkAmount(context, required);
+            float required = ContraptionToolRules.DrillRequiredWork(target);
+            float workAmount = ContraptionToolRules.DrillWorkAmount(context.Rpm, context.Dt, required);
             if (!context.AddProgress(key, workAmount, required, out float progress))
             {
                 EmitToolWorkEffects(context, key, targetPos, target, facing.Opposite, EnumTool.Drill, progress, 0.35f);
@@ -123,22 +97,24 @@ namespace VintageKinematics.Blocks
                 return;
             }
 
-            if (!TryFindLowestTreeBlock(context, frontPos, out BlockPos lowestLog)) return;
+            if (!IsSawBreakableWood(context, frontBlock, frontPos)) return;
 
-            List<BlockPos> treeBlocks = CollectTreeBlocks(context, lowestLog);
+            List<BlockPos> treeBlocks = ContraptionToolTreeSearch.Find(
+                context.World,
+                frontPos,
+                pos => !context.Contraption.ContainsSnapshotWorldBlockPosition(pos) && CanBreakAt(context, pos));
             if (treeBlocks.Count == 0) return;
 
-            string key = WorkKey("saw", lowestLog, context.World.BlockAccessor.GetBlock(lowestLog));
-            float required = MathF.Max(SawMinimumWork, treeBlocks.Count * SawWorkPerBlock);
-            Block rootBlock = context.World.BlockAccessor.GetBlock(lowestLog);
+            string key = WorkKey("saw", frontPos, frontBlock);
+            float required = ContraptionToolRules.SawRequiredWork(context.World, treeBlocks);
             if (!context.AddProgress(key, context.WorkRate, required, out float progress))
             {
-                EmitToolWorkEffects(context, key, lowestLog, rootBlock, facing.Opposite, EnumTool.Saw, progress, 0.4f);
+                EmitToolWorkEffects(context, key, frontPos, frontBlock, facing.Opposite, EnumTool.Saw, progress, 0.4f);
                 context.RequestMovementPause(ToolMovementPauseKey, 150, "Cutting tree");
                 return;
             }
 
-            EmitToolWorkEffects(context, key, lowestLog, rootBlock, facing.Opposite, EnumTool.Saw, progress, 0.55f);
+            EmitToolWorkEffects(context, key, frontPos, frontBlock, facing.Opposite, EnumTool.Saw, progress, 0.55f);
             for (int i = 0; i < treeBlocks.Count; i++)
             {
                 BlockPos pos = treeBlocks[i];
@@ -159,7 +135,7 @@ namespace VintageKinematics.Blocks
             if (!IsSawBreakableLeaves(context, leaf, leafPos)) return;
 
             string key = WorkKey("sawleaf", leafPos, leaf);
-            float required = MathF.Max(SawLeafMinimumWork, MathF.Max(1f, leaf.Resistance) * SawWorkPerBlock);
+            float required = ContraptionToolRules.SawLeafRequiredWork(leaf);
             if (!context.AddProgress(key, context.WorkRate, required, out float progress))
             {
                 EmitToolWorkEffects(context, key, leafPos, leaf, facing.Opposite, EnumTool.Saw, progress, 0.28f);
@@ -173,114 +149,7 @@ namespace VintageKinematics.Blocks
 
         private static bool CanDrillBreak(ContraptionWorkContext context, Block block, BlockPos pos)
         {
-            if (block == null || block.Id == 0) return false;
-            if (!CanBreakAt(context, pos)) return false;
-            if (block.Resistance >= 99999f || block.RequiredMiningTier > MaxDrillMiningTier) return false;
-
-            EnumBlockMaterial material = block.GetBlockMaterial(context.World.BlockAccessor, pos);
-            return material == EnumBlockMaterial.Stone
-                || material == EnumBlockMaterial.Ore
-                || material == EnumBlockMaterial.Soil
-                || material == EnumBlockMaterial.Gravel
-                || material == EnumBlockMaterial.Sand;
-        }
-
-        private static float DrillWorkAmount(ContraptionWorkContext context, float required)
-        {
-            float rpm = Math.Clamp(MathF.Abs(context.Rpm), DrillSlowRpm, DrillFastRpm);
-            float t = MathF.Pow(DrillSlowRpm / rpm, DrillRpmCurveExponent);
-            float seconds = DrillFastSeconds + (DrillSlowSeconds - DrillFastSeconds) * t;
-            seconds *= MathF.Sqrt(MathF.Max(1f, required) / DrillMinimumWork);
-            return required * context.Dt / MathF.Max(0.05f, seconds);
-        }
-
-        private static bool TryFindLowestTreeBlock(ContraptionWorkContext context, BlockPos frontPos, out BlockPos lowestLog)
-        {
-            lowestLog = null;
-            int bestDistance = int.MaxValue;
-
-            for (int y = frontPos.InternalY - SawTreeSearchDown; y <= frontPos.InternalY + SawTreeSearchUp; y++)
-            {
-                for (int dx = -1; dx <= 1; dx++)
-                {
-                    for (int dz = -1; dz <= 1; dz++)
-                    {
-                        BlockPos pos = new BlockPos(frontPos.X + dx, y, frontPos.Z + dz, frontPos.dimension);
-                        if (context.Contraption.ContainsSnapshotWorldBlockPosition(pos)) continue;
-
-                        Block block = context.World.BlockAccessor.GetBlock(pos);
-                        if (!IsSawBreakableWood(context, block, pos)) continue;
-
-                        int distance = Math.Abs(dx) + Math.Abs(dz) + Math.Abs(y - frontPos.InternalY);
-                        if (lowestLog == null || y < lowestLog.InternalY || (y == lowestLog.InternalY && distance < bestDistance))
-                        {
-                            lowestLog = pos;
-                            bestDistance = distance;
-                        }
-                    }
-                }
-            }
-
-            return lowestLog != null;
-        }
-
-        private static List<BlockPos> CollectTreeBlocks(ContraptionWorkContext context, BlockPos root)
-        {
-            List<BlockPos> result = new List<BlockPos>();
-            Queue<BlockPos> open = new Queue<BlockPos>();
-            HashSet<string> seen = new HashSet<string>();
-
-            open.Enqueue(root.Copy());
-            seen.Add(PositionKey(root));
-
-            while (open.Count > 0 && result.Count < MaxSawTreeBlocks)
-            {
-                BlockPos pos = open.Dequeue();
-                if (context.Contraption.ContainsSnapshotWorldBlockPosition(pos)) continue;
-
-                Block block = context.World.BlockAccessor.GetBlock(pos);
-                if (!IsSawBreakableWood(context, block, pos)) continue;
-
-                result.Add(pos.Copy());
-                foreach (Vec3i delta in CardinalNeighbors)
-                {
-                    BlockPos next = new BlockPos(pos.X + delta.X, pos.InternalY + delta.Y, pos.Z + delta.Z, pos.dimension);
-                    if (!seen.Add(PositionKey(next))) continue;
-                    open.Enqueue(next);
-                }
-            }
-
-            AddNearbyLeaves(context, result, seen);
-            return result;
-        }
-
-        private static void AddNearbyLeaves(ContraptionWorkContext context, List<BlockPos> result, HashSet<string> seen)
-        {
-            int addedLeaves = 0;
-            int woodCount = result.Count;
-            for (int i = 0; i < woodCount && addedLeaves < MaxSawLeafBlocks; i++)
-            {
-                BlockPos wood = result[i];
-                for (int dx = -2; dx <= 2; dx++)
-                {
-                    for (int dy = -2; dy <= 2; dy++)
-                    {
-                        for (int dz = -2; dz <= 2; dz++)
-                        {
-                            BlockPos pos = new BlockPos(wood.X + dx, wood.InternalY + dy, wood.Z + dz, wood.dimension);
-                            if (!seen.Add(PositionKey(pos))) continue;
-                            if (context.Contraption.ContainsSnapshotWorldBlockPosition(pos)) continue;
-
-                            Block block = context.World.BlockAccessor.GetBlock(pos);
-                            if (!IsSawBreakableLeaves(context, block, pos)) continue;
-
-                            result.Add(pos);
-                            addedLeaves++;
-                            if (addedLeaves >= MaxSawLeafBlocks) return;
-                        }
-                    }
-                }
-            }
+            return ContraptionToolRules.CanDrillBreak(context.World, block, pos, target => CanBreakAt(context, target));
         }
 
         private static bool IsSawBreakableTreeBlock(ContraptionWorkContext context, Block block, BlockPos pos)
@@ -290,20 +159,12 @@ namespace VintageKinematics.Blocks
 
         private static bool IsSawBreakableWood(ContraptionWorkContext context, Block block, BlockPos pos)
         {
-            return block != null
-                && block.Id != 0
-                && CanBreakAt(context, pos)
-                && block.GetBlockMaterial(context.World.BlockAccessor, pos) == EnumBlockMaterial.Wood
-                && block.Resistance < 99999f;
+            return ContraptionToolRules.CanSawWood(context.World, block, pos, target => CanBreakAt(context, target));
         }
 
         private static bool IsSawBreakableLeaves(ContraptionWorkContext context, Block block, BlockPos pos)
         {
-            return block != null
-                && block.Id != 0
-                && CanBreakAt(context, pos)
-                && block.GetBlockMaterial(context.World.BlockAccessor, pos) == EnumBlockMaterial.Leaves
-                && block.Resistance < 99999f;
+            return ContraptionToolRules.CanSawLeaves(context.World, block, pos, target => CanBreakAt(context, target));
         }
 
         private static void EmitToolWorkEffects(ContraptionWorkContext context, string key, BlockPos pos, Block block, BlockFacing hitFace, EnumTool tool, float progress, float volume)
@@ -415,8 +276,7 @@ namespace VintageKinematics.Blocks
                 }
             }
 
-            context.World.BlockAccessor.SetBlock(0, pos);
-            context.World.BlockAccessor.MarkBlockDirty(pos);
+            AutomationBlockMutation.RemoveAndNotify(context.World, pos);
         }
 
         private static bool CanBreakAt(ContraptionWorkContext context, BlockPos pos)
@@ -431,18 +291,7 @@ namespace VintageKinematics.Blocks
 
         private static bool TryGetToolFacing(Block block, out BlockFacing facing)
         {
-            facing = null;
-            string side = block?.Variant?["side"];
-            switch (side)
-            {
-                case "n": facing = BlockFacing.NORTH; return true;
-                case "e": facing = BlockFacing.EAST; return true;
-                case "s": facing = BlockFacing.SOUTH; return true;
-                case "w": facing = BlockFacing.WEST; return true;
-                case "u": facing = BlockFacing.UP; return true;
-                case "d": facing = BlockFacing.DOWN; return true;
-                default: return false;
-            }
+            return ContraptionToolRules.TryGetFacing(block, out facing);
         }
 
         private static bool IsMovingIntoFacing(ContraptionWorkContext context, BlockFacing facing)

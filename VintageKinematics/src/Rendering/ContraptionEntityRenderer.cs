@@ -40,6 +40,7 @@ namespace VintageKinematics.Rendering
         public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
         {
             if (entity == null || !entity.Alive || capi.World.Player?.Entity == null) return;
+            if (entity.ShouldHideDuringAssemblyOverlap()) return;
 
             EnsureSnapshot();
             if (offsets.Length == 0 || blocks.Length == 0) return;

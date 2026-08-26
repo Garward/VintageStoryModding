@@ -1,0 +1,22 @@
+{
+    "code": "lavaportion",
+    "class": "ItemLiquidPortion",
+    "matterState": "liquid",
+    "attributes": {
+        "handbook": { "ignoreCreativeInvStacks": true },
+        "temperature": 1200,
+        "waterTightContainerProps": {
+            "containable": false,
+            "itemsPerLitre": 100,
+            "texture": { "base": "game:block/liquid/lava" },
+            "whenSpilled": {
+                "action": "PlaceBlock",
+                "stack": { "type": "block", "code": "game:lava-still-7" }
+            }
+        }
+    },
+    "shape": { "base": "game:item/liquid" },
+    "texture": { "base": "game:block/liquid/lava" },
+    "maxstacksize": 10000,
+    "materialDensity": 5000
+}

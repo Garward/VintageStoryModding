@@ -30,6 +30,8 @@ namespace VintageKinematics.Api
         public long NetworkId { get; set; }
         /// <summary>Su contribution. Positive = consumer, negative = source.</summary>
         public float StressImpact { get; set; }
+        /// <summary>Only show network RPM and stress in the placed-block tooltip.</summary>
+        public bool CompactTooltip { get; set; }
         /// <summary>Signed RPM at this position; sign matches network direction.</summary>
         public float CurrentRPM { get; set; }
         /// <summary>Cached client-side flag that the network is conflicted.</summary>
@@ -152,6 +154,7 @@ namespace VintageKinematics.Api
             }
 
             StressImpact = ReadFloat(properties, defaults, "stressImpact", 0f);
+            CompactTooltip = ReadBool(properties, defaults, "compactTooltip", false);
             if (StressImpact != 0f)
             {
                 var cfg = api.ModLoader.GetModSystem<KineticConfigSystem>()?.Config;
@@ -358,6 +361,7 @@ namespace VintageKinematics.Api
             var net = EffectiveNetwork;
             KineticTooltipBuilder.AppendStatus(dsc, net, ActualRPM);
             KineticTooltipBuilder.AppendStress(dsc, net);
+            if (CompactTooltip) return;
 
             float absRPM = MathF.Abs(ActualRPM);
             if (StressImpact > 0f)
