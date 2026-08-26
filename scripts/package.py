@@ -12,12 +12,13 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 DEFAULT_EXTRA_FILES = (
-    "README.md",
     "CREDITS.md",
     "LICENSE",
     "../LICENSE",
     "docs/api-tutorial.md",
 )
+
+PACKAGE_README = "PACKAGE_README.md"
 
 
 def parse_args() -> argparse.Namespace:
@@ -108,6 +109,13 @@ def add_extra(zip_file: ZipFile, project: Path, relative_path: str, seen: set[st
     add_file(zip_file, source, archive_name, seen)
 
 
+def add_readme(zip_file: ZipFile, project: Path, seen: set[str]) -> None:
+    """Package the player README when supplied, otherwise use the project README."""
+    player_readme = project / PACKAGE_README
+    source = player_readme if player_readme.exists() else project / "README.md"
+    add_file(zip_file, source, "README.md", seen)
+
+
 def main() -> int:
     args = parse_args()
     project = args.project.resolve()
@@ -130,6 +138,7 @@ def main() -> int:
 
         add_file(zip_file, project / "modinfo.json", "modinfo.json", seen)
         add_file(zip_file, project / "modicon.png", "modicon.png", seen)
+        add_readme(zip_file, project, seen)
 
         for relative_path in iter_extra_files(args.extra_files):
             add_extra(zip_file, project, relative_path, seen)
