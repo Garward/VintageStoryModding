@@ -1,6 +1,7 @@
 using System;
 using VRPG.Data;
 using VRPG.Data.Definitions;
+using VRPG.Data.Library;
 using VRPG.Inventory;
 using Xunit;
 
@@ -68,6 +69,27 @@ public sealed class GearDefinitionValidatorTests
     }
 
     [Fact]
+    public void RejectsNoncanonicalCommonRareAndUnboundedUniqueProfiles()
+    {
+        GearRarityDefinition common = Rarity("vrpg:common", 1f);
+        common.MinAffixes = 1;
+        GearRarityDefinition rare = Rarity("vrpg:rare", 1.15f);
+        GearRarityDefinition unique = Rarity("vrpg:unique", 1.2f, true);
+        unique.MinAffixes = 7;
+        unique.MaxAffixes = 7;
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, new[] { common, rare, unique }, new[] { ValidAffix() }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("common", StringComparison.OrdinalIgnoreCase)
+            && error.Contains("0-1", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("rare", StringComparison.OrdinalIgnoreCase)
+            && error.Contains("3-5", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("unique", StringComparison.OrdinalIgnoreCase)
+            && error.Contains("affix caps", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void RejectsUnusableAffixFamilyAndMalformedCompatibilityValues()
     {
         GearAffixDefinition affix = ValidAffix();
@@ -92,6 +114,30 @@ public sealed class GearDefinitionValidatorTests
     {
         GearAffixDefinition affix = ValidAffix();
         affix.RequiredTags = new[] { "armor" };
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, Rarities(), new[] { affix }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("compatible gear base", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RejectsWeaponOnlyAffixOnArmorWithMisconfiguredWeaponTags()
+    {
+        GearAffixDefinition affix = ValidAffix();
+        affix.AllowedEquipmentRoles = new[] { PlayerEquipmentRoles.MainWeapon };
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidArmorBaseWithWeaponTags() }, Rarities(), new[] { affix }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("compatible gear base", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RejectsArmorOnlyAffixOnWeaponWithMisconfiguredArmorTags()
+    {
+        GearAffixDefinition affix = ValidAffix();
+        affix.AllowedEquipmentRoles = new[] { PlayerEquipmentRoles.Body };
 
         string[] errors = GearDefinitionValidator.Validate(
             new[] { ValidBase() }, Rarities(), new[] { affix }, ChassisExists);
@@ -125,6 +171,39 @@ public sealed class GearDefinitionValidatorTests
             new[] { ValidBase() }, Rarities(), new[] { ValidAffix() }, ChassisExists));
     }
 
+    [Fact]
+    public void RegistryPublishesDomainlessGearDefinitionsWithCanonicalVrpgIdentities()
+    {
+        GearBaseDefinition gearBase = ValidBase();
+        gearBase.Code = "test-sword";
+        gearBase.UniqueCode = "test-sword-unique";
+        GearAffixDefinition affix = ValidAffix();
+        affix.Code = "test-power";
+        affix.MinimumRarityCode = "common";
+        GearRarityDefinition[] rarities = Rarities();
+        foreach (GearRarityDefinition rarity in rarities)
+        {
+            rarity.Code = rarity.Code.Substring("vrpg:".Length);
+        }
+
+        var registry = new VRPGDataRegistry();
+        registry.GearBases.Load(new[] { gearBase });
+        registry.Rarities.Load(rarities);
+        registry.Affixes.Load(new[] { affix });
+
+        Assert.Empty(GearDefinitionValidator.Validate(
+            registry.GearBases.All, registry.Rarities.All, registry.Affixes.All, ChassisExists));
+        Assert.Equal("vrpg:test-sword", registry.GearBases.Get("vrpg:test-sword")!.Code);
+        Assert.Equal("vrpg:common", registry.Rarities.Get("vrpg:common")!.Code);
+        Assert.Equal("vrpg:test-power", registry.Affixes.Get("vrpg:test-power")!.Code);
+        Assert.Equal("vrpg:common", registry.Affixes.All[0].MinimumRarityCode);
+        Assert.Equal("vrpg:test-sword-unique", registry.GearBases.All[0].UniqueCode);
+        Assert.Equal("game:test-sword", registry.GearBases.All[0].VisualChassis);
+
+        LibraryIndex library = LibraryIndex.Build(registry);
+        Assert.Contains(library.Entries, entry => entry.Code == "vrpg:test-sword");
+    }
+
     private static GearBaseDefinition ValidBase()
     {
         return new GearBaseDefinition
@@ -141,6 +220,22 @@ public sealed class GearDefinitionValidatorTests
         };
     }
 
+    private static GearBaseDefinition ValidArmorBaseWithWeaponTags()
+    {
+        return new GearBaseDefinition
+        {
+            Code = "vrpg:test-body",
+            Name = "Test Body",
+            EquipmentRole = PlayerEquipmentRoles.Body,
+            Family = "armor",
+            Tags = new[] { "weapon" },
+            AffixFamilies = new[] { "offense" },
+            VisualChassis = "game:test-sword",
+            LevelOneArmor = 10f,
+            UniqueCode = "vrpg:test-body-unique"
+        };
+    }
+
     private static GearAffixDefinition ValidAffix()
     {
         return new GearAffixDefinition
@@ -152,6 +247,7 @@ public sealed class GearDefinitionValidatorTests
             ExcludedTags = Array.Empty<string>(),
             MutualExclusionGroup = "power",
             UniquePerItem = true,
+            AllowedEquipmentRoles = new[] { PlayerEquipmentRoles.MainWeapon },
             MinimumRarityCode = "vrpg:common",
             Tiers = new[] { Tier(1, 1, 100, "vrpg:weapon_power", 1, 4) }
         };
@@ -179,19 +275,24 @@ public sealed class GearDefinitionValidatorTests
         return new[]
         {
             Rarity("vrpg:common", 1f),
-            Rarity("vrpg:rare", 1.15f),
+            Rarity("vrpg:rare", 1.15f, minAffixes: 3, maxAffixes: 5),
             Rarity("vrpg:unique", 1.2f, true)
         };
     }
 
-    private static GearRarityDefinition Rarity(string code, float weaponPowerScalar, bool uniqueLike = false)
+    private static GearRarityDefinition Rarity(
+        string code,
+        float weaponPowerScalar,
+        bool uniqueLike = false,
+        int minAffixes = 0,
+        int maxAffixes = 1)
     {
         return new GearRarityDefinition
         {
             Code = code,
             Name = code,
-            MinAffixes = 0,
-            MaxAffixes = 1,
+            MinAffixes = minAffixes,
+            MaxAffixes = maxAffixes,
             Weight = 1,
             StatScalar = 1f,
             WeaponPowerScalar = weaponPowerScalar,

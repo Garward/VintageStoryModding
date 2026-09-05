@@ -9,6 +9,8 @@ public sealed class GearAffixDefinition : IVrpgDataRecord
     public string Family { get; set; } = "";
     public string[] RequiredTags { get; set; } = System.Array.Empty<string>();
     public string[] ExcludedTags { get; set; } = System.Array.Empty<string>();
+    public string[] AllowedEquipmentRoles { get; set; } = System.Array.Empty<string>();
+    public string[] ExcludedEquipmentRoles { get; set; } = System.Array.Empty<string>();
     public string MutualExclusionGroup { get; set; } = "";
     public bool UniquePerItem { get; set; }
     public string MinimumRarityCode { get; set; } = "";

@@ -13,11 +13,11 @@ public static class GearDefinitionValidator
     private const int MaximumAffixes = 6;
     private const int MaximumRequiredLevel = 100;
 
-    private static readonly (string Code, float WeaponPowerScalar)[] RequiredRaritySeeds =
+    private static readonly (string Code, float WeaponPowerScalar, int? MinAffixes, int? MaxAffixes)[] RequiredRaritySeeds =
     {
-        ("vrpg:common", 1.00f),
-        ("vrpg:rare", 1.15f),
-        ("vrpg:unique", 1.20f)
+        ("vrpg:common", 1.00f, 0, 1),
+        ("vrpg:rare", 1.15f, 3, 5),
+        ("vrpg:unique", 1.20f, null, null)
     };
 
     public static void ValidateOrThrow(
@@ -45,6 +45,7 @@ public static class GearDefinitionValidator
         ArgumentNullException.ThrowIfNull(affixes);
         ArgumentNullException.ThrowIfNull(chassisExists);
 
+        CanonicalizeDefinitions(bases, rarities, affixes);
         var errors = new List<string>();
         Dictionary<string, GearBaseDefinition> basesByCode = Index(bases, "gear base", errors);
         Dictionary<string, GearRarityDefinition> raritiesByCode = Index(rarities, "rarity", errors);
@@ -114,7 +115,7 @@ public static class GearDefinitionValidator
             }
         }
 
-        foreach ((string code, float scalar) in RequiredRaritySeeds)
+        foreach ((string code, float scalar, int? minAffixes, int? maxAffixes) in RequiredRaritySeeds)
         {
             if (!raritiesByCode.TryGetValue(code, out GearRarityDefinition? rarity))
             {
@@ -123,6 +124,11 @@ public static class GearDefinitionValidator
             else if (rarity.WeaponPowerScalar != scalar)
             {
                 errors.Add($"rarity '{code}' must use weaponPowerScalar {scalar:0.00}.");
+            }
+            else if (minAffixes is int expectedMinimum && maxAffixes is int expectedMaximum
+                && (rarity.MinAffixes != expectedMinimum || rarity.MaxAffixes != expectedMaximum))
+            {
+                errors.Add($"rarity '{code}' must use the canonical {expectedMinimum}-{expectedMaximum} affix profile.");
             }
         }
 
@@ -249,6 +255,7 @@ public static class GearDefinitionValidator
             ValidateValues(label, "required tag", affix.RequiredTags, requireAny: true, errors);
             ValidateValues(label, "excluded tag", affix.ExcludedTags, requireAny: false, errors);
             ValidateRequiredExcludedOverlap(label, affix.RequiredTags, affix.ExcludedTags, errors);
+            ValidateEquipmentRoles(label, affix.AllowedEquipmentRoles, affix.ExcludedEquipmentRoles, errors);
             if (string.IsNullOrWhiteSpace(affix.MutualExclusionGroup))
             {
                 errors.Add(label + " requires an exclusion group.");
@@ -331,10 +338,73 @@ public static class GearDefinitionValidator
                     .Where(value => !string.IsNullOrWhiteSpace(value))
                     .Select(value => value.Trim()),
                 StringComparer.OrdinalIgnoreCase);
-            if (required.IsSubsetOf(tags) && !excluded.Overlaps(tags)) return true;
+            if (required.IsSubsetOf(tags) && !excluded.Overlaps(tags) && IsRoleCompatible(affix, definition.EquipmentRole)) return true;
         }
 
         return false;
+    }
+
+    private static void ValidateEquipmentRoles(
+        string label,
+        string[]? allowedRoles,
+        string[]? excludedRoles,
+        ICollection<string> errors)
+    {
+        ValidateValues(label, "allowed equipment role", allowedRoles, requireAny: false, errors);
+        ValidateValues(label, "excluded equipment role", excludedRoles, requireAny: false, errors);
+        var allowed = new HashSet<string>(allowedRoles ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+        foreach (string role in allowed)
+        {
+            if (!string.IsNullOrWhiteSpace(role) && !PlayerEquipmentRoles.BuiltIn.Contains(role.Trim()))
+            {
+                errors.Add(label + " has an unknown allowed equipment role '" + role.Trim() + "'.");
+            }
+        }
+        foreach (string role in excludedRoles ?? Array.Empty<string>())
+        {
+            if (string.IsNullOrWhiteSpace(role)) continue;
+            string trimmed = role.Trim();
+            if (!PlayerEquipmentRoles.BuiltIn.Contains(trimmed))
+            {
+                errors.Add(label + " has an unknown excluded equipment role '" + trimmed + "'.");
+            }
+            else if (allowed.Contains(trimmed))
+            {
+                errors.Add(label + " cannot both allow and exclude equipment role '" + trimmed + "'.");
+            }
+        }
+    }
+
+    private static bool IsRoleCompatible(GearAffixDefinition affix, string? equipmentRole)
+    {
+        string role = equipmentRole?.Trim() ?? "";
+        string[] allowed = affix.AllowedEquipmentRoles ?? Array.Empty<string>();
+        string[] excluded = affix.ExcludedEquipmentRoles ?? Array.Empty<string>();
+        bool allowedByList = allowed.Length == 0 || allowed.Any(value => string.Equals(value?.Trim(), role, StringComparison.OrdinalIgnoreCase));
+        return allowedByList && !excluded.Any(value => string.Equals(value?.Trim(), role, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static void CanonicalizeDefinitions(
+        IEnumerable<GearBaseDefinition> bases,
+        IEnumerable<GearRarityDefinition> rarities,
+        IEnumerable<GearAffixDefinition> affixes)
+    {
+        foreach (GearBaseDefinition definition in bases)
+        {
+            if (definition == null) continue;
+            definition.Code = NormalizeCode(definition.Code);
+            definition.UniqueCode = NormalizeOptionalCode(definition.UniqueCode);
+        }
+        foreach (GearRarityDefinition rarity in rarities)
+        {
+            if (rarity != null) rarity.Code = NormalizeCode(rarity.Code);
+        }
+        foreach (GearAffixDefinition affix in affixes)
+        {
+            if (affix == null) continue;
+            affix.Code = NormalizeCode(affix.Code);
+            affix.MinimumRarityCode = NormalizeCode(affix.MinimumRarityCode);
+        }
     }
 
     private static void ValidateModifiers(
@@ -426,6 +496,11 @@ public static class GearDefinitionValidator
     {
         string value = (code ?? "").Trim();
         return value.Length == 0 || value.Contains(':') ? value : "vrpg:" + value;
+    }
+
+    private static string NormalizeOptionalCode(string? code)
+    {
+        return string.IsNullOrWhiteSpace(code) ? "" : NormalizeCode(code);
     }
 
     private static bool IsNamespacedCode(string code)

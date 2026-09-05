@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
 
@@ -21,8 +22,7 @@ public sealed class VrpgDataStore<T> where T : class, IVrpgDataRecord
 
     public void Load(ICoreAPI api)
     {
-        ordered.Clear();
-        byCode.Clear();
+        ArgumentNullException.ThrowIfNull(api);
 
         var assets = api.Assets.GetMany<T>(api.Logger, assetPath);
         if (assets.Count == 0)
@@ -37,7 +37,28 @@ public sealed class VrpgDataStore<T> where T : class, IVrpgDataRecord
             }
         }
 
-        foreach (var entry in assets)
+        Replace(assets.Select(entry => new KeyValuePair<string, T>(entry.Key.ToString(), entry.Value)));
+    }
+
+    /// <summary>Loads deserialized records through the same canonical indexing contract as assets.</summary>
+    public void Load(IEnumerable<T> records)
+    {
+        ArgumentNullException.ThrowIfNull(records);
+        Replace(records.Select(record => new KeyValuePair<string, T>(record?.Code ?? "", record!)));
+    }
+
+    public T? Get(string code)
+    {
+        string normalized = NormalizeCode(code);
+        return normalized.Length > 0 && byCode.TryGetValue(normalized, out T? record) ? record : null;
+    }
+
+    private void Replace(IEnumerable<KeyValuePair<string, T>> records)
+    {
+        ordered.Clear();
+        byCode.Clear();
+
+        foreach (KeyValuePair<string, T> entry in records)
         {
             T record = entry.Value;
             if (record == null)
@@ -47,8 +68,10 @@ public sealed class VrpgDataStore<T> where T : class, IVrpgDataRecord
 
             if (string.IsNullOrWhiteSpace(record.Code))
             {
-                record.Code = entry.Key.ToString();
+                record.Code = entry.Key;
             }
+
+            record.Code = NormalizeCode(record.Code);
 
             if (string.IsNullOrWhiteSpace(record.Name))
             {
@@ -62,9 +85,10 @@ public sealed class VrpgDataStore<T> where T : class, IVrpgDataRecord
         ordered.Sort((left, right) => string.Compare(left.Code, right.Code, StringComparison.OrdinalIgnoreCase));
     }
 
-    public T? Get(string code)
+    private static string NormalizeCode(string? code)
     {
-        return code != null && byCode.TryGetValue(code, out T? record) ? record : null;
+        string value = (code ?? "").Trim();
+        return value.Length == 0 || value.Contains(':') ? value : "vrpg:" + value;
     }
 
     public string FormatList(string title, int limit = 16)

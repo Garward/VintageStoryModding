@@ -4,6 +4,8 @@
   "family": "weapon",
   "requiredTags": [ "weapon" ],
   "excludedTags": [],
+  "allowedEquipmentRoles": [ "weapon.main", "weapon.alternate1", "weapon.alternate2", "weapon.offhand" ],
+  "excludedEquipmentRoles": [],
   "mutualExclusionGroup": "weapon-power",
   "uniquePerItem": true,
   "minimumRarityCode": "vrpg:common",

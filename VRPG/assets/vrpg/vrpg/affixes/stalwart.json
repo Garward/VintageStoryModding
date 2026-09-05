@@ -4,6 +4,8 @@
   "family": "defense",
   "requiredTags": [ "armor" ],
   "excludedTags": [],
+  "allowedEquipmentRoles": [ "armor.head", "armor.body", "armor.legs", "armor.hands", "armor.feet" ],
+  "excludedEquipmentRoles": [],
   "mutualExclusionGroup": "health",
   "uniquePerItem": true,
   "minimumRarityCode": "vrpg:common",
