@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using VRPG.Inventory;
+using VRPG.Inventory.Gear;
 using VRPG.Inventory.Persistence;
 using Xunit;
 
@@ -26,9 +27,11 @@ public sealed class PlayerItemPersistenceTests
             }
         };
         PlayerItemMutationResult materialInsert = store.Insert("insert-material", material, 10, 0);
+        GearInstance expectedGear = GearInstanceFixture();
+        PlayerItemPrototype expectedGearPrototype = Gear(expectedGear);
         PlayerItemMutationResult gearInsert = store.Insert(
             "insert-gear",
-            Gear(),
+            expectedGearPrototype,
             1,
             materialInsert.Revision);
         PlayerItemMutationResult missingInsert = store.Insert(
@@ -36,7 +39,9 @@ public sealed class PlayerItemPersistenceTests
             Material("missing:component"),
             4,
             gearInsert.Revision);
-        PlayerItemOperationResult equipped = store.Equip(
+        PlayerItemOperationResult equipped = new GearEquipmentService(TestGearDefinitions.Registry()).TryEquip(
+            store,
+            expectedGear.RequiredLevel,
             "equip",
             gearInsert.EntryId,
             PlayerEquipmentRoles.MainWeapon,
@@ -71,7 +76,16 @@ public sealed class PlayerItemPersistenceTests
         Assert.True(loaded.Success);
         Assert.Equal(saved.Generation, loaded.Generation);
         Assert.False(restored.IsDirty);
-        Assert.Equal(gearInsert.EntryId, restored.Equipment().Entries.Single().EntryId);
+        EquippedPlayerItemRecord restoredEquipment = restored.Equipment().Entries.Single();
+        Assert.Equal(gearInsert.EntryId, restoredEquipment.EntryId);
+        Assert.Equal(PlayerEquipmentRoles.MainWeapon, restoredEquipment.RoleCode);
+        Assert.True(restored.TryGet(gearInsert.EntryId, out PlayerItemDetail? restoredGearDetail));
+        Assert.Equal(expectedGearPrototype.ExactState, restoredGearDetail!.Prototype.ExactState);
+        Assert.True(GearItemStateCodec.TryDecode(
+            restoredGearDetail.Prototype.ExactState,
+            out GearInstance? restoredGear,
+            out string gearError), gearError);
+        AssertGearContentEqual(expectedGear, restoredGear!);
         PlayerRecoverySummary recovery = restored.Recovery().Entries.Single();
         Assert.Equal(PlayerItemRecoveryReason.MissingAsset, recovery.Reason);
         Assert.Equal("addon reload", recovery.Source);
@@ -360,13 +374,56 @@ public sealed class PlayerItemPersistenceTests
             "Copper",
             new byte[] { 1, 2, 3 });
 
-    private static PlayerItemPrototype Gear() =>
+    private static PlayerItemPrototype Gear(GearInstance gear) =>
         new(
             PlayerItemStorageKind.Unique,
             "game:sword",
             PlayerItemCategories.Gear,
             "Sword",
-            new byte[] { 4, 5, 6 });
+            GearItemStateCodec.Encode(gear));
+
+    private static GearInstance GearInstanceFixture() => new(
+        GearInstanceSchema.CurrentVersion,
+        GearInstanceSchema.CurrentGenerationRules,
+        "vrpg:test-sword",
+        20,
+        "vrpg:common",
+        PlayerEquipmentRoles.MainWeapon,
+        "game:test-sword",
+        new[]
+        {
+            new GearAffixRoll("vrpg:flat-power", 1, new[]
+            {
+                new GearModifierRoll("vrpg:weapon_power", GearModifierOperations.Add, 6.5f)
+            })
+        },
+        new GearResolvedStats(21.5f, 2, 10, 5, 0.1f, 0.1f, 0.2f, 0.3f, 0.4f),
+        new GearProvenance("test", "persistence", new[] { "restart", "exact" }, 7331UL),
+        "",
+        new byte[] { 7, 3, 3, 1 });
+
+    private static void AssertGearContentEqual(GearInstance expected, GearInstance actual)
+    {
+        Assert.Equal(expected.SchemaVersion, actual.SchemaVersion);
+        Assert.Equal(expected.GenerationRuleVersion, actual.GenerationRuleVersion);
+        Assert.Equal(expected.BaseCode, actual.BaseCode);
+        Assert.Equal(expected.RequiredLevel, actual.RequiredLevel);
+        Assert.Equal(expected.RarityCode, actual.RarityCode);
+        Assert.Equal(expected.EquipmentRole, actual.EquipmentRole);
+        Assert.Equal(expected.VisualChassisAssetCode, actual.VisualChassisAssetCode);
+        Assert.Equal(expected.Resolved, actual.Resolved);
+        Assert.Equal(expected.Provenance.SourceKind, actual.Provenance.SourceKind);
+        Assert.Equal(expected.Provenance.SourceCode, actual.Provenance.SourceCode);
+        Assert.Equal(expected.Provenance.Tags, actual.Provenance.Tags);
+        Assert.Equal(expected.Provenance.SelectionSeed, actual.Provenance.SelectionSeed);
+        Assert.Equal(expected.UniqueCode, actual.UniqueCode);
+        Assert.Equal(expected.UniqueRulePayload, actual.UniqueRulePayload);
+        Assert.Equal(expected.Affixes.Count, actual.Affixes.Count);
+        for (int index = 0; index < expected.Affixes.Count; index++)
+        {
+            Assert.Equal(expected.Affixes[index], actual.Affixes[index]);
+        }
+    }
 
     private sealed class MemoryArchiveStorage : IPlayerItemArchiveStorage
     {

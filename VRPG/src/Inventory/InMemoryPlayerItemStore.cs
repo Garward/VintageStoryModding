@@ -90,6 +90,22 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         }
     }
 
+    public bool TryGet(string entryId, out PlayerItemDetail? detail)
+    {
+        lock (sync)
+        {
+            if (string.IsNullOrWhiteSpace(entryId)
+                || !byId.TryGetValue(entryId, out StoredEntry? entry))
+            {
+                detail = null;
+                return false;
+            }
+
+            detail = DetailClone(entry);
+            return true;
+        }
+    }
+
     public PlayerItemMutationResult Insert(
         PlayerItemPrototype prototype,
         long quantity,
@@ -317,6 +333,17 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         entry.Location,
         entry.Flags,
         ReservedQuantity(entry.EntryId));
+
+    private static PlayerItemDetail DetailClone(StoredEntry entry) => new(
+        entry.EntryId,
+        entry.Prototype with
+        {
+            ExactState = (byte[])entry.Prototype.ExactState.Clone(),
+            EmbeddedReferences = CloneReferences(entry.Prototype.EmbeddedReferences)
+        },
+        entry.Quantity,
+        entry.Location,
+        entry.Flags);
 
     private int ActiveCount(PlayerItemStorageKind kind) => byId.Values.Count(entry =>
         entry.Prototype.Kind == kind

@@ -55,6 +55,14 @@ public sealed record PlayerItemSummary(
     PlayerItemFlags Flags = PlayerItemFlags.None,
     long ReservedQuantity = 0);
 
+/// <summary>Clone-owned canonical entry data for trusted server-side consumers.</summary>
+public sealed record PlayerItemDetail(
+    string EntryId,
+    PlayerItemPrototype Prototype,
+    long Quantity,
+    PlayerItemLocation Location,
+    PlayerItemFlags Flags);
+
 public sealed record PlayerItemQuery(
     string Category,
     string Search,

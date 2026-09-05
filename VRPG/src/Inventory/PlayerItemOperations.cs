@@ -14,7 +14,10 @@ public enum PlayerItemOperationRejection
     EquipmentRoleMissing,
     NotEquippable,
     ReservationMissing,
-    ConfirmationRequired
+    ConfirmationRequired,
+    InvalidGear,
+    EquipmentRoleMismatch,
+    RequirementNotMet
 }
 
 public sealed record PlayerItemOperationResult(

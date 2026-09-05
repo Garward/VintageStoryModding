@@ -4,6 +4,7 @@ public interface IPlayerItemStore
 {
     long Revision { get; }
     PlayerItemPage Query(PlayerItemQuery query);
+    bool TryGet(string entryId, out PlayerItemDetail? detail);
     PlayerItemMutationResult Insert(
         string requestId,
         PlayerItemPrototype prototype,
