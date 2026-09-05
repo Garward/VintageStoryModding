@@ -25,22 +25,24 @@ namespace VintageKinematics.Storage.Topology
                 bool linked = ClientCanSubmitLinkedIntent(
                     member.WarehouseId,
                     member.ControllerPos != null);
-                bool online = world.Side == EnumAppSide.Client
-                    ? linked
-                    : linked
-                        && world.BlockAccessor.GetBlockEntity(member.ControllerPos)
-                            is BEKineticWarehouseTerminal controller
-                        && controller.WarehouseId == member.WarehouseId
-                        && ControllerAcceptsPlacement(
-                            world.Side,
-                            controller.StructureState,
-                            controller.IsItemIndexReady);
+                BEKineticWarehouseTerminal controller = linked
+                    ? world.BlockAccessor.GetBlockEntity(member.ControllerPos)
+                        as BEKineticWarehouseTerminal
+                    : null;
+                bool controllerPresent = controller != null
+                    && controller.WarehouseId == member.WarehouseId;
+                bool online = controllerPresent
+                    && ControllerAcceptsPlacement(
+                        world.Side,
+                        controller.StructureState,
+                        controller.IsItemIndexReady);
                 neighbors.Add(new StoragePlacementNeighbor(
                     member.WarehouseId,
                     member.ControllerPos == null
                         ? null
                         : WorldStorageTopologySource.FromBlockPos(member.ControllerPos),
-                    online));
+                    online,
+                    controllerPresent));
             }
             return StoragePlacementPolicy.Evaluate(role, neighbors);
         }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.Entities;
@@ -15,14 +17,16 @@ namespace VintageKinematics.BlockEntities
         private const float BlocksPerRotation = 1.2f;
         private const float ContraptionBaseStressImpact = 1f;
         private const float ContraptionStressImpactPerBlock = 0.25f;
-        private const long MoveSoundIntervalMs = 450;
+        private const float GantrySoundVolumeScale = 0.5f;
         private const long AutoRestoreSettleDelayMs = 250;
+        private const string MovingTreeKey = "vkGantryMoving";
         private static readonly AssetLocation GantryMoveSound = new AssetLocation("sounds/effect/gearbox_turn.ogg");
         private static readonly AssetLocation GantryStartSound = new AssetLocation("sounds/effect/woodswitch.ogg");
         private static readonly AssetLocation GantryStopSound = new AssetLocation("sounds/effect/latch.ogg");
         private static readonly Dictionary<long, long> LastMovedEntityMs = new Dictionary<long, long>();
         private static readonly Dictionary<long, long> AutoRestoreSettleStartMs = new Dictionary<long, long>();
-        private static readonly Dictionary<string, GantrySoundState> SoundStates = new Dictionary<string, GantrySoundState>();
+        private bool gantryMoving;
+        private ILoadedSound activeMoveSound;
 
         public override void Initialize(ICoreAPI api)
         {
@@ -30,6 +34,10 @@ namespace VintageKinematics.BlockEntities
             if (api.Side == EnumAppSide.Server)
             {
                 RegisterGameTickListener(OnMoveTick, MoveIntervalMs);
+            }
+            else
+            {
+                RegisterGameTickListener(UpdateClientMoveSound, 50);
             }
         }
 
@@ -39,7 +47,6 @@ namespace VintageKinematics.BlockEntities
 
             ExpandTrack(axis, out BlockPos trackMin, out BlockPos trackMax);
             if (!IsCanonicalTrackHost(trackMin)) return;
-            string soundKey = TrackKey(trackMin, trackMax, axis);
 
             BEBehaviorKinetic kinetic = GetBehavior<BEBehaviorKinetic>();
             float rpm = kinetic?.ActualRPM ?? 0f;
@@ -47,7 +54,7 @@ namespace VintageKinematics.BlockEntities
             if (!canDrive)
             {
                 RestoreStoppedContraptions(trackMin, trackMax, axis);
-                UpdateGantrySound(soundKey, false, rpm, trackMin, trackMax);
+                UpdateGantrySound(false, trackMin, trackMax);
                 return;
             }
 
@@ -62,7 +69,7 @@ namespace VintageKinematics.BlockEntities
             if (!TryApplyContraptionLoad(trackMin, trackMax, axis, rpm, dt, pendingDx, pendingDy, pendingDz, out List<EntityVKContraption> movingContraptions))
             {
                 RestoreStoppedContraptions(trackMin, trackMax, axis);
-                UpdateGantrySound(soundKey, false, rpm, trackMin, trackMax);
+                UpdateGantrySound(false, trackMin, trackMax);
                 return;
             }
 
@@ -120,7 +127,7 @@ namespace VintageKinematics.BlockEntities
                 movedAny = true;
             }
 
-            UpdateGantrySound(soundKey, movedAny, rpm, trackMin, trackMax);
+            UpdateGantrySound(movedAny, trackMin, trackMax);
         }
 
         private bool TryApplyContraptionLoad(BlockPos trackMin, BlockPos trackMax, EnumKineticAxis axis, float rpm, float dt, double moveX, double moveY, double moveZ, out List<EntityVKContraption> movingContraptions)
@@ -157,44 +164,86 @@ namespace VintageKinematics.BlockEntities
                 && Pos.dimension == trackMin.dimension;
         }
 
-        private void UpdateGantrySound(string soundKey, bool moving, float rpm, BlockPos trackMin, BlockPos trackMax)
+        private void UpdateGantrySound(
+            bool moving,
+            BlockPos trackMin,
+            BlockPos trackMax)
         {
-            long now = Api.World.ElapsedMilliseconds;
-            if (!SoundStates.TryGetValue(soundKey, out GantrySoundState state))
-            {
-                state = new GantrySoundState();
-                SoundStates[soundKey] = state;
-            }
+            if (gantryMoving == moving) return;
 
             Vec3d soundPos = TrackCenter(trackMin, trackMax);
             if (moving)
             {
-                if (!state.Active)
-                {
-                    PlayGantrySound(GantryStartSound, soundPos, 0.75f, 0.9f);
-                    state.Active = true;
-                }
+                PlayGantrySound(GantryStartSound, soundPos, 0.75f, 0.9f);
+            }
+            else
+            {
+                PlayGantrySound(GantryStopSound, soundPos, 0.6f, 0.75f);
+            }
+            gantryMoving = moving;
+            MarkDirty(true);
+        }
 
-                if (now - state.LastMoveSoundMs >= MoveSoundIntervalMs)
-                {
-                    float rpmScale = MathF.Min(MathF.Abs(rpm) / 64f, 2f);
-                    PlayGantrySound(GantryMoveSound, soundPos, 0.18f + 0.12f * rpmScale, 0.65f + 0.08f * rpmScale);
-                    state.LastMoveSoundMs = now;
-                }
-
+        private void UpdateClientMoveSound(float dt)
+        {
+            if (Api is not ICoreClientAPI capi || !gantryMoving)
+            {
+                StopClientMoveSound();
+                return;
+            }
+            if (!TryGetAxis(out EnumKineticAxis axis))
+            {
+                StopClientMoveSound();
                 return;
             }
 
-            if (state.Active)
+            ExpandTrack(axis, out BlockPos trackMin, out BlockPos trackMax);
+            Vec3d center = TrackCenter(trackMin, trackMax);
+            float rpm = MathF.Abs(GetBehavior<BEBehaviorKinetic>()?.ActualRPM ?? 0f);
+            float volume = MovementSoundVolume(rpm);
+            if (activeMoveSound == null || activeMoveSound.IsDisposed)
             {
-                PlayGantrySound(GantryStopSound, soundPos, 0.6f, 0.75f);
-                state.Active = false;
+                activeMoveSound = capi.World.LoadSound(new SoundParams
+                {
+                    Location = GantryMoveSound,
+                    Position = new Vec3f((float)center.X, (float)center.Y, (float)center.Z),
+                    ShouldLoop = true,
+                    DisposeOnFinish = false,
+                    Range = 18f,
+                    Volume = volume
+                });
+                activeMoveSound?.Start();
+                return;
             }
+
+            activeMoveSound.SetPosition((float)center.X, (float)center.Y, (float)center.Z);
+            activeMoveSound.SetVolume(volume);
+        }
+
+        private static float MovementSoundVolume(float rpm)
+        {
+            float rpmScale = MathF.Min(MathF.Abs(rpm) / 64f, 2f);
+            return (0.18f + 0.12f * rpmScale) * GantrySoundVolumeScale;
+        }
+
+        private void StopClientMoveSound()
+        {
+            activeMoveSound?.Stop();
+            activeMoveSound?.Dispose();
+            activeMoveSound = null;
         }
 
         private void PlayGantrySound(AssetLocation sound, Vec3d pos, float volume, float range)
         {
-            Api.World.PlaySoundAt(sound, pos.X, pos.Y, pos.Z, null, randomizePitch: true, range: 18f, volume: volume);
+            Api.World.PlaySoundAt(
+                sound,
+                pos.X,
+                pos.Y,
+                pos.Z,
+                null,
+                randomizePitch: true,
+                range: 18f,
+                volume: volume * GantrySoundVolumeScale);
         }
 
         private static Vec3d TrackCenter(BlockPos trackMin, BlockPos trackMax)
@@ -203,6 +252,33 @@ namespace VintageKinematics.BlockEntities
                 (trackMin.X + trackMax.X) * 0.5 + 0.5,
                 (trackMin.InternalY + trackMax.InternalY) * 0.5 + 0.5,
                 (trackMin.Z + trackMax.Z) * 0.5 + 0.5);
+        }
+
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            base.ToTreeAttributes(tree);
+            tree.SetBool(MovingTreeKey, gantryMoving);
+        }
+
+        public override void FromTreeAttributes(
+            ITreeAttribute tree,
+            IWorldAccessor worldForResolving)
+        {
+            base.FromTreeAttributes(tree, worldForResolving);
+            gantryMoving = tree.GetBool(MovingTreeKey);
+            if (!gantryMoving) StopClientMoveSound();
+        }
+
+        public override void OnBlockUnloaded()
+        {
+            StopClientMoveSound();
+            base.OnBlockUnloaded();
+        }
+
+        public override void OnBlockRemoved()
+        {
+            StopClientMoveSound();
+            base.OnBlockRemoved();
         }
 
         private static string TrackKey(BlockPos trackMin, BlockPos trackMax, EnumKineticAxis axis)
@@ -495,10 +571,5 @@ namespace VintageKinematics.BlockEntities
             return pos.dimension + ":" + pos.X + "," + pos.InternalY + "," + pos.Z;
         }
 
-        private sealed class GantrySoundState
-        {
-            public bool Active;
-            public long LastMoveSoundMs;
-        }
     }
 }

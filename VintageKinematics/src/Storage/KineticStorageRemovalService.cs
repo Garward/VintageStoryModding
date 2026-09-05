@@ -2,6 +2,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using VintageKinematics.Api;
 using VintageKinematics.Api.Storage;
+using VintageKinematics.Storage.Topology;
 
 namespace VintageKinematics.Storage
 {
@@ -34,6 +35,17 @@ namespace VintageKinematics.Storage
             if (guard != null)
             {
                 return guard.CanRemoveStorageBlock(pos, kind, byPlayer);
+            }
+
+            BlockEntity local = MultiblockHelper.GetMultiblockAwareBE(world, pos)
+                ?? world.BlockAccessor.GetBlockEntity(pos);
+            if (local is IVKStorageStructureMember orphanedMember)
+            {
+                return OrphanedStorageRemovalEvaluator.Check(
+                    world,
+                    pos,
+                    orphanedMember,
+                    kind);
             }
 
             Block block = world.BlockAccessor.GetBlock(pos);

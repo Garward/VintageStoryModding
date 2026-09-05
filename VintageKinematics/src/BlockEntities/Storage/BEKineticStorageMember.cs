@@ -75,5 +75,23 @@ namespace VintageKinematics.BlockEntities.Storage
             WarehouseId = null;
             ControllerPos = null;
         }
+
+        internal bool RelinkController(
+            string warehouseId,
+            BlockPos expectedController,
+            BlockPos replacementController)
+        {
+            if (WarehouseId != warehouseId
+                || ControllerPos == null
+                || expectedController == null
+                || !ControllerPos.Equals(expectedController))
+            {
+                return false;
+            }
+
+            SetLink(warehouseId, replacementController);
+            MarkDirty(true);
+            return true;
+        }
     }
 }

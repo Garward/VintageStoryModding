@@ -79,20 +79,58 @@ namespace VintageKinematics.Storage.Recovery
             return tombstone;
         }
 
+        internal StorageRecoveryRecord MoveController(
+            string warehouseId,
+            StorageControllerLocation expectedController,
+            StorageControllerLocation newController)
+        {
+            if (!TryGet(warehouseId, out StorageRecoveryRecord existing))
+            {
+                throw new KeyNotFoundException("Cannot move an unknown warehouse controller.");
+            }
+            if (existing.Controller != expectedController)
+            {
+                throw new InvalidOperationException(
+                    "Warehouse controller relocation does not match the persisted location.");
+            }
+            if (existing.IsTombstone)
+            {
+                throw new InvalidOperationException("A tombstoned warehouse cannot be moved.");
+            }
+            if (expectedController == newController) return existing;
+            if (existing.Revision == long.MaxValue)
+            {
+                throw new InvalidOperationException("Recovery record revision is exhausted.");
+            }
+
+            StorageRecoveryRecord moved = StorageRecoveryRecord.Create(
+                existing.WarehouseId,
+                newController,
+                existing.Revision + 1,
+                existing.SnapshotBytes);
+            records[existing.WarehouseId] = moved;
+            MarkDirty(existing.WarehouseId);
+            return moved;
+        }
+
         /// <summary>
         /// Replaces one identity after a caller has explicitly selected retained recovery evidence.
         /// Unlike normal updates, this may intentionally supersede a tombstone or tied divergence.
         /// </summary>
-        public bool ReplaceAfterExplicitRecovery(StorageRecoveryRecord record)
+        public bool ReplaceAfterExplicitRecovery(
+            StorageRecoveryRecord record,
+            bool allowControllerRelocation = false)
         {
-            ValidateExplicitRecovery(record);
+            ValidateExplicitRecovery(record, allowControllerRelocation);
 
             records[record.WarehouseId] = record;
             MarkDirty(record.WarehouseId);
             return true;
         }
 
-        internal void ValidateExplicitRecovery(StorageRecoveryRecord record)
+        internal void ValidateExplicitRecovery(
+            StorageRecoveryRecord record,
+            bool allowControllerRelocation = false)
         {
             if (record == null) throw new ArgumentNullException(nameof(record));
             if (!record.HasValidChecksum)
@@ -101,7 +139,7 @@ namespace VintageKinematics.Storage.Recovery
             }
             if (records.TryGetValue(record.WarehouseId, out StorageRecoveryRecord existing))
             {
-                if (existing.Controller != record.Controller)
+                if (!allowControllerRelocation && existing.Controller != record.Controller)
                 {
                     throw new InvalidOperationException("Explicit recovery cannot move a warehouse controller.");
                 }

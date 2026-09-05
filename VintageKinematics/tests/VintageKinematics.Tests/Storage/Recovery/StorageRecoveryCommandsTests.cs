@@ -1,4 +1,6 @@
 using VintageKinematics.Storage.Recovery;
+using VintageKinematics.Storage.Index;
+using VintageKinematics.Storage.Persistence;
 using Xunit;
 
 namespace VintageKinematics.Tests.Storage.Recovery
@@ -28,6 +30,38 @@ namespace VintageKinematics.Tests.Storage.Recovery
             Assert.NotEqual(controllerToken, recoveryToken);
             Assert.NotEqual(controllerToken, changedCopyToken);
             Assert.Equal(16, controllerToken.Length);
+        }
+
+        [Fact]
+        public void PlayerFacingCopyDescriptionUsesCountsInsteadOfChecksums()
+        {
+            var persistence = new KineticStoragePersistence(null);
+            var index = new KineticStorageIndex(null, new StorageIndexLimits(256));
+            StorageRecoveryRecord record = StorageRecoveryRecord.Create(
+                WarehouseId,
+                Controller,
+                3,
+                persistence.Encode(persistence.Capture(index)));
+
+            string description = StorageRecoveryCommands.DescribeCopyForPlayer(
+                "World backup",
+                StorageSnapshotCopy.FromRecord(record));
+
+            Assert.Equal(
+                "World backup: revision 3, 0 item(s) across 0 type(s).",
+                description);
+            Assert.DoesNotContain("checksum", description);
+        }
+
+        [Theory]
+        [InlineData("controller")]
+        [InlineData("recovery")]
+        [InlineData("empty")]
+        public void PlayerFacingConfirmationCommandDoesNotRequireCopyingToken(string source)
+        {
+            string command = StorageRecoveryCommands.ConfirmationCommand(16, source);
+
+            Assert.Equal($"/vk storagerecover 16 {source} confirm", command);
         }
 
         private static StorageReconciliationResult Reconcile(

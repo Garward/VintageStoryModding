@@ -72,12 +72,15 @@ namespace VintageKinematics.Storage.Recovery
                 && controllerCopy.Record.IsEquivalentTo(recoveryCopy.Record);
             if (!mirrorsAgree) return false;
 
-            // The compact header contains no item payload. When both independently persisted
-            // full mirrors prove the same valid state, that state is the only recoverable item
-            // truth and the header can always be reconstructed from it. Retaining an ahead or
-            // conflicting header as authority would only lock the warehouse around data that
-            // does not exist anywhere to restore.
-            return true;
+            // An older or missing compact header is ordinary stale metadata and can be
+            // reconstructed from the agreeing full mirrors. An ahead or same-revision
+            // conflicting header proves that a newer transaction reached the block entity but
+            // its full payload did not persist; selecting the older backup must remain an
+            // explicit, warned recovery decision.
+            StorageRecoveryIndexEntry header = controllerCopy.Header;
+            return header == null
+                || header.Matches(recoveryCopy.Record)
+                || header.Revision < recoveryCopy.Record.Revision;
         }
 
         private static StorageSnapshotCopy ValidatePayload(

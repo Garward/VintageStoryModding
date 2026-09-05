@@ -19,25 +19,15 @@ Early kinetic power comes from hand cranks, treadwheels, and counterweight drive
 - The Kinetic Warehouse, providing searchable shared storage with expandable capacity and belt input and output.
 - Powered equipment including drills, saws, kinetic boots, backpacks, and the Mechanical Binder.
 
-## Version 1.4.2
+## Version 1.4.3
 
-- Contraption drills and saws can operate as stationary machines with kinetic power connected behind them.
-- Stationary tools insert completed drops directly into storage below when possible, reducing loose-item buildup.
-- Drills correctly update nearby fluids after mining, allowing vanilla basalt generators to refill.
-- Contraption saws cut complete trees using vanilla axe traversal, including connected branches and leaves.
-- Gantry contraptions can contain controllers at both ends and use whichever anchor can move.
-- Fixed gantry movement, anchor handoff, contraption conversion flashes, and severe contraption performance problems.
-- Gantry shafts now visibly rotate with their kinetic network.
-- Added a 100-litre Iron Fluid Tank suitable for lava.
-- Pumps collect full lava sources as finite 10-litre transfers. Renewable water remains infinite.
-- Stored water, salt water, and lava can be placed into supported world cells in 10-litre batches.
-- Pumps aimed at an existing source can expand outward across a supported layer to fill an enclosed pool.
-- Reduced excessive kinetic quern animation updates without changing processing speed.
-- Improved recovery of older or missing Vintage Kinematics block entities.
+- Fixed Kinetic Warehouse Terminals sometimes becoming unusable or appearing empty after removing storage cells and reloading the world.
+- Warehouse Terminals can now be picked up and moved to another block in the same warehouse without emptying it first.
+- Reduced Gantry Carriage sound volume and fixed movement sounds continuing too long or overlapping.
 
 ## Installation
 
-Place the Vintage Kinematics zip in the Vintage Story `Mods` directory. Multiplayer servers and connecting players must use compatible versions of the mod.
+Place the Vintage Kinematics zip in the Vintage Story `Mods` directory in your data folder. Multiplayer servers and connecting players must use compatible versions of the mod.
 
 Keep the mod as a zip. It does not need to be extracted.
 
@@ -45,4 +35,4 @@ Keep the mod as a zip. It does not need to be extracted.
 
 Most kinetic blocks show their RPM, stress use, network capacity, and current state while you look at them. Check those details first when a machine is not running.
 
-For detailed rules and troubleshooting, use the in-game Vintage Kinematics handbook pages. When reporting a problem, include the Vintage Kinematics version, Vintage Story version, relevant client or server logs, and a description or screenshot of the setup.
+For detailed rules and troubleshooting, use the in game Vintage Kinematics handbook pages. When reporting a problem, include the Vintage Kinematics version, Vintage Story version, relevant client or server logs, and a description or screenshot of the setup in either the forum or discord thread.

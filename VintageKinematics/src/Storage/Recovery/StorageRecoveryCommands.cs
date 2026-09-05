@@ -8,12 +8,17 @@ using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using VintageKinematics.BlockEntities.Storage;
+using VintageKinematics.Storage.Persistence;
 using VintageKinematics.Storage.Topology;
 
 namespace VintageKinematics.Storage.Recovery
 {
     internal static class StorageRecoveryCommands
     {
+        private const long ConfirmationLifetimeMilliseconds = 120_000;
+        private static readonly Dictionary<string, PendingConfirmation> PendingConfirmations =
+            new(StringComparer.Ordinal);
+
         public static TextCommandResult HandleRecover(
             ICoreServerAPI api,
             TextCommandCallingArgs args)
@@ -33,6 +38,7 @@ namespace VintageKinematics.Storage.Recovery
             }
             if (string.IsNullOrEmpty(sourceWord))
             {
+                RememberInspection(api, args, controller, result);
                 return TextCommandResult.Success(Describe(controller, result, radius));
             }
             if (!result.RequiresAdminRecovery)
@@ -46,13 +52,16 @@ namespace VintageKinematics.Storage.Recovery
                     controller.WarehouseId,
                     result,
                     StorageSnapshotSource.None);
-                if (!string.Equals(
+                if (!MatchesConfirmation(
+                    api,
+                    args,
+                    controller.WarehouseId,
+                    StorageSnapshotSource.None,
                     expectedEmptyToken,
-                    suppliedToken,
-                    StringComparison.OrdinalIgnoreCase))
+                    suppliedToken))
                 {
                     return TextCommandResult.Error(
-                        "Empty-reset confirmation token is missing or stale. Run the command without a source to inspect current evidence.");
+                        "Confirmation is missing or expired. Inspect the terminal again, then use the displayed confirm command within two minutes.");
                 }
                 if (!controller.TryConfirmEmptyRecovery(out string emptyFailure))
                 {
@@ -63,6 +72,7 @@ namespace VintageKinematics.Storage.Recovery
                     args.Caller.Player?.PlayerName ?? args.Caller.FromChatGroupId.ToString(),
                     controller.WarehouseId,
                     controller.Pos);
+                ClearPending(args);
                 return TextCommandResult.Success(
                     "Empty recovery state initialized. The warehouse remains unavailable until its topology rebuild completes.");
             }
@@ -71,10 +81,16 @@ namespace VintageKinematics.Storage.Recovery
                 ? StorageSnapshotSource.BlockEntity
                 : StorageSnapshotSource.RecoveryRegistry;
             string expectedToken = CreateConfirmationToken(controller.WarehouseId, result, source);
-            if (!string.Equals(expectedToken, suppliedToken, StringComparison.OrdinalIgnoreCase))
+            if (!MatchesConfirmation(
+                api,
+                args,
+                controller.WarehouseId,
+                source,
+                expectedToken,
+                suppliedToken))
             {
                 return TextCommandResult.Error(
-                    "Recovery confirmation token is missing or stale. Run the command without a source to inspect current copies.");
+                    "Confirmation is missing or expired. Inspect the terminal again, then use the displayed confirm command within two minutes.");
             }
             if (!controller.TryConfirmRecovery(source, out string failureCode))
             {
@@ -88,6 +104,7 @@ namespace VintageKinematics.Storage.Recovery
                 controller.WarehouseId,
                 controller.Pos,
                 controller.LastReconciliation.BlockEntityCopy.Record?.Revision ?? 0);
+            ClearPending(args);
             return TextCommandResult.Success(failureCode == null
                 ? "Recovery committed. The warehouse remains unavailable until its topology rebuild completes."
                 : "Recovery selection was retained, but this warehouse stays locked because other persistence issues remain.");
@@ -112,58 +129,242 @@ namespace VintageKinematics.Storage.Recovery
             int radius)
         {
             StringBuilder text = new StringBuilder();
-            text.AppendLine("Inspection only; no warehouse data was changed.");
-            text.AppendLine($"Warehouse {controller.WarehouseId} at {controller.Pos}; outcome={result.Outcome}.");
-            AppendCopy(text, "controller", result.BlockEntityCopy, controller.WarehouseId, result, radius);
-            AppendCopy(text, "recovery", result.RecoveryCopy, controller.WarehouseId, result, radius);
             if (result.Outcome == StorageReconciliationOutcome.Identical)
             {
-                text.Append("Copies are identical; no recovery selection is required.");
+                return $"Warehouse at {controller.Pos} is healthy. No recovery is needed.";
             }
-            else if (result.Outcome
+            if (result.Outcome
                 == StorageReconciliationOutcome.IdenticalMirrorsWithStaleHeader)
             {
-                text.Append("Full mirrors are identical; the stale controller header was repaired automatically.");
+                return $"Warehouse at {controller.Pos} is healthy. Outdated terminal metadata was repaired automatically.";
             }
-            else if (controller.CanConfirmEmptyRecovery)
+
+            text.AppendLine($"Warehouse recovery: LOCKED terminal at {controller.Pos}.");
+            if (controller.CanConfirmEmptyRecovery)
             {
-                string token = CreateConfirmationToken(
-                    controller.WarehouseId,
-                    result,
-                    StorageSnapshotSource.None);
-                text.Append(
-                    $"No valid item copy exists and the synchronized stored count is zero; "
-                    + $"explicit empty reset: /vk storagerecover {radius} empty {token}");
+                text.AppendLine("No recoverable item data remains.");
+                if (controller.SyncedStoredItems > 0)
+                {
+                    text.AppendLine(
+                        $"Resetting as empty will permanently discard the terminal's reported {controller.SyncedStoredItems} item(s).");
+                }
+                text.Append($"Unlock as empty: {ConfirmationCommand(radius, "empty")}");
             }
-            else if (result.RequiresAdminRecovery)
+            else
             {
-                text.Append(
-                    "Recovery remains locked until one of the confirm commands shown above is run exactly.");
+                AppendCopy(text, "Terminal copy", result.BlockEntityCopy);
+                AppendCopy(text, "Saved recovery copy", result.RecoveryCopy);
+                AppendRecoveryChoices(text, result, radius);
+                AppendRevisionLossWarning(text, result);
             }
-            return text.ToString();
+            return text.ToString().TrimEnd();
         }
 
         private static void AppendCopy(
             StringBuilder text,
             string label,
-            StorageSnapshotCopy copy,
-            string warehouseId,
+            StorageSnapshotCopy copy)
+        {
+            if (IsUsable(copy))
+            {
+                text.AppendLine(DescribeCopyForPlayer(label, copy));
+            }
+        }
+
+        internal static string DescribeCopyForPlayer(
+            string label,
+            StorageSnapshotCopy copy)
+        {
+            StorageRecoveryRecord record = copy?.Record;
+            if (IsUsable(copy)
+                && TrySnapshotStats(record, out long items, out int types))
+            {
+                return $"{label}: revision {record.Revision}, {items} item(s) across {types} type(s).";
+            }
+            return $"{label}: unavailable.";
+        }
+
+        private static void AppendRecoveryChoices(
+            StringBuilder text,
             StorageReconciliationResult result,
             int radius)
         {
-            text.Append($"{label}: {DescribeCopy(copy)}");
-            if (copy.State == StorageSnapshotCopyState.Valid
-                && copy.Record != null
-                && !copy.Record.IsTombstone
-                && result.RequiresAdminRecovery)
+            AppendRecoveryChoice(
+                text,
+                "terminal copy",
+                "controller",
+                result.BlockEntityCopy,
+                radius);
+            AppendRecoveryChoice(
+                text,
+                "saved recovery copy",
+                "recovery",
+                result.RecoveryCopy,
+                radius);
+        }
+
+        private static void AppendRevisionLossWarning(
+            StringBuilder text,
+            StorageReconciliationResult result)
+        {
+            long metadataRevision = Math.Max(
+                result.BlockEntityCopy.Header?.Revision ?? 0,
+                result.RecoveryCopy.Header?.Revision ?? 0);
+            long newestSnapshotRevision = Math.Max(
+                IsUsable(result.BlockEntityCopy)
+                    ? result.BlockEntityCopy.Record.Revision
+                    : 0,
+                IsUsable(result.RecoveryCopy)
+                    ? result.RecoveryCopy.Record.Revision
+                    : 0);
+            if (metadataRevision > newestSnapshotRevision && newestSnapshotRevision > 0)
             {
-                StorageSnapshotSource source = label == "controller"
-                    ? StorageSnapshotSource.BlockEntity
-                    : StorageSnapshotSource.RecoveryRegistry;
-                string token = CreateConfirmationToken(warehouseId, result, source);
-                text.Append($"; confirm: /vk storagerecover {radius} {label} {token}");
+                text.Append(
+                    $"Warning: metadata reached revision {metadataRevision}; the newest snapshot is revision {newestSnapshotRevision}. Later item changes are unrecoverable.");
             }
-            text.AppendLine();
+        }
+
+        private static void AppendRecoveryChoice(
+            StringBuilder text,
+            string label,
+            string commandSource,
+            StorageSnapshotCopy copy,
+            int radius)
+        {
+            if (copy?.State != StorageSnapshotCopyState.Valid
+                || copy.Record == null
+                || copy.Record.IsTombstone)
+            {
+                return;
+            }
+            text.AppendLine(
+                $"Restore the {label}: {ConfirmationCommand(radius, commandSource)}");
+        }
+
+        internal static string ConfirmationCommand(int radius, string source)
+        {
+            return $"/vk storagerecover {radius} {source} confirm";
+        }
+
+        private static void RememberInspection(
+            ICoreServerAPI api,
+            TextCommandCallingArgs args,
+            BEKineticWarehouseTerminal controller,
+            StorageReconciliationResult result)
+        {
+            var tokens = new Dictionary<StorageSnapshotSource, string>();
+            if (IsUsable(result.BlockEntityCopy))
+            {
+                tokens[StorageSnapshotSource.BlockEntity] = CreateConfirmationToken(
+                    controller.WarehouseId,
+                    result,
+                    StorageSnapshotSource.BlockEntity);
+            }
+            if (IsUsable(result.RecoveryCopy))
+            {
+                tokens[StorageSnapshotSource.RecoveryRegistry] = CreateConfirmationToken(
+                    controller.WarehouseId,
+                    result,
+                    StorageSnapshotSource.RecoveryRegistry);
+            }
+            if (controller.CanConfirmEmptyRecovery)
+            {
+                tokens[StorageSnapshotSource.None] = CreateConfirmationToken(
+                    controller.WarehouseId,
+                    result,
+                    StorageSnapshotSource.None);
+            }
+
+            PendingConfirmations[CallerKey(args)] = new PendingConfirmation(
+                controller.WarehouseId,
+                api.World.ElapsedMilliseconds + ConfirmationLifetimeMilliseconds,
+                tokens);
+        }
+
+        private static bool MatchesConfirmation(
+            ICoreServerAPI api,
+            TextCommandCallingArgs args,
+            string warehouseId,
+            StorageSnapshotSource source,
+            string expectedToken,
+            string suppliedToken)
+        {
+            if (string.Equals(expectedToken, suppliedToken, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            if (!string.Equals(suppliedToken, "confirm", StringComparison.OrdinalIgnoreCase)
+                || !PendingConfirmations.TryGetValue(
+                    CallerKey(args),
+                    out PendingConfirmation pending)
+                || pending.ExpiresAtMilliseconds < api.World.ElapsedMilliseconds
+                || pending.WarehouseId != warehouseId
+                || !pending.Tokens.TryGetValue(source, out string inspectedToken))
+            {
+                return false;
+            }
+            return string.Equals(inspectedToken, expectedToken, StringComparison.Ordinal);
+        }
+
+        private static bool IsUsable(StorageSnapshotCopy copy)
+        {
+            return copy?.State == StorageSnapshotCopyState.Valid
+                && copy.Record != null
+                && !copy.Record.IsTombstone;
+        }
+
+        private static void ClearPending(TextCommandCallingArgs args)
+        {
+            PendingConfirmations.Remove(CallerKey(args));
+        }
+
+        private static string CallerKey(TextCommandCallingArgs args)
+        {
+            return args.Caller.Player?.PlayerUID
+                ?? "chatgroup:" + args.Caller.FromChatGroupId;
+        }
+
+        private static bool TrySnapshotStats(
+            StorageRecoveryRecord record,
+            out long items,
+            out int types)
+        {
+            items = 0;
+            types = 0;
+            if (record == null || record.IsTombstone) return false;
+            StorageSnapshotDecodeResult decoded = StorageSnapshotCodec.Decode(record.SnapshotBytes);
+            if (decoded.QuarantinedEntries.Count > 0) return false;
+            try
+            {
+                foreach (PersistedStorageEntry entry in decoded.Entries)
+                {
+                    items = checked(items + entry.Quantity);
+                }
+            }
+            catch (OverflowException)
+            {
+                items = 0;
+                return false;
+            }
+            types = decoded.Entries.Count;
+            return true;
+        }
+
+        private sealed class PendingConfirmation
+        {
+            public string WarehouseId { get; }
+            public long ExpiresAtMilliseconds { get; }
+            public IReadOnlyDictionary<StorageSnapshotSource, string> Tokens { get; }
+
+            public PendingConfirmation(
+                string warehouseId,
+                long expiresAtMilliseconds,
+                IReadOnlyDictionary<StorageSnapshotSource, string> tokens)
+            {
+                WarehouseId = warehouseId;
+                ExpiresAtMilliseconds = expiresAtMilliseconds;
+                Tokens = tokens;
+            }
         }
 
         private static string DescribeCopy(StorageSnapshotCopy copy)

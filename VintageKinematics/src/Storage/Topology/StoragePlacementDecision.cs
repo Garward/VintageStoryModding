@@ -23,16 +23,19 @@ namespace VintageKinematics.Storage.Topology
         public string WarehouseId { get; }
         public StorageTopologyPosition? Controller { get; }
         public bool ControllerOnline { get; }
+        public bool ControllerPresent { get; }
         public bool IsLinked => !string.IsNullOrWhiteSpace(WarehouseId) && Controller.HasValue;
 
         public StoragePlacementNeighbor(
             string warehouseId,
             StorageTopologyPosition? controller,
-            bool controllerOnline)
+            bool controllerOnline,
+            bool controllerPresent = false)
         {
             WarehouseId = warehouseId;
             Controller = controller;
             ControllerOnline = controllerOnline;
+            ControllerPresent = controllerPresent;
         }
     }
 

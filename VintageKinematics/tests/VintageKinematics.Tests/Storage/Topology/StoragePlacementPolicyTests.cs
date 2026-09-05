@@ -16,7 +16,47 @@ namespace VintageKinematics.Tests.Storage.Topology
         {
             StoragePlacementDecision result = StoragePlacementPolicy.Evaluate(
                 StoragePlacementRole.Controller,
-                new[] { Neighbor(First, FirstController, true) });
+                new[] { Neighbor(First, FirstController, true, true) });
+
+            Assert.Equal(StoragePlacementIssue.ControllerTouchesStorage, result.Issue);
+        }
+
+        [Fact]
+        public void ControllerCannotReplaceAnExistingControllerThatIsOffline()
+        {
+            StoragePlacementDecision result = StoragePlacementPolicy.Evaluate(
+                StoragePlacementRole.Controller,
+                new[] { Neighbor(First, FirstController, false, true) });
+
+            Assert.Equal(StoragePlacementIssue.ControllerTouchesStorage, result.Issue);
+        }
+
+        [Fact]
+        public void ControllerCanReattachToOneOrphanedWarehouse()
+        {
+            StoragePlacementDecision result = StoragePlacementPolicy.Evaluate(
+                StoragePlacementRole.Controller,
+                new[]
+                {
+                    Neighbor(First, FirstController, false),
+                    Neighbor(First, FirstController, false)
+                });
+
+            Assert.True(result.Allowed);
+            Assert.Equal(First, result.WarehouseId);
+            Assert.Equal(FirstController, result.Controller);
+        }
+
+        [Fact]
+        public void ControllerCannotJoinDifferentOrphanedWarehouses()
+        {
+            StoragePlacementDecision result = StoragePlacementPolicy.Evaluate(
+                StoragePlacementRole.Controller,
+                new[]
+                {
+                    Neighbor(First, FirstController, false),
+                    Neighbor(Second, SecondController, false)
+                });
 
             Assert.Equal(StoragePlacementIssue.ControllerTouchesStorage, result.Issue);
         }
@@ -74,9 +114,10 @@ namespace VintageKinematics.Tests.Storage.Topology
         private static StoragePlacementNeighbor Neighbor(
             string warehouseId,
             StorageTopologyPosition controller,
-            bool online)
+            bool online,
+            bool present = false)
         {
-            return new StoragePlacementNeighbor(warehouseId, controller, online);
+            return new StoragePlacementNeighbor(warehouseId, controller, online, present);
         }
     }
 }

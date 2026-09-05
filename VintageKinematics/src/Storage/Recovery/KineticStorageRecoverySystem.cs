@@ -39,13 +39,23 @@ namespace VintageKinematics.Storage.Recovery
             registryReadyCallbacks.Add(callback);
         }
 
-        public bool ApplyExplicitRecovery(StorageRecoveryRecord record)
+        public bool ApplyExplicitRecovery(
+            StorageRecoveryRecord record,
+            bool allowControllerRelocation = false)
         {
             if (!IsLoaded || record == null) return false;
-            Registry.ValidateExplicitRecovery(record);
-            ControllerRegistry.ValidateExplicitRecovery(record);
-            Registry.ReplaceAfterExplicitRecovery(record);
-            ControllerRegistry.ReplaceAfterExplicitRecovery(record);
+            if (allowControllerRelocation
+                && Registry.TryGet(record.WarehouseId, out StorageRecoveryRecord recoveryBefore)
+                && ControllerRegistry.TryGet(record.WarehouseId, out StorageRecoveryRecord controllerBefore)
+                && recoveryBefore.Controller != controllerBefore.Controller)
+            {
+                throw new InvalidOperationException(
+                    "Explicit recovery cannot relocate mirrors that disagree on the prior controller.");
+            }
+            Registry.ValidateExplicitRecovery(record, allowControllerRelocation);
+            ControllerRegistry.ValidateExplicitRecovery(record, allowControllerRelocation);
+            Registry.ReplaceAfterExplicitRecovery(record, allowControllerRelocation);
+            ControllerRegistry.ReplaceAfterExplicitRecovery(record, allowControllerRelocation);
             LoadIssues = LoadIssues
                 .Where(issue => !string.Equals(
                     issue.WarehouseId,
@@ -53,6 +63,7 @@ namespace VintageKinematics.Storage.Recovery
                     StringComparison.Ordinal))
                 .ToArray();
             canPersist = LoadIssues.Count == 0;
+            if (canPersist) PersistDirtyMirrors();
             return true;
         }
 
@@ -62,6 +73,7 @@ namespace VintageKinematics.Storage.Recovery
             ControllerRegistry.ValidateUpsert(record);
             Registry.Upsert(record);
             ControllerRegistry.Upsert(record);
+            PersistDirtyMirrors();
         }
 
         public void TombstoneMirrors(string warehouseId, long revision)
@@ -83,6 +95,61 @@ namespace VintageKinematics.Storage.Recovery
             ControllerRegistry.ValidateUpsert(tombstone);
             Registry.Upsert(tombstone);
             ControllerRegistry.Upsert(tombstone);
+            PersistDirtyMirrors();
+        }
+
+        public StorageRecoveryRecord MoveControllerMirrors(
+            string warehouseId,
+            StorageControllerLocation expectedController,
+            StorageControllerLocation newController)
+        {
+            if (!IsLoaded || !CanPersist)
+            {
+                throw new InvalidOperationException(
+                    "Warehouse recovery mirrors are unavailable for controller relocation.");
+            }
+            if (!Registry.TryGet(warehouseId, out StorageRecoveryRecord recovery)
+                || !ControllerRegistry.TryGet(warehouseId, out StorageRecoveryRecord controller)
+                || !recovery.IsEquivalentTo(controller)
+                || recovery.Controller != expectedController)
+            {
+                throw new InvalidOperationException(
+                    "Both recovery mirrors must agree at the old controller location before relocation.");
+            }
+
+            StorageRecoveryRecord movedRecovery = Registry.MoveController(
+                warehouseId,
+                expectedController,
+                newController);
+            StorageRecoveryRecord movedController = ControllerRegistry.MoveController(
+                warehouseId,
+                expectedController,
+                newController);
+            if (!movedRecovery.IsEquivalentTo(movedController))
+            {
+                throw new InvalidOperationException(
+                    "Warehouse recovery mirrors diverged during controller relocation.");
+            }
+            missingControllers.Remove(EvidenceKey(recovery));
+            reportedMissingControllers.Remove(EvidenceKey(recovery));
+            PersistDirtyMirrors();
+            return movedRecovery;
+        }
+
+        private void PersistDirtyMirrors()
+        {
+            // StoreData must be updated when the transaction commits. Waiting only for the
+            // GameWorldSave callback can leave a block entity header newer than both full
+            // snapshots when the server closes immediately after a transfer.
+            if (!IsLoaded || store == null) return;
+            if (!CanPersist)
+            {
+                throw new InvalidOperationException(
+                    "Warehouse recovery mirrors cannot be persisted while recovery load issues exist.");
+            }
+
+            controllerPersistence.Save(store, ControllerRegistry);
+            recoveryPersistence.Save(store, Registry);
         }
 
         public override void StartServerSide(ICoreServerAPI api)
@@ -150,8 +217,7 @@ namespace VintageKinematics.Storage.Recovery
 
             try
             {
-                controllerPersistence.Save(store, ControllerRegistry);
-                recoveryPersistence.Save(store, Registry);
+                PersistDirtyMirrors();
             }
             catch (Exception exception)
             {

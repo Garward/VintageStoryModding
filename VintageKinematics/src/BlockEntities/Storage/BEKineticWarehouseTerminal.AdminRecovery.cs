@@ -10,8 +10,16 @@ namespace VintageKinematics.BlockEntities.Storage
     {
         public bool CanConfirmEmptyRecovery =>
             Api?.Side == Vintagestory.API.Common.EnumAppSide.Server
-            && LastReconciliation?.Outcome == StorageReconciliationOutcome.NoValidCopy
-            && SyncedStoredItems == 0;
+            && LastReconciliation?.RequiresAdminRecovery == true
+            && !HasRecoverableItemCopy(LastReconciliation.BlockEntityCopy)
+            && !HasRecoverableItemCopy(LastReconciliation.RecoveryCopy);
+
+        private static bool HasRecoverableItemCopy(StorageSnapshotCopy copy)
+        {
+            return copy?.State == StorageSnapshotCopyState.Valid
+                && copy.Record != null
+                && !copy.Record.IsTombstone;
+        }
 
         /// <summary>
         /// Converges both copies on a newly numbered revision. Callers must enforce admin access.
@@ -71,9 +79,12 @@ namespace VintageKinematics.BlockEntities.Storage
                 selected.Record.SnapshotBytes);
             KineticStorageRecoverySystem recoverySystem =
                 Api.ModLoader.GetModSystem<KineticStorageRecoverySystem>();
-            if (recoverySystem?.ApplyExplicitRecovery(converged) != true)
+            if (!TryApplyExplicitRecovery(
+                recoverySystem,
+                converged,
+                allowControllerRelocation: false,
+                out failureCode))
             {
-                failureCode = "storage-recovery-commit-rejected";
                 return false;
             }
 
@@ -128,9 +139,12 @@ namespace VintageKinematics.BlockEntities.Storage
                 snapshot);
             KineticStorageRecoverySystem recoverySystem =
                 Api.ModLoader.GetModSystem<KineticStorageRecoverySystem>();
-            if (recoverySystem?.ApplyExplicitRecovery(converged) != true)
+            if (!TryApplyExplicitRecovery(
+                recoverySystem,
+                converged,
+                allowControllerRelocation: true,
+                out failureCode))
             {
-                failureCode = "storage-recovery-commit-rejected";
                 return false;
             }
 
@@ -147,6 +161,36 @@ namespace VintageKinematics.BlockEntities.Storage
             MarkDirty();
             RequestStructureRebuild(StorageChangeReason.Recovery);
             return true;
+        }
+
+        private bool TryApplyExplicitRecovery(
+            KineticStorageRecoverySystem recoverySystem,
+            StorageRecoveryRecord record,
+            bool allowControllerRelocation,
+            out string failureCode)
+        {
+            try
+            {
+                if (recoverySystem?.ApplyExplicitRecovery(
+                    record,
+                    allowControllerRelocation) == true)
+                {
+                    failureCode = null;
+                    return true;
+                }
+                failureCode = "storage-recovery-commit-rejected";
+                return false;
+            }
+            catch (Exception exception)
+            {
+                Api.World.Logger.Error(
+                    "[VintageKinematics] Explicit recovery failed for warehouse {0} at {1}: {2}",
+                    WarehouseId,
+                    Pos,
+                    exception);
+                failureCode = "storage-recovery-commit-failed";
+                return false;
+            }
         }
 
         private long MaxRetainedRevision()

@@ -28,6 +28,6 @@
     "vintagekinematics:storage-filter-fuzzy": "Fuzzy",
     "vintagekinematics:storage-filter-exact": "Exact",
     "blockdesc-kineticwarehouseterminal-*": "Searchable terminal and authoritative index for one connected Kinetic Warehouse.",
-    "blockdesc-kineticwarehousecell-wood": "Adds 1,024 items of shared capacity to a face-connected Kinetic Warehouse.",
-    "blockdesc-kineticwarehousecell-reinforced": "Adds 4,096 items of compact shared capacity to a face-connected Kinetic Warehouse."
+    "blockdesc-kineticwarehousecell-wood": "Adds space to a connected Kinetic Warehouse",
+    "blockdesc-kineticwarehousecell-reinforced": "Adds space to a connected Kinetic Warehouse"
 }

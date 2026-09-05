@@ -27,6 +27,21 @@ namespace VintageKinematics.BlockEntities.Storage
             IPlayer byPlayer)
         {
             long stored = itemIndex?.StoredItems ?? 0;
+            StorageTopologyPosition target = WorldStorageTopologySource.FromBlockPos(pos);
+            StorageTopologyPosition controller = WorldStorageTopologySource.FromBlockPos(Pos);
+            if (target == controller
+                && (kind == StorageRemovalKind.PlayerBreak
+                    || kind == StorageRemovalKind.WrenchPickup))
+            {
+                return HasSafeRelocationEvidence()
+                    ? StorageRemovalCheck.Allow(
+                        pos,
+                        stored,
+                        VerifiedItemCapacity,
+                        System.Math.Max(0, VerifiedItemCapacity - CapacityContribution))
+                    : DenyUnknown(pos, stored);
+            }
+
             if (!StorageRemovalPolicy.CanEvaluateCapacity(
                 StructureState,
                 IsItemIndexReady,
@@ -36,8 +51,6 @@ namespace VintageKinematics.BlockEntities.Storage
                 return DenyUnknown(pos, stored);
             }
 
-            StorageTopologyPosition target = WorldStorageTopologySource.FromBlockPos(pos);
-            StorageTopologyPosition controller = WorldStorageTopologySource.FromBlockPos(Pos);
             if (target == controller)
             {
                 return stored == 0
@@ -77,6 +90,28 @@ namespace VintageKinematics.BlockEntities.Storage
                     "vintagekinematics:storage-removal-would-overflow");
         }
 
+        private bool HasSafeRelocationEvidence()
+        {
+            if (Api?.Side != EnumAppSide.Server
+                || activeRecoveryRecord == null)
+            {
+                return false;
+            }
+
+            KineticStorageRecoverySystem recoverySystem =
+                Api.ModLoader.GetModSystem<KineticStorageRecoverySystem>();
+            return recoverySystem?.IsLoaded == true
+                && recoverySystem.CanPersist
+                && recoverySystem.Registry.TryGet(
+                    WarehouseId,
+                    out StorageRecoveryRecord recovery)
+                && recoverySystem.ControllerRegistry.TryGet(
+                    WarehouseId,
+                    out StorageRecoveryRecord controller)
+                && recovery.IsEquivalentTo(activeRecoveryRecord)
+                && controller.IsEquivalentTo(activeRecoveryRecord);
+        }
+
         private StorageRemovalCheck DenyUnknown(BlockPos pos, long stored)
         {
             return StorageRemovalCheck.Deny(
@@ -100,7 +135,10 @@ namespace VintageKinematics.BlockEntities.Storage
             if (Api?.Side != EnumAppSide.Server
                 || activeRecoveryRecord == null
                 || itemIndex == null
-                || itemIndex.StoredItems != 0)
+                || itemIndex.StoredItems != 0
+                || knownMembers.Any(member =>
+                    member != WorldStorageTopologySource.FromBlockPos(Pos))
+                || HasAttachedStorageMembers())
             {
                 return;
             }
@@ -116,6 +154,23 @@ namespace VintageKinematics.BlockEntities.Storage
             recoverySystem.TombstoneMirrors(
                 WarehouseId,
                 checked(activeRecoveryRecord.Revision + 1));
+        }
+
+        private bool HasAttachedStorageMembers()
+        {
+            foreach (BlockFacing face in BlockFacing.ALLFACES)
+            {
+                if (Api.World.BlockAccessor.GetBlockEntity(Pos.AddCopy(face))
+                        is IVKStorageStructureMember member
+                    && !member.IsController
+                    && member.WarehouseId == WarehouseId
+                    && member.ControllerPos != null
+                    && member.ControllerPos.Equals(Pos))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

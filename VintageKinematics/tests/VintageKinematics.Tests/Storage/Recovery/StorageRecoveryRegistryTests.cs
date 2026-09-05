@@ -140,6 +140,44 @@ namespace VintageKinematics.Tests.Storage.Recovery
         }
 
         [Fact]
+        public void ConfirmedExplicitRecoveryCanRelocateAStaleTombstone()
+        {
+            StorageRecoveryRegistry registry = new StorageRecoveryRegistry();
+            registry.Upsert(CreateRecord(FirstId, 1, 10));
+            registry.Tombstone(FirstId, 2);
+            var physicalController = new StorageControllerLocation(13, 34, -56, 2);
+            StorageRecoveryRecord reset = StorageRecoveryRecord.Create(
+                FirstId,
+                physicalController,
+                3,
+                new byte[] { 30 });
+
+            registry.ReplaceAfterExplicitRecovery(
+                reset,
+                allowControllerRelocation: true);
+
+            Assert.True(registry.TryGet(FirstId, out StorageRecoveryRecord stored));
+            Assert.Equal(physicalController, stored.Controller);
+            Assert.False(stored.IsTombstone);
+            Assert.Equal(3, stored.Revision);
+        }
+
+        [Fact]
+        public void ExplicitRecoveryCannotRelocateWithoutSpecificAuthorization()
+        {
+            StorageRecoveryRegistry registry = new StorageRecoveryRegistry();
+            registry.Upsert(CreateRecord(FirstId, 1, 10));
+            StorageRecoveryRecord moved = StorageRecoveryRecord.Create(
+                FirstId,
+                new StorageControllerLocation(13, 34, -56, 2),
+                2,
+                new byte[] { 20 });
+
+            Assert.Throws<InvalidOperationException>(() =>
+                registry.ReplaceAfterExplicitRecovery(moved));
+        }
+
+        [Fact]
         public void ControllerMove_IsRejected()
         {
             StorageRecoveryRegistry registry = new StorageRecoveryRegistry();
@@ -151,6 +189,36 @@ namespace VintageKinematics.Tests.Storage.Recovery
                 new byte[] { 20 });
 
             Assert.Throws<InvalidOperationException>(() => registry.Upsert(moved));
+        }
+
+        [Fact]
+        public void ExplicitControllerMove_PreservesSnapshotAndAdvancesRevision()
+        {
+            StorageRecoveryRegistry registry = new StorageRecoveryRegistry();
+            StorageRecoveryRecord original = CreateRecord(FirstId, 1, 10);
+            registry.Upsert(original);
+            var movedLocation = new StorageControllerLocation(13, 34, -56, 2);
+
+            StorageRecoveryRecord moved = registry.MoveController(
+                FirstId,
+                Controller,
+                movedLocation);
+
+            Assert.Equal(movedLocation, moved.Controller);
+            Assert.Equal(2, moved.Revision);
+            Assert.Equal(original.SnapshotBytes, moved.SnapshotBytes);
+        }
+
+        [Fact]
+        public void ExplicitControllerMove_RequiresExpectedOldLocation()
+        {
+            StorageRecoveryRegistry registry = new StorageRecoveryRegistry();
+            registry.Upsert(CreateRecord(FirstId, 1, 10));
+
+            Assert.Throws<InvalidOperationException>(() => registry.MoveController(
+                FirstId,
+                new StorageControllerLocation(99, 34, -56, 2),
+                new StorageControllerLocation(13, 34, -56, 2)));
         }
 
         [Fact]

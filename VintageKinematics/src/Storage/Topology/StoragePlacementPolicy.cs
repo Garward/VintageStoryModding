@@ -15,9 +15,42 @@ namespace VintageKinematics.Storage.Topology
             neighbors ??= Array.Empty<StoragePlacementNeighbor>();
             if (role == StoragePlacementRole.Controller)
             {
-                return neighbors.Count == 0
-                    ? new StoragePlacementDecision(StoragePlacementIssue.None)
-                    : new StoragePlacementDecision(StoragePlacementIssue.ControllerTouchesStorage);
+                if (neighbors.Count == 0)
+                {
+                    return new StoragePlacementDecision(StoragePlacementIssue.None);
+                }
+
+                string orphanWarehouseId = null;
+                StorageTopologyPosition? orphanController = null;
+                foreach (StoragePlacementNeighbor neighbor in neighbors)
+                {
+                    if (!neighbor.IsLinked || neighbor.ControllerPresent)
+                    {
+                        return new StoragePlacementDecision(
+                            StoragePlacementIssue.ControllerTouchesStorage);
+                    }
+                    if (orphanWarehouseId == null)
+                    {
+                        orphanWarehouseId = neighbor.WarehouseId;
+                        orphanController = neighbor.Controller;
+                    }
+                    else if (!string.Equals(
+                            orphanWarehouseId,
+                            neighbor.WarehouseId,
+                            StringComparison.Ordinal)
+                        || orphanController != neighbor.Controller)
+                    {
+                        return new StoragePlacementDecision(
+                            StoragePlacementIssue.ControllerTouchesStorage);
+                    }
+                }
+
+                // A single consistent set of cells whose old controller is absent is the
+                // physical proof required to reattach a moved terminal to that warehouse.
+                return new StoragePlacementDecision(
+                    StoragePlacementIssue.None,
+                    orphanWarehouseId,
+                    orphanController);
             }
             if (neighbors.Count == 0)
             {

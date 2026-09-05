@@ -51,6 +51,13 @@ namespace VintageKinematics.BlockEntities.Storage
             LastReconciliation = decision.Reconciliation;
             if (!decision.CanOpen)
             {
+                Api.World.Logger.Warning(
+                    "[VintageKinematics] Warehouse {0} at {1} is locked for recovery: outcome={2}, terminal metadata revision={3}, world backup revision={4}.",
+                    WarehouseId,
+                    Pos,
+                    decision.Reconciliation.Outcome,
+                    decision.Reconciliation.BlockEntityCopy.Header?.Revision ?? 0,
+                    decision.Reconciliation.RecoveryCopy.Record?.Revision ?? 0);
                 EnterRecoveryRequired(decision.Reconciliation);
                 return;
             }

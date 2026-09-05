@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 using VintageKinematics.Api.Storage;
+using VintageKinematics.Blocks;
 using VintageKinematics.Storage.Recovery;
 using VintageKinematics.Storage.Topology;
 
@@ -11,11 +14,16 @@ namespace VintageKinematics.BlockEntities.Storage
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
+            BlockPos persistedController = ControllerPos?.Copy();
             EnsureIdentity(allowGenerate: false);
             if (api.Side == EnumAppSide.Server && !string.IsNullOrWhiteSpace(WarehouseId))
             {
                 api.ModLoader.GetModSystem<StorageTopologyRescanSystem>()?.Register(this);
-                RequestRecoveryInitialization(isNewController: false);
+                RequestRecoveryInitialization(
+                    isNewController: false,
+                    IsDifferentPosition(persistedController, Pos)
+                        ? persistedController
+                        : null);
                 RequestStructureRebuild(StorageChangeReason.Loaded);
             }
         }
@@ -42,11 +50,50 @@ namespace VintageKinematics.BlockEntities.Storage
             {
                 lock (persistenceSync)
                 {
+                    StoragePlacementDecision placement = WorldStoragePlacementPolicy.Evaluate(
+                        Api.World,
+                        Pos,
+                        StoragePlacementRole.Controller);
+                    bool hasAdjacentOrphan = placement.Allowed
+                        && !string.IsNullOrWhiteSpace(placement.WarehouseId)
+                        && placement.Controller.HasValue;
+                    string portableWarehouseId = null;
+                    BlockPos portableController = null;
+                    bool portableHasMembers = false;
+                    bool hasPortableIdentity = !hasAdjacentOrphan
+                        && BlockKineticWarehouseMember.TryReadPortableControllerIdentity(
+                            byItemStack,
+                            out portableWarehouseId,
+                            out portableController,
+                            out portableHasMembers)
+                        && (!portableHasMembers
+                            || !BlockKineticWarehouseMember.HasOrphanedWarehouseMembers(
+                                Api.World,
+                                portableWarehouseId,
+                                portableController));
+
                     // Fresh identity and cleared reused-BE state are one persisted transition.
                     ResetForFreshPlacement();
-                    EnsureIdentity(allowGenerate: true);
+                    BlockPos previousController = null;
+                    if (hasAdjacentOrphan)
+                    {
+                        previousController = WorldStorageTopologySource.ToBlockPos(
+                            placement.Controller.Value);
+                        SetLink(placement.WarehouseId, Pos);
+                    }
+                    else if (hasPortableIdentity)
+                    {
+                        previousController = portableController;
+                        SetLink(portableWarehouseId, Pos);
+                    }
+                    else
+                    {
+                        EnsureIdentity(allowGenerate: true);
+                    }
                     Api.ModLoader.GetModSystem<StorageTopologyRescanSystem>()?.Register(this);
-                    RequestRecoveryInitialization(isNewController: true);
+                    RequestRecoveryInitialization(
+                        isNewController: previousController == null,
+                        previousController);
                     RequestStructureRebuild(StorageChangeReason.StructureChanged);
                 }
             }
@@ -86,7 +133,9 @@ namespace VintageKinematics.BlockEntities.Storage
             syncedPowerAvailable = false;
         }
 
-        private void RequestRecoveryInitialization(bool isNewController)
+        private void RequestRecoveryInitialization(
+            bool isNewController,
+            BlockPos previousController = null)
         {
             if (recoveryInitializationRequested || Api?.Side != EnumAppSide.Server) return;
             recoveryInitializationRequested = true;
@@ -107,8 +156,81 @@ namespace VintageKinematics.BlockEntities.Storage
                 {
                     return;
                 }
+                if (previousController != null)
+                {
+                    try
+                    {
+                        recoverySystem.MoveControllerMirrors(
+                            WarehouseId,
+                            ToControllerLocation(previousController),
+                            PhysicalLocation());
+                        RelinkMovedWarehouse(previousController);
+                    }
+                    catch (Exception exception)
+                    {
+                        Api.World.Logger.Error(
+                            "[VintageKinematics] Could not reattach moved warehouse {0} from {1} to {2}: {3}",
+                            WarehouseId,
+                            previousController,
+                            Pos,
+                            exception);
+                        EnterRecoveryRequired(null);
+                        return;
+                    }
+                }
                 InitializeItemRecovery(recoverySystem, isNewController);
             });
+        }
+
+        private void RelinkMovedWarehouse(BlockPos previousController)
+        {
+            var visited = new HashSet<StorageTopologyPosition>();
+            var open = new Queue<BlockPos>();
+            foreach (BlockFacing face in BlockFacing.ALLFACES)
+            {
+                open.Enqueue(Pos.AddCopy(face));
+            }
+
+            int relinked = 0;
+            while (open.Count > 0)
+            {
+                BlockPos position = open.Dequeue();
+                StorageTopologyPosition topologyPosition =
+                    WorldStorageTopologySource.FromBlockPos(position);
+                if (!visited.Add(topologyPosition)) continue;
+                if (Api.World.BlockAccessor.GetBlockEntity(position)
+                    is not BEKineticStorageMember member
+                    || member.IsController
+                    || !member.RelinkController(WarehouseId, previousController, Pos))
+                {
+                    continue;
+                }
+
+                relinked++;
+                if (relinked > StorageTopologyLimits.DefaultMaxNonControllerMembers)
+                {
+                    throw new InvalidOperationException(
+                        "Moved warehouse exceeds the supported member limit.");
+                }
+                foreach (BlockFacing face in BlockFacing.ALLFACES)
+                {
+                    open.Enqueue(position.AddCopy(face));
+                }
+            }
+        }
+
+        private static StorageControllerLocation ToControllerLocation(BlockPos position)
+        {
+            return new StorageControllerLocation(
+                position.X,
+                position.InternalY,
+                position.Z,
+                position.dimension);
+        }
+
+        internal static bool IsDifferentPosition(BlockPos first, BlockPos second)
+        {
+            return first != null && second != null && !first.Equals(second);
         }
 
         public void RequestStructureRebuild(StorageChangeReason reason)
