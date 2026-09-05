@@ -173,12 +173,20 @@ The five defensive axes remain distinct:
 The server resolves defenses in this order:
 
 ```text
-eligible hit and Evasion check
+active Evasive Step invulnerability
+→ eligible hit and Evasion check
 → Armor or matching Elemental Resistance
 → other reduction and suppression layers
 → Magic Shield absorption
+→ Evasive Step lethal-hit check
 → Health damage
 ```
+
+Late-game encounter populations target an approximately even split between
+physical and elemental outgoing damage. This is an ecosystem budget rather than
+a requirement that every creature deal both types. Physical hits keep Armor
+relevant, while elemental pressure makes capped resistances a normal part of a
+finished build.
 
 Armor uses a rating rather than flat subtraction or a permanent percentage:
 
@@ -192,27 +200,61 @@ balance seeds use `100` total level-one Armor across a complete armor-focused
 Common set and `150` level-one attack pressure. Both scale at 8% per level, so a
 maintained set mitigates 40% of eligible physical damage. Tripling the maintained
 set's rating through bases, affixes, talents, and temporary skills reaches about
-67% mitigation. The existing 90% hard layer cap is never exceeded. These are
-tuning seeds, not a new architecture: balance sweeps may adjust the two base
-constants while preserving rating-based mitigation and the maintained/specialist
-targets. Around 8% rating growth per level makes comparable level-ten armor
-about twice the rating of level-one armor, so the coordinated starter set is
-quickly replaceable.
+67% mitigation. Ninety percent is the practical Armor soft ceiling rather than
+a dead-stat cutoff. The same rating curve continues beyond it with extreme
+diminishing returns: 90% requires Armor equal to roughly 9 times level-scaled
+attack pressure, 95% requires 19 times, 97% requires about 32 times, and the
+absolute 99% physical-mitigation hard cap requires about 99 times. Excess Armor
+therefore remains useful to exceptional Armor/leech builds without creating
+literal physical immunity. A completed build may sustain-tank appropriate
+ordinary pressure while it maintains leech, but interrupted leech, control,
+burst windows, exposure, and authored boss mechanics remain valid threats.
 
-Elemental resistance remains separate and observes the existing 50% ordinary
-cap unless an explicit maximum-resistance modifier changes it. Health, Magic
-Shield, Armor, Evasion, and resistance compete for base implicits, affixes, and
-talent investment. Specialization is created entirely through opportunity cost:
-there are no class locks or explicit penalties for hybrid defenses.
+These are tuning seeds, not a new architecture: balance sweeps may adjust the
+two base constants while preserving rating-based mitigation and the maintained,
+specialist, soft-ceiling, and hard-cap targets. Around 8% rating growth per level
+makes comparable level-ten armor about twice the rating of level-one armor, so
+the coordinated starter set is quickly replaceable.
 
-Persistent Evasion is initially capped at 60%. Temporary class skills may raise
-the cap to 75%; a named guaranteed evade, Reflex, or Evasive Step is a separate
-cooldown-governed response rather than a hidden chance above the cap. The
-server owns hit eligibility and Evasion outcomes. The recovered late-game
-stress seeds remain ceilings rather than automatic grants: a committed Health
-build may exceed 10,000 Health and a committed largely unarmored Shield build
-may exceed 20,000 Magic Shield. The defensive simulator must validate actual
-survival windows before those ceilings become content targets.
+Elemental resistance remains separate and has a 75% hard cap for every ordinary
+element. During progression, resistance affixes compete with other upgrades and
+create gearing pressure. By late game, however, good current-level gear is
+expected to let a maintained build cap every elemental resistance while also
+maximizing one primary defensive style: Health, Magic Shield, Armor, or Evasion.
+Resistance penetration and exposure reduce effective resistance rather than
+silently raising enemy damage, so capped resistance does not make elemental
+threats irrelevant. Base implicits, affixes, talents, and the player's two-class
+synergy determine the primary style; there are no class locks or explicit
+penalties for hybrid defenses.
+
+Evasion prevents eligible direct hits regardless of whether their damage is
+physical or elemental and has a 90% hard cap. Accuracy may suppress effective
+Evasion. Damage over time, persistent hazards, and explicitly unavoidable
+mechanics do not roll Evasion. A highly specialized Evasion character therefore
+avoids most direct pressure but still feels the full force of a physical hit
+that connects when the character has negligible Armor. Balance validation must
+measure connected-hit lethality and clustered-hit failure cases, not only
+average damage avoided.
+
+Dexterity-primary characters have Reflex and Evasive Step from the beginning of
+progression. Evasive Step is an always-active passive with no hotkey and no
+combat-hotbar slot. When ready, it prevents an otherwise lethal hostile hit after
+mitigation and Magic Shield have determined the damage that would reach Health,
+moves the character away from the attacker, grants a brief invulnerability
+window, and then enters cooldown. The invulnerability check precedes all other
+defenses on subsequent hits. Initial runtime seeds remain a 6-second cooldown,
+0.38-second invulnerability window, and 0.28 escape impulse. Quick Reflex reduces
+the cooldown by 10%, and Untouchable Moment adds 0.05 seconds of invulnerability.
+Losing Dexterity as the primary attribute disables Reflex and Evasive Step;
+ordinary secondary-stat investment does not disable them while Dexterity remains
+highest. Later passives may add charges or alter recovery and escape behavior,
+but they are not required for an early Dexterity build to function.
+
+The recovered late-game stress seeds remain ceilings rather than automatic
+grants: a committed Health build may exceed 10,000 Health and a committed largely
+unarmored Shield build may exceed 20,000 Magic Shield. The defensive simulator
+must validate actual survival windows before those ceilings become content
+targets.
 
 ## 8. Starter equipment
 
@@ -339,8 +381,15 @@ The implementation must prove:
   insufficient capacity, and persistence failure;
 - correct Weapon Power order and representative level 1, 20, 40, 60, 80, and
   100 outputs;
-- Armor rating growth, caps, old-item falloff, and interaction with the other
-  four defensive axes;
+- Armor rating growth, its 90% soft ceiling and 99% hard cap, old-item falloff,
+  leech stability, and interaction with the other defensive axes;
+- 75% elemental-resistance caps, late-game all-element cap feasibility, and an
+  approximately even physical/elemental encounter-population damage budget;
+- 90% Evasion hard-cap behavior, accuracy and ineligible-damage counters, and
+  connected-hit lethality for low-Armor Evasion specialists;
+- Evasive Step lethal activation after mitigation and Magic Shield, nonlethal
+  hits, cooldown, displacement, subsequent hits during invulnerability, talent
+  modifiers, and Dexterity-primary activation changes;
 - authoritative equipment effects and removal without stale modifiers;
 - affix compatibility, tier ceilings, exclusions, and exact-roll persistence;
 - missing base, rarity, affix, chassis, and addon recovery behavior;

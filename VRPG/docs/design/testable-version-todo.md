@@ -57,6 +57,15 @@ an explicitly identified immediate coding target.
   deterministic generator boundary, required-level Weapon Power, level-scaled
   Armor, and the Health/Magic Shield/Armor/Evasion/Elemental Resistance equipment
   effects defined by the gear-foundation specification.
+- [ ] Implement and balance the finalized defensive targets: 75% hard-capped
+  elemental resistances attainable across all elements on good late-game gear;
+  rating-based Armor with a 90% practical soft ceiling and 99% hard cap; and
+  eligible-hit Evasion with a 90% hard cap, accuracy counters, and explicit
+  ineligible damage categories.
+- [ ] Correct Evasive Step to resolve an otherwise lethal hostile hit only after
+  mitigation and Magic Shield, then apply displacement and server-owned
+  invulnerability. Preserve its Dexterity-primary/no-hotkey contract and cover
+  cooldown, follow-up hits, talent modifiers, reconnect, and primary-stat changes.
 - [ ] Add complete visually coordinated level-one Common starter sets for every
   selectable starter class. Vintage Story collectibles are visual chassis only;
   starter identity, values, ownership, and persistence are VRPG-owned.
@@ -434,7 +443,8 @@ collision-policy consumers remain.
 ### Slice A — close runtime and item-ownership gaps
 
 1. Implement the real VRPG gear schema, base registry, generation boundary,
-   Weapon Power, defensive scaling, equipment effects, and complete starter sets.
+   Weapon Power, finalized defensive caps and ordering, Evasive Step regression
+   coverage, equipment effects, and complete starter sets.
 2. Live-verify character/class/movement authority and remove the remaining hidden
    Survival sources required by the Character replacement.
 3. Finish engine item ingress, bounded materialization, equipment-entry loadouts,
