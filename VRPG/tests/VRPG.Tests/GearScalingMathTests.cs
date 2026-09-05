@@ -40,11 +40,25 @@ public sealed class GearScalingMathTests
     }
 
     [Fact]
+    public void WeaponPowerMultipliesSeparateMoreModifiersIndependently()
+    {
+        double result = GearScalingMath.ResolveWeaponPower(
+            levelBasePower: 100,
+            flatWeaponPower: 0,
+            additionalWeaponPowerPercent: 0,
+            moreWeaponPowerPercents: new[] { 10.0, 20.0 },
+            rarityScalar: 1.0);
+
+        Assert.Equal(132.0, result, 3);
+    }
+
+    [Fact]
     public void WeaponPowerCannotResolveToANegativeValue()
     {
         Assert.Equal(0.0, GearScalingMath.ResolveWeaponPower(-10, -20), 12);
         Assert.Equal(0.0, GearScalingMath.ResolveWeaponPower(100, 0, -100), 12);
         Assert.Equal(0.0, GearScalingMath.ResolveWeaponPower(100, 0, 0, -100), 12);
+        Assert.Equal(0.0, GearScalingMath.ResolveWeaponPower(100, 0, 0, new[] { -100.0, 20.0 }), 12);
     }
 
     [Fact]
@@ -128,6 +142,7 @@ public sealed class GearScalingMathTests
         Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.ResolveWeaponPower(1, 0, value));
         Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.ResolveWeaponPower(1, 0, 0, value));
         Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.ResolveWeaponPower(1, 0, 0, 0, value));
+        Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.ResolveWeaponPower(1, 0, 0, new[] { value }));
         Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.ArmorLevelBase(1, value));
         Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.AttackPressure(1, value));
         Assert.Throws<ArgumentOutOfRangeException>(() => GearScalingMath.ArmorMitigation(value, 1));

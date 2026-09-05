@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace VRPG.Inventory.Gear;
 
@@ -13,16 +14,36 @@ public static class GearScalingMath
         double flatWeaponPower = 0.0,
         double additionalWeaponPowerPercent = 0.0,
         double moreWeaponPowerPercent = 0.0,
+        double rarityScalar = 1.0) =>
+        ResolveWeaponPower(
+            levelBasePower,
+            flatWeaponPower,
+            additionalWeaponPowerPercent,
+            new[] { moreWeaponPowerPercent },
+            rarityScalar);
+
+    public static double ResolveWeaponPower(
+        double levelBasePower,
+        double flatWeaponPower,
+        double additionalWeaponPowerPercent,
+        IReadOnlyList<double> moreWeaponPowerPercents,
         double rarityScalar = 1.0)
     {
+        ArgumentNullException.ThrowIfNull(moreWeaponPowerPercents);
         double basePower = NonNegativeFinite(levelBasePower);
         double flatPower = Finite(flatWeaponPower);
         double additionalPercent = Finite(additionalWeaponPowerPercent);
-        double morePercent = Finite(moreWeaponPowerPercent);
         double rarity = PositiveFinite(rarityScalar);
         double additiveBase = Math.Max(0.0, basePower + flatPower);
         double additionalMultiplier = Math.Max(0.0, 1.0 + additionalPercent / 100.0);
-        double moreMultiplier = Math.Max(0.0, 1.0 + morePercent / 100.0);
+        double moreMultiplier = 1.0;
+        for (int index = 0; index < moreWeaponPowerPercents.Count; index++)
+        {
+            double morePercent = Finite(moreWeaponPowerPercents[index]);
+            double moreFactor = Math.Max(0.0, 1.0 + morePercent / 100.0);
+            moreMultiplier = Finite(moreMultiplier * moreFactor);
+        }
+
         return Finite(additiveBase * additionalMultiplier * moreMultiplier * rarity);
     }
 

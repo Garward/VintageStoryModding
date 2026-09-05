@@ -56,7 +56,7 @@ public static class ScalingMath
             levelBaseDamage,
             flatWeaponDamage,
             additionalWeaponDamagePercent,
-            moreWeaponDamagePercent,
+            new[] { (double)moreWeaponDamagePercent },
             rarityMultiplier);
     }
 
