@@ -72,7 +72,7 @@ public static class ItemStackCodec
         var references = new Dictionary<(PlayerItemAssetKind Kind, int Id), CanonicalCollectibleReference>();
         var canonicalIds = new Dictionary<(PlayerItemAssetKind Kind, string Code), int>();
         CanonicalizeEmbeddedStacks(canonicalAttributes, references, canonicalIds);
-        byte[] exactState = WriteAttributes(canonicalAttributes);
+        byte[] exactState = EncodeCanonicalState(canonicalAttributes);
         var payload = new CanonicalItemPayload(
             PlayerItemSchema.CurrentVersion,
             kind,
@@ -106,7 +106,7 @@ public static class ItemStackCodec
                 Clone(payload),
                 ItemStackMaterializationFailure.QuantityExceedsEngineLimit);
 
-        TreeAttribute attributes = ReadAttributes(payload.ExactState);
+        TreeAttribute attributes = DecodeCanonicalState(payload.ExactState);
         if (!TryRemapEmbeddedStacks(attributes, payload.EmbeddedReferences, resolver))
             return ItemStackMaterialization.Rejected(
                 Clone(payload),
@@ -133,19 +133,22 @@ public static class ItemStackCodec
             stack.Collectible.NutritionProps != null);
     }
 
-    private static byte[] WriteAttributes(ITreeAttribute attributes)
+    public static byte[] EncodeCanonicalState(ITreeAttribute attributes)
     {
+        ArgumentNullException.ThrowIfNull(attributes);
+        ITreeAttribute clone = attributes.Clone();
         using var stream = new MemoryStream();
         using var writer = new BinaryWriter(stream);
-        attributes.ToBytes(writer);
+        clone.ToBytes(writer);
         writer.Flush();
         return stream.ToArray();
     }
 
-    private static TreeAttribute ReadAttributes(byte[] bytes)
+    public static TreeAttribute DecodeCanonicalState(byte[] bytes)
     {
+        ArgumentNullException.ThrowIfNull(bytes);
         var attributes = new TreeAttribute();
-        using var stream = new MemoryStream(bytes, writable: false);
+        using var stream = new MemoryStream((byte[])bytes.Clone(), writable: false);
         using var reader = new BinaryReader(stream);
         attributes.FromBytes(reader);
         if (stream.Position != stream.Length)
