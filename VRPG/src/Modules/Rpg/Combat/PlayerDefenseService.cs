@@ -42,7 +42,13 @@ public sealed class PlayerDefenseService
             || !entity.Alive || source.Type == EnumDamageType.Heal || incomingDamage <= 0)
             return incomingDamage;
 
-        PlayerDefenseContext hit = context(entity, source);
+        if (source.Duration > TimeSpan.Zero)
+        {
+            PlayerDamageOverTimeContext.Capture(entity, source, context(entity, source));
+            return incomingDamage;
+        }
+
+        PlayerDefenseContext hit = PlayerDamageOverTimeContext.TickContext(source) ?? context(entity, source);
         if (!source.IgnoreInvFrames && !hit.IgnoreInvulnerability && evasiveStep.IsInvulnerable(entity)) return 0;
 
         EquippedGearStats gear = equipped(entity);

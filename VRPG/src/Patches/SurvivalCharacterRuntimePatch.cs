@@ -120,15 +120,16 @@ public static class SurvivalCharacterRuntimePatch
             return;
         }
 
-        if (ShouldSuppressDamage(damageSource.Type))
+        if (ShouldSuppressDamage(damageSource))
         {
             damage = 0f;
         }
     }
 
-    public static bool ShouldSuppressDamage(EnumDamageType damageType)
+    public static bool ShouldSuppressDamage(DamageSource source)
     {
-        return damageType == EnumDamageType.Hunger || damageType == EnumDamageType.Frost;
+        return source.Type == EnumDamageType.Hunger
+            || source.Type == EnumDamageType.Frost && source.Source is EnumDamageSource.Internal or EnumDamageSource.Weather;
     }
 
     public static bool GetBlendedPrefix(EntityStats __instance, string category, ref float __result)

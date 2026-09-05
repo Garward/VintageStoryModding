@@ -212,6 +212,7 @@ public sealed class PlayerDefenseServiceTests
         {
             float damage = 10;
             EntityDamageScalingPatch.OnEntityReceiveDamagePrefix(new HealthBehavior(f.Player.Entity), f.Source, ref damage);
+            EntityDamageScalingPatch.AfterDamageCallbacks(new HealthBehavior(f.Player.Entity), f.Source, ref damage);
             Assert.Equal(5, damage);
         }
         finally { EntityDamageScalingPatch.PlayerDamageResolver = null; }
@@ -231,14 +232,17 @@ public sealed class PlayerDefenseServiceTests
         {
             float damage = 10;
             EntityDamageScalingPatch.OnEntityReceiveDamagePrefix(new HealthBehavior(target), source, ref damage);
+            EntityDamageScalingPatch.AfterDamageCallbacks(new HealthBehavior(target), source, ref damage);
             Assert.Equal(10, damage);
             source.SourceEntity = new EntityPlayer();
             source.SourceEntity.WatchedAttributes.SetFloat("vrpgDamageMultiplier", 9);
             damage = 10;
             EntityDamageScalingPatch.OnEntityReceiveDamagePrefix(new HealthBehavior(target), source, ref damage);
+            EntityDamageScalingPatch.AfterDamageCallbacks(new HealthBehavior(target), source, ref damage);
             Assert.Equal(15, damage);
             damage = 10;
             EntityDamageScalingPatch.OnEntityReceiveDamagePrefix(new HealthBehavior(attacker), source, ref damage);
+            EntityDamageScalingPatch.AfterDamageCallbacks(new HealthBehavior(attacker), source, ref damage);
             Assert.Equal(30, damage);
             Assert.Equal(new[] { 20f, 30f }, observed);
         }
@@ -256,7 +260,7 @@ public sealed class PlayerDefenseServiceTests
     private sealed class HealthBehavior(Entity entity) : EntityBehavior(entity)
     { public override string PropertyName() => "health"; }
 
-    private sealed class Fixture
+    internal sealed class Fixture
     {
         public long Now;
         public bool Dexterity = true, Hostile = true;
@@ -264,7 +268,7 @@ public sealed class PlayerDefenseServiceTests
         public int Rolls, GearReads;
         public EquippedGearStats Gear = EquippedGearStats.Empty;
         public PlayerDefenseContext Context = new();
-        public readonly TestPlayer Player = new();
+        public readonly TestPlayer Player;
         public readonly EntityAgent Attacker = new();
         public readonly RpgPlayerStore Store = new();
         public readonly TalentTreeCatalog Talents = new();
@@ -274,12 +278,14 @@ public sealed class PlayerDefenseServiceTests
         public readonly PlayerDefenseService Defense;
         public RpgPlayerState State => Store.GetOrCreate(Player);
 
-        public Fixture(RpgModuleConfig? config = null)
+        public Fixture(RpgModuleConfig? config = null, EntityPlayer? entity = null)
         {
+            Player = new TestPlayer(entity ?? new EntityPlayer());
             config ??= new RpgModuleConfig();
             var world = Proxy.Create<IServerWorldAccessor>((name, _) => name switch
             {
                 "get_ElapsedMilliseconds" => Now,
+                "get_Side" => EnumAppSide.Server,
                 "PlayerByUid" => Player,
                 "get_AllOnlinePlayers" => Array.Empty<IPlayer>(),
                 _ => throw new NotSupportedException(name)
@@ -327,7 +333,7 @@ public sealed class PlayerDefenseServiceTests
         protected override object? Invoke(MethodInfo? method, object?[]? args) => call(method!.Name, args);
     }
 
-    private sealed class TestPlayer() : ServerPlayer(null!, new ServerWorldPlayerData { EntityPlayer = new EntityPlayer() })
+    internal sealed class TestPlayer(EntityPlayer entity) : ServerPlayer(null!, new ServerWorldPlayerData { EntityPlayer = entity })
     {
         public override string PlayerUID => "p";
         protected override void Init() { }

@@ -32,7 +32,8 @@ public sealed class CharacterRuntimeModeTests
     [InlineData(EnumDamageType.Heal, false)]
     public void OnlyInheritedSurvivalDamageIsSuppressed(EnumDamageType damageType, bool expected)
     {
-        Assert.Equal(expected, SurvivalCharacterRuntimePatch.ShouldSuppressDamage(damageType));
+        Assert.Equal(expected, SurvivalCharacterRuntimePatch.ShouldSuppressDamage(new DamageSource
+        { Type = damageType, Source = EnumDamageSource.Internal }));
     }
 
     [Theory]
