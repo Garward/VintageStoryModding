@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using VRPG.Data;
 using VRPG.Data.Definitions;
 using VRPG.Modules.Rpg.Combat;
@@ -33,6 +34,8 @@ public sealed class SkillCastingService
     private readonly Dictionary<string, Dictionary<string, long>> cooldownEnds = new Dictionary<string, Dictionary<string, long>>(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ActiveTimedCast> activeChannels = new Dictionary<string, ActiveTimedCast>(StringComparer.OrdinalIgnoreCase);
     private readonly List<ActiveTimedCast> activeSequences = new List<ActiveTimedCast>();
+    private readonly ConditionalWeakTable<Entity, EquippedGearStats> projectileGear = new();
+    public System.Func<IServerPlayer, EquippedGearStats>? EquippedStatsProvider { get; set; }
     private readonly Dictionary<string, HashSet<string>> empoweredSkills = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
     public SkillCastingService(
@@ -406,7 +409,8 @@ public sealed class SkillCastingService
         Entity sourceEntity,
         bool synchronizeVisualToCarrier)
     {
-        ApplyAreaDamage(player, skill, skillLevel, center, sourceEntity);
+        ApplyAreaDamage(player, skill, skillLevel, center, sourceEntity,
+            projectileGear.TryGetValue(sourceEntity, out var gear) ? gear : EquippedGearStats.Invalid);
         CombatVisualEventPacket burst = Event(CombatVisualKind.Burst, skill, center.Clone().Add(0, 0.12, 0));
         burst.SourceEntityId = player.Entity.EntityId;
         if (synchronizeVisualToCarrier)
@@ -437,7 +441,8 @@ public sealed class SkillCastingService
         long now,
         out string error)
     {
-        if (!ExecuteHit(player, skill, skillLevel, out error))
+        EquippedGearStats gear = EquippedStatsProvider?.Invoke(player) ?? EquippedGearStats.Empty;
+        if (!ExecuteHit(player, skill, skillLevel, out error, gear))
         {
             return false;
         }
@@ -450,6 +455,7 @@ public sealed class SkillCastingService
                 Slot = slot,
                 SkillCode = skill.Code,
                 SkillLevel = skillLevel,
+                Gear = gear,
                 RemainingHits = Math.Max(0, skill.Timing.HitCount - 1),
                 NextHitMilliseconds = now + IntervalMilliseconds(skill),
                 EndMilliseconds = long.MaxValue
@@ -463,6 +469,7 @@ public sealed class SkillCastingService
                 Slot = slot,
                 SkillCode = skill.Code,
                 SkillLevel = skillLevel,
+                Gear = gear,
                 RemainingHits = -1,
                 NextHitMilliseconds = now + IntervalMilliseconds(skill),
                 EndMilliseconds = now + (long)(skill.Timing.MaxDurationSeconds * 1000f)
@@ -473,29 +480,30 @@ public sealed class SkillCastingService
         return true;
     }
 
-    private bool ExecuteHit(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error)
+    private bool ExecuteHit(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error, EquippedGearStats? gear = null)
     {
+        gear ??= EquippedStatsProvider?.Invoke(player) ?? EquippedGearStats.Empty;
         error = "";
         switch (skill.Delivery.ToLowerInvariant())
         {
             case "raycast_aoe":
-                CastRaycastArea(player, skill, skillLevel);
+                CastRaycastArea(player, skill, skillLevel, gear);
                 return true;
             case "projectile_aoe":
-                return SpawnProjectile(player, skill, skillLevel, out error);
+                return SpawnProjectile(player, skill, skillLevel, out error, gear);
             case "targeted_drop":
-                return SpawnTargetedDrop(player, skill, skillLevel, out error);
+                return SpawnTargetedDrop(player, skill, skillLevel, out error, gear);
             case "circle":
-                CastCircle(player, skill, skillLevel);
+                CastCircle(player, skill, skillLevel, gear);
                 return true;
             case "melee_arc":
-                CastMelee(player, skill, skillLevel, MeleeShape.Arc);
+                CastMelee(player, skill, skillLevel, MeleeShape.Arc, gear);
                 return true;
             case "melee_line":
-                CastMelee(player, skill, skillLevel, MeleeShape.Line);
+                CastMelee(player, skill, skillLevel, MeleeShape.Line, gear);
                 return true;
             case "melee_single":
-                CastMelee(player, skill, skillLevel, MeleeShape.Single);
+                CastMelee(player, skill, skillLevel, MeleeShape.Single, gear);
                 return true;
             default:
                 error = "Unsupported delivery type: " + skill.Delivery;
@@ -525,7 +533,7 @@ public sealed class SkillCastingService
             long interval = IntervalMilliseconds(skill);
             while (cast.RemainingHits > 0 && now >= cast.NextHitMilliseconds)
             {
-                if (!ExecuteHit(player, skill, cast.SkillLevel, out _))
+                if (!ExecuteHit(player, skill, cast.SkillLevel, out _, cast.Gear))
                 {
                     cast.RemainingHits = 0;
                     break;
@@ -565,7 +573,7 @@ public sealed class SkillCastingService
             while (now >= cast.NextHitMilliseconds)
             {
                 if (!TrySpendChannelTick(player, skill, cast.SkillLevel, out _)
-                    || !ExecuteHit(player, skill, cast.SkillLevel, out _))
+                    || !ExecuteHit(player, skill, cast.SkillLevel, out _, cast.Gear))
                 {
                     ended.Add(entry.Key);
                     break;
@@ -643,7 +651,7 @@ public sealed class SkillCastingService
         return Math.Max(50L, (long)(skill.Timing.HitIntervalSeconds * 1000f));
     }
 
-    private void CastRaycastArea(IServerPlayer player, SkillDefinition skill, int skillLevel)
+    private void CastRaycastArea(IServerPlayer player, SkillDefinition skill, int skillLevel, EquippedGearStats gear)
     {
         Vec3d start = EyePosition(player.Entity);
         Vec3f view = player.Entity.Pos.GetViewVector();
@@ -675,23 +683,23 @@ public sealed class SkillCastingService
             center = blockSelection.FullPosition;
         }
 
-        ApplyAreaDamage(player, skill, skillLevel, center, player.Entity);
+        ApplyAreaDamage(player, skill, skillLevel, center, player.Entity, gear);
         CombatVisualEventPacket ray = Event(CombatVisualKind.Ray, skill, center);
         ray.SourceEntityId = player.Entity.EntityId;
         visuals.Send(ray);
         visuals.Send(Event(CombatVisualKind.Burst, skill, center));
     }
 
-    private void CastCircle(IServerPlayer player, SkillDefinition skill, int skillLevel)
+    private void CastCircle(IServerPlayer player, SkillDefinition skill, int skillLevel, EquippedGearStats gear)
     {
         Vec3d center = player.Entity.Pos.XYZ.Clone().Add(0, 0.2, 0);
-        ApplyAreaDamage(player, skill, skillLevel, center, player.Entity);
+        ApplyAreaDamage(player, skill, skillLevel, center, player.Entity, gear);
         CombatVisualEventPacket circle = Event(CombatVisualKind.Circle, skill, center);
         circle.SourceEntityId = player.Entity.EntityId;
         visuals.Send(circle);
     }
 
-    private void CastMelee(IServerPlayer player, SkillDefinition skill, int skillLevel, MeleeShape shape)
+    private void CastMelee(IServerPlayer player, SkillDefinition skill, int skillLevel, MeleeShape shape, EquippedGearStats gear)
     {
         if (!player.HasPrivilege(Privilege.attackcreatures))
         {
@@ -773,12 +781,12 @@ public sealed class SkillCastingService
         candidates.Sort((left, right) => CompareMeleeCandidates(left, right, shape));
         int requestedLimit = shape == MeleeShape.Single ? 1 : skill.MaxTargets;
         int limit = requestedLimit <= 0 ? candidates.Count : Math.Min(requestedLimit, candidates.Count);
-        float damage = damageResolver.Resolve(playerStore.GetOrCreate(player), skill, skillLevel);
+        float damage = damageResolver.Resolve(playerStore.GetOrCreate(player), skill, skillLevel, gear);
         EnumDamageType damageType = ResolveDamageType(skill.Damage.Type);
         for (int i = 0; i < limit; i++)
         {
             Entity target = candidates[i].Entity;
-            bool damaged = target.ReceiveDamage(new DamageSource
+            var damageSource = new DamageSource
             {
                 Source = EnumDamageSource.Player,
                 SourceEntity = player.Entity,
@@ -788,7 +796,9 @@ public sealed class SkillCastingService
                 DamageTier = skill.Damage.Tier,
                 IgnoreInvFrames = skill.Damage.IgnoreInvFrames,
                 KnockbackStrength = 0.25f
-            }, damage);
+            };
+            RpgDamageSourceTagger.MarkSkill(damageSource);
+            bool damaged = target.ReceiveDamage(damageSource, damage);
 
             if (damaged && target.Alive)
             {
@@ -865,7 +875,7 @@ public sealed class SkillCastingService
         return comparison != 0 ? comparison : left.Entity.EntityId.CompareTo(right.Entity.EntityId);
     }
 
-    private bool SpawnProjectile(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error)
+    private bool SpawnProjectile(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error, EquippedGearStats gear)
     {
         error = "";
         AssetLocation entityCode = skill.Projectile.Ballistic ? BallisticProjectileEntityCode : ProjectileEntityCode;
@@ -883,6 +893,7 @@ public sealed class SkillCastingService
         }
 
         projectile.FiredBy = player.Entity;
+        projectileGear.Add(projectile, gear);
         projectile.Configure(skill, skillLevel, SelectProjectileModel(skill));
         LaunchProjectile(player.Entity, projectile, skill);
         return true;
@@ -895,7 +906,7 @@ public sealed class SkillCastingService
         return selected == 0 ? skill.Model : variants[selected - 1];
     }
 
-    private bool SpawnTargetedDrop(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error)
+    private bool SpawnTargetedDrop(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error, EquippedGearStats gear)
     {
         error = "";
         Vec3d eye = EyePosition(player.Entity);
@@ -920,6 +931,7 @@ public sealed class SkillCastingService
         }
 
         Vec3d start = target.Clone().Add(0, skill.TargetedDrop.Height, 0);
+        projectileGear.Add(drop, gear);
         drop.Configure(player.Entity, skill, skillLevel, target);
         drop.Pos.SetPosWithDimension(start);
         drop.World = player.Entity.World;
@@ -1099,7 +1111,7 @@ public sealed class SkillCastingService
                     && skill.Projectile?.Ballistic == true));
     }
 
-    private void ApplyAreaDamage(IServerPlayer player, SkillDefinition skill, int skillLevel, Vec3d center, Entity sourceEntity)
+    private void ApplyAreaDamage(IServerPlayer player, SkillDefinition skill, int skillLevel, Vec3d center, Entity sourceEntity, EquippedGearStats gear)
     {
         if (!player.HasPrivilege(Privilege.attackcreatures))
         {
@@ -1114,13 +1126,13 @@ public sealed class SkillCastingService
 
         Array.Sort(nearby, (left, right) => DistanceSquared(EntityCenter(left), center).CompareTo(DistanceSquared(EntityCenter(right), center)));
         int limit = skill.MaxTargets <= 0 ? nearby.Length : Math.Min(skill.MaxTargets, nearby.Length);
-        float damage = damageResolver.Resolve(playerStore.GetOrCreate(player), skill, skillLevel);
+        float damage = damageResolver.Resolve(playerStore.GetOrCreate(player), skill, skillLevel, gear);
         EnumDamageType damageType = ResolveDamageType(skill.Damage.Type);
 
         for (int i = 0; i < limit; i++)
         {
             Entity target = nearby[i];
-            bool damaged = target.ReceiveDamage(new DamageSource
+            var damageSource = new DamageSource
             {
                 Source = EnumDamageSource.Player,
                 SourceEntity = sourceEntity,
@@ -1130,7 +1142,9 @@ public sealed class SkillCastingService
                 DamageTier = skill.Damage.Tier,
                 IgnoreInvFrames = skill.Damage.IgnoreInvFrames,
                 KnockbackStrength = 0.25f
-            }, damage);
+            };
+            RpgDamageSourceTagger.MarkSkill(damageSource);
+            bool damaged = target.ReceiveDamage(damageSource, damage);
 
             if (damaged && target.Alive)
             {
@@ -1321,6 +1335,7 @@ public sealed class SkillCastingService
 
     private sealed class ActiveTimedCast
     {
+        public EquippedGearStats Gear { get; init; } = EquippedGearStats.Invalid;
         public string PlayerUid { get; init; } = "";
         public int Slot { get; init; }
         public string SkillCode { get; init; } = "";

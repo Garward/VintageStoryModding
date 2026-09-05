@@ -16,9 +16,31 @@ public sealed class SkillDamageResolver
         this.talents = talents;
     }
 
-    public float Resolve(RpgPlayerState state, SkillDefinition skill, int skillLevel)
+    // Temporary preview compatibility until server composition supplies gear to RpgModule.BuildSkillState.
+    // Authoritative damage callers must always pass the actual view, including Invalid.
+    public float Resolve(RpgPlayerState state, SkillDefinition skill, int skillLevel) =>
+        Resolve(state, skill, skillLevel, EquippedGearStats.Empty);
+
+    public float Resolve(RpgPlayerState state, SkillDefinition skill, int skillLevel, EquippedGearStats gear)
     {
+        if (!gear.Valid) return 0f;
         var applicableStats = BuildApplicableStats(skill);
+        return ResolveDamage(state, skill, gear, applicableStats,
+            gear.AttackWeaponPower * (double)skill.WeaponDamagePercentAtLevel(skillLevel) / 100.0);
+    }
+
+    public float ResolveAttack(RpgPlayerState state, bool projectile, EquippedGearStats gear)
+    {
+        if (!gear.Valid) return 0f;
+        var attack = new SkillDefinition { Tags = projectile ? new[] { "attack", "projectile" } : new[] { "attack", "melee" } };
+        var applicableStats = BuildApplicableStats(attack);
+        applicableStats.Remove("skill_damage");
+        return ResolveDamage(state, attack, gear, applicableStats, gear.AttackWeaponPower);
+    }
+
+    private float ResolveDamage(RpgPlayerState state, SkillDefinition skill, EquippedGearStats gear,
+        HashSet<string> applicableStats, double baseDamage)
+    {
         var modifiers = new StatModifierAccumulator();
 
         AddAttributeScaling(modifiers, state, skill);
@@ -42,7 +64,13 @@ public sealed class SkillDamageResolver
             }
         }
 
-        double resolved = modifiers.Resolve(skill.DamageAtLevel(skillLevel));
+        foreach (StatModifierDefinition modifier in gear.Modifiers)
+        {
+            if (applicableStats.Contains(NormalizeStatCode(modifier.Stat)))
+                modifiers.Add(modifier.Operation, Midpoint(modifier));
+        }
+
+        double resolved = modifiers.Resolve(baseDamage);
         return (float)Math.Min(float.MaxValue, resolved);
     }
 

@@ -18,17 +18,19 @@ public sealed class RpgResourceCalculator
         this.talents = talents;
     }
 
-    public RpgResourceMaximums CalculateMaximums(RpgPlayerState state)
+    public RpgResourceMaximums CalculateMaximums(RpgPlayerState state, EquippedGearStats? gear = null)
     {
+        gear = gear?.Valid == true ? gear : EquippedGearStats.Empty;
         var totals = new ResourceTotals(
-            Math.Max(1f, config.Resources.BaseMaxHealth),
+            Math.Max(1f, config.Resources.BaseMaxHealth) + gear.MaximumHealth,
             Math.Max(1f, config.Resources.BaseMaxMana),
             0f,
-            Math.Max(0f, config.Resources.BaseMaxMagicShield));
+            Math.Max(0f, config.Resources.BaseMaxMagicShield) + gear.MaximumMagicShield);
 
         ApplyMaximumLevelGrowth(totals, state);
         ApplyMaximumAttributeScaling(totals, state);
         ApplyTalentModifiers(totals, state, ResourceTotalKind.Maximum);
+        foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Maximum);
 
         float health = totals.Health.Final();
         float bloodBase = health * Math.Max(0f, config.Resources.BloodMaxHealthRatio);
@@ -40,7 +42,7 @@ public sealed class RpgResourceCalculator
             totals.MagicShield.FinalAllowZero());
     }
 
-    public RpgResourceRegeneration CalculateRegeneration(RpgPlayerState state)
+    public RpgResourceRegeneration CalculateRegeneration(RpgPlayerState state, EquippedGearStats? gear = null)
     {
         ResourceRegenConfig regen = config.Resources.Regen;
         var totals = new ResourceTotals(
@@ -52,6 +54,8 @@ public sealed class RpgResourceCalculator
         ApplyRegenerationLevelGrowth(totals, state);
         ApplyRegenerationAttributeScaling(totals, state);
         ApplyTalentModifiers(totals, state, ResourceTotalKind.Regeneration);
+        if (gear?.Valid == true)
+            foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Regeneration);
 
         float health = totals.Health.FinalAllowZero();
         float bloodBase = health * Math.Max(0f, config.Resources.BloodRegenHealthRatio);

@@ -2,6 +2,7 @@ using System;
 using VRPG.Config;
 using VRPG.Data;
 using VRPG.Modules.Rpg.Combat;
+using VRPG.Modules.Rpg.Stats;
 using VRPG.Network;
 using VRPG.Modules.Rpg.Talents;
 using Vintagestory.API.Datastructures;
@@ -21,6 +22,7 @@ public sealed class RpgResourceService
     private readonly CombatStateService combatStates;
 
     public System.Func<IServerPlayer, float>? EvasiveStepCooldownRemaining { get; set; }
+    public System.Func<IServerPlayer, EquippedGearStats>? EquippedStatsProvider { get; set; }
 
     public RpgResourceService(
         ICoreServerAPI api,
@@ -42,7 +44,7 @@ public sealed class RpgResourceService
     public void OnPlayerNowPlaying(IServerPlayer player)
     {
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EnsureDefaults(state, Equipped(player));
         SyncPlayerCombatAttributes(player, state);
         ApplyHealthDefaults(player, state);
         SendSnapshot(player);
@@ -59,7 +61,7 @@ public sealed class RpgResourceService
             }
 
             RpgPlayerState state = playerStore.GetOrCreate(player);
-            EnsureDefaults(state);
+            EnsureDefaults(state, Equipped(player));
             SyncPlayerCombatAttributes(player, state);
             ApplyHealthDefaults(player, state);
             ApplyRegeneration(player, state, dt);
@@ -70,10 +72,11 @@ public sealed class RpgResourceService
     public RpgResourcePacket BuildSnapshot(IServerPlayer player)
     {
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EquippedGearStats gear = Equipped(player);
+        EnsureDefaults(state, gear);
         SyncPlayerCombatAttributes(player, state);
-        RpgResourceMaximums maximums = calculator.CalculateMaximums(state);
-        RpgResourceRegeneration regeneration = calculator.CalculateRegeneration(state);
+        RpgResourceMaximums maximums = calculator.CalculateMaximums(state, gear);
+        RpgResourceRegeneration regeneration = calculator.CalculateRegeneration(state, gear);
 
         float currentHealth = maximums.Health;
         float maxHealth = maximums.Health;
@@ -124,10 +127,30 @@ public sealed class RpgResourceService
     public void RefreshAfterTalentTreeSave(IServerPlayer player)
     {
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EnsureDefaults(state, Equipped(player));
         SyncPlayerCombatAttributes(player, state);
         ApplyHealthDefaults(player, state);
         SendSnapshot(player);
+    }
+
+    public void RefreshAfterEquipmentChange(IServerPlayer player)
+    {
+        RefreshAfterTalentTreeSave(player);
+        playerStore.Save();
+    }
+
+    public float AbsorbMagicShield(IServerPlayer player, float incomingDamage)
+    {
+        if (!float.IsFinite(incomingDamage) || incomingDamage <= 0f) return 0f;
+        RpgPlayerState state = playerStore.GetOrCreate(player);
+        float shield = float.IsFinite(state.MagicShield) ? Math.Max(0f, state.MagicShield) : 0f;
+        float absorbed = Math.Min(incomingDamage, shield);
+        if (absorbed > 0f)
+        {
+            state.MagicShield -= absorbed;
+            playerStore.Save();
+        }
+        return incomingDamage - absorbed;
     }
 
     public bool TrySpend(IServerPlayer player, string resource, float amount, out string error, out bool insufficientResource)
@@ -142,7 +165,7 @@ public sealed class RpgResourceService
         }
 
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EnsureDefaults(state, Equipped(player));
 
         switch (normalized)
         {
@@ -186,7 +209,7 @@ public sealed class RpgResourceService
     public void SetResource(IServerPlayer player, string resource, float current, float max)
     {
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EnsureDefaults(state, Equipped(player));
 
         float nextMax = Math.Max(1f, max);
         float nextCurrent = Clamp(current, 0f, nextMax);
@@ -223,7 +246,7 @@ public sealed class RpgResourceService
     public void SetExperience(IServerPlayer player, long experience, long toNextLevel)
     {
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EnsureDefaults(state, Equipped(player));
         state.Experience = Math.Max(0, experience);
         state.ExperienceToNextLevel = Math.Max(1, toNextLevel);
         playerStore.Save();
@@ -238,7 +261,7 @@ public sealed class RpgResourceService
         }
 
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        EnsureDefaults(state);
+        EnsureDefaults(state, Equipped(player));
 
         int cap = Math.Max(1, maxLevel);
         state.Level = Math.Clamp(state.Level, 1, cap);
@@ -273,14 +296,16 @@ public sealed class RpgResourceService
         SendSnapshot(player);
     }
 
-    private void EnsureDefaults(RpgPlayerState state)
+    private EquippedGearStats Equipped(IServerPlayer player) => EquippedStatsProvider?.Invoke(player) ?? EquippedGearStats.Empty;
+
+    private void EnsureDefaults(RpgPlayerState state, EquippedGearStats gear)
     {
         if (state.ExperienceToNextLevel <= 0)
         {
             state.ExperienceToNextLevel = Math.Max(1, config.Resources.BaseExperienceToNextLevel);
         }
 
-        RpgResourceMaximums maximums = calculator.CalculateMaximums(state);
+        RpgResourceMaximums maximums = calculator.CalculateMaximums(state, gear);
 
         if (!state.ResourcesInitialized)
         {
@@ -291,6 +316,9 @@ public sealed class RpgResourceService
         state.Mana = Clamp(state.Mana, 0f, maximums.Mana);
         state.Blood = Clamp(state.Blood, 0f, maximums.Blood);
         state.MagicShield = Clamp(state.MagicShield, 0f, maximums.MagicShield);
+        state.MaxMana = maximums.Mana;
+        state.MaxBlood = maximums.Blood;
+        state.MaxMagicShield = maximums.MagicShield;
     }
 
     private void ApplyRegeneration(IServerPlayer player, RpgPlayerState state, float dt)
@@ -301,8 +329,9 @@ public sealed class RpgResourceService
             return;
         }
 
-        RpgResourceMaximums maximums = calculator.CalculateMaximums(state);
-        RpgResourceRegeneration regeneration = calculator.CalculateRegeneration(state);
+        EquippedGearStats gear = Equipped(player);
+        RpgResourceMaximums maximums = calculator.CalculateMaximums(state, gear);
+        RpgResourceRegeneration regeneration = calculator.CalculateRegeneration(state, gear);
 
         state.Mana = Regenerate(state.Mana, maximums.Mana, regeneration.Mana, seconds);
         state.MagicShield = Regenerate(state.MagicShield, maximums.MagicShield, regeneration.MagicShield, seconds);
@@ -346,7 +375,7 @@ public sealed class RpgResourceService
             return;
         }
 
-        RpgResourceMaximums maximums = calculator.CalculateMaximums(state);
+        RpgResourceMaximums maximums = calculator.CalculateMaximums(state, Equipped(player));
         float desiredMax = Math.Max(1f, maximums.Health);
         float maxHealth = healthTree.GetFloat("maxhealth", desiredMax);
         if (Math.Abs(maxHealth - desiredMax) <= 0.001f)
@@ -356,7 +385,7 @@ public sealed class RpgResourceService
 
         float currentHealth = healthTree.GetFloat("currenthealth", maxHealth);
         float percent = maxHealth > 0f ? Clamp(currentHealth / maxHealth, 0f, 1f) : 1f;
-        SetVanillaHealth(player, Math.Max(1f, desiredMax * percent), desiredMax);
+        SetVanillaHealth(player, desiredMax * percent, desiredMax);
     }
 
     private static void RegenerateHealth(IServerPlayer player, float perSecond, float seconds)
