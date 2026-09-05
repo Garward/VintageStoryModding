@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:warden-starter-head",
+  "name": "Warden's hood",
+  "equipmentRole": "armor.head",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "warden"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-head-lamellar-wood",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

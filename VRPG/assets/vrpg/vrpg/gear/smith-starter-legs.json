@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:smith-starter-legs",
+  "name": "Smith's leggings",
+  "equipmentRole": "armor.legs",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "smith"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-legs-chain-copper",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 25,
+  "implicits": []
+}

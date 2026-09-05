@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:scrapper-starter-head",
+  "name": "Scrapper's hood",
+  "equipmentRole": "armor.head",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "scrapper"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-head-lamellar-wood",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:scrapper-starter-legs",
+  "name": "Scrapper's leggings",
+  "equipmentRole": "armor.legs",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "scrapper"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-legs-lamellar-wood",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 25,
+  "implicits": []
+}

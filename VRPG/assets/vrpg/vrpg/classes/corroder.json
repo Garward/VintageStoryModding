@@ -11,9 +11,13 @@
     "combatPattern": "Launch rust-caged embers that burst across clustered enemies.",
     "defensiveApproach": "Keep distance and shape where enemies can safely move.",
     "primaryAttribute": "intelligence",
-    "weapon": { "code": "game:club-scrapmace-scrap", "name": "Scrap focus", "equipmentRole": "mainweapon" },
-    "armor": [
-      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    "items": [
+      { "gearBaseCode": "vrpg:corroder-starter-weapon", "equipmentRole": "weapon.main" },
+      { "gearBaseCode": "vrpg:corroder-starter-head", "equipmentRole": "armor.head" },
+      { "gearBaseCode": "vrpg:corroder-starter-body", "equipmentRole": "armor.body" },
+      { "gearBaseCode": "vrpg:corroder-starter-legs", "equipmentRole": "armor.legs" },
+      { "gearBaseCode": "vrpg:corroder-starter-hands", "equipmentRole": "armor.hands" },
+      { "gearBaseCode": "vrpg:corroder-starter-feet", "equipmentRole": "armor.feet" }
     ],
     "skillCode": "vrpg:cinder_orb"
   }

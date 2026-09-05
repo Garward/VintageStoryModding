@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:corroder-starter-body",
+  "name": "Corroder's coat",
+  "equipmentRole": "armor.body",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "corroder"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-body-tailored-orange-linen",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 35,
+  "implicits": []
+}

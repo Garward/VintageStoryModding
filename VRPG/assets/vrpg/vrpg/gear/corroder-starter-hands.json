@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:corroder-starter-hands",
+  "name": "Corroder's cuffs",
+  "equipmentRole": "armor.hands",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "corroder"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-hand-cuffsorange",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 10,
+  "implicits": []
+}

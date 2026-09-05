@@ -1,0 +1,16 @@
+{
+  "code": "vrpg:corroder-starter-weapon",
+  "name": "Scrap focus",
+  "equipmentRole": "weapon.main",
+  "family": "focus",
+  "tags": [
+    "weapon",
+    "focus",
+    "corroder"
+  ],
+  "affixFamilies": ["offense", "weapon"],
+  "visualChassis": "game:club-scrapmace-scrap",
+  "levelOneWeaponPower": 10,
+  "levelOneArmor": 0,
+  "implicits": []
+}

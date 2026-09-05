@@ -11,9 +11,13 @@
     "combatPattern": "Hold a line and drive force through several enemies at once.",
     "defensiveApproach": "Control approach lanes and protect safer ground.",
     "primaryAttribute": "strength",
-    "weapon": { "code": "game:spear-generic-iron", "name": "Iron spear", "equipmentRole": "mainweapon" },
-    "armor": [
-      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    "items": [
+      { "gearBaseCode": "vrpg:warden-starter-weapon", "equipmentRole": "weapon.main" },
+      { "gearBaseCode": "vrpg:warden-starter-head", "equipmentRole": "armor.head" },
+      { "gearBaseCode": "vrpg:warden-starter-body", "equipmentRole": "armor.body" },
+      { "gearBaseCode": "vrpg:warden-starter-legs", "equipmentRole": "armor.legs" },
+      { "gearBaseCode": "vrpg:warden-starter-hands", "equipmentRole": "armor.hands" },
+      { "gearBaseCode": "vrpg:warden-starter-feet", "equipmentRole": "armor.feet" }
     ],
     "skillCode": "vrpg:thrust"
   }

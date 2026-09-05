@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:corroder-starter-feet",
+  "name": "Corroder's boots",
+  "equipmentRole": "armor.feet",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "corroder"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-foot-alchemist",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:scrapper-starter-feet",
+  "name": "Scrapper's boots",
+  "equipmentRole": "armor.feet",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "scrapper"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-foot-worn-leather-boots",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

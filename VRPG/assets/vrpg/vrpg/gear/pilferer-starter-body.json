@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:pilferer-starter-body",
+  "name": "Pilferer's coat",
+  "equipmentRole": "armor.body",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "pilferer"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-body-sewn-leather",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 35,
+  "implicits": []
+}

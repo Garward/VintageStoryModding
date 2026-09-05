@@ -745,6 +745,7 @@ public static class SkillDefinitionValidator
                 StarterLoadoutDefinitionValidator.Validate(
                     definition,
                     data.Skills.All,
+                    data.GearBases.All,
                     code => AssetExists(api, code),
                     errors);
             }

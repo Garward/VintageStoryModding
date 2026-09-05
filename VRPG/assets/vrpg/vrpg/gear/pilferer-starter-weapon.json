@@ -1,0 +1,16 @@
+{
+  "code": "vrpg:pilferer-starter-weapon",
+  "name": "Pilferer's knife",
+  "equipmentRole": "weapon.main",
+  "family": "dagger",
+  "tags": [
+    "weapon",
+    "dagger",
+    "pilferer"
+  ],
+  "affixFamilies": ["offense", "weapon"],
+  "visualChassis": "game:knife-generic-iron",
+  "levelOneWeaponPower": 10,
+  "levelOneArmor": 0,
+  "implicits": []
+}

@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:scrapper-starter-body",
+  "name": "Scrapper's coat",
+  "equipmentRole": "armor.body",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "scrapper"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-body-lamellar-wood",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 35,
+  "implicits": []
+}

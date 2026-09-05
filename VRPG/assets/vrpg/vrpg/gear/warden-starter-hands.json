@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:warden-starter-hands",
+  "name": "Warden's bracers",
+  "equipmentRole": "armor.hands",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "warden"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-hand-forlorn-bracer",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 10,
+  "implicits": []
+}

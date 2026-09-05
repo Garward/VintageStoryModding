@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:corroder-starter-head",
+  "name": "Corroder's hood",
+  "equipmentRole": "armor.head",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "corroder"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-head-tailored-orange-linen",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

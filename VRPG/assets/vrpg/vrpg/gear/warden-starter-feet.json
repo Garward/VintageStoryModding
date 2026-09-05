@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:warden-starter-feet",
+  "name": "Warden's boots",
+  "equipmentRole": "armor.feet",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "warden"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-foot-soldier-boots",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

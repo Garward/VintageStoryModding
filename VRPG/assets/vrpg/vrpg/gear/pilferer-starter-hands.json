@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:pilferer-starter-hands",
+  "name": "Pilferer's gloves",
+  "equipmentRole": "armor.hands",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "pilferer"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-hand-malefactor-gloves",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 10,
+  "implicits": []
+}

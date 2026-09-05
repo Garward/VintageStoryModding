@@ -11,9 +11,13 @@
     "combatPattern": "Break enemy footing with deliberate hammer blows.",
     "defensiveApproach": "Stay close and rely on sturdy armor.",
     "primaryAttribute": "strength",
-    "weapon": { "code": "game:hammer-iron", "name": "Iron hammer", "equipmentRole": "mainweapon" },
-    "armor": [
-      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    "items": [
+      { "gearBaseCode": "vrpg:smith-starter-weapon", "equipmentRole": "weapon.main" },
+      { "gearBaseCode": "vrpg:smith-starter-head", "equipmentRole": "armor.head" },
+      { "gearBaseCode": "vrpg:smith-starter-body", "equipmentRole": "armor.body" },
+      { "gearBaseCode": "vrpg:smith-starter-legs", "equipmentRole": "armor.legs" },
+      { "gearBaseCode": "vrpg:smith-starter-hands", "equipmentRole": "armor.hands" },
+      { "gearBaseCode": "vrpg:smith-starter-feet", "equipmentRole": "armor.feet" }
     ],
     "skillCode": "vrpg:hammer_blow"
   }

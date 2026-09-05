@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using VRPG.Config;
@@ -8,6 +9,7 @@ using VRPG.Data;
 using VRPG.Data.Definitions;
 using VRPG.Network;
 using VRPG.Interactions;
+using VRPG.Inventory;
 using VRPG.Modules.Rpg.Combat;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Scaling;
@@ -221,8 +223,10 @@ public sealed class RpgModule : IVrpgModule
                 CombatPattern = starter.CombatPattern,
                 DefensiveApproach = starter.DefensiveApproach,
                 PrimaryAttribute = starter.PrimaryAttribute,
-                WeaponName = starter.Weapon.Name,
-                ArmorNames = Array.ConvertAll(starter.Armor, item => item.Name),
+                WeaponName = starter.Items.Where(item => item.EquipmentRole == PlayerEquipmentRoles.MainWeapon)
+                    .Select(item => data.GearBases.Get(item.GearBaseCode)?.Name ?? "").Single(),
+                ArmorNames = starter.Items.Where(item => item.EquipmentRole != PlayerEquipmentRoles.MainWeapon)
+                    .Select(item => data.GearBases.Get(item.GearBaseCode)?.Name ?? "").ToArray(),
                 SkillName = skill?.Name ?? starter.SkillCode,
                 SkillDescription = skill?.Description ?? "",
                 Color = definition.Color

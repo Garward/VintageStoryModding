@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:warden-starter-legs",
+  "name": "Warden's leggings",
+  "equipmentRole": "armor.legs",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "warden"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-legs-lamellar-wood",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 25,
+  "implicits": []
+}

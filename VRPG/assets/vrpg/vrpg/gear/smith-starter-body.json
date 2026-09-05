@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:smith-starter-body",
+  "name": "Smith's coat",
+  "equipmentRole": "armor.body",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "smith"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-body-chain-copper",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 35,
+  "implicits": []
+}

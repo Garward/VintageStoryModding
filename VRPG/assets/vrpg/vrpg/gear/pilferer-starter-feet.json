@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:pilferer-starter-feet",
+  "name": "Pilferer's boots",
+  "equipmentRole": "armor.feet",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "pilferer"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-foot-malefactor-boots",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

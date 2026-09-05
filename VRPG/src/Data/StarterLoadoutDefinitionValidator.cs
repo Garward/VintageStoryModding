@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using VRPG.Data.Definitions;
+using VRPG.Inventory;
 
 namespace VRPG.Data;
 
@@ -14,22 +17,27 @@ public static class StarterLoadoutDefinitionValidator
         "intelligence"
     };
 
-    private static readonly HashSet<string> EquipmentRoles = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> EquipmentRoles = new(StringComparer.Ordinal)
     {
-        "mainweapon",
-        "armorhead",
-        "armorbody",
-        "armorlegs"
+        PlayerEquipmentRoles.MainWeapon, PlayerEquipmentRoles.Head, PlayerEquipmentRoles.Body,
+        PlayerEquipmentRoles.Legs, PlayerEquipmentRoles.Hands, PlayerEquipmentRoles.Feet
+    };
+
+    private static readonly HashSet<string> AuthoringOverrides = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "level", "requiredLevel", "rarity", "rarityCode", "affixes", "setBonus", "setBonuses", "setCode"
     };
 
     public static void Validate(
         ClassDefinition definition,
         IReadOnlyList<SkillDefinition> skills,
+        IReadOnlyList<GearBaseDefinition> bases,
         Func<string, bool> assetExists,
         ICollection<string> errors)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentNullException.ThrowIfNull(skills);
+        ArgumentNullException.ThrowIfNull(bases);
         ArgumentNullException.ThrowIfNull(assetExists);
         ArgumentNullException.ThrowIfNull(errors);
 
@@ -54,17 +62,7 @@ public static class StarterLoadoutDefinitionValidator
             errors.Add(label + ": starter primaryAttribute must be strength, dexterity, or intelligence.");
         }
 
-        ValidateItem(label, starter.Weapon, "mainweapon", assetExists, errors);
-
-        StarterItemDefinition[] armor = starter.Armor ?? Array.Empty<StarterItemDefinition>();
-        if (armor.Length == 0)
-        {
-            errors.Add(label + ": starter must include at least one armor item.");
-        }
-        for (int i = 0; i < armor.Length; i++)
-        {
-            ValidateItem(label + $": starter armor[{i}]", armor[i], null, assetExists, errors);
-        }
+        ValidateItems(label, starter, bases, assetExists, errors);
 
         string skillCode = NormalizeCode(starter.SkillCode, "vrpg");
         SkillDefinition? skill = null;
@@ -97,10 +95,34 @@ public static class StarterLoadoutDefinitionValidator
         }
     }
 
+    internal static void ValidateItems(
+        string label,
+        StarterLoadoutDefinition starter,
+        IReadOnlyList<GearBaseDefinition> bases,
+        Func<string, bool> assetExists,
+        ICollection<string> errors)
+    {
+        ValidateOverrides(label, starter.ExtensionData, errors);
+        var roles = new HashSet<string>(StringComparer.Ordinal);
+        StarterItemDefinition[] items = starter.Items ?? Array.Empty<StarterItemDefinition>();
+        if (items.Length != EquipmentRoles.Count)
+            errors.Add(label + ": starter must contain exactly six items.");
+        foreach (StarterItemDefinition? item in items)
+        {
+            if (item != null && !roles.Add(item.EquipmentRole ?? ""))
+                errors.Add(label + ": starter contains duplicate role " + item.EquipmentRole + ".");
+            ValidateItem(label, item, bases, assetExists, errors);
+        }
+        foreach (string role in EquipmentRoles)
+        {
+            if (!roles.Contains(role)) errors.Add(label + ": starter is missing role " + role + ".");
+        }
+    }
+
     private static void ValidateItem(
         string label,
         StarterItemDefinition? item,
-        string? requiredRole,
+        IReadOnlyList<GearBaseDefinition> bases,
         Func<string, bool> assetExists,
         ICollection<string> errors)
     {
@@ -110,24 +132,38 @@ public static class StarterLoadoutDefinitionValidator
             return;
         }
 
-        string role = (item.EquipmentRole ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(item.Name))
-        {
-            errors.Add(label + ": starter item name is required for the grant preview.");
-        }
+        ValidateOverrides(label, item.ExtensionData, errors);
+        string role = item.EquipmentRole ?? "";
         if (!EquipmentRoles.Contains(role))
         {
             errors.Add(label + ": starter item equipmentRole is not supported.");
         }
-        else if (requiredRole != null && !string.Equals(role, requiredRole, StringComparison.OrdinalIgnoreCase))
+        string code = NormalizeCode(item.GearBaseCode, "vrpg");
+        if (code.StartsWith("game:", StringComparison.OrdinalIgnoreCase))
         {
-            errors.Add(label + ": starter weapon must use the mainweapon equipment role.");
+            errors.Add(label + ": starter must reference a VRPG gear base, not a raw game item.");
+            return;
         }
-
-        string code = NormalizeCode(item.Code, "game");
-        if (code.Length == 0 || !assetExists(code))
+        GearBaseDefinition? gearBase = bases.FirstOrDefault(candidate =>
+            string.Equals(NormalizeCode(candidate.Code, "vrpg"), code, StringComparison.OrdinalIgnoreCase));
+        if (gearBase == null)
         {
-            errors.Add(label + ": starter item asset does not exist: " + item.Code + ".");
+            errors.Add(label + ": starter references unknown gear base " + item.GearBaseCode + ".");
+            return;
+        }
+        if (!string.Equals(gearBase.EquipmentRole, role, StringComparison.Ordinal))
+            errors.Add(label + ": starter gear base role does not match " + role + ".");
+        if (string.IsNullOrWhiteSpace(gearBase.VisualChassis) || !assetExists(gearBase.VisualChassis))
+            errors.Add(label + ": starter chassis does not exist: " + gearBase.VisualChassis + ".");
+    }
+
+    private static void ValidateOverrides(string label, IDictionary<string, JToken>? fields, ICollection<string> errors)
+    {
+        if (fields == null) return;
+        foreach (string field in fields.Keys)
+        {
+            if (AuthoringOverrides.Contains(field))
+                errors.Add(label + ": starter " + field + " is not supported; starters are level 1 Common with no affixes or set bonuses.");
         }
     }
 

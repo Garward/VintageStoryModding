@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:warden-starter-body",
+  "name": "Warden's coat",
+  "equipmentRole": "armor.body",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "warden"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-body-lamellar-wood",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 35,
+  "implicits": []
+}

@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:smith-starter-hands",
+  "name": "Smith's gloves",
+  "equipmentRole": "armor.hands",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "smith"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:clothes-hand-heavy-leather-gloves",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 10,
+  "implicits": []
+}

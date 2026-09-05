@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:pilferer-starter-head",
+  "name": "Pilferer's hood",
+  "equipmentRole": "armor.head",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "pilferer"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-head-sewn-leather",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}

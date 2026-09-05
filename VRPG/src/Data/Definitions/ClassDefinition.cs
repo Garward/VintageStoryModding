@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VRPG.Data;
 
 namespace VRPG.Data.Definitions;
@@ -22,15 +25,20 @@ public sealed class StarterLoadoutDefinition
     public string CombatPattern { get; set; } = "";
     public string DefensiveApproach { get; set; } = "";
     public string PrimaryAttribute { get; set; } = "";
-    public StarterItemDefinition Weapon { get; set; } = new StarterItemDefinition();
-    public StarterItemDefinition[] Armor { get; set; } = Array.Empty<StarterItemDefinition>();
+    public StarterItemDefinition[] Items { get; set; } = Array.Empty<StarterItemDefinition>();
     public string SkillCode { get; set; } = "";
+
+    // Preserve unknown JSON so attempted mechanical overrides can be rejected explicitly.
+    [JsonExtensionData]
+    public IDictionary<string, JToken>? ExtensionData { get; set; }
 }
 
 /// <summary>One exact item promised by a starter loadout.</summary>
 public sealed class StarterItemDefinition
 {
-    public string Code { get; set; } = "";
-    public string Name { get; set; } = "";
+    public string GearBaseCode { get; set; } = "";
     public string EquipmentRole { get; set; } = "";
+
+    [JsonExtensionData]
+    public IDictionary<string, JToken>? ExtensionData { get; set; }
 }

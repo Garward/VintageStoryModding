@@ -1,0 +1,16 @@
+{
+  "code": "vrpg:warden-starter-weapon",
+  "name": "Warden's spear",
+  "equipmentRole": "weapon.main",
+  "family": "spear",
+  "tags": [
+    "weapon",
+    "spear",
+    "warden"
+  ],
+  "affixFamilies": ["offense", "weapon"],
+  "visualChassis": "game:spear-generic-iron",
+  "levelOneWeaponPower": 10,
+  "levelOneArmor": 0,
+  "implicits": []
+}

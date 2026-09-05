@@ -11,9 +11,13 @@
     "combatPattern": "Mark a landing point, then hurl unstable salvage into the crowd.",
     "defensiveApproach": "Create space with movement and well-timed impacts.",
     "primaryAttribute": "strength",
-    "weapon": { "code": "game:club-scrap-scrap", "name": "Scrap club", "equipmentRole": "mainweapon" },
-    "armor": [
-      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    "items": [
+      { "gearBaseCode": "vrpg:scrapper-starter-weapon", "equipmentRole": "weapon.main" },
+      { "gearBaseCode": "vrpg:scrapper-starter-head", "equipmentRole": "armor.head" },
+      { "gearBaseCode": "vrpg:scrapper-starter-body", "equipmentRole": "armor.body" },
+      { "gearBaseCode": "vrpg:scrapper-starter-legs", "equipmentRole": "armor.legs" },
+      { "gearBaseCode": "vrpg:scrapper-starter-hands", "equipmentRole": "armor.hands" },
+      { "gearBaseCode": "vrpg:scrapper-starter-feet", "equipmentRole": "armor.feet" }
     ],
     "skillCode": "vrpg:junk_toss"
   }

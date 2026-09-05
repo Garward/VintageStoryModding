@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:corroder-starter-legs",
+  "name": "Corroder's leggings",
+  "equipmentRole": "armor.legs",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "corroder"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-legs-tailored-orange-linen",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 25,
+  "implicits": []
+}

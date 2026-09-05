@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:pilferer-starter-legs",
+  "name": "Pilferer's leggings",
+  "equipmentRole": "armor.legs",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "pilferer"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-legs-sewn-leather",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 25,
+  "implicits": []
+}

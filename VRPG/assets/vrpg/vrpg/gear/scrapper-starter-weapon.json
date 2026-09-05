@@ -1,0 +1,16 @@
+{
+  "code": "vrpg:scrapper-starter-weapon",
+  "name": "Scrap club",
+  "equipmentRole": "weapon.main",
+  "family": "club",
+  "tags": [
+    "weapon",
+    "club",
+    "scrapper"
+  ],
+  "affixFamilies": ["offense", "weapon"],
+  "visualChassis": "game:club-scrap-scrap",
+  "levelOneWeaponPower": 10,
+  "levelOneArmor": 0,
+  "implicits": []
+}

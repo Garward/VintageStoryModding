@@ -11,9 +11,13 @@
     "combatPattern": "Strike quickly, exploit openings, and disengage before the answer lands.",
     "defensiveApproach": "Avoid pressure through timing and movement.",
     "primaryAttribute": "dexterity",
-    "weapon": { "code": "game:knife-generic-iron", "name": "Iron knife", "equipmentRole": "mainweapon" },
-    "armor": [
-      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    "items": [
+      { "gearBaseCode": "vrpg:pilferer-starter-weapon", "equipmentRole": "weapon.main" },
+      { "gearBaseCode": "vrpg:pilferer-starter-head", "equipmentRole": "armor.head" },
+      { "gearBaseCode": "vrpg:pilferer-starter-body", "equipmentRole": "armor.body" },
+      { "gearBaseCode": "vrpg:pilferer-starter-legs", "equipmentRole": "armor.legs" },
+      { "gearBaseCode": "vrpg:pilferer-starter-hands", "equipmentRole": "armor.hands" },
+      { "gearBaseCode": "vrpg:pilferer-starter-feet", "equipmentRole": "armor.feet" }
     ],
     "skillCode": "vrpg:flurry"
   }

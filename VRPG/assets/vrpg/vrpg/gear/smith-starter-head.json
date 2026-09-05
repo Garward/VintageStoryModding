@@ -1,0 +1,15 @@
+{
+  "code": "vrpg:smith-starter-head",
+  "name": "Smith's coif",
+  "equipmentRole": "armor.head",
+  "family": "armor",
+  "tags": [
+    "armor",
+    "smith"
+  ],
+  "affixFamilies": ["defense"],
+  "visualChassis": "game:armor-head-chain-copper",
+  "levelOneWeaponPower": 0,
+  "levelOneArmor": 15,
+  "implicits": []
+}
