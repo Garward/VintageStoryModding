@@ -67,6 +67,18 @@ public sealed class GearInstanceAuthor
         string? provenanceError = ValidateProvenance(request);
         if (provenanceError != null) return GearAuthoringResult.Reject(provenanceError);
 
+        foreach (StatModifierDefinition implicitModifier in gearBase.Implicits ?? Array.Empty<StatModifierDefinition>())
+        {
+            if (implicitModifier == null
+                || !float.IsFinite(implicitModifier.Min)
+                || !float.IsFinite(implicitModifier.Max)
+                || implicitModifier.Min != implicitModifier.Max)
+            {
+                return GearAuthoringResult.Reject(
+                    $"Gear base '{gearBase.Code}' implicits must use fixed finite Min == Max values.");
+            }
+        }
+
         GearAffixSelection[] selections = request.Affixes ?? Array.Empty<GearAffixSelection>();
         var selectedCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var exclusionGroups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -79,6 +91,18 @@ public sealed class GearInstanceAuthor
             if (affix == null)
             {
                 return GearAuthoringResult.Reject($"Unknown gear affix '{Display(selection.AffixCode)}'.");
+            }
+
+            GearRarityDefinition? minimumRarity = data.Rarities.Get(affix.MinimumRarityCode);
+            if (minimumRarity == null)
+            {
+                return GearAuthoringResult.Reject(
+                    $"Gear affix '{affix.Code}' references unknown minimum rarity '{Display(affix.MinimumRarityCode)}'.");
+            }
+            if (rarity.ProgressionRank < minimumRarity.ProgressionRank)
+            {
+                return GearAuthoringResult.Reject(
+                    $"Gear affix '{affix.Code}' requires minimum rarity '{minimumRarity.Code}'.");
             }
 
             if (!selectedCodes.Add(affix.Code))

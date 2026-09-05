@@ -50,7 +50,7 @@ public sealed class GearDefinitionValidatorTests
     {
         GearBaseDefinition duplicate = ValidBase();
         duplicate.Code = "test-sword";
-        GearRarityDefinition invalid = Rarity("vrpg:rare", 1.15f);
+        GearRarityDefinition invalid = Rarity("vrpg:rare", 1, 1.15f);
         invalid.MinAffixes = 5;
         invalid.MaxAffixes = 4;
         invalid.StatScalar = float.NaN;
@@ -58,7 +58,7 @@ public sealed class GearDefinitionValidatorTests
 
         string[] errors = GearDefinitionValidator.Validate(
             new[] { ValidBase(), duplicate },
-            new[] { Rarity("common", 1f), invalid, Rarity("vrpg:unique", 1.2f, true) },
+            new[] { Rarity("common", 0, 1f), invalid, Rarity("vrpg:unique", 2, 1.2f, true) },
             new[] { ValidAffix() },
             ChassisExists);
 
@@ -69,12 +69,62 @@ public sealed class GearDefinitionValidatorTests
     }
 
     [Fact]
+    public void RejectsRangedBaseImplicitsWithoutAnExplicitRollInput()
+    {
+        GearBaseDefinition gearBase = ValidBase();
+        gearBase.Implicits = new[]
+        {
+            new StatModifierDefinition { Stat = "vrpg:max_health", Min = 4f, Max = 8f, Operation = "add" }
+        };
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { gearBase }, Rarities(), new[] { ValidAffix() }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("implicit", StringComparison.Ordinal)
+            && error.Contains("fixed", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RejectsNegativeAndDuplicateRarityProgressionRanks()
+    {
+        GearRarityDefinition[] rarities = Rarities();
+        rarities[0].ProgressionRank = -1;
+        rarities[1].ProgressionRank = 2;
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, rarities, new[] { ValidAffix() }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("progressionRank", StringComparison.Ordinal)
+            && error.Contains("non-negative", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("duplicate progressionRank 2", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RejectsNoncanonicalSeedRarityProgressionRanks()
+    {
+        GearRarityDefinition[] rarities = Rarities();
+        rarities[0].ProgressionRank = 2;
+        rarities[1].ProgressionRank = 0;
+        rarities[2].ProgressionRank = 1;
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, rarities, new[] { ValidAffix() }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("vrpg:common", StringComparison.Ordinal)
+            && error.Contains("progressionRank 0", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("vrpg:rare", StringComparison.Ordinal)
+            && error.Contains("progressionRank 1", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("vrpg:unique", StringComparison.Ordinal)
+            && error.Contains("progressionRank 2", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void RejectsNoncanonicalCommonRareAndUnboundedUniqueProfiles()
     {
-        GearRarityDefinition common = Rarity("vrpg:common", 1f);
+        GearRarityDefinition common = Rarity("vrpg:common", 0, 1f);
         common.MinAffixes = 1;
-        GearRarityDefinition rare = Rarity("vrpg:rare", 1.15f);
-        GearRarityDefinition unique = Rarity("vrpg:unique", 1.2f, true);
+        GearRarityDefinition rare = Rarity("vrpg:rare", 1, 1.15f);
+        GearRarityDefinition unique = Rarity("vrpg:unique", 2, 1.2f, true);
         unique.MinAffixes = 7;
         unique.MaxAffixes = 7;
 
@@ -357,14 +407,15 @@ public sealed class GearDefinitionValidatorTests
     {
         return new[]
         {
-            Rarity("vrpg:common", 1f),
-            Rarity("vrpg:rare", 1.15f, minAffixes: 3, maxAffixes: 5),
-            Rarity("vrpg:unique", 1.2f, true)
+            Rarity("vrpg:common", 0, 1f),
+            Rarity("vrpg:rare", 1, 1.15f, minAffixes: 3, maxAffixes: 5),
+            Rarity("vrpg:unique", 2, 1.2f, true)
         };
     }
 
     private static GearRarityDefinition Rarity(
         string code,
+        int progressionRank,
         float weaponPowerScalar,
         bool uniqueLike = false,
         int minAffixes = 0,
@@ -374,6 +425,7 @@ public sealed class GearDefinitionValidatorTests
         {
             Code = code,
             Name = code,
+            ProgressionRank = progressionRank,
             MinAffixes = minAffixes,
             MaxAffixes = maxAffixes,
             Weight = 1,

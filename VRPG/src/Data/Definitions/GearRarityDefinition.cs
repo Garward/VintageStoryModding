@@ -8,6 +8,7 @@ public sealed class GearRarityDefinition : IVrpgDataRecord
     public string Name { get; set; } = "";
     public string ColorHex { get; set; } = "#ffffff";
     public int Weight { get; set; } = 100;
+    public int ProgressionRank { get; set; }
     public int MinAffixes { get; set; }
     public int MaxAffixes { get; set; }
     public float StatScalar { get; set; } = 1f;

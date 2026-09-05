@@ -13,11 +13,11 @@ public static class GearDefinitionValidator
     private const int MaximumAffixes = 6;
     private const int MaximumRequiredLevel = 100;
 
-    private static readonly (string Code, float WeaponPowerScalar, int? MinAffixes, int? MaxAffixes)[] RequiredRaritySeeds =
+    private static readonly (string Code, int ProgressionRank, float WeaponPowerScalar, int? MinAffixes, int? MaxAffixes)[] RequiredRaritySeeds =
     {
-        ("vrpg:common", 1.00f, 0, 1),
-        ("vrpg:rare", 1.15f, 3, 5),
-        ("vrpg:unique", 1.20f, null, null)
+        ("vrpg:common", 0, 1.00f, 0, 1),
+        ("vrpg:rare", 1, 1.15f, 3, 5),
+        ("vrpg:unique", 2, 1.20f, null, null)
     };
 
     public static void ValidateOrThrow(
@@ -95,12 +95,21 @@ public static class GearDefinitionValidator
         IReadOnlyDictionary<string, GearRarityDefinition> raritiesByCode,
         ICollection<string> errors)
     {
+        var progressionRanks = new HashSet<int>();
         foreach (GearRarityDefinition rarity in rarities)
         {
             if (rarity == null) continue;
             string label = "rarity '" + DisplayCode(rarity.Code) + "'";
             if (string.IsNullOrWhiteSpace(rarity.Name)) errors.Add(label + " requires a name.");
             if (rarity.Weight <= 0) errors.Add(label + " weight must be positive.");
+            if (rarity.ProgressionRank < 0)
+            {
+                errors.Add(label + " progressionRank must be non-negative.");
+            }
+            else if (!progressionRanks.Add(rarity.ProgressionRank))
+            {
+                errors.Add($"duplicate progressionRank {rarity.ProgressionRank} on {label}.");
+            }
             if (rarity.MinAffixes < 0 || rarity.MaxAffixes < rarity.MinAffixes || rarity.MaxAffixes > MaximumAffixes)
             {
                 errors.Add(label + $" affix caps must be ordered from 0 through {MaximumAffixes}.");
@@ -115,20 +124,27 @@ public static class GearDefinitionValidator
             }
         }
 
-        foreach ((string code, float scalar, int? minAffixes, int? maxAffixes) in RequiredRaritySeeds)
+        foreach ((string code, int progressionRank, float scalar, int? minAffixes, int? maxAffixes) in RequiredRaritySeeds)
         {
             if (!raritiesByCode.TryGetValue(code, out GearRarityDefinition? rarity))
             {
                 errors.Add($"missing required rarity seed '{code}'.");
             }
-            else if (rarity.WeaponPowerScalar != scalar)
+            else
             {
-                errors.Add($"rarity '{code}' must use weaponPowerScalar {scalar:0.00}.");
-            }
-            else if (minAffixes is int expectedMinimum && maxAffixes is int expectedMaximum
-                && (rarity.MinAffixes != expectedMinimum || rarity.MaxAffixes != expectedMaximum))
-            {
-                errors.Add($"rarity '{code}' must use the canonical {expectedMinimum}-{expectedMaximum} affix profile.");
+                if (rarity.ProgressionRank != progressionRank)
+                {
+                    errors.Add($"rarity '{code}' must use progressionRank {progressionRank}.");
+                }
+                if (rarity.WeaponPowerScalar != scalar)
+                {
+                    errors.Add($"rarity '{code}' must use weaponPowerScalar {scalar:0.00}.");
+                }
+                if (minAffixes is int expectedMinimum && maxAffixes is int expectedMaximum
+                    && (rarity.MinAffixes != expectedMinimum || rarity.MaxAffixes != expectedMaximum))
+                {
+                    errors.Add($"rarity '{code}' must use the canonical {expectedMinimum}-{expectedMaximum} affix profile.");
+                }
             }
         }
 
@@ -164,6 +180,7 @@ public static class GearDefinitionValidator
 
             ValidateRoleProfile(label, definition, errors);
             ValidateModifiers(label + " implicit", definition.Implicits, requireAny: false, errors);
+            ValidateFixedImplicits(label, definition.Implicits, errors);
             if (!string.IsNullOrWhiteSpace(definition.UniqueCode) && !IsNamespacedCode(NormalizeCode(definition.UniqueCode)))
             {
                 errors.Add(label + " uniqueCode must be namespaced when supplied.");
@@ -458,6 +475,25 @@ public static class GearDefinitionValidator
             else if (modifier.Max < modifier.Min)
             {
                 errors.Add(modifierLabel + " rolls must be ordered.");
+            }
+        }
+    }
+
+    private static void ValidateFixedImplicits(
+        string label,
+        StatModifierDefinition[]? modifiers,
+        ICollection<string> errors)
+    {
+        StatModifierDefinition[] values = modifiers ?? Array.Empty<StatModifierDefinition>();
+        for (int index = 0; index < values.Length; index++)
+        {
+            StatModifierDefinition? modifier = values[index];
+            if (modifier != null
+                && float.IsFinite(modifier.Min)
+                && float.IsFinite(modifier.Max)
+                && modifier.Min != modifier.Max)
+            {
+                errors.Add(label + $" implicit modifier[{index}] must use a fixed Min == Max value.");
             }
         }
     }

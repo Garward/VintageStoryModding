@@ -3,6 +3,7 @@
   "name": "Unique",
   "colorHex": "#c98042",
   "weight": 10,
+  "progressionRank": 2,
   "minAffixes": 4,
   "maxAffixes": 6,
   "statScalar": 1.0,

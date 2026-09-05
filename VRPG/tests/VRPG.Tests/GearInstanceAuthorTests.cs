@@ -192,6 +192,49 @@ public sealed class GearInstanceAuthorTests
     }
 
     [Fact]
+    public void AuthorRejectsRangedBaseImplicitEvenIfUnvalidatedDataReachesBoundary()
+    {
+        VRPGDataRegistry registry = TestGearDefinitions.Registry(data =>
+            data.GearBases.Get("vrpg:test-sword")!.Implicits[0].Max = 20f);
+
+        GearAuthoringResult result = new GearInstanceAuthor(registry).Author(Request(
+            "vrpg:test-sword", 1, "vrpg:common", Array.Empty<GearAffixSelection>()));
+
+        AssertRejected(result, "fixed");
+    }
+
+    [Fact]
+    public void AuthorRejectsAffixBelowItsMinimumRarityRank()
+    {
+        VRPGDataRegistry registry = TestGearDefinitions.RegistryWithValidDefinitions(data =>
+            data.Affixes.Get("vrpg:flat-power")!.MinimumRarityCode = "vrpg:rare");
+
+        GearAuthoringResult result = new GearInstanceAuthor(registry).Author(Request(
+            "vrpg:test-sword", 1, "vrpg:common",
+            new[] { new GearAffixSelection("vrpg:flat-power", 1, 0f) }));
+
+        AssertRejected(result, "minimum rarity");
+    }
+
+    [Fact]
+    public void AuthorAcceptsAffixAtItsMinimumRarityRank()
+    {
+        VRPGDataRegistry registry = TestGearDefinitions.RegistryWithValidDefinitions(data =>
+            data.Affixes.Get("vrpg:flat-power")!.MinimumRarityCode = "vrpg:rare");
+
+        GearAuthoringResult result = new GearInstanceAuthor(registry).Author(Request(
+            "vrpg:test-sword", 40, "vrpg:rare",
+            new[]
+            {
+                new GearAffixSelection("vrpg:flat-power", 2, 0f),
+                new GearAffixSelection("vrpg:additional-power", 2, 0f),
+                new GearAffixSelection("vrpg:more-power", 1, 0f)
+            }));
+
+        Assert.True(result.Success, result.Error);
+    }
+
+    [Fact]
     public void AuthorRejectsUniqueRarityWithoutMatchingBaseIdentity()
     {
         VRPGDataRegistry registry = TestGearDefinitions.Registry(data =>
@@ -301,17 +344,36 @@ internal static class TestGearDefinitions
 {
     public static VRPGDataRegistry Registry(Action<VRPGDataRegistry>? afterValidation = null)
     {
+        VRPGDataRegistry registry = CreateRegistry();
+        Validate(registry);
+        afterValidation?.Invoke(registry);
+        return registry;
+    }
+
+    public static VRPGDataRegistry RegistryWithValidDefinitions(Action<VRPGDataRegistry> beforeValidation)
+    {
+        var registry = CreateRegistry();
+        beforeValidation(registry);
+        Validate(registry);
+        return registry;
+    }
+
+    private static VRPGDataRegistry CreateRegistry()
+    {
         var registry = new VRPGDataRegistry();
         registry.GearBases.Load(new[] { Sword() });
         registry.Rarities.Load(Rarities());
         registry.Affixes.Load(Affixes());
+        return registry;
+    }
+
+    private static void Validate(VRPGDataRegistry registry)
+    {
         GearDefinitionValidator.ValidateOrThrow(
             registry.GearBases.All,
             registry.Rarities.All,
             registry.Affixes.All,
             ChassisExists);
-        afterValidation?.Invoke(registry);
-        return registry;
     }
 
     public static GearBaseDefinition RequireBase(string code) =>
@@ -349,14 +411,15 @@ internal static class TestGearDefinitions
 
     private static GearRarityDefinition[] Rarities() => new[]
     {
-        Rarity("common", "Common", 0, 1, 1f, 1f),
-        Rarity("rare", "Rare", 3, 5, 1.5f, 1.15f),
-        Rarity("unique", "Unique", 0, 1, 1.75f, 1.20f, uniqueLike: true)
+        Rarity("common", "Common", 0, 0, 1, 1f, 1f),
+        Rarity("rare", "Rare", 1, 3, 5, 1.5f, 1.15f),
+        Rarity("unique", "Unique", 2, 0, 1, 1.75f, 1.20f, uniqueLike: true)
     };
 
     private static GearRarityDefinition Rarity(
         string code,
         string name,
+        int progressionRank,
         int minimum,
         int maximum,
         float statScalar,
@@ -365,6 +428,7 @@ internal static class TestGearDefinitions
     {
         Code = code,
         Name = name,
+        ProgressionRank = progressionRank,
         MinAffixes = minimum,
         MaxAffixes = maximum,
         Weight = 1,
