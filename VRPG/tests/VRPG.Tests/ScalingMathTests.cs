@@ -1,4 +1,5 @@
 using VRPG.Data.Definitions;
+using VRPG.Inventory.Gear;
 using VRPG.Modules.Rpg.Scaling;
 using Xunit;
 
@@ -54,6 +55,19 @@ public sealed class ScalingMathTests
             rarityMultiplier: 1.15f);
 
         Assert.Equal(258.75f, result, 3);
+    }
+
+    [Fact]
+    public void LegacyWeaponHelpersDelegateToPureGearScalingMath()
+    {
+        ScalingDefinition scaling = CreateScaling();
+        scaling.WeaponLevels = new WeaponLevelScalingDefinition { BaseDamage = 12, DamagePerLevelPercent = 99 };
+
+        float expectedBase = (float)GearScalingMath.WeaponLevelBase(20, 12);
+        float expectedPower = (float)GearScalingMath.ResolveWeaponPower(expectedBase, 3, 25, 10, 1.15);
+
+        Assert.Equal(expectedBase, ScalingMath.WeaponLevelBaseDamage(scaling, 20), 5);
+        Assert.Equal(expectedPower, ScalingMath.ResolveWeaponDamage(expectedBase, 3, 25, 10, 1.15f), 5);
     }
 
     [Fact]

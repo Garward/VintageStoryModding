@@ -1,5 +1,6 @@
 using System;
 using VRPG.Data.Definitions;
+using VRPG.Inventory.Gear;
 
 namespace VRPG.Modules.Rpg.Scaling;
 
@@ -31,16 +32,17 @@ public static class ScalingMath
     public static float WeaponBaseDamage(ScalingDefinition scaling, int level, float baseDamage = 0f, float rarityMultiplier = 1f)
     {
         float levelBase = WeaponLevelBaseDamage(scaling, level, baseDamage);
-        return levelBase * Math.Max(0.01f, rarityMultiplier);
+        return (float)GearScalingMath.ResolveWeaponPower(levelBase, rarityScalar: rarityMultiplier);
     }
 
     public static float WeaponLevelBaseDamage(ScalingDefinition scaling, int requiredLevel, float baseDamage = 0f)
     {
+        if (!float.IsFinite(baseDamage))
+            throw new ArgumentOutOfRangeException(nameof(baseDamage), baseDamage, "Weapon scaling inputs must be finite.");
+
         WeaponLevelScalingDefinition weapon = scaling.WeaponLevels;
         float baseValue = baseDamage > 0f ? baseDamage : Math.Max(0.01f, weapon.BaseDamage);
-        int clampedLevel = Math.Clamp(requiredLevel, 1, Math.Max(1, scaling.MaxPlayerLevel));
-        double growth = 1.0 + Math.Max(0f, weapon.DamagePerLevelPercent) / 100.0;
-        return (float)(baseValue * Math.Pow(growth, clampedLevel - 1));
+        return (float)GearScalingMath.WeaponLevelBase(requiredLevel, baseValue);
     }
 
     public static float ResolveWeaponDamage(
@@ -50,12 +52,12 @@ public static class ScalingMath
         float moreWeaponDamagePercent = 0f,
         float rarityMultiplier = 1f)
     {
-        float additionalMultiplier = Math.Max(0f, 1f + additionalWeaponDamagePercent / 100f);
-        float moreMultiplier = Math.Max(0f, 1f + moreWeaponDamagePercent / 100f);
-        return Math.Max(0f, levelBaseDamage + flatWeaponDamage)
-            * additionalMultiplier
-            * moreMultiplier
-            * Math.Max(0.01f, rarityMultiplier);
+        return (float)GearScalingMath.ResolveWeaponPower(
+            levelBaseDamage,
+            flatWeaponDamage,
+            additionalWeaponDamagePercent,
+            moreWeaponDamagePercent,
+            rarityMultiplier);
     }
 
     public static float CreatureBuildPressureMultiplier(
