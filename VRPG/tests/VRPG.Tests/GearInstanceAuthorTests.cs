@@ -10,6 +10,21 @@ namespace VRPG.Tests;
 
 public sealed class GearInstanceAuthorTests
 {
+    [Theory]
+    [InlineData(1, 12f)]
+    [InlineData(100, 361.6395f)]
+    public void UniqueAuthoringPreservesIdentityAndBoundaryLevels(int level, float expectedPower)
+    {
+        GearAuthoringResult result = Author().Author(Request("vrpg:test-sword", level, "vrpg:unique", Array.Empty<GearAffixSelection>()));
+        Assert.True(result.Success, result.Error);
+        Assert.Equal("vrpg:test-sword-unique", result.Instance!.UniqueCode);
+        Assert.Equal(level, result.Instance.RequiredLevel);
+        Assert.InRange(result.Instance.Resolved.WeaponPower, expectedPower - .001f, expectedPower + .001f);
+        GearInstance decoded = Decode(Prototype(result.Instance).ExactState);
+        Assert.Equal(result.Instance.UniqueCode, decoded.UniqueCode);
+        Assert.Equal(result.Instance.Resolved, decoded.Resolved);
+    }
+
     [Fact]
     public void AuthorResolvesExactRollsOnceInRequiredOrder()
     {

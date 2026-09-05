@@ -16,8 +16,8 @@ public sealed class SkillDamageResolver
         this.talents = talents;
     }
 
-    // Temporary preview compatibility until server composition supplies gear to RpgModule.BuildSkillState.
-    // Authoritative damage callers must always pass the actual view, including Invalid.
+    // Compatibility for callers explicitly calculating an unequipped character.
+    // Server damage and preview callers must pass the actual view, including Invalid.
     public float Resolve(RpgPlayerState state, SkillDefinition skill, int skillLevel) =>
         Resolve(state, skill, skillLevel, EquippedGearStats.Empty);
 

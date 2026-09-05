@@ -6,6 +6,7 @@ namespace VRPG.Modules.Rpg.Combat;
 /// <summary>Server-only metadata, tied to source object identity and never persisted.</summary>
 public static class RpgDamageSourceTagger
 {
+    public static void Clear() => skills.Clear();
     private static readonly ConditionalWeakTable<DamageSource, RpgDamageSourceMarker> skills = new();
 
     public static void MarkSkill(DamageSource source) => skills.GetValue(source, _ => new RpgDamageSourceMarker());

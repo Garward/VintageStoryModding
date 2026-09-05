@@ -9,6 +9,12 @@ namespace VRPG.Modules.Rpg.Combat;
 /// <summary>Preserves exact-hit server context through the engine's in-memory DoT queue.</summary>
 public static class PlayerDamageOverTimeContext
 {
+    public static void Clear()
+    {
+        queuedContexts.Clear();
+        effects.Clear();
+        ticks.Clear();
+    }
     private sealed record QueuedHit(DamageSource Source, PlayerDefenseContext Context, bool Skill);
     private static readonly ConditionalWeakTable<DamageSource, ConditionalWeakTable<Entity, PlayerDefenseContext>> queuedContexts = new();
     private static readonly ConditionalWeakTable<DamageOverTimeEffect, QueuedHit> effects = new();

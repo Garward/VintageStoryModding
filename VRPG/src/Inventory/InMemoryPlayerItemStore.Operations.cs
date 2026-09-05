@@ -306,7 +306,7 @@ public sealed partial class InMemoryPlayerItemStore
             }
             if (!byId.TryGetValue(entryId, out StoredEntry? entry))
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryMissing);
-            if (entry.Location != PlayerItemLocation.Stored)
+            if (entry.Location is not (PlayerItemLocation.Stored or PlayerItemLocation.Equipped))
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
             if (ReservedQuantity(entryId) != 0)
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryReserved);

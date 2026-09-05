@@ -56,6 +56,9 @@ public sealed class EquippedGearStatResolver
 {
     private readonly Dictionary<string, (long Revision, EquippedGearStats Stats)> cache = new(StringComparer.OrdinalIgnoreCase);
 
+    public void RemovePlayer(string playerUid) => cache.Remove(playerUid);
+    public void Clear() => cache.Clear();
+
     public EquippedGearStats Resolve(string playerUid, long revision, GearEquipmentSnapshot snapshot)
     {
         // Validate before the cache lookup: an invalid snapshot must never expose an older valid result.

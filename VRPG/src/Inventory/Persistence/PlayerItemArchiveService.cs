@@ -31,6 +31,7 @@ public sealed class PlayerItemArchiveService
     {
         lock (sync)
         {
+            IsLoaded = false;
             PlayerItemArchiveLoadResult loaded = repository.Load();
             if (!loaded.Success) return loaded;
 

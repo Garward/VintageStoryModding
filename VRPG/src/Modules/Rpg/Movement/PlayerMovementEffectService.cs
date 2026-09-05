@@ -9,6 +9,16 @@ namespace VRPG.Modules.Rpg.Movement;
 
 public sealed class PlayerMovementEffectService
 {
+    public void RemovePlayer(string uid)
+    {
+        activeByPlayer.Remove(uid);
+        sequenceByPlayer.Remove(uid);
+    }
+    public void Clear()
+    {
+        activeByPlayer.Clear();
+        sequenceByPlayer.Clear();
+    }
     private readonly ICoreServerAPI api;
     private readonly IServerNetworkChannel channel;
     private readonly Dictionary<string, long> sequenceByPlayer = new(StringComparer.OrdinalIgnoreCase);

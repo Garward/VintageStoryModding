@@ -12,6 +12,19 @@ namespace VRPG.Tests;
 public sealed class PlayerItemPersistenceTests
 {
     [Fact]
+    public void FailedReloadRevokesEarlierArchiveReadiness()
+    {
+        var storage = new MemoryArchiveStorage();
+        var service = Service(storage);
+        Assert.True(service.Load().Success);
+        Assert.True(service.SaveDirty().Success);
+        storage.Corrupt(PlayerItemArchiveRepository.SlotAKey);
+        Assert.False(service.Load().Success);
+        Assert.False(service.IsLoaded);
+        Assert.False(service.SaveDirty().Success);
+    }
+
+    [Fact]
     public void CompleteStoreRoundTripsAcrossServerRestart()
     {
         var storage = new MemoryArchiveStorage();

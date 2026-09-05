@@ -23,6 +23,8 @@ public sealed class RpgResourceService
 
     public System.Func<IServerPlayer, float>? EvasiveStepCooldownRemaining { get; set; }
     public System.Func<IServerPlayer, EquippedGearStats>? EquippedStatsProvider { get; set; }
+    public System.Func<IServerPlayer, bool>? IsActive { get; set; }
+    public System.Func<IServerPlayer, bool>? EvasiveStepAvailable { get; set; }
 
     public RpgResourceService(
         ICoreServerAPI api,
@@ -43,6 +45,7 @@ public sealed class RpgResourceService
 
     public void OnPlayerNowPlaying(IServerPlayer player)
     {
+        if (IsActive?.Invoke(player) == false) return;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
         SyncPlayerCombatAttributes(player, state);
@@ -55,7 +58,7 @@ public sealed class RpgResourceService
         IPlayer[] players = api.World.AllOnlinePlayers;
         for (int i = 0; i < players.Length; i++)
         {
-            if (players[i] is not IServerPlayer player)
+            if (players[i] is not IServerPlayer player || IsActive?.Invoke(player) == false)
             {
                 continue;
             }
@@ -71,6 +74,8 @@ public sealed class RpgResourceService
 
     public RpgResourcePacket BuildSnapshot(IServerPlayer player)
     {
+        if (IsActive?.Invoke(player) == false)
+            return new RpgResourcePacket { HudEnabled = false, HideVanillaStatbar = false };
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EquippedGearStats gear = Equipped(player);
         EnsureDefaults(state, gear);
@@ -115,7 +120,7 @@ public sealed class RpgResourceService
             CombatLockRemainingSeconds = combatStates.RemainingSeconds(player),
             PrimaryAttribute = primaryAttribute,
             StartingAttributeAffinity = CoreAttributeResolver.Normalize(state.StartingAttributeAffinity),
-            EvasiveStepActive = primaryAttribute == CoreAttributeResolver.Dexterity,
+            EvasiveStepActive = EvasiveStepAvailable?.Invoke(player) == true,
             EvasiveStepCooldownRemainingSeconds = EvasiveStepCooldownRemaining?.Invoke(player) ?? 0f
         };
     }
@@ -127,6 +132,7 @@ public sealed class RpgResourceService
 
     public void RefreshAfterTalentTreeSave(IServerPlayer player)
     {
+        if (IsActive?.Invoke(player) == false) return;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
         SyncPlayerCombatAttributes(player, state);

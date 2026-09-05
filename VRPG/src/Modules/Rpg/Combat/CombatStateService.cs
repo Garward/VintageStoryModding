@@ -8,6 +8,8 @@ namespace VRPG.Modules.Rpg.Combat;
 
 public sealed class CombatStateService
 {
+    public void RemovePlayer(string uid) => combatUntilByPlayer.Remove(uid);
+    public void Clear() => combatUntilByPlayer.Clear();
     private readonly ICoreServerAPI api;
     private readonly long lockDurationMs;
     private readonly Dictionary<string, long> combatUntilByPlayer = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);

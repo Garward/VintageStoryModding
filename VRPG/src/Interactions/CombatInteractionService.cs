@@ -15,6 +15,12 @@ namespace VRPG.Interactions;
 /// <summary>Resolves interaction requests again on the server before dispatching a registered verb.</summary>
 public sealed class CombatInteractionService
 {
+    public void RemovePlayer(string uid)
+    {
+        foreach (var key in new List<CooldownKey>(readyAtMilliseconds.Keys))
+            if (string.Equals(key.PlayerUid, uid, StringComparison.OrdinalIgnoreCase)) readyAtMilliseconds.Remove(key);
+    }
+    public void Clear() => readyAtMilliseconds.Clear();
     private const int MaximumCodeLength = 128;
     private readonly ICoreServerAPI api;
     private readonly CombatInteractionConfig config;

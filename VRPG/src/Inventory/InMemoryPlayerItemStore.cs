@@ -364,6 +364,11 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
 
     private void MoveLocation(StoredEntry entry, PlayerItemLocation destination)
     {
+        if (entry.Location == PlayerItemLocation.Equipped && destination != PlayerItemLocation.Equipped)
+        {
+            foreach (string role in equipmentByRole.Where(pair => pair.Value == entry.EntryId).Select(pair => pair.Key).ToArray())
+                equipmentByRole.Remove(role);
+        }
         if (entry.Location == destination) return;
         RemoveFromQueryIndex(entry);
         entry.Location = destination;

@@ -3,6 +3,7 @@ using System.Reflection;
 using VRPG.Config;
 using VRPG.Data.Definitions;
 using VRPG.Inventory.Gear;
+using VRPG.Inventory;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Combat;
 using VRPG.Modules.Rpg.Stats;
@@ -18,6 +19,33 @@ namespace VRPG.Tests;
 
 public sealed class RpgResourceCalculatorTests
 {
+    [Fact]
+    public void InactiveRuntimePreservesNativeHealthAndDoesNotAdvertiseEvasiveStep()
+    {
+        var (service, player, store, storage, _) = ResourceService();
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        tree.SetFloat("currenthealth", 7);
+        tree.SetFloat("maxhealth", 15);
+        service.IsActive = _ => false;
+        int writes = storage.Writes;
+        service.OnPlayerNowPlaying(player);
+        var snapshot = service.BuildSnapshot(player);
+        Assert.Equal(7, tree.GetFloat("currenthealth"));
+        Assert.Equal(15, tree.GetFloat("maxhealth"));
+        Assert.Equal(writes, storage.Writes);
+        Assert.False(snapshot.HudEnabled);
+        Assert.False(snapshot.HideVanillaStatbar);
+        Assert.False(snapshot.EvasiveStepActive);
+    }
+
+    [Fact]
+    public void AllocatedDexterityCannotAdvertiseAutomaticEscapeWithoutClassAuthority()
+    {
+        var (service, player, store, _, _) = ResourceService();
+        store.GetOrCreate(player).BaseStats["vrpg:dexterity"] = 100;
+        Assert.False(service.BuildSnapshot(player).EvasiveStepActive);
+    }
+
     [Theory]
     [InlineData(2e38f, 2e38f)]
     [InlineData(1.8e38f, 2.2e38f)]
@@ -202,9 +230,40 @@ public sealed class RpgResourceCalculatorTests
     [InlineData(float.PositiveInfinity)]
     public void SpendingRejectsNonFiniteCostsWithoutCorruptingCurrentResources(float invalid)
     {
-        var (service, player, store, _, _) = ResourceService();
+        var (service, player, store, storage, channel) = ResourceService();
+        var state = store.GetOrCreate(player);
+        state.Mana = 37.25f;
+        state.MagicShield = 4.5f;
+        string before = Newtonsoft.Json.JsonConvert.SerializeObject(state);
+        byte[] health = ItemStackCodec.EncodeCanonicalState((TreeAttribute)player.Entity.WatchedAttributes.GetTreeAttribute("health"));
+        int writes = storage.Writes, packets = channel.Packets;
         Assert.Throws<ArgumentOutOfRangeException>(() => service.TrySpend(player, "mana", invalid, out _, out _));
-        Assert.True(float.IsFinite(store.GetOrCreate(player).Mana));
+        Assert.Equal(before, Newtonsoft.Json.JsonConvert.SerializeObject(state));
+        Assert.Equal(health, ItemStackCodec.EncodeCanonicalState((TreeAttribute)player.Entity.WatchedAttributes.GetTreeAttribute("health")));
+        Assert.Equal(writes, storage.Writes);
+        Assert.Equal(packets, channel.Packets);
+    }
+
+    [Theory]
+    [InlineData(float.NaN)]
+    [InlineData(float.PositiveInfinity)]
+    [InlineData(float.NegativeInfinity)]
+    [InlineData(-1f)]
+    public void InvalidRegenerationDurationNeverSpendsOrCreatesResources(float duration)
+    {
+        var (service, player, store, _, _) = ResourceService();
+        var state = store.GetOrCreate(player);
+        service.RefreshAfterEquipmentChange(player);
+        state.Mana = 17;
+        state.Blood = 11;
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        tree.SetFloat("currenthealth", 23);
+        string before = Newtonsoft.Json.JsonConvert.SerializeObject(state);
+        // Exercise the private regeneration boundary without simulating the unrelated engine tick loop.
+        typeof(RpgResourceService).GetMethod("ApplyRegeneration", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, new object[] { player, state, duration });
+        Assert.Equal(before, Newtonsoft.Json.JsonConvert.SerializeObject(state));
+        Assert.Equal(23, tree.GetFloat("currenthealth"));
     }
 
     private static TalentTreeCatalog ExtremeTalents()

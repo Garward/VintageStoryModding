@@ -6,6 +6,15 @@ namespace VRPG.Tests;
 public sealed class SkillChargeTrackerTests
 {
     [Fact]
+    public void LeavingReleasesTransientChargeState()
+    {
+        var tracker = new SkillChargeTracker();
+        Assert.True(tracker.TryConsume("p", "skill", 1, 1000, 0, out _));
+        tracker.RemovePlayer("p");
+        Assert.Equal(1, tracker.Snapshot("p", "skill", 1, 1000, 0).Current);
+    }
+
+    [Fact]
     public void NewReservoirStartsFullAndRecoversSequentially()
     {
         var tracker = new SkillChargeTracker();

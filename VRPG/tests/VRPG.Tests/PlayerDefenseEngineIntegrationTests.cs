@@ -16,6 +16,25 @@ namespace VRPG.Tests;
 [Collection("EntityDamageScalingPatch")]
 public sealed class PlayerDefenseEngineIntegrationTests
 {
+    [Theory]
+    [InlineData("OnEntityReceiveDamage")]
+    [InlineData("ApplyOnDamageDelegates")]
+    [InlineData("handleDamaged")]
+    [InlineData("TurnIntoDoTEffect")]
+    [InlineData("ProcessDoTEffects")]
+    public void MissingRequiredHookFailsBeforeInstallingAnyDamageAuthority(string missing)
+    {
+        var harmony = new Harmony("vrpg.tests.preflight." + Guid.NewGuid());
+        try
+        {
+            var error = Assert.Throws<InvalidOperationException>(() => EntityDamageScalingPatch.Patch(harmony,
+                (type, name, parameters) => name == missing ? null : AccessTools.Method(type, name, parameters)));
+            Assert.Contains(missing, error.Message);
+            Assert.Empty(harmony.GetPatchedMethods());
+        }
+        finally { harmony.UnpatchAll(harmony.Id); }
+    }
+
     [Fact]
     public void UnwiredPlayerDefenseRetainsNativeQueuedSourceScaling()
     {

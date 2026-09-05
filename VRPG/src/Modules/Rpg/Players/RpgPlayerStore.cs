@@ -10,6 +10,12 @@ namespace VRPG.Modules.Rpg.Players;
 
 public sealed class RpgPlayerStore
 {
+    public void Clear()
+    {
+        states.Clear();
+        storage = null;
+        api = null;
+    }
     private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
     {
         Formatting = Formatting.None,

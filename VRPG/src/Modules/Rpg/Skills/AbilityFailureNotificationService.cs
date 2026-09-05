@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using VRPG.Modules.Rpg.Players;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -9,6 +10,12 @@ namespace VRPG.Modules.Rpg.Skills;
 
 public sealed class AbilityFailureNotificationService
 {
+    public void RemovePlayer(string uid)
+    {
+        foreach (string key in rateLimits.Keys.Where(key => key.StartsWith(uid + ":", StringComparison.OrdinalIgnoreCase)).ToArray())
+            rateLimits.Remove(key);
+    }
+    public void Clear() => rateLimits.Clear();
     private const long MessageIntervalMs = 1600;
     private const long SpamWindowMs = 6000;
     private const long SpamMuteMs = 8000;

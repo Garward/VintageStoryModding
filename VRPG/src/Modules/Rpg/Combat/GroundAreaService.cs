@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using VRPG.Network;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -29,6 +30,7 @@ public sealed class ExpiryTransitions
 /// <summary>Pure area bookkeeping so expiry rules are unit-testable.</summary>
 public sealed class GroundAreaTable
 {
+    public void Clear() => areas.Clear();
     public const int ExpiringLeadMs = 1500;
 
     private readonly Dictionary<long, GroundAreaRecord> areas = new Dictionary<long, GroundAreaRecord>();
@@ -77,6 +79,10 @@ public sealed class GroundAreaTable
 
 public sealed class GroundAreaService : IDisposable
 {
+    public void RemovePlayer(string uid)
+    {
+        foreach (var area in table.All.Where(area => area.OwnerUid == uid).ToArray()) Remove(area.Id);
+    }
     private readonly ICoreServerAPI api;
     private readonly IServerNetworkChannel channel;
     private readonly GroundAreaTable table = new GroundAreaTable();
@@ -198,5 +204,6 @@ public sealed class GroundAreaService : IDisposable
     public void Dispose()
     {
         api.Event.UnregisterGameTickListener(tickListenerId);
+        table.Clear();
     }
 }

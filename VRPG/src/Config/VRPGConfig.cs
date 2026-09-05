@@ -24,6 +24,7 @@ public sealed class RpgModuleConfig
     public float EvasiveStepCooldownSeconds { get; set; } = 6f;
     public float EvasiveStepInvulnerabilitySeconds { get; set; } = 0.38f;
     public float EvasiveStepImpulse { get; set; } = 0.28f;
+    public string GearFallbackChassisAssetCode { get; set; } = "game:gear-rusty";
     public RpgHudConfig Hud { get; set; } = new RpgHudConfig();
     public RpgSkillHotbarConfig SkillHotbar { get; set; } = new RpgSkillHotbarConfig();
     public RpgEntityHudConfig EntityHud { get; set; } = new RpgEntityHudConfig();

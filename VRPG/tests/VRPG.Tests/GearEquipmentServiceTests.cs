@@ -10,6 +10,21 @@ namespace VRPG.Tests;
 
 public sealed class GearEquipmentServiceTests
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void MissingMechanicalDefinitionCannotEnterOrRemainInAnEquipmentSnapshot(bool rarity)
+    {
+        var f = new GearReadinessValidatorTests.Fixture();
+        string id = f.Insert(GearItemStateCodec.Encode(GearReadinessValidatorTests.Instance()));
+        if (rarity) f.Data.Rarities.Load(Array.Empty<VRPG.Data.Definitions.GearRarityDefinition>());
+        else f.Data.Affixes.Load(Array.Empty<VRPG.Data.Definitions.GearAffixDefinition>());
+        var equipment = new GearEquipmentService(f.Data);
+        Assert.False(equipment.TryEquip(f.Store, 100, "equip", id, PlayerEquipmentRoles.MainWeapon, f.Store.Revision).Success);
+        Assert.True(f.Store.Equip("fixture-corruption", id, PlayerEquipmentRoles.MainWeapon, f.Store.Revision).Success);
+        Assert.False(equipment.Snapshot(f.Store).Valid);
+    }
+
     [Fact]
     public void DetailLookupReturnsDeepClones()
     {

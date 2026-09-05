@@ -16,6 +16,16 @@ namespace VRPG.Modules.Rpg.Combat;
 
 public sealed class EvasiveStepService
 {
+    public void RemovePlayer(string uid)
+    {
+        cooldownUntilByPlayer.Remove(uid);
+        invulnerableUntilByPlayer.Remove(uid);
+    }
+    public void Clear()
+    {
+        cooldownUntilByPlayer.Clear();
+        invulnerableUntilByPlayer.Clear();
+    }
     private readonly ICoreServerAPI api;
     private readonly RpgPlayerStore playerStore;
     private readonly TalentTreeCatalog talents;

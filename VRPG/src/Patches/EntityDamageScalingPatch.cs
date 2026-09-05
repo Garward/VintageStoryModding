@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using VRPG.Modules.Rpg.Combat;
 using Vintagestory.API.Common;
@@ -11,28 +12,40 @@ public static class EntityDamageScalingPatch
     public static Action<Entity, Entity>? HostileDamageObserved { get; set; }
     public static System.Func<Entity, DamageSource, float, float>? PlayerDamageResolver { get; set; }
     public static System.Func<Entity, DamageSource, float, float?>? PlayerOutgoingDamageResolver { get; set; }
+    public static System.Func<Entity, bool>? PlayerDefenseActive { get; set; }
 
-    public static void Patch(Harmony harmony)
+    public static void Patch(Harmony harmony, System.Func<Type, string, Type[], MethodInfo?>? findMethod = null)
     {
-        Type? healthBehavior = AccessTools.TypeByName("Vintagestory.GameContent.EntityBehaviorHealth");
-        if (healthBehavior == null)
+        findMethod ??= (type, name, parameters) => AccessTools.Method(type, name, parameters);
+        Type health = AccessTools.TypeByName("Vintagestory.GameContent.EntityBehaviorHealth")
+            ?? throw new InvalidOperationException("Missing required damage authority type EntityBehaviorHealth.");
+        Type wearables = AccessTools.TypeByName("Vintagestory.GameContent.ModSystemWearableStats")
+            ?? throw new InvalidOperationException("Missing required damage authority type ModSystemWearableStats.");
+        MethodInfo Require(Type type, string name, Type returns, params Type[] parameters)
         {
-            return;
+            MethodInfo? method = findMethod(type, name, parameters);
+            if (method == null || method.IsStatic || method.ReturnType != returns)
+                throw new InvalidOperationException($"Missing or incompatible required damage hook {type.Name}.{name}.");
+            return method;
         }
-
-        var method = AccessTools.Method(healthBehavior, "OnEntityReceiveDamage");
-        if (method != null)
+        var receive = Require(health, "OnEntityReceiveDamage", typeof(void), typeof(DamageSource), typeof(float).MakeByRefType());
+        var callbacks = Require(health, "ApplyOnDamageDelegates", typeof(void), typeof(DamageSource), typeof(float).MakeByRefType());
+        var wearable = Require(wearables, "handleDamaged", typeof(float), typeof(IPlayer), typeof(float), typeof(DamageSource));
+        var queued = Require(health, "TurnIntoDoTEffect", typeof(bool), typeof(DamageSource), typeof(float));
+        var ticks = Require(health, "ProcessDoTEffects", typeof(void), typeof(float));
+        var targets = new[] { receive, callbacks, wearable, queued, ticks };
+        try
         {
-            harmony.Patch(method, prefix: new HarmonyMethod(typeof(EntityDamageScalingPatch), nameof(OnEntityReceiveDamagePrefix)));
-        }
-        var callbacks = AccessTools.Method(healthBehavior, "ApplyOnDamageDelegates");
-        if (callbacks != null)
+            harmony.Patch(receive, prefix: new HarmonyMethod(typeof(EntityDamageScalingPatch), nameof(OnEntityReceiveDamagePrefix)));
             harmony.Patch(callbacks, postfix: new HarmonyMethod(typeof(EntityDamageScalingPatch), nameof(AfterDamageCallbacks)));
-        Type? wearables = AccessTools.TypeByName("Vintagestory.GameContent.ModSystemWearableStats");
-        var wearableDamage = wearables == null ? null : AccessTools.Method(wearables, "handleDamaged");
-        if (wearableDamage != null)
-            harmony.Patch(wearableDamage, prefix: new HarmonyMethod(typeof(EntityDamageScalingPatch), nameof(WearableDamagePrefix)));
-        NativeDamageOverTimePatch.Patch(harmony);
+            harmony.Patch(wearable, prefix: new HarmonyMethod(typeof(EntityDamageScalingPatch), nameof(WearableDamagePrefix)));
+            NativeDamageOverTimePatch.Patch(harmony, queued, ticks);
+        }
+        catch (Exception exception)
+        {
+            foreach (var target in targets) harmony.Unpatch(target, HarmonyPatchType.All, harmony.Id);
+            throw new InvalidOperationException("VRPG damage authority could not be installed; all damage hooks were rolled back.", exception);
+        }
     }
 
     public static void OnEntityReceiveDamagePrefix(EntityBehavior __instance, DamageSource damageSource, ref float damage)
@@ -48,8 +61,7 @@ public static class EntityDamageScalingPatch
         {
             return;
         }
-        if (damageSource.Duration > TimeSpan.Zero && target is EntityPlayer && PlayerDamageResolver != null
-            && SurvivalCharacterRuntimePatch.OwnershipResolver?.Invoke(target) == true)
+        if (damageSource.Duration > TimeSpan.Zero && IsPlayerDefenseActive(target))
         {
             // This is a future budget, not a landed hit. Capture context without spending defenses.
             PlayerDamageResolver?.Invoke(target, damageSource, damage);
@@ -83,16 +95,18 @@ public static class EntityDamageScalingPatch
 
     public static void AfterDamageCallbacks(EntityBehavior __instance, DamageSource damageSource, ref float damage)
     {
-        if (__instance.entity is EntityPlayer && damage > 0 && damageSource.Type != EnumDamageType.Heal
-            && PlayerDamageResolver != null)
-            damage = Math.Max(0f, PlayerDamageResolver(__instance.entity, damageSource, damage));
+        if (damage > 0 && damageSource.Type != EnumDamageType.Heal && IsPlayerDefenseActive(__instance.entity))
+            damage = Math.Max(0f, PlayerDamageResolver!(__instance.entity, damageSource, damage));
     }
 
     public static bool WearableDamagePrefix(IPlayer player, float damage, DamageSource dmgSource, ref float __result)
     {
-        if (PlayerDamageResolver == null || dmgSource.Type == EnumDamageType.Heal
-            || SurvivalCharacterRuntimePatch.OwnershipResolver?.Invoke(player.Entity) != true) return true;
+        if (dmgSource.Type == EnumDamageType.Heal || !IsPlayerDefenseActive(player.Entity)) return true;
         __result = damage;
         return false;
     }
+
+    private static bool IsPlayerDefenseActive(Entity target) => target is EntityPlayer
+        && PlayerDamageResolver != null
+        && (PlayerDefenseActive?.Invoke(target) ?? SurvivalCharacterRuntimePatch.OwnershipResolver?.Invoke(target)) == true;
 }

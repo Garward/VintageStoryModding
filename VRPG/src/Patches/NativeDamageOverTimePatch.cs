@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Reflection;
 using HarmonyLib;
 using VRPG.Modules.Rpg.Combat;
 using Vintagestory.API.Common;
@@ -11,11 +12,11 @@ namespace VRPG.Patches;
 
 public static class NativeDamageOverTimePatch
 {
-    public static void Patch(Harmony harmony)
+    public static void Patch(Harmony harmony, MethodInfo queued, MethodInfo ticks)
     {
-        harmony.Patch(AccessTools.Method(typeof(EntityBehaviorHealth), "TurnIntoDoTEffect"),
+        harmony.Patch(queued,
             postfix: new HarmonyMethod(typeof(NativeDamageOverTimePatch), nameof(QueuedPostfix)));
-        harmony.Patch(AccessTools.Method(typeof(EntityBehaviorHealth), "ProcessDoTEffects"),
+        harmony.Patch(ticks,
             transpiler: new HarmonyMethod(typeof(NativeDamageOverTimePatch), nameof(TickSourceTranspiler)));
     }
 

@@ -51,6 +51,17 @@ an explicitly identified immediate coding target.
 
 #### B. One safe item and equipment owner
 
+Gear foundation integration evidence (2026-09-05): 561 Release tests pass,
+including archive readiness/recovery, exact fallback preservation, shared
+equipment stats, damage ordering, and delegate cleanup. A disposable dedicated
+server loaded all 30 starter bases, inspected all five six-piece starter sets
+without grants, restarted with archive readiness intact, and kept gear unavailable
+when item persistence was disabled. Connected-player rendering/combat acceptance
+is still incomplete: the isolated client requires a valid game login, and
+automatic Evasive Step still awaits authoritative selected-class pairs from the
+later onboarding transaction. The gear, defense, starter appearance, and
+equipment-effect claims below remain unchecked until those live checks pass.
+
 - [x] Canonical records, authoritative store transactions, persistence, exact
   `ItemStack` codec, recovery, and lossless migration foundations are implemented.
 - [ ] Implement the VRPG gear-instance schema, gear-base definitions, validators,

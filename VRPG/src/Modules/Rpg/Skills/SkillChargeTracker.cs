@@ -19,6 +19,8 @@ public readonly record struct SkillChargeSnapshot(
 /// <summary>Tracks server-authoritative, sequentially recovering skill charges.</summary>
 public sealed class SkillChargeTracker
 {
+    public void RemovePlayer(string uid) => states.Remove(uid);
+    public void Clear() => states.Clear();
     private readonly Dictionary<string, Dictionary<string, ChargeState>> states =
         new Dictionary<string, Dictionary<string, ChargeState>>(StringComparer.OrdinalIgnoreCase);
 

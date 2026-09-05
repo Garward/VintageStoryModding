@@ -23,6 +23,17 @@ namespace VRPG.Tests;
 public sealed class PlayerDefenseServiceTests
 {
     [Fact]
+    public void LeavingClearsEscapeInvulnerabilityAndCooldown()
+    {
+        var f = new Fixture();
+        Assert.Equal(0, f.Resolve(20));
+        Assert.True(f.Escape.IsInvulnerable(f.Player.Entity));
+        f.Escape.RemovePlayer(f.Player.PlayerUID);
+        Assert.False(f.Escape.IsInvulnerable(f.Player.Entity));
+        Assert.Equal(0, f.Escape.CooldownRemainingSeconds(f.Player));
+    }
+
+    [Fact]
     public void ShieldSpendingPrecedesPostShieldLethalEscape()
     {
         var f = new Fixture();
@@ -208,6 +219,7 @@ public sealed class PlayerDefenseServiceTests
         f.Source.SourceEntity = self ? f.Player.Entity : null;
         f.Source.CauseEntity = null;
         EntityDamageScalingPatch.PlayerDamageResolver = f.Defense.ResolveDamage;
+        EntityDamageScalingPatch.PlayerDefenseActive = _ => true;
         try
         {
             float damage = 10;
@@ -215,7 +227,7 @@ public sealed class PlayerDefenseServiceTests
             EntityDamageScalingPatch.AfterDamageCallbacks(new HealthBehavior(f.Player.Entity), f.Source, ref damage);
             Assert.Equal(5, damage);
         }
-        finally { EntityDamageScalingPatch.PlayerDamageResolver = null; }
+        finally { EntityDamageScalingPatch.PlayerDamageResolver = null; EntityDamageScalingPatch.PlayerDefenseActive = null; }
     }
 
     [Fact]
@@ -228,6 +240,7 @@ public sealed class PlayerDefenseServiceTests
         var observed = new List<float>();
         EntityDamageScalingPatch.PlayerDamageResolver = (_, _, value) => { observed.Add(value); return value / 2; };
         EntityDamageScalingPatch.PlayerOutgoingDamageResolver = (_, _, _) => 30;
+        EntityDamageScalingPatch.PlayerDefenseActive = _ => true;
         try
         {
             float damage = 10;
@@ -250,6 +263,7 @@ public sealed class PlayerDefenseServiceTests
         {
             EntityDamageScalingPatch.PlayerDamageResolver = null;
             EntityDamageScalingPatch.PlayerOutgoingDamageResolver = null;
+            EntityDamageScalingPatch.PlayerDefenseActive = null;
         }
     }
 

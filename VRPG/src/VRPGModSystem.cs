@@ -157,6 +157,7 @@ public sealed class VRPGModSystem : ModSystem
                 config.Modules.Rpg.InventoryReplacement.Enabled
                 && config.Modules.Rpg.InventoryReplacement.ExperimentalDialogReplacement
                 && playerItemPersistence?.IsReady == true
+                && rpgModule?.GearReady == true
                 && engineItemIngress != null;
             EngineItemFlowPatch.Route = (playerUid, stack) =>
                 engineItemIngress?.Route(
@@ -169,7 +170,7 @@ public sealed class VRPGModSystem : ModSystem
                 config.Modules.Rpg,
                 DataRegistry,
                 serverChannel!,
-                () => playerItemPersistence?.IsReady == true);
+                () => playerItemPersistence?.Service);
             AddAndStart(api, rpgModule);
         }
 
@@ -495,7 +496,8 @@ public sealed class VRPGModSystem : ModSystem
             EnumGameMode gameMode = player?.WorldData?.CurrentGameMode ?? EnumGameMode.Guest;
             return CharacterRuntimeMode.IsOwned(
                 rpg.Enabled,
-                rpg.CharacterRuntime.Enabled,
+                rpg.CharacterRuntime.Enabled && (api.Side == EnumAppSide.Client
+                    ? clientPlayerMenuCapabilities.ItemStoreReady : rpgModule?.GearReady == true),
                 gameMode);
         };
         SurvivalCharacterRuntimePatch.OwnershipResolver = ownsCharacterRuntime;

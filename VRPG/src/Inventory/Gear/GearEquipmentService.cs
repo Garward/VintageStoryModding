@@ -102,6 +102,9 @@ public sealed class GearEquipmentService
                 PlayerItemOperationRejection.RequirementNotMet);
         }
 
+        if (!GearReadinessValidator.ValidateDefinitions(gear, data, out _))
+            return PlayerItemOperationResult.Rejected(store.Revision, requestId, PlayerItemOperationRejection.InvalidGear);
+
         return store.Equip(requestId, entryId, roleCode, expectedRevision);
     }
 
@@ -138,6 +141,7 @@ public sealed class GearEquipmentService
 
             GearBaseDefinition? gearBase = data.GearBases.Get(gear!.BaseCode);
             if (gearBase == null
+                || !GearReadinessValidator.ValidateDefinitions(gear, data, out _)
                 || !string.Equals(equipped.RoleCode, gear.EquipmentRole, StringComparison.Ordinal)
                 || !string.Equals(equipped.RoleCode, gearBase.EquipmentRole, StringComparison.Ordinal))
             {

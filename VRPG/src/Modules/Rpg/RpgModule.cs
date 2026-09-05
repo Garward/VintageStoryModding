@@ -10,6 +10,7 @@ using VRPG.Data.Definitions;
 using VRPG.Network;
 using VRPG.Interactions;
 using VRPG.Inventory;
+using VRPG.Inventory.Persistence;
 using VRPG.Modules.Rpg.Combat;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Scaling;
@@ -25,12 +26,12 @@ using Vintagestory.API.Server;
 
 namespace VRPG.Modules.Rpg;
 
-public sealed class RpgModule : IVrpgModule
+public sealed partial class RpgModule : IVrpgModule
 {
     private readonly RpgModuleConfig config;
     private readonly VRPGDataRegistry data;
     private readonly IServerNetworkChannel channel;
-    private readonly Func<bool> itemStoreReady;
+    private readonly RpgGearRuntime gearRuntime;
     private readonly RpgPlayerStore playerStore = new RpgPlayerStore();
     private readonly TalentTreeCatalog talentTree = new TalentTreeCatalog();
     private readonly SavedTalentTreeLibrary savedTalentTrees = new SavedTalentTreeLibrary();
@@ -64,12 +65,12 @@ public sealed class RpgModule : IVrpgModule
         RpgModuleConfig config,
         VRPGDataRegistry data,
         IServerNetworkChannel channel,
-        Func<bool>? itemStoreReady = null)
+        Func<PlayerItemArchiveService?>? itemArchive = null)
     {
         this.config = config;
         this.data = data;
         this.channel = channel;
-        this.itemStoreReady = itemStoreReady ?? (() => false);
+        gearRuntime = new RpgGearRuntime(config, data, itemArchive ?? (() => null));
         statusEffects = new StatusEffectTracker(data);
     }
 
@@ -100,8 +101,11 @@ public sealed class RpgModule : IVrpgModule
         combatStates = new CombatStateService(api, config.CombatStatLockSeconds);
         EntityDamageScalingPatch.HostileDamageObserved = combatStates.ObserveHostileDamage;
         resources = new RpgResourceService(api, config, data, talentTree, playerStore, channel, combatStates);
+        resources.IsActive = player => gearRuntime.Owns(player.Entity);
+        resources.EquippedStatsProvider = ResolveEquippedStats;
         movementEffects = new PlayerMovementEffectService(api, channel);
-        // Gear-foundation composition supplies authoritative class/hostility resolvers in Task 9.
+        // The later atomic class-selection transaction must supply authoritative selected-class pairs.
+        // Allocated stats, affinity and starter previews do not establish that authority.
         evasiveStep = new EvasiveStepService(api, config, talentTree, playerStore, channel, movementEffects,
             _ => false, (_, _) => false);
         resources.EvasiveStepCooldownRemaining = evasiveStep.CooldownRemainingSeconds;
@@ -109,6 +113,18 @@ public sealed class RpgModule : IVrpgModule
         visualBroadcaster = new CombatVisualBroadcaster(api, channel);
         groundAreas = new GroundAreaService(api, channel);
         skills = new SkillCastingService(api, data, playerStore, resources, skillDamage, channel, visualBroadcaster, groundAreas, statusEffects);
+        skills.EquippedStatsProvider = ResolveEquippedStats;
+        var weaponDamage = new PlayerWeaponDamageService(gearRuntime.Owns,
+            target => target.WatchedAttributes.GetInt("vrpgLevel", 0) > 0,
+            player => playerStore.GetOrCreate(player.PlayerUID),
+            player => gearRuntime.ResolveStats(player.PlayerUID), skillDamage);
+        var defense = new PlayerDefenseService(playerStore, resources, evasiveStep,
+            player => gearRuntime.ResolveStats(player.PlayerUID), (_, _) => new PlayerDefenseContext(), Random.Shared.NextDouble);
+        gearRuntime.BindDamageResolvers(weaponDamage.ResolveOutgoing, defense.ResolveDamage);
+        api.Event.SaveGameLoaded += ValidateGearReadiness;
+        api.Event.PlayerLeave += OnPlayerLeave;
+        api.Event.PlayerDisconnect += OnPlayerLeave;
+        RegisterGearInspection(api);
         talentAllocation = new TalentAllocationService(talentTree, playerStore, resources, combatStates);
         failureNotifications = new AbilityFailureNotificationService(api, playerStore);
         var interactionHandlers = new CombatInteractionHandlerRegistry();
@@ -167,7 +183,7 @@ public sealed class RpgModule : IVrpgModule
         {
             ProtocolVersion = PlayerMenuCapabilityProtocol.CurrentVersion,
             InventoryReplacementEnabled = replacementEnabled,
-            ItemStoreReady = replacementEnabled && itemStoreReady(),
+            ItemStoreReady = replacementEnabled && gearRuntime.IsReady,
             DialogReplacementReady = false
         }, player);
     }
@@ -900,6 +916,7 @@ public sealed class RpgModule : IVrpgModule
     public HubClassPacket[] BuildClasses(IServerPlayer player)
     {
         RpgPlayerState state = playerStore.GetOrCreate(player);
+        EquippedGearStats gear = ResolveEquippedStats(player);
         var classes = new System.Collections.Generic.List<ClassDefinition>(data.Classes.All);
         classes.Sort((left, right) =>
         {
@@ -919,14 +936,14 @@ public sealed class RpgModule : IVrpgModule
                 Icon = definition.Icon,
                 Color = definition.Color,
                 Tags = definition.Tags,
-                Skills = SkillsForClass(definition.Code, state)
+                Skills = SkillsForClass(definition.Code, state, gear)
             };
         }
 
         return packets;
     }
 
-    private HubSkillPacket[] SkillsForClass(string classCode, RpgPlayerState state)
+    private HubSkillPacket[] SkillsForClass(string classCode, RpgPlayerState state, EquippedGearStats gear)
     {
         var matching = new System.Collections.Generic.List<HubSkillPacket>();
         foreach (SkillDefinition skill in data.Skills.All)
@@ -951,8 +968,7 @@ public sealed class RpgModule : IVrpgModule
                 EquippedSlot = EquippedSlot(state, skill.Code),
                 Delivery = skill.Delivery,
                 DamageType = skill.Damage.Type,
-                Damage = skillDamage?.Resolve(state, skill, Math.Max(1, state.GetSkillLevel(skill.Code)))
-                    ?? skill.DamageAtLevel(Math.Max(1, state.GetSkillLevel(skill.Code))),
+                Damage = skillDamage?.Resolve(state, skill, Math.Max(1, state.GetSkillLevel(skill.Code)), gear) ?? 0f,
                 ResourceType = skill.Resource.Type,
                 ResourceCost = skill.ResourceCostAtLevel(Math.Max(1, state.GetSkillLevel(skill.Code))),
                 CooldownSeconds = skill.CooldownSeconds,
@@ -993,6 +1009,7 @@ public sealed class RpgModule : IVrpgModule
 
     public void Dispose()
     {
+        gearRuntime.Dispose();
         if (serverApi != null)
         {
             if (resources != null)
@@ -1004,6 +1021,9 @@ public sealed class RpgModule : IVrpgModule
             serverApi.Event.PlayerNowPlaying -= SendOnboardingState;
             serverApi.Event.PlayerNowPlaying -= NormalizeCharacterRuntime;
             serverApi.Event.PlayerNowPlaying -= SendPlayerMenuCapabilities;
+            serverApi.Event.SaveGameLoaded -= ValidateGearReadiness;
+            serverApi.Event.PlayerLeave -= OnPlayerLeave;
+            serverApi.Event.PlayerDisconnect -= OnPlayerLeave;
             if (groundAreaSnapshotHandler != null)
             {
                 serverApi.Event.PlayerNowPlaying -= groundAreaSnapshotHandler;
@@ -1022,11 +1042,38 @@ public sealed class RpgModule : IVrpgModule
             EntityDamageScalingPatch.HostileDamageObserved = null;
         }
 
-        EntityDamageScalingPatch.PlayerDamageResolver = null;
-
         creatures?.Stop();
         groundAreas?.Dispose();
         groundAreas = null;
+        skills?.Clear();
+        evasiveStep?.Clear();
+        movementEffects?.Clear();
+        combatStates?.Clear();
+        interactions?.Clear();
+        failureNotifications?.Clear();
+        statusEffects.Clear();
+        talentEditorDrafts.Clear();
+        playerStore.Save();
+        playerStore.Clear();
+        PlayerDamageOverTimeContext.Clear();
+        RpgDamageSourceTagger.Clear();
+        if (resources != null)
+        {
+            resources.EquippedStatsProvider = null;
+            resources.EvasiveStepCooldownRemaining = null;
+            resources.IsActive = null;
+        }
+        resources = null;
+        combatStates = null;
+        evasiveStep = null;
+        movementEffects = null;
+        skills = null;
+        skillDamage = null;
+        creatures = null;
+        interactions = null;
+        failureNotifications = null;
+        talentAllocation = null;
+        visualBroadcaster = null;
         serverApi = null;
     }
 }

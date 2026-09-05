@@ -9,6 +9,8 @@ namespace VRPG.Modules.Rpg.StatusEffects;
 
 public sealed class StatusEffectTracker
 {
+    public void RemoveEntity(long entityId) => byEntityId.Remove(entityId);
+    public void Clear() => byEntityId.Clear();
     private readonly Func<string, StatusEffectDefinition?> resolveDefinition;
     private readonly Dictionary<long, List<StatusEffectInstance>> byEntityId = new Dictionary<long, List<StatusEffectInstance>>();
 

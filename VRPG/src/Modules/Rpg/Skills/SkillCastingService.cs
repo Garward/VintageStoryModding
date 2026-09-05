@@ -18,6 +18,36 @@ namespace VRPG.Modules.Rpg.Skills;
 
 public sealed class SkillCastingService
 {
+    public void RemovePlayer(string uid)
+    {
+        activeChannels.Remove(uid);
+        activeSequences.RemoveAll(cast => string.Equals(cast.PlayerUid, uid, StringComparison.OrdinalIgnoreCase));
+        cooldownEnds.Remove(uid);
+        empoweredSkills.Remove(uid);
+        chargeTracker.RemovePlayer(uid);
+        foreach (var entry in projectileGear)
+        {
+            Entity? caster = entry.Key switch
+            {
+                EntityVrpgSkillProjectile projectile => projectile.FiredBy,
+                EntityVrpgTargetedDrop drop => drop.FiredBy,
+                _ => null
+            };
+            if (caster is EntityPlayer player && player.PlayerUID == uid)
+                projectileGear.Remove(entry.Key);
+        }
+    }
+
+    public void Clear()
+    {
+        activeChannels.Clear();
+        activeSequences.Clear();
+        cooldownEnds.Clear();
+        empoweredSkills.Clear();
+        chargeTracker.Clear();
+        projectileGear.Clear();
+        EquippedStatsProvider = null;
+    }
     private static readonly AssetLocation ProjectileEntityCode = new AssetLocation("vrpg:skillprojectile");
     private static readonly AssetLocation BallisticProjectileEntityCode = new AssetLocation("vrpg:skillballisticprojectile");
     private static readonly AssetLocation TargetedDropEntityCode = new AssetLocation("vrpg:skilltargeteddrop");
