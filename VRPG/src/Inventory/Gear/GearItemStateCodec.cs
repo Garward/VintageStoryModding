@@ -65,7 +65,7 @@ public static class GearItemStateCodec
             if (schemaVersion != GearInstanceSchema.CurrentVersion)
                 throw new InvalidDataException($"Unsupported gear schema version {schemaVersion}.");
             int generationRuleVersion = RequiredInt(gear, "generationRuleVersion");
-            if (generationRuleVersion != GearInstanceSchema.CurrentGenerationRules)
+            if (generationRuleVersion is <= 0 or > GearInstanceSchema.CurrentGenerationRules)
                 throw new InvalidDataException($"Unsupported gear generation-rule version {generationRuleVersion}.");
 
             GearInstance decoded = new(
@@ -197,7 +197,7 @@ public static class GearItemStateCodec
     {
         if (instance.SchemaVersion != GearInstanceSchema.CurrentVersion)
             throw new ArgumentException("Unsupported gear schema version.", nameof(instance));
-        if (instance.GenerationRuleVersion != GearInstanceSchema.CurrentGenerationRules)
+        if (instance.GenerationRuleVersion is <= 0 or > GearInstanceSchema.CurrentGenerationRules)
             throw new ArgumentException("Unsupported gear generation-rule version.", nameof(instance));
         if (instance.RequiredLevel is < 1 or > 100)
             throw new ArgumentException("Gear required level must be between 1 and 100.", nameof(instance));
@@ -260,18 +260,24 @@ public static class GearItemStateCodec
     private static int RequiredInt(ITreeAttribute tree, string key)
     {
         if (!tree.HasAttribute(key)) throw new InvalidDataException($"Gear field '{key}' is missing.");
+        if (tree[key] is not IntAttribute)
+            throw new InvalidDataException($"Gear field '{key}' must use IntAttribute.");
         return tree.GetInt(key);
     }
 
     private static long RequiredLong(ITreeAttribute tree, string key)
     {
         if (!tree.HasAttribute(key)) throw new InvalidDataException($"Gear field '{key}' is missing.");
+        if (tree[key] is not LongAttribute)
+            throw new InvalidDataException($"Gear field '{key}' must use LongAttribute.");
         return tree.GetLong(key);
     }
 
     private static float RequiredFiniteFloat(ITreeAttribute tree, string key)
     {
         if (!tree.HasAttribute(key)) throw new InvalidDataException($"Gear field '{key}' is missing.");
+        if (tree[key] is not FloatAttribute)
+            throw new InvalidDataException($"Gear field '{key}' must use FloatAttribute.");
         float value = tree.GetFloat(key);
         ValidateFinite(value, key);
         return value;
@@ -303,10 +309,9 @@ public static class GearItemStateCodec
     private static byte[] RequiredBytes(ITreeAttribute tree, string key)
     {
         if (!tree.HasAttribute(key)) throw new InvalidDataException($"Gear field '{key}' is missing.");
-        byte[]? bytes = tree.GetBytes(key);
-        return bytes == null
-            ? throw new InvalidDataException($"Gear field '{key}' is invalid.")
-            : (byte[])bytes.Clone();
+        if (tree[key] is not ByteArrayAttribute attribute)
+            throw new InvalidDataException($"Gear field '{key}' must use ByteArrayAttribute.");
+        return (byte[])attribute.value.Clone();
     }
 
     private static string[] RequiredStringArray(ITreeAttribute tree, string key)

@@ -7,7 +7,7 @@ namespace VRPG.Inventory.Gear;
 public static class GearInstanceSchema
 {
     public const int CurrentVersion = 1;
-    public const int CurrentGenerationRules = 1;
+    public const int CurrentGenerationRules = 2;
 }
 
 /// <summary>Modifier operations that may be persisted before definition validation is available.</summary>
@@ -17,14 +17,11 @@ public static class GearModifierOperations
     public const string Increased = "increased";
     public const string More = "more";
 
-    public static IReadOnlySet<string> Supported { get; } = new HashSet<string>(StringComparer.Ordinal)
+    public static bool IsSupported(string? operation) => operation switch
     {
-        Add,
-        Increased,
-        More
+        Add or Increased or More => true,
+        _ => false
     };
-
-    public static bool IsSupported(string? operation) => operation != null && Supported.Contains(operation);
 }
 
 /// <summary>A server-authored permanent gear state with non-aliasing collection accessors.</summary>

@@ -51,6 +51,25 @@ public sealed class GearItemStateCodecTests
     }
 
     [Fact]
+    public void HistoricalPositiveGenerationVersionRoundTripsWhileFutureAndZeroVersionsAreRejected()
+    {
+        Assert.True(GearInstanceSchema.CurrentGenerationRules > 1);
+        GearInstance historical = CreateFixture() with { GenerationRuleVersion = 1 };
+
+        bool decoded = GearItemStateCodec.TryDecode(
+            GearItemStateCodec.Encode(historical), out GearInstance? actual, out string error);
+
+        Assert.True(decoded, error);
+        Assert.Equal(1, actual!.GenerationRuleVersion);
+        Assert.Throws<ArgumentException>(() => GearItemStateCodec.Encode(
+            CreateFixture() with { GenerationRuleVersion = 0 }));
+        Assert.Throws<ArgumentException>(() => GearItemStateCodec.Encode(
+            CreateFixture() with { GenerationRuleVersion = GearInstanceSchema.CurrentGenerationRules + 1 }));
+        AssertGenerationDecodeRejected(0);
+        AssertGenerationDecodeRejected(GearInstanceSchema.CurrentGenerationRules + 1);
+    }
+
+    [Fact]
     public void ReturnedCollectionsAndPayloadCannotMutateInstance()
     {
         GearModifierRoll[] modifiers = { new("vrpg:armor", "increased", 7.375f) };
@@ -111,6 +130,57 @@ public sealed class GearItemStateCodecTests
         GearInstance duplicate = CreateFixture() with { Affixes = new[] { affix, affix } };
 
         Assert.Throws<ArgumentException>(() => GearItemStateCodec.Encode(duplicate));
+    }
+
+    [Fact]
+    public void ModifierOperationVocabularyIsClosedAndCannotBeMutatedThroughPublicApi()
+    {
+        Assert.Null(typeof(GearModifierOperations).GetProperty("Supported"));
+        Assert.True(GearModifierOperations.IsSupported("add"));
+        Assert.True(GearModifierOperations.IsSupported("increased"));
+        Assert.True(GearModifierOperations.IsSupported("more"));
+        Assert.False(GearModifierOperations.IsSupported("multiply"));
+    }
+
+    [Fact]
+    public void DecodeRejectsWrongWireTypesForRequiredNumericAndPayloadFields()
+    {
+        AssertWrongWireType(gear => gear.SetString("requiredLevel", "80"), "requiredLevel", "IntAttribute");
+        AssertWrongWireType(gear => gear.SetInt("armor", 215), "armor", "FloatAttribute");
+        AssertWrongWireType(gear =>
+            ((TreeArrayAttribute)((TreeArrayAttribute)gear["affixes"]!).value[0]["modifiers"]!).value[0]
+                .SetInt("value", 7),
+            "value", "FloatAttribute");
+        AssertWrongWireType(gear => gear.SetString("uniqueRulePayload", "payload"), "uniqueRulePayload", "ByteArrayAttribute");
+        AssertWrongWireType(gear =>
+            gear.GetTreeAttribute("provenance")!.SetInt("selectionSeed", 42),
+            "selectionSeed", "LongAttribute");
+    }
+
+    private static void AssertWrongWireType(Action<TreeAttribute> replace, string field, string expectedType)
+    {
+        TreeAttribute root = ItemStackCodec.DecodeCanonicalState(GearItemStateCodec.Encode(CreateFixture()));
+        var gear = (TreeAttribute)root.GetTreeAttribute("vrpgGear")!;
+        replace(gear);
+
+        bool decoded = GearItemStateCodec.TryDecode(
+            ItemStackCodec.EncodeCanonicalState(root), out _, out string error);
+
+        Assert.False(decoded);
+        Assert.Contains(field, error);
+        Assert.Contains(expectedType, error);
+    }
+
+    private static void AssertGenerationDecodeRejected(int generationRuleVersion)
+    {
+        TreeAttribute root = ItemStackCodec.DecodeCanonicalState(GearItemStateCodec.Encode(CreateFixture()));
+        root.GetTreeAttribute("vrpgGear")!.SetInt("generationRuleVersion", generationRuleVersion);
+
+        bool decoded = GearItemStateCodec.TryDecode(
+            ItemStackCodec.EncodeCanonicalState(root), out _, out string error);
+
+        Assert.False(decoded);
+        Assert.Contains("Unsupported gear generation-rule version", error);
     }
 
     private static GearInstance CreateFixture(string operation = "increased") => new(
