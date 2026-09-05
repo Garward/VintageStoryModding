@@ -18,6 +18,219 @@ namespace VRPG.Tests;
 
 public sealed class RpgResourceCalculatorTests
 {
+    [Theory]
+    [InlineData(2e38f, 2e38f)]
+    [InlineData(1.8e38f, 2.2e38f)]
+    public void LargeFiniteResourceModifierMidpointsDoNotOverflow(float min, float max)
+    {
+        var gear = new EquippedGearStats(0, 0, 0, 0, 0, 0, 0, 0, 0, new[]
+        {
+            new StatModifierDefinition { Stat = "max_mana", Operation = "add", Min = min, Max = max },
+            new StatModifierDefinition { Stat = "health_regen", Operation = "add", Min = min, Max = max }
+        });
+        var calculator = new RpgResourceCalculator(new RpgModuleConfig(), new TalentTreeCatalog());
+        var state = new RpgPlayerState();
+        Assert.InRange(calculator.CalculateMaximums(state, gear).Mana, 1.99e38f, 2.01e38f);
+        Assert.InRange(calculator.CalculateRegeneration(state, gear).Health, 1.99e38f, 2.01e38f);
+    }
+
+    [Fact]
+    public void LargeExactGearResourceRollRemainsFiniteAndExact()
+    {
+        var instance = EquippedGearStatResolverTests.Gear() with { Affixes = new[]
+        {
+            new GearAffixRoll("vrpg:resources", 1, new[]
+            {
+                new GearModifierRoll("vrpg:max_mana", "add", 2e38f),
+                new GearModifierRoll("vrpg:health_regen", "add", 2e38f)
+            })
+        } };
+        var gear = new EquippedGearStatResolver().Resolve("p", 1, EquippedGearStatResolverTests.Snapshot(1, instance));
+        var calculator = new RpgResourceCalculator(new RpgModuleConfig(), new TalentTreeCatalog());
+        Assert.True(gear.Valid);
+        Assert.Equal(2e38f, calculator.CalculateMaximums(new RpgPlayerState(), gear).Mana);
+        Assert.Equal(2e38f, calculator.CalculateRegeneration(new RpgPlayerState(), gear).Health);
+    }
+
+    [Fact]
+    public void AllMaximumAndRegenerationResultsSaturateOnlyAtTheFloatBoundary()
+    {
+        var config = new RpgModuleConfig();
+        config.Resources.BloodMaxHealthRatio = 1;
+        config.Resources.BloodRegenHealthRatio = 1;
+        var talents = ExtremeTalents();
+        var state = new RpgPlayerState();
+        state.Talents.Add("vrpg:extreme");
+        var gear = ExtremeGear();
+        var calculator = new RpgResourceCalculator(config, talents);
+        var maximums = calculator.CalculateMaximums(state, gear);
+        var regen = calculator.CalculateRegeneration(state, gear);
+        Assert.Equal(float.MaxValue, maximums.Health);
+        Assert.Equal(float.MaxValue, maximums.Mana);
+        Assert.Equal(float.MaxValue, maximums.Blood);
+        Assert.Equal(float.MaxValue, maximums.MagicShield);
+        Assert.Equal(float.MaxValue, regen.Health);
+        Assert.Equal(float.MaxValue, regen.Mana);
+        Assert.Equal(float.MaxValue, regen.Blood);
+        Assert.Equal(float.MaxValue, regen.MagicShield);
+    }
+
+    [Fact]
+    public void FlatAdditionRetainsDoublePrecisionBeforeReducingMoreLayer()
+    {
+        var config = new RpgModuleConfig();
+        config.Resources.BaseMaxHealth = 2e38f;
+        var talents = new TalentTreeCatalog();
+        talents.Replace("test", "Test", new[] { new TalentNodeDefinition { Code = "vrpg:half", Modifiers = new[]
+        { new StatModifierDefinition { Stat = "max_health", Operation = "more", Min = -50, Max = -50 } } } });
+        var state = new RpgPlayerState();
+        state.Talents.Add("vrpg:half");
+        Assert.Equal(2e38f, new RpgResourceCalculator(config, talents).CalculateMaximums(state, ExtremeGear()).Health);
+    }
+
+    [Fact]
+    public void DerivedBloodUsesDoubleHealthBeforeOutputSaturation()
+    {
+        var config = new RpgModuleConfig();
+        config.Resources.BaseMaxHealth = 2e38f;
+        config.Resources.Regen.BaseHealthRegenPerSecond = 2e38f;
+        config.Resources.BloodMaxHealthRatio = 0.25f;
+        config.Resources.BloodRegenHealthRatio = 0.25f;
+        var talents = new TalentTreeCatalog();
+        talents.Replace("test", "Test", new[] { new TalentNodeDefinition { Code = "vrpg:health", Modifiers = new[]
+        {
+            new StatModifierDefinition { Stat = "max_health", Operation = "more", Min = 100, Max = 100 },
+            new StatModifierDefinition { Stat = "health_regen", Operation = "more", Min = 100, Max = 100 }
+        } } });
+        var state = new RpgPlayerState();
+        state.Talents.Add("vrpg:health");
+        var calculator = new RpgResourceCalculator(config, talents);
+        Assert.Equal(float.MaxValue, calculator.CalculateMaximums(state).Health);
+        Assert.Equal(1e38f, calculator.CalculateMaximums(state).Blood);
+        Assert.Equal(1e38f, calculator.CalculateRegeneration(state).Blood);
+    }
+
+    [Fact]
+    public void RepeatedExtremeEquipmentRefreshKeepsEveryResourceFiniteAndPreservesPercentage()
+    {
+        var (service, player, store, _, _) = ResourceService(ExtremeTalents());
+        var state = store.GetOrCreate(player);
+        state.Talents.Add("vrpg:extreme");
+        state.Mana = float.MaxValue;
+        state.Blood = float.MaxValue;
+        state.MagicShield = float.MaxValue;
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        tree.SetFloat("maxhealth", 2e38f);
+        tree.SetFloat("currenthealth", 5e37f);
+        service.EquippedStatsProvider = _ => ExtremeGear();
+        for (int i = 0; i < 3; i++)
+        {
+            service.RefreshAfterEquipmentChange(player);
+            var snapshot = service.BuildSnapshot(player);
+            Assert.Equal(float.MaxValue, snapshot.MaxHealth);
+            Assert.Equal(float.MaxValue / 4, snapshot.Health);
+            Assert.Equal(float.MaxValue, tree.GetFloat("basemaxhealth"));
+            Assert.All(new[] { snapshot.Health, snapshot.MaxHealth, snapshot.Mana, snapshot.MaxMana,
+                snapshot.Blood, snapshot.MaxBlood, snapshot.MagicShield, snapshot.MaxMagicShield,
+                snapshot.HealthRegenPerSecond, snapshot.ManaRegenPerSecond, snapshot.BloodRegenPerSecond,
+                snapshot.MagicShieldRegenPerSecond, state.Mana, state.Blood, state.MagicShield }, value => Assert.True(float.IsFinite(value)));
+        }
+        service.EquippedStatsProvider = _ => EquippedGearStats.Empty;
+        service.RefreshAfterEquipmentChange(player);
+        Assert.Equal(50, tree.GetFloat("currenthealth")); // 25% of base 100 with 100% More.
+        tree.SetFloat("currenthealth", 0);
+        service.EquippedStatsProvider = _ => ExtremeGear();
+        service.RefreshAfterEquipmentChange(player);
+        Assert.Equal(0, tree.GetFloat("currenthealth"));
+    }
+
+    [Theory]
+    [InlineData(float.NaN)]
+    [InlineData(float.PositiveInfinity)]
+    public void RefreshRepairsNonFinitePriorResourceStateWithoutInventingHealth(float invalid)
+    {
+        var (service, player, store, _, _) = ResourceService();
+        var state = store.GetOrCreate(player);
+        state.Mana = invalid;
+        state.Blood = invalid;
+        state.MagicShield = invalid;
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        tree.SetFloat("maxhealth", invalid);
+        tree.SetFloat("currenthealth", invalid);
+        service.RefreshAfterEquipmentChange(player);
+        var snapshot = service.BuildSnapshot(player);
+        Assert.Equal(0, snapshot.Health);
+        Assert.Equal(100, snapshot.MaxHealth);
+        Assert.Equal(0, tree.GetFloat("currenthealth"));
+        Assert.All(new[] { state.Mana, state.Blood, state.MagicShield, state.MaxMana, state.MaxBlood,
+            state.MaxMagicShield, tree.GetFloat("maxhealth"), tree.GetFloat("basemaxhealth") }, value => Assert.True(float.IsFinite(value)));
+    }
+
+    [Theory]
+    [InlineData("health", float.NaN)]
+    [InlineData("health", float.PositiveInfinity)]
+    [InlineData("mana", float.NaN)]
+    [InlineData("mana", float.PositiveInfinity)]
+    [InlineData("blood", float.NaN)]
+    [InlineData("blood", float.PositiveInfinity)]
+    [InlineData("shield", float.NaN)]
+    [InlineData("shield", float.PositiveInfinity)]
+    public void PublicResourceSettersCannotWriteNonFiniteValues(string resource, float invalid)
+    {
+        var (service, player, store, _, _) = ResourceService();
+        service.SetResource(player, resource, invalid, invalid);
+        var state = store.GetOrCreate(player);
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        Assert.All(new[] { state.Mana, state.MaxMana, state.Blood, state.MaxBlood, state.MagicShield,
+            state.MaxMagicShield, tree.GetFloat("currenthealth"), tree.GetFloat("maxhealth"), tree.GetFloat("basemaxhealth") },
+            value => Assert.True(float.IsFinite(value)));
+    }
+
+    [Fact]
+    public void SnapshotRepairsNonFiniteHealthEvenWhenMaximumIsUnchanged()
+    {
+        var (service, player, _, _, _) = ResourceService();
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        tree.SetFloat("maxhealth", 100);
+        tree.SetFloat("currenthealth", float.NaN);
+        Assert.Equal(0, service.BuildSnapshot(player).Health);
+        Assert.Equal(0, tree.GetFloat("currenthealth"));
+    }
+
+    [Theory]
+    [InlineData(float.NaN)]
+    [InlineData(float.PositiveInfinity)]
+    public void SpendingRejectsNonFiniteCostsWithoutCorruptingCurrentResources(float invalid)
+    {
+        var (service, player, store, _, _) = ResourceService();
+        Assert.Throws<ArgumentOutOfRangeException>(() => service.TrySpend(player, "mana", invalid, out _, out _));
+        Assert.True(float.IsFinite(store.GetOrCreate(player).Mana));
+    }
+
+    private static TalentTreeCatalog ExtremeTalents()
+    {
+        var modifiers = new System.Collections.Generic.List<StatModifierDefinition>();
+        foreach (string code in new[] { "max_health", "max_mana", "max_blood", "max_magic_shield",
+            "health_regen", "mana_regen", "blood_regen", "magic_shield_regen" })
+            modifiers.Add(new StatModifierDefinition { Stat = code, Operation = "more", Min = 100, Max = 100 });
+        var talents = new TalentTreeCatalog();
+        talents.Replace("test", "Test", new[] { new TalentNodeDefinition { Code = "vrpg:extreme", Modifiers = modifiers.ToArray() } });
+        return talents;
+    }
+
+    private static EquippedGearStats ExtremeGear()
+    {
+        var modifiers = new System.Collections.Generic.List<GearModifierRoll>();
+        foreach (string code in new[] { "max_mana", "max_blood", "health_regen", "mana_regen", "magic_shield_regen" })
+            modifiers.Add(new GearModifierRoll("vrpg:" + code, "add", 2e38f));
+        var instance = EquippedGearStatResolverTests.Gear() with
+        {
+            Resolved = new GearResolvedStats(0, 0, 2e38f, 2e38f, 0, 0, 0, 0, 0),
+            Affixes = new[] { new GearAffixRoll("vrpg:extreme", 1, modifiers) }
+        };
+        return new EquippedGearStatResolver().Resolve("p", 1, EquippedGearStatResolverTests.Snapshot(1, instance));
+    }
+
     [Fact]
     public void EquipmentRefreshClampsShieldAndPreservesHealthPercentageIncludingDeath()
     {
@@ -66,7 +279,7 @@ public sealed class RpgResourceCalculatorTests
         Assert.Equal(packets, channel.Packets);
     }
 
-    private static (RpgResourceService Service, IServerPlayer Player, RpgPlayerStore Store, Storage Storage, ApiProxy Channel) ResourceService()
+    private static (RpgResourceService Service, IServerPlayer Player, RpgPlayerStore Store, Storage Storage, ApiProxy Channel) ResourceService(TalentTreeCatalog? talents = null)
     {
         var config = new RpgModuleConfig();
         config.Resources.BaseMaxHealth = 100;
@@ -77,7 +290,7 @@ public sealed class RpgResourceCalculatorTests
         var player = new TestPlayer();
         player.Entity.WatchedAttributes["health"] = new TreeAttribute();
         var channel = DispatchProxy.Create<IServerNetworkChannel, ApiProxy>();
-        var service = new RpgResourceService(null!, config, null!, new TalentTreeCatalog(), store, channel,
+        var service = new RpgResourceService(null!, config, null!, talents ?? new TalentTreeCatalog(), store, channel,
             new CombatStateService(null!, 1));
         return (service, player, store, storage, (ApiProxy)(object)channel);
     }

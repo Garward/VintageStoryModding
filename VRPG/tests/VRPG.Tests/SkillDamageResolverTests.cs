@@ -8,6 +8,31 @@ namespace VRPG.Tests;
 
 public sealed class SkillDamageResolverTests
 {
+    [Theory]
+    [InlineData(2e38f, 2e38f)]
+    [InlineData(1.8e38f, 2.2e38f)]
+    public void LargeFiniteModifierMidpointsRemainRepresentable(float min, float max)
+    {
+        var gear = new EquippedGearStats(20, 0, 0, 0, 0, 0, 0, 0, 0,
+            new[] { new StatModifierDefinition { Stat = "damage", Operation = "add", Min = min, Max = max } }, hasMainWeapon: true);
+        float damage = new SkillDamageResolver(new TalentTreeCatalog()).Resolve(new RpgPlayerState(), new SkillDefinition(), 1, gear);
+        Assert.InRange(damage, 1.99e38f, 2.01e38f);
+    }
+
+    [Fact]
+    public void LargeExactGearRollReachesDamageWithoutPrematureSaturation()
+    {
+        var instance = EquippedGearStatResolverTests.Gear(20) with { Affixes = new[]
+        {
+            new VRPG.Inventory.Gear.GearAffixRoll("vrpg:damage", 1, new[]
+            { new VRPG.Inventory.Gear.GearModifierRoll("vrpg:damage", "add", 2e38f) })
+        } };
+        var gear = new EquippedGearStatResolver().Resolve("p", 1, EquippedGearStatResolverTests.Snapshot(1, instance));
+        Assert.True(gear.Valid);
+        Assert.Equal(2e38f, gear.Modifiers[0].Min);
+        Assert.Equal(2e38f, new SkillDamageResolver(new TalentTreeCatalog()).Resolve(new RpgPlayerState(), new SkillDefinition(), 1, gear));
+    }
+
     [Fact]
     public void CompatibilityPreviewDoesNotOverrideExplicitInvalidEquipment()
     {

@@ -75,6 +75,7 @@ public sealed class RpgResourceService
         EquippedGearStats gear = Equipped(player);
         EnsureDefaults(state, gear);
         SyncPlayerCombatAttributes(player, state);
+        ApplyHealthDefaults(player, state, gear);
         RpgResourceMaximums maximums = calculator.CalculateMaximums(state, gear);
         RpgResourceRegeneration regeneration = calculator.CalculateRegeneration(state, gear);
 
@@ -155,6 +156,7 @@ public sealed class RpgResourceService
 
     public bool TrySpend(IServerPlayer player, string resource, float amount, out string error, out bool insufficientResource)
     {
+        if (!float.IsFinite(amount)) throw new ArgumentOutOfRangeException(nameof(amount));
         error = "";
         insufficientResource = false;
         float cost = Math.Max(0f, amount);
@@ -211,7 +213,7 @@ public sealed class RpgResourceService
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
 
-        float nextMax = Math.Max(1f, max);
+        float nextMax = StatValueMath.NonNegativeFloat(max, 1f);
         float nextCurrent = Clamp(current, 0f, nextMax);
 
         switch (NormalizeResource(resource))
@@ -227,7 +229,7 @@ public sealed class RpgResourceService
                 break;
             case "magicshield":
             case "shield":
-                state.MaxMagicShield = Math.Max(0f, max);
+                state.MaxMagicShield = StatValueMath.NonNegativeFloat(max);
                 state.MagicShield = Clamp(current, 0f, state.MaxMagicShield);
                 break;
             case "blood":
@@ -323,7 +325,7 @@ public sealed class RpgResourceService
 
     private void ApplyRegeneration(IServerPlayer player, RpgPlayerState state, float dt)
     {
-        float seconds = Math.Max(0f, dt);
+        float seconds = float.IsFinite(dt) ? Math.Max(0f, dt) : 0f;
         if (seconds <= 0f)
         {
             return;
@@ -364,10 +366,10 @@ public sealed class RpgResourceService
             return Clamp(current, 0f, max);
         }
 
-        return Clamp(current + perSecond * seconds, 0f, max);
+        return Clamp((double)current + (double)perSecond * seconds, 0f, max);
     }
 
-    private void ApplyHealthDefaults(IServerPlayer player, RpgPlayerState state)
+    private void ApplyHealthDefaults(IServerPlayer player, RpgPlayerState state, EquippedGearStats? gear = null)
     {
         ITreeAttribute? healthTree = player.Entity?.WatchedAttributes.GetTreeAttribute(HealthTreeName);
         if (healthTree == null)
@@ -375,17 +377,23 @@ public sealed class RpgResourceService
             return;
         }
 
-        RpgResourceMaximums maximums = calculator.CalculateMaximums(state, Equipped(player));
+        RpgResourceMaximums maximums = calculator.CalculateMaximums(state, gear ?? Equipped(player));
         float desiredMax = Math.Max(1f, maximums.Health);
         float maxHealth = healthTree.GetFloat("maxhealth", desiredMax);
-        if (Math.Abs(maxHealth - desiredMax) <= 0.001f)
+        float currentHealth = healthTree.GetFloat("currenthealth", maxHealth);
+        if (float.IsFinite(maxHealth) && float.IsFinite(currentHealth)
+            && currentHealth >= 0f && currentHealth <= maxHealth
+            && Math.Abs((double)maxHealth - desiredMax) <= 0.001d
+            && float.IsFinite(healthTree.GetFloat("basemaxhealth", desiredMax)))
         {
             return;
         }
 
-        float currentHealth = healthTree.GetFloat("currenthealth", maxHealth);
-        float percent = maxHealth > 0f ? Clamp(currentHealth / maxHealth, 0f, 1f) : 1f;
-        SetVanillaHealth(player, desiredMax * percent, desiredMax);
+        // An invalid previous ratio cannot establish living health. Keep valid ratios in double precision.
+        double percent = float.IsFinite(maxHealth) && maxHealth > 0f && float.IsFinite(currentHealth)
+            ? Math.Clamp((double)currentHealth / maxHealth, 0d, 1d)
+            : 0d;
+        SetVanillaHealth(player, StatValueMath.NonNegativeFloat(desiredMax * percent), desiredMax);
     }
 
     private static void RegenerateHealth(IServerPlayer player, float perSecond, float seconds)
@@ -408,7 +416,7 @@ public sealed class RpgResourceService
             return;
         }
 
-        healthTree.SetFloat("currenthealth", Clamp(currentHealth + perSecond * seconds, 0f, maxHealth));
+        healthTree.SetFloat("currenthealth", Clamp((double)currentHealth + (double)perSecond * seconds, 0f, maxHealth));
         player.Entity.WatchedAttributes.MarkPathDirty(HealthTreeName);
     }
 
@@ -425,6 +433,7 @@ public sealed class RpgResourceService
             return;
         }
 
+        max = StatValueMath.NonNegativeFloat(max, 1f);
         healthTree.SetFloat("basemaxhealth", max);
         healthTree.SetFloat("maxhealth", max);
         healthTree.SetFloat("currenthealth", Clamp(current, 0f, max));
@@ -436,13 +445,10 @@ public sealed class RpgResourceService
         return (resource ?? "").Trim().Replace("_", "").Replace("-", "").ToLowerInvariant();
     }
 
-    private static float Clamp(float value, float min, float max)
+    private static float Clamp(double value, float min, float max)
     {
-        if (max < min)
-        {
-            max = min;
-        }
-
-        return Math.Max(min, Math.Min(max, value));
+        max = StatValueMath.NonNegativeFloat(max, min);
+        if (double.IsNaN(value)) return min;
+        return (float)Math.Clamp(value, min, max);
     }
 }

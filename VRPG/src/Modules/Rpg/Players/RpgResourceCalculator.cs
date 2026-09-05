@@ -22,24 +22,24 @@ public sealed class RpgResourceCalculator
     {
         gear = gear?.Valid == true ? gear : EquippedGearStats.Empty;
         var totals = new ResourceTotals(
-            Math.Max(1f, config.Resources.BaseMaxHealth) + gear.MaximumHealth,
+            Math.Max(1d, config.Resources.BaseMaxHealth) + gear.MaximumHealth,
             Math.Max(1f, config.Resources.BaseMaxMana),
             0f,
-            Math.Max(0f, config.Resources.BaseMaxMagicShield) + gear.MaximumMagicShield);
+            Math.Max(0d, config.Resources.BaseMaxMagicShield) + gear.MaximumMagicShield);
 
         ApplyMaximumLevelGrowth(totals, state);
         ApplyMaximumAttributeScaling(totals, state);
         ApplyTalentModifiers(totals, state, ResourceTotalKind.Maximum);
         foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Maximum);
 
-        float health = totals.Health.Final();
-        float bloodBase = health * Math.Max(0f, config.Resources.BloodMaxHealthRatio);
+        double health = totals.Health.Final();
+        double bloodBase = health * Math.Max(0d, config.Resources.BloodMaxHealthRatio);
 
         return new RpgResourceMaximums(
-            health,
-            totals.Mana.Final(),
-            totals.Blood.FinalFromBase(bloodBase),
-            totals.MagicShield.FinalAllowZero());
+            StatValueMath.NonNegativeFloat(health, 1f),
+            StatValueMath.NonNegativeFloat(totals.Mana.Final(), 1f),
+            StatValueMath.NonNegativeFloat(totals.Blood.FinalFromBase(bloodBase), 1f),
+            StatValueMath.NonNegativeFloat(totals.MagicShield.FinalAllowZero()));
     }
 
     public RpgResourceRegeneration CalculateRegeneration(RpgPlayerState state, EquippedGearStats? gear = null)
@@ -57,19 +57,19 @@ public sealed class RpgResourceCalculator
         if (gear?.Valid == true)
             foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Regeneration);
 
-        float health = totals.Health.FinalAllowZero();
-        float bloodBase = health * Math.Max(0f, config.Resources.BloodRegenHealthRatio);
+        double health = totals.Health.FinalAllowZero();
+        double bloodBase = health * Math.Max(0d, config.Resources.BloodRegenHealthRatio);
 
         return new RpgResourceRegeneration(
-            health,
-            totals.Mana.FinalAllowZero(),
-            totals.Blood.FinalAllowZeroFromBase(bloodBase),
-            totals.MagicShield.FinalAllowZero());
+            StatValueMath.NonNegativeFloat(health),
+            StatValueMath.NonNegativeFloat(totals.Mana.FinalAllowZero()),
+            StatValueMath.NonNegativeFloat(totals.Blood.FinalAllowZeroFromBase(bloodBase)),
+            StatValueMath.NonNegativeFloat(totals.MagicShield.FinalAllowZero()));
     }
 
     private void ApplyMaximumLevelGrowth(ResourceTotals totals, RpgPlayerState state)
     {
-        int levelSteps = Math.Max(0, state.Level - 1);
+        double levelSteps = Math.Max(0d, (double)state.Level - 1);
         ResourceLevelGrowthConfig growth = config.Resources.LevelGrowth;
         totals.Health.AddFlat(growth.MaxHealthPerLevel * levelSteps);
         totals.Mana.AddFlat(growth.MaxManaPerLevel * levelSteps);
@@ -79,7 +79,7 @@ public sealed class RpgResourceCalculator
 
     private void ApplyRegenerationLevelGrowth(ResourceTotals totals, RpgPlayerState state)
     {
-        int levelSteps = Math.Max(0, state.Level - 1);
+        double levelSteps = Math.Max(0d, (double)state.Level - 1);
         ResourceLevelGrowthConfig growth = config.Resources.LevelGrowth;
         totals.Health.AddFlat(growth.HealthRegenPerLevel * levelSteps);
         totals.Mana.AddFlat(growth.ManaRegenPerLevel * levelSteps);
@@ -89,8 +89,8 @@ public sealed class RpgResourceCalculator
     private void ApplyMaximumAttributeScaling(ResourceTotals totals, RpgPlayerState state)
     {
         AttributeResourceScalingConfig scaling = config.Resources.AttributeScaling;
-        int strength = GetStatPoints(state, "vrpg:strength");
-        int intelligence = GetStatPoints(state, "vrpg:intelligence");
+        double strength = GetStatPoints(state, "vrpg:strength");
+        double intelligence = GetStatPoints(state, "vrpg:intelligence");
 
         totals.Health.AddFlat(strength * scaling.HealthPerStrength);
         totals.Health.AddPercent(strength * scaling.HealthPercentPerStrength);
@@ -108,8 +108,8 @@ public sealed class RpgResourceCalculator
     private void ApplyRegenerationAttributeScaling(ResourceTotals totals, RpgPlayerState state)
     {
         AttributeResourceScalingConfig scaling = config.Resources.AttributeScaling;
-        int strength = GetStatPoints(state, "vrpg:strength");
-        int intelligence = GetStatPoints(state, "vrpg:intelligence");
+        double strength = GetStatPoints(state, "vrpg:strength");
+        double intelligence = GetStatPoints(state, "vrpg:intelligence");
 
         totals.Health.AddFlat(strength * scaling.HealthRegenPerStrength);
         totals.Health.AddPercent(strength * scaling.HealthRegenPercentPerStrength);
@@ -148,8 +148,7 @@ public sealed class RpgResourceCalculator
             return;
         }
 
-        float value = modifier.Max != 0f || modifier.Min != 0f ? (modifier.Min + modifier.Max) / 2f : 0f;
-        total.Add(modifier.Operation, value);
+        total.Add(modifier.Operation, StatValueMath.ModifierValue(modifier));
     }
 
     private int GetStatPoints(RpgPlayerState state, string stat)
@@ -248,7 +247,7 @@ public sealed class RpgResourceCalculator
 
     private sealed class ResourceTotals
     {
-        public ResourceTotals(float health, float mana, float blood, float magicShield)
+        public ResourceTotals(double health, double mana, double blood, double magicShield)
         {
             Health = new ResourceTotal(health);
             Mana = new ResourceTotal(mana);
@@ -264,47 +263,47 @@ public sealed class RpgResourceCalculator
 
     private sealed class ResourceTotal
     {
-        private readonly float baseValue;
+        private readonly double baseValue;
         private readonly StatModifierAccumulator modifiers = new StatModifierAccumulator();
 
-        public ResourceTotal(float baseValue)
+        public ResourceTotal(double baseValue)
         {
             this.baseValue = baseValue;
         }
 
-        public void AddFlat(float value)
+        public void AddFlat(double value)
         {
             modifiers.Add(StatModifierOperations.Add, value);
         }
 
-        public void AddPercent(float value)
+        public void AddPercent(double value)
         {
             modifiers.Add(StatModifierOperations.Increased, value);
         }
 
-        public void Add(string? operation, float value)
+        public void Add(string? operation, double value)
         {
             modifiers.Add(operation, value);
         }
 
-        public float Final()
+        public double Final()
         {
             return FinalFromBase(baseValue);
         }
 
-        public float FinalAllowZero()
+        public double FinalAllowZero()
         {
             return FinalAllowZeroFromBase(baseValue);
         }
 
-        public float FinalFromBase(float value)
+        public double FinalFromBase(double value)
         {
             return Math.Max(1f, FinalAllowZeroFromBase(value));
         }
 
-        public float FinalAllowZeroFromBase(float value)
+        public double FinalAllowZeroFromBase(double value)
         {
-            return (float)modifiers.Resolve(value);
+            return modifiers.Resolve(value);
         }
     }
 

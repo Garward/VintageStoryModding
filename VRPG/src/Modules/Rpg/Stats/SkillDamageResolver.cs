@@ -60,18 +60,18 @@ public sealed class SkillDamageResolver
                     continue;
                 }
 
-                modifiers.Add(modifier.Operation, Midpoint(modifier));
+                modifiers.Add(modifier.Operation, StatValueMath.ModifierValue(modifier));
             }
         }
 
         foreach (StatModifierDefinition modifier in gear.Modifiers)
         {
             if (applicableStats.Contains(NormalizeStatCode(modifier.Stat)))
-                modifiers.Add(modifier.Operation, Midpoint(modifier));
+                modifiers.Add(modifier.Operation, StatValueMath.ModifierValue(modifier));
         }
 
         double resolved = modifiers.Resolve(baseDamage);
-        return (float)Math.Min(float.MaxValue, resolved);
+        return StatValueMath.NonNegativeFloat(resolved);
     }
 
     private static HashSet<string> BuildApplicableStats(SkillDefinition skill)
@@ -165,13 +165,6 @@ public sealed class SkillDamageResolver
         }
 
         return state.BaseStats.TryGetValue("vrpg:" + code, out value) ? value : 0;
-    }
-
-    private static float Midpoint(StatModifierDefinition modifier)
-    {
-        return modifier.Max != 0f || modifier.Min != 0f
-            ? (modifier.Min + modifier.Max) / 2f
-            : 0f;
     }
 
     private static string NormalizeStatCode(string? code)
