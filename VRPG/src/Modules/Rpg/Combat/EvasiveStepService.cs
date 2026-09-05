@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using VRPG.Config;
-using VRPG.Data;
 using VRPG.Data.Definitions;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Movement;
@@ -10,7 +9,6 @@ using VRPG.Modules.Rpg.Talents;
 using VRPG.Network;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
@@ -23,6 +21,8 @@ public sealed class EvasiveStepService
     private readonly TalentTreeCatalog talents;
     private readonly CombatVisualBroadcaster visuals;
     private readonly PlayerMovementEffectService movementEffects;
+    private readonly System.Func<EntityPlayer, bool> dexterityPrimary;
+    private readonly System.Func<EntityPlayer, Entity, bool> hostile;
     private readonly long baseCooldownMs;
     private readonly long baseInvulnerabilityMs;
     private readonly double baseImpulse;
@@ -35,57 +35,53 @@ public sealed class EvasiveStepService
         TalentTreeCatalog talents,
         RpgPlayerStore playerStore,
         IServerNetworkChannel channel,
-        PlayerMovementEffectService movementEffects)
+        PlayerMovementEffectService movementEffects,
+        System.Func<EntityPlayer, bool> dexterityPrimary,
+        System.Func<EntityPlayer, Entity, bool> hostile)
     {
         this.api = api;
         this.talents = talents;
         this.playerStore = playerStore;
         this.movementEffects = movementEffects;
+        this.dexterityPrimary = dexterityPrimary;
+        this.hostile = hostile;
         visuals = new CombatVisualBroadcaster(api, channel);
         baseCooldownMs = (long)(Math.Max(0.5f, config.EvasiveStepCooldownSeconds) * 1000f);
         baseInvulnerabilityMs = (long)(Math.Clamp(config.EvasiveStepInvulnerabilitySeconds, 0.1f, 0.75f) * 1000f);
         baseImpulse = Math.Clamp(config.EvasiveStepImpulse, 0.05f, 0.6f);
     }
 
-    public bool TryPreventDamage(Entity entity, DamageSource source, float incomingDamage)
+    public bool TryActivate(EntityPlayer entityPlayer, DamageSource source, bool wouldBeLethal)
     {
-        if (entity is not EntityPlayer entityPlayer
-            || entityPlayer.Player is not IServerPlayer player
+        if (!wouldBeLethal || entityPlayer.Player is not IServerPlayer player
             || !entityPlayer.Alive
-            || incomingDamage <= 0f)
+            || !IsHostile(entityPlayer, source) || !IsDexterityPrimary(entityPlayer)
+            || IsOnCooldown(player))
         {
             return false;
-        }
-
-        if (IsInvulnerable(entityPlayer))
-        {
-            return true;
         }
 
         RpgPlayerState state = playerStore.GetOrCreate(player);
-        if (CoreAttributeResolver.ResolvePrimary(state) != CoreAttributeResolver.Dexterity)
-        {
-            return false;
-        }
+        ApplyEscape(player, source, state);
+        StartCooldownAndInvulnerability(player, state);
+        SpawnBurst(entityPlayer);
+        return true;
+    }
 
-        ITreeAttribute? health = entityPlayer.WatchedAttributes.GetTreeAttribute("health");
-        float currentHealth = health?.GetFloat("currenthealth", 0f) ?? 0f;
-        if (currentHealth <= 0f || incomingDamage + 0.001f < currentHealth)
-        {
-            return false;
-        }
+    private bool IsHostile(EntityPlayer player, DamageSource source) =>
+        source.Type != EnumDamageType.Heal
+        && source.Source is EnumDamageSource.Entity or EnumDamageSource.Player
+        && source.GetCauseEntity() is Entity attacker && attacker != player && hostile(player, attacker);
 
-        long now = api.World.ElapsedMilliseconds;
-        long cooldownUntil = GetUntil(cooldownUntilByPlayer, player.PlayerUID);
-        if (cooldownUntil > now)
-        {
-            return false;
-        }
+    private bool IsDexterityPrimary(EntityPlayer player) => dexterityPrimary(player);
 
-        long cooldownMs = ModifiedDuration(state, "evasive_step_cooldown", baseCooldownMs, 500L);
-        long invulnerabilityMs = ModifiedDuration(state, "evasive_step_invulnerability", baseInvulnerabilityMs, 100L);
+    private bool IsOnCooldown(IServerPlayer player) =>
+        GetUntil(cooldownUntilByPlayer, player.PlayerUID) > api.World.ElapsedMilliseconds;
+
+    private void ApplyEscape(IServerPlayer player, DamageSource source, RpgPlayerState state)
+    {
         double impulse = Math.Clamp(Modifiers(state, "evasive_step_impulse").Resolve(baseImpulse), 0.05, 0.8);
-        (double x, double z) = EscapeDirection(entityPlayer, source.GetCauseEntity());
+        (double x, double z) = EscapeDirection(player.Entity, source.GetCauseEntity());
         double motionX = x * impulse;
         double motionZ = z * impulse;
         movementEffects.Apply(player, new MovementEffectRequest(
@@ -94,10 +90,15 @@ public sealed class EvasiveStepService
             MovementEffectAxes.Horizontal,
             new MovementVector(motionX, 0, motionZ),
             Priority: 100));
+    }
+
+    private void StartCooldownAndInvulnerability(IServerPlayer player, RpgPlayerState state)
+    {
+        long now = api.World.ElapsedMilliseconds;
+        long cooldownMs = ModifiedDuration(state, "evasive_step_cooldown", baseCooldownMs, 500L);
+        long invulnerabilityMs = ModifiedDuration(state, "evasive_step_invulnerability", baseInvulnerabilityMs, 100L);
         cooldownUntilByPlayer[player.PlayerUID] = now + cooldownMs;
         invulnerableUntilByPlayer[player.PlayerUID] = now + invulnerabilityMs;
-        SpawnBurst(player.Entity);
-        return true;
     }
 
     public float CooldownRemainingSeconds(IServerPlayer player)

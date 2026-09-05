@@ -99,9 +99,10 @@ public sealed class RpgModule : IVrpgModule
         EntityDamageScalingPatch.HostileDamageObserved = combatStates.ObserveHostileDamage;
         resources = new RpgResourceService(api, config, data, talentTree, playerStore, channel, combatStates);
         movementEffects = new PlayerMovementEffectService(api, channel);
-        evasiveStep = new EvasiveStepService(api, config, talentTree, playerStore, channel, movementEffects);
+        // Gear-foundation composition supplies authoritative class/hostility resolvers in Task 9.
+        evasiveStep = new EvasiveStepService(api, config, talentTree, playerStore, channel, movementEffects,
+            _ => false, (_, _) => false);
         resources.EvasiveStepCooldownRemaining = evasiveStep.CooldownRemainingSeconds;
-        EntityDamageScalingPatch.DamagePrevented = evasiveStep.TryPreventDamage;
         skillDamage = new SkillDamageResolver(talentTree);
         visualBroadcaster = new CombatVisualBroadcaster(api, channel);
         groundAreas = new GroundAreaService(api, channel);
@@ -1017,10 +1018,7 @@ public sealed class RpgModule : IVrpgModule
             EntityDamageScalingPatch.HostileDamageObserved = null;
         }
 
-        if (evasiveStep != null && EntityDamageScalingPatch.DamagePrevented == evasiveStep.TryPreventDamage)
-        {
-            EntityDamageScalingPatch.DamagePrevented = null;
-        }
+        EntityDamageScalingPatch.PlayerDamageResolver = null;
 
         creatures?.Stop();
         groundAreas?.Dispose();

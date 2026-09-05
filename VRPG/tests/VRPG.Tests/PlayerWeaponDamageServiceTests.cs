@@ -10,6 +10,7 @@ using Xunit;
 
 namespace VRPG.Tests;
 
+[Collection("EntityDamageScalingPatch")]
 public sealed class PlayerWeaponDamageServiceTests
 {
     [Theory]

@@ -9,7 +9,7 @@ namespace VRPG.Patches;
 public static class EntityDamageScalingPatch
 {
     public static Action<Entity, Entity>? HostileDamageObserved { get; set; }
-    public static System.Func<Entity, DamageSource, float, bool>? DamagePrevented { get; set; }
+    public static System.Func<Entity, DamageSource, float, float>? PlayerDamageResolver { get; set; }
     public static System.Func<Entity, DamageSource, float, float?>? PlayerOutgoingDamageResolver { get; set; }
 
     public static void Patch(Harmony harmony)
@@ -36,34 +36,35 @@ public static class EntityDamageScalingPatch
 
         Entity? target = __instance.entity;
         Entity? source = damageSource.GetCauseEntity();
-        if (target == null || source == null || source == target)
+        if (target == null)
         {
             return;
         }
 
-        HostileDamageObserved?.Invoke(source, target);
-        bool resolvedPlayerHit = source is EntityPlayer && RpgDamageSourceTagger.IsSkill(damageSource);
-        if (source is EntityPlayer && !resolvedPlayerHit
-            && PlayerOutgoingDamageResolver?.Invoke(target, damageSource, damage) is float resolved)
+        if (source != null && source != target)
         {
-            damage = resolved;
-            resolvedPlayerHit = true;
-        }
-        if (!resolvedPlayerHit)
-        {
-            float sourceMultiplier = Math.Max(0.01f, source.WatchedAttributes.GetFloat("vrpgDamageMultiplier", 1f));
-            int sourceLevel = Math.Max(1, source.WatchedAttributes.GetInt("vrpgLevel", 1));
-            int targetLevel = Math.Max(1, target.WatchedAttributes.GetInt("vrpgLevel", 1));
-            int delta = sourceLevel - targetLevel;
-            float levelMultiplier = delta >= 0
-                ? 1f + Math.Min(99, delta) * 0.04f
-                : 1f / (1f + Math.Min(99, -delta) * 0.18f);
+            HostileDamageObserved?.Invoke(source, target);
+            bool resolvedPlayerHit = source is EntityPlayer && RpgDamageSourceTagger.IsSkill(damageSource);
+            if (source is EntityPlayer && !resolvedPlayerHit
+                && PlayerOutgoingDamageResolver?.Invoke(target, damageSource, damage) is float resolved)
+            {
+                damage = resolved;
+                resolvedPlayerHit = true;
+            }
+            if (!resolvedPlayerHit)
+            {
+                float sourceMultiplier = Math.Max(0.01f, source.WatchedAttributes.GetFloat("vrpgDamageMultiplier", 1f));
+                int sourceLevel = Math.Max(1, source.WatchedAttributes.GetInt("vrpgLevel", 1));
+                int targetLevel = Math.Max(1, target.WatchedAttributes.GetInt("vrpgLevel", 1));
+                int delta = sourceLevel - targetLevel;
+                float levelMultiplier = delta >= 0
+                    ? 1f + Math.Min(99, delta) * 0.04f
+                    : 1f / (1f + Math.Min(99, -delta) * 0.18f);
 
-            damage *= sourceMultiplier * levelMultiplier;
+                damage *= sourceMultiplier * levelMultiplier;
+            }
         }
-        if (DamagePrevented?.Invoke(target, damageSource, damage) == true)
-        {
-            damage = 0f;
-        }
+        if (target is EntityPlayer && PlayerDamageResolver != null)
+            damage = Math.Max(0f, PlayerDamageResolver(target, damageSource, damage));
     }
 }
