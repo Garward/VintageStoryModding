@@ -7,7 +7,7 @@ namespace VRPG.Inventory.Gear;
 public static class GearInstanceSchema
 {
     public const int CurrentVersion = 1;
-    public const int CurrentGenerationRules = 2;
+    public const int CurrentGenerationRules = 1;
 }
 
 /// <summary>Modifier operations that may be persisted before definition validation is available.</summary>

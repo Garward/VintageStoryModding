@@ -51,16 +51,16 @@ public sealed class GearItemStateCodecTests
     }
 
     [Fact]
-    public void HistoricalPositiveGenerationVersionRoundTripsWhileFutureAndZeroVersionsAreRejected()
+    public void CurrentGenerationVersionRoundTripsWhileFutureAndZeroVersionsAreRejected()
     {
-        Assert.True(GearInstanceSchema.CurrentGenerationRules > 1);
-        GearInstance historical = CreateFixture() with { GenerationRuleVersion = 1 };
+        Assert.Equal(1, GearInstanceSchema.CurrentGenerationRules);
+        GearInstance current = CreateFixture();
 
         bool decoded = GearItemStateCodec.TryDecode(
-            GearItemStateCodec.Encode(historical), out GearInstance? actual, out string error);
+            GearItemStateCodec.Encode(current), out GearInstance? actual, out string error);
 
         Assert.True(decoded, error);
-        Assert.Equal(1, actual!.GenerationRuleVersion);
+        Assert.Equal(GearInstanceSchema.CurrentGenerationRules, actual!.GenerationRuleVersion);
         Assert.Throws<ArgumentException>(() => GearItemStateCodec.Encode(
             CreateFixture() with { GenerationRuleVersion = 0 }));
         Assert.Throws<ArgumentException>(() => GearItemStateCodec.Encode(
