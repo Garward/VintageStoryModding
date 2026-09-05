@@ -394,6 +394,7 @@ public static class GearDefinitionValidator
             if (definition == null) continue;
             definition.Code = NormalizeCode(definition.Code);
             definition.UniqueCode = NormalizeOptionalCode(definition.UniqueCode);
+            CanonicalizeModifierStats(definition.Implicits);
         }
         foreach (GearRarityDefinition rarity in rarities)
         {
@@ -404,6 +405,21 @@ public static class GearDefinitionValidator
             if (affix == null) continue;
             affix.Code = NormalizeCode(affix.Code);
             affix.MinimumRarityCode = NormalizeCode(affix.MinimumRarityCode);
+            foreach (GearAffixTierDefinition tier in affix.Tiers ?? Array.Empty<GearAffixTierDefinition>())
+            {
+                if (tier != null) CanonicalizeModifierStats(tier.Modifiers);
+            }
+        }
+    }
+
+    private static void CanonicalizeModifierStats(StatModifierDefinition[]? modifiers)
+    {
+        foreach (StatModifierDefinition modifier in modifiers ?? Array.Empty<StatModifierDefinition>())
+        {
+            if (modifier != null && !string.IsNullOrWhiteSpace(modifier.Stat))
+            {
+                modifier.Stat = NormalizeCode(modifier.Stat);
+            }
         }
     }
 

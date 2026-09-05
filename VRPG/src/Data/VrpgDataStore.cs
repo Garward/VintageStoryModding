@@ -78,10 +78,10 @@ public sealed class VrpgDataStore<T> where T : class, IVrpgDataRecord
                 record.Name = record.Code;
             }
 
-            byCode[record.Code] = record;
+            byCode.TryAdd(record.Code, record);
+            ordered.Add(record);
         }
 
-        ordered.AddRange(byCode.Values);
         ordered.Sort((left, right) => string.Compare(left.Code, right.Code, StringComparison.OrdinalIgnoreCase));
     }
 

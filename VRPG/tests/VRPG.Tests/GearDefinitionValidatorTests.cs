@@ -146,6 +146,43 @@ public sealed class GearDefinitionValidatorTests
     }
 
     [Fact]
+    public void RejectsExcludedEquipmentRoleFromOtherwiseCompatibleBase()
+    {
+        GearAffixDefinition affix = ValidAffix();
+        affix.AllowedEquipmentRoles = Array.Empty<string>();
+        affix.ExcludedEquipmentRoles = new[] { PlayerEquipmentRoles.MainWeapon };
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, Rarities(), new[] { affix }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("compatible gear base", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RejectsUnknownAffixEquipmentRole()
+    {
+        GearAffixDefinition affix = ValidAffix();
+        affix.AllowedEquipmentRoles = new[] { "armor.elbow" };
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, Rarities(), new[] { affix }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("unknown allowed equipment role", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void RejectsAffixEquipmentRoleIncludedInBothLists()
+    {
+        GearAffixDefinition affix = ValidAffix();
+        affix.ExcludedEquipmentRoles = new[] { PlayerEquipmentRoles.MainWeapon };
+
+        string[] errors = GearDefinitionValidator.Validate(
+            new[] { ValidBase() }, Rarities(), new[] { affix }, ChassisExists);
+
+        Assert.Contains(errors, error => error.Contains("both allow and exclude equipment role", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void RejectsUnsupportedOperationsNonfiniteRollsAndUniqueWithoutAuthoredIdentity()
     {
         GearBaseDefinition baseDefinition = ValidBase();
@@ -202,6 +239,52 @@ public sealed class GearDefinitionValidatorTests
 
         LibraryIndex library = LibraryIndex.Build(registry);
         Assert.Contains(library.Entries, entry => entry.Code == "vrpg:test-sword");
+    }
+
+    [Fact]
+    public void RegistryPublishesCanonicalDomainlessModifierStats()
+    {
+        GearBaseDefinition gearBase = ValidBase();
+        gearBase.Implicits = new[]
+        {
+            new StatModifierDefinition { Stat = "armor", Min = 1, Max = 1, Operation = "add" }
+        };
+        GearAffixDefinition affix = ValidAffix();
+        affix.Tiers[0].Modifiers = new[]
+        {
+            new StatModifierDefinition { Stat = "weapon_power", Min = 1, Max = 4, Operation = "add" }
+        };
+        var registry = new VRPGDataRegistry();
+        registry.GearBases.Load(new[] { gearBase });
+        registry.Rarities.Load(Rarities());
+        registry.Affixes.Load(new[] { affix });
+
+        Assert.Empty(GearDefinitionValidator.Validate(
+            registry.GearBases.All, registry.Rarities.All, registry.Affixes.All, ChassisExists));
+        Assert.Equal("vrpg:armor", registry.GearBases.All[0].Implicits[0].Stat);
+        Assert.Equal("vrpg:weapon_power", registry.Affixes.All[0].Tiers[0].Modifiers[0].Stat);
+    }
+
+    [Fact]
+    public void RegistryPreservesCanonicalCollisionsForAggregateValidation()
+    {
+        GearBaseDefinition first = ValidBase();
+        first.Code = "test-sword";
+        first.Name = "First sword";
+        GearBaseDefinition second = ValidBase();
+        second.Code = "vrpg:test-sword";
+        second.Name = "Second sword";
+        var registry = new VRPGDataRegistry();
+        registry.GearBases.Load(new[] { first, second });
+        registry.Rarities.Load(Rarities());
+        registry.Affixes.Load(new[] { ValidAffix() });
+
+        string[] errors = GearDefinitionValidator.Validate(
+            registry.GearBases.All, registry.Rarities.All, registry.Affixes.All, ChassisExists);
+
+        Assert.Equal(2, registry.GearBases.All.Count);
+        Assert.Equal("First sword", registry.GearBases.Get("vrpg:test-sword")!.Name);
+        Assert.Contains(errors, error => error.Contains("duplicate gear base code", StringComparison.Ordinal));
     }
 
     private static GearBaseDefinition ValidBase()
