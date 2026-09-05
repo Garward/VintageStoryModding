@@ -12,5 +12,6 @@ public sealed class GearRarityDefinition : IVrpgDataRecord
     public int MaxAffixes { get; set; }
     public float StatScalar { get; set; } = 1f;
     public float WeaponPowerScalar { get; set; } = 1f;
+    /// <summary>Marks a rarity that requires an authored unique identity.</summary>
     public bool UniqueLike { get; set; }
 }

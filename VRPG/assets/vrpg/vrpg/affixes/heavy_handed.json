@@ -1,10 +1,21 @@
 {
   "code": "vrpg:heavy_handed",
   "name": "Heavy-Handed",
-  "slotTag": "weapon",
-  "rarity": "vrpg:common",
-  "modifiers": [
-    { "stat": "vrpg:physical_damage", "min": 1, "max": 4, "operation": "add" },
-    { "stat": "vrpg:strength", "min": 1, "max": 3, "operation": "add" }
+  "family": "weapon",
+  "requiredTags": [ "weapon" ],
+  "excludedTags": [],
+  "mutualExclusionGroup": "weapon-power",
+  "uniquePerItem": true,
+  "minimumRarityCode": "vrpg:common",
+  "tiers": [
+    {
+      "tier": 1,
+      "minimumRequiredLevel": 1,
+      "maximumRequiredLevel": 100,
+      "modifiers": [
+        { "stat": "vrpg:physical_damage", "min": 1, "max": 4, "operation": "add" },
+        { "stat": "vrpg:strength", "min": 1, "max": 3, "operation": "add" }
+      ]
+    }
   ]
 }

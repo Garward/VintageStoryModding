@@ -1,9 +1,20 @@
 {
   "code": "vrpg:stalwart",
   "name": "Stalwart",
-  "slotTag": "armor",
-  "rarity": "vrpg:common",
-  "modifiers": [
-    { "stat": "vrpg:max_health_percent", "min": 3, "max": 8, "operation": "add" }
+  "family": "defense",
+  "requiredTags": [ "armor" ],
+  "excludedTags": [],
+  "mutualExclusionGroup": "health",
+  "uniquePerItem": true,
+  "minimumRarityCode": "vrpg:common",
+  "tiers": [
+    {
+      "tier": 1,
+      "minimumRequiredLevel": 1,
+      "maximumRequiredLevel": 100,
+      "modifiers": [
+        { "stat": "vrpg:max_health_percent", "min": 3, "max": 8, "operation": "add" }
+      ]
+    }
   ]
 }

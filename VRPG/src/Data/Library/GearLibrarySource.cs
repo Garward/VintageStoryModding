@@ -10,6 +10,28 @@ public sealed class GearLibrarySource : ILibrarySource
 
     public IEnumerable<LibraryEntry> Build(VRPGDataRegistry data)
     {
+        foreach (GearBaseDefinition gearBase in data.GearBases.All)
+        {
+            string profile = gearBase.LevelOneWeaponPower > 0f
+                ? $"{gearBase.LevelOneWeaponPower:0.###} Weapon Power"
+                : $"{gearBase.LevelOneArmor:0.###} Armor";
+            yield return new LibraryEntry
+            {
+                Code = gearBase.Code,
+                Name = gearBase.Name,
+                Category = "gear/bases",
+                Summary = $"{gearBase.Family} — {profile}.",
+                Tags = new[] { "gear", "base", gearBase.EquipmentRole, gearBase.Family }.Concat(gearBase.Tags ?? System.Array.Empty<string>()).ToArray(),
+                Fields = new[]
+                {
+                    new LibraryField("Role", gearBase.EquipmentRole),
+                    new LibraryField("Family", gearBase.Family),
+                    new LibraryField("Chassis", gearBase.VisualChassis),
+                    new LibraryField("Base profile", profile)
+                }
+            };
+        }
+
         foreach (GearRarityDefinition rarity in data.Rarities.All)
         {
             yield return new LibraryEntry
@@ -34,16 +56,24 @@ public sealed class GearLibrarySource : ILibrarySource
                 Code = affix.Code,
                 Name = affix.Name,
                 Category = "gear/affixes",
-                Summary = string.Join(", ", affix.Modifiers.Select(FormatModifier)),
-                Tags = new[] { "gear", "affix", affix.SlotTag, affix.Rarity },
+                Summary = string.Join("; ", (affix.Tiers ?? System.Array.Empty<GearAffixTierDefinition>()).Select(FormatTier)),
+                Tags = new[] { "gear", "affix", affix.Family, affix.MinimumRarityCode }.Concat(affix.RequiredTags ?? System.Array.Empty<string>()).ToArray(),
                 Fields = new[]
                 {
-                    new LibraryField("Slot", affix.SlotTag),
-                    new LibraryField("Rarity", affix.Rarity),
-                    new LibraryField("Modifiers", affix.Modifiers.Length.ToString())
+                    new LibraryField("Family", affix.Family),
+                    new LibraryField("Minimum rarity", affix.MinimumRarityCode),
+                    new LibraryField("Required tags", string.Join(", ", affix.RequiredTags ?? System.Array.Empty<string>())),
+                    new LibraryField("Excluded tags", string.Join(", ", affix.ExcludedTags ?? System.Array.Empty<string>())),
+                    new LibraryField("Tiers", (affix.Tiers ?? System.Array.Empty<GearAffixTierDefinition>()).Length.ToString())
                 }
             };
         }
+    }
+
+    private static string FormatTier(GearAffixTierDefinition tier)
+    {
+        return $"Tier {tier.Tier} (Lv {tier.MinimumRequiredLevel}-{tier.MaximumRequiredLevel}): "
+            + string.Join(", ", (tier.Modifiers ?? System.Array.Empty<StatModifierDefinition>()).Select(FormatModifier));
     }
 
     private static string FormatModifier(StatModifierDefinition modifier)
