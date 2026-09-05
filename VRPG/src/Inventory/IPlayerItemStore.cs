@@ -22,6 +22,12 @@ public interface IPlayerItemStore
     PlayerItemReservationSnapshot Reservation(string reservationId);
     PlayerItemOperationResult CommitReservation(string requestId, string reservationId);
     PlayerItemOperationResult RollbackReservation(string requestId, string reservationId);
+    bool TryGetCompletedEquip(
+        string requestId,
+        string entryId,
+        string roleCode,
+        long expectedRevision,
+        out PlayerItemOperationResult? result);
     PlayerItemOperationResult Equip(
         string requestId,
         string entryId,

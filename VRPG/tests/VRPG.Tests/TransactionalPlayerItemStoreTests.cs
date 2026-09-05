@@ -169,6 +169,52 @@ public sealed class TransactionalPlayerItemStoreTests
     }
 
     [Fact]
+    public void CompletedEquipPreflightReturnsReplayConflictOrNewWithoutMutation()
+    {
+        IPlayerItemStore store = Store("gear");
+        long revision = store.Insert("insert-preflight", Gear(), 1, 0).Revision;
+        PlayerItemOperationResult accepted = store.Equip(
+            "equip-preflight",
+            "gear",
+            PlayerEquipmentRoles.MainWeapon,
+            revision);
+        PlayerItemOperationResult moved = store.MoveToRecovery(
+            "move-after-preflight",
+            "gear",
+            PlayerItemLocation.Unresolved,
+            PlayerItemRecoveryReason.UnsupportedContent,
+            "test",
+            accepted.Revision);
+
+        bool replayed = store.TryGetCompletedEquip(
+            "equip-preflight",
+            "gear",
+            PlayerEquipmentRoles.MainWeapon,
+            revision,
+            out PlayerItemOperationResult? replay);
+        bool conflicted = store.TryGetCompletedEquip(
+            "equip-preflight",
+            "missing",
+            PlayerEquipmentRoles.Head,
+            moved.Revision,
+            out PlayerItemOperationResult? conflict);
+        bool isNew = store.TryGetCompletedEquip(
+            "new-equip",
+            "gear",
+            PlayerEquipmentRoles.MainWeapon,
+            moved.Revision,
+            out PlayerItemOperationResult? newResult);
+
+        Assert.True(replayed);
+        Assert.Equal(accepted, replay);
+        Assert.True(conflicted);
+        Assert.Equal(PlayerItemOperationRejection.RequestIdConflict, conflict!.Rejection);
+        Assert.False(isNew);
+        Assert.Null(newResult);
+        Assert.Equal(moved.Revision, store.Revision);
+    }
+
+    [Fact]
     public void UnequipReturnsCanonicalEntryToStorage()
     {
         var store = Store("gear");

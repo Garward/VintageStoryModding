@@ -138,6 +138,80 @@ public sealed class GearEquipmentServiceTests
     }
 
     [Fact]
+    public void SuccessfulEquipReplaysAfterEntryIsUnequippedAndExtracted()
+    {
+        IPlayerItemStore store = StoreWithGear(1, PlayerEquipmentRoles.MainWeapon);
+        string entryId = store.Query(GearQuery()).Entries.Single().EntryId;
+        long equipRevision = store.Revision;
+        GearEquipmentService service = GearEquipmentServiceForFixtures();
+        PlayerItemOperationResult accepted = service.TryEquip(
+            store, 1, "equip-then-remove", entryId, PlayerEquipmentRoles.MainWeapon, equipRevision);
+        PlayerItemOperationResult unequipped = store.Unequip(
+            "unequip-after", PlayerEquipmentRoles.MainWeapon, accepted.Revision);
+        PlayerItemMutationResult extracted = store.Extract(
+            "extract-after", entryId, 1, unequipped.Revision);
+
+        PlayerItemOperationResult replay = service.TryEquip(
+            store, 1, "equip-then-remove", entryId, PlayerEquipmentRoles.MainWeapon, equipRevision);
+
+        Assert.True(extracted.Success);
+        Assert.Equal(accepted, replay);
+        Assert.Equal(extracted.Revision, store.Revision);
+    }
+
+    [Fact]
+    public void CompletedEquipRequestConflictsBeforeCurrentGearValidation()
+    {
+        IPlayerItemStore store = StoreWithGear(1, PlayerEquipmentRoles.MainWeapon);
+        string entryId = store.Query(GearQuery()).Entries.Single().EntryId;
+        long equipRevision = store.Revision;
+        GearEquipmentService service = GearEquipmentServiceForFixtures();
+        PlayerItemOperationResult accepted = service.TryEquip(
+            store, 1, "completed-equip", entryId, PlayerEquipmentRoles.MainWeapon, equipRevision);
+        PlayerItemOperationResult moved = store.MoveToRecovery(
+            "move-after-equip",
+            entryId,
+            PlayerItemLocation.Unresolved,
+            PlayerItemRecoveryReason.UnsupportedContent,
+            "test",
+            accepted.Revision);
+
+        PlayerItemOperationResult differentRole = service.TryEquip(
+            store, 1, "completed-equip", entryId, PlayerEquipmentRoles.Head, equipRevision);
+        PlayerItemOperationResult differentEntry = service.TryEquip(
+            store, 1, "completed-equip", "missing", PlayerEquipmentRoles.MainWeapon, equipRevision);
+        PlayerItemOperationResult differentRevision = service.TryEquip(
+            store, 1, "completed-equip", entryId, PlayerEquipmentRoles.MainWeapon, moved.Revision);
+
+        Assert.Equal(PlayerItemOperationRejection.RequestIdConflict, differentRole.Rejection);
+        Assert.Equal(PlayerItemOperationRejection.RequestIdConflict, differentEntry.Rejection);
+        Assert.Equal(PlayerItemOperationRejection.RequestIdConflict, differentRevision.Rejection);
+        Assert.Equal(moved.Revision, store.Revision);
+    }
+
+    [Fact]
+    public void NewRequestStillRequiresCurrentGearValidation()
+    {
+        IPlayerItemStore store = StoreWithGear(1, PlayerEquipmentRoles.MainWeapon);
+        string entryId = store.Query(GearQuery()).Entries.Single().EntryId;
+        GearEquipmentService service = GearEquipmentServiceForFixtures();
+        PlayerItemOperationResult moved = store.MoveToRecovery(
+            "move-new-request",
+            entryId,
+            PlayerItemLocation.Unresolved,
+            PlayerItemRecoveryReason.UnsupportedContent,
+            "test",
+            store.Revision);
+
+        PlayerItemOperationResult result = service.TryEquip(
+            store, 1, "genuinely-new", entryId, PlayerEquipmentRoles.MainWeapon, moved.Revision);
+
+        Assert.Equal(PlayerItemOperationRejection.InvalidGear, result.Rejection);
+        Assert.Empty(store.Equipment().Entries);
+        Assert.Equal(moved.Revision, store.Revision);
+    }
+
+    [Fact]
     public void SnapshotReturnsExactCopySafeEquippedEntries()
     {
         IPlayerItemStore store = StoreWithGear(20, PlayerEquipmentRoles.MainWeapon);
@@ -194,14 +268,26 @@ public sealed class GearEquipmentServiceTests
             4,
             new[] { new EquippedPlayerItemRecord(PlayerEquipmentRoles.MainWeapon, "missing") },
             Array.Empty<PlayerItemDetail>());
-        var duplicate = new SnapshotStore(
+        var duplicateEntry = new SnapshotStore(
             5,
             new[]
             {
                 new EquippedPlayerItemRecord(PlayerEquipmentRoles.MainWeapon, "gear"),
-                new EquippedPlayerItemRecord(PlayerEquipmentRoles.MainWeapon, "gear")
+                new EquippedPlayerItemRecord(PlayerEquipmentRoles.Head, "gear")
             },
             new[] { detail });
+        PlayerItemDetail secondDetail = Detail(
+            "gear-b",
+            Gear(1, PlayerEquipmentRoles.MainWeapon),
+            PlayerItemLocation.Equipped);
+        var duplicateRole = new SnapshotStore(
+            5,
+            new[]
+            {
+                new EquippedPlayerItemRecord(PlayerEquipmentRoles.MainWeapon, "gear"),
+                new EquippedPlayerItemRecord(PlayerEquipmentRoles.MainWeapon, "gear-b")
+            },
+            new[] { detail, secondDetail });
         var racing = new SnapshotStore(
             6,
             new[] { new EquippedPlayerItemRecord(PlayerEquipmentRoles.MainWeapon, "gear") },
@@ -209,13 +295,16 @@ public sealed class GearEquipmentServiceTests
             mutateRevisionOnGet: true);
 
         GearEquipmentSnapshot missingSnapshot = service.Snapshot(missing);
-        GearEquipmentSnapshot duplicateSnapshot = service.Snapshot(duplicate);
+        GearEquipmentSnapshot duplicateEntrySnapshot = service.Snapshot(duplicateEntry);
+        GearEquipmentSnapshot duplicateRoleSnapshot = service.Snapshot(duplicateRole);
         GearEquipmentSnapshot racingSnapshot = service.Snapshot(racing);
 
         Assert.False(missingSnapshot.Valid);
         Assert.Contains("missing", missingSnapshot.Error, StringComparison.Ordinal);
-        Assert.False(duplicateSnapshot.Valid);
-        Assert.Contains("gear", duplicateSnapshot.Error, StringComparison.Ordinal);
+        Assert.False(duplicateEntrySnapshot.Valid);
+        Assert.Contains("gear", duplicateEntrySnapshot.Error, StringComparison.Ordinal);
+        Assert.False(duplicateRoleSnapshot.Valid);
+        Assert.Contains("gear-b", duplicateRoleSnapshot.Error, StringComparison.Ordinal);
         Assert.False(racingSnapshot.Valid);
         Assert.Empty(racingSnapshot.Entries);
         Assert.Contains("revision", racingSnapshot.Error, StringComparison.OrdinalIgnoreCase);
@@ -317,6 +406,17 @@ public sealed class GearEquipmentServiceTests
                 }
             };
             return true;
+        }
+
+        public bool TryGetCompletedEquip(
+            string requestId,
+            string entryId,
+            string roleCode,
+            long expectedRevision,
+            out PlayerItemOperationResult? result)
+        {
+            result = null;
+            return false;
         }
 
         public PlayerEquipmentSnapshot Equipment() => new(Revision, (EquippedPlayerItemRecord[])equipment.Clone());

@@ -86,6 +86,34 @@ public sealed class PlayerItemPersistenceTests
             out GearInstance? restoredGear,
             out string gearError), gearError);
         AssertGearContentEqual(expectedGear, restoredGear!);
+        PlayerItemOperationResult unequippedGear = restored.Unequip(
+            "unequip-restored-gear",
+            PlayerEquipmentRoles.MainWeapon,
+            restored.Revision);
+        PlayerItemMutationResult extractedGear = restored.Extract(
+            "extract-restored-gear",
+            gearInsert.EntryId,
+            1,
+            unequippedGear.Revision);
+        PlayerItemOperationResult persistedEquipReplay =
+            new GearEquipmentService(TestGearDefinitions.Registry()).TryEquip(
+                restored,
+                expectedGear.RequiredLevel,
+                "equip",
+                gearInsert.EntryId,
+                PlayerEquipmentRoles.MainWeapon,
+                missingInsert.Revision);
+        PlayerItemOperationResult persistedEquipConflict =
+            new GearEquipmentService(TestGearDefinitions.Registry()).TryEquip(
+                restored,
+                expectedGear.RequiredLevel,
+                "equip",
+                "missing",
+                PlayerEquipmentRoles.Head,
+                extractedGear.Revision);
+        Assert.True(extractedGear.Success);
+        Assert.Equal(equipped, persistedEquipReplay);
+        Assert.Equal(PlayerItemOperationRejection.RequestIdConflict, persistedEquipConflict.Rejection);
         PlayerRecoverySummary recovery = restored.Recovery().Entries.Single();
         Assert.Equal(PlayerItemRecoveryReason.MissingAsset, recovery.Reason);
         Assert.Equal("addon reload", recovery.Source);

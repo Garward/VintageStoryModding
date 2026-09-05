@@ -153,13 +153,47 @@ public sealed partial class InMemoryPlayerItemStore
         }
     }
 
+    public bool TryGetCompletedEquip(
+        string requestId,
+        string entryId,
+        string roleCode,
+        long expectedRevision,
+        out PlayerItemOperationResult? result)
+    {
+        string fingerprint = EquipFingerprint(entryId, roleCode, expectedRevision);
+        lock (sync)
+        {
+            if (TryBeginRequest(
+                requestId,
+                fingerprint,
+                out PlayerItemOperationResult? replay,
+                out bool conflict))
+            {
+                result = replay;
+                return replay != null;
+            }
+
+            if (conflict)
+            {
+                result = PlayerItemOperationResult.Rejected(
+                    revision,
+                    requestId,
+                    PlayerItemOperationRejection.RequestIdConflict);
+                return true;
+            }
+
+            result = null;
+            return false;
+        }
+    }
+
     public PlayerItemOperationResult Equip(
         string requestId,
         string entryId,
         string roleCode,
         long expectedRevision)
     {
-        string fingerprint = $"equip|{expectedRevision}|{entryId}|{roleCode}";
+        string fingerprint = EquipFingerprint(entryId, roleCode, expectedRevision);
         lock (sync)
         {
             if (!BeginOperation(requestId, fingerprint, out PlayerItemOperationResult? immediate)) return immediate!;
@@ -550,6 +584,12 @@ public sealed partial class InMemoryPlayerItemStore
             return $"{operation}|{revision}|invalid";
         return $"{operation}|{revision}|{string.Join(';', normalized.Select(amount => $"{amount.EntryId}:{amount.Quantity}"))}";
     }
+
+    private static string EquipFingerprint(
+        string entryId,
+        string roleCode,
+        long expectedRevision) =>
+        $"equip|{expectedRevision}|{entryId}|{roleCode}";
 
     private static string PrototypeFingerprint(PlayerItemPrototype? prototype)
     {

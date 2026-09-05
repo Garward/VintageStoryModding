@@ -53,6 +53,16 @@ public sealed class GearEquipmentService
     {
         ArgumentNullException.ThrowIfNull(store);
 
+        if (store.TryGetCompletedEquip(
+            requestId,
+            entryId,
+            roleCode,
+            expectedRevision,
+            out PlayerItemOperationResult? completed))
+        {
+            return completed!;
+        }
+
         if (!store.TryGet(entryId, out PlayerItemDetail? detail)
             || detail == null
             || !IsGearStorage(detail)
