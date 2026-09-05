@@ -2969,6 +2969,18 @@ internal static class CraftingOutputGuard
     private static readonly MethodInfo ConsumeIngredientsMethod =
         AccessTools.Method(typeof(InventoryCraftingGrid), "ConsumeIngredients");
 
+    private static readonly MethodInfo CanStillCraftCurrentMethod =
+        // 1.22.7 added the just-crafted recipe parameter. Keep the legacy lookup
+        // so the same mod binary can still run on earlier 1.22 releases.
+        AccessTools.Method(
+            typeof(InventoryCraftingGrid),
+            "CanStillCraftCurrent",
+            new[] { typeof(GridRecipe) })
+        ?? AccessTools.Method(
+            typeof(InventoryCraftingGrid),
+            "CanStillCraftCurrent",
+            Type.EmptyTypes);
+
     private static readonly FieldInfo HasLeftOversField =
         AccessTools.Field(typeof(ItemSlotCraftingOutput), "hasLeftOvers");
 
@@ -3025,9 +3037,18 @@ internal static class CraftingOutputGuard
         }
     }
 
-    public static void ConsumeIngredients(InventoryCraftingGrid inv, ItemSlot outputSinkSlot)
+    public static GridRecipe ConsumeIngredients(InventoryCraftingGrid inv, ItemSlot outputSinkSlot)
     {
-        ConsumeIngredientsMethod.Invoke(inv, new object[] { outputSinkSlot });
+        return ConsumeIngredientsMethod.Invoke(inv, new object[] { outputSinkSlot }) as GridRecipe;
+    }
+
+    public static bool CanStillCraftCurrent(InventoryCraftingGrid inv, GridRecipe justCraftedRecipe)
+    {
+        object[] args = CanStillCraftCurrentMethod.GetParameters().Length == 0
+            ? Array.Empty<object>()
+            : new[] { justCraftedRecipe };
+
+        return (bool)CanStillCraftCurrentMethod.Invoke(inv, args);
     }
 
     public static void ResetLeftoverState(ItemSlotCraftingOutput outputSlot)
@@ -3155,9 +3176,9 @@ internal static class CraftingOutputGuard
             }
 
             movedTotal += moved;
-            ConsumeIngredients(inv, sinkSlot);
+            GridRecipe justCraftedRecipe = ConsumeIngredients(inv, sinkSlot);
 
-            if (!inv.CanStillCraftCurrent())
+            if (!CanStillCraftCurrent(inv, justCraftedRecipe))
             {
                 break;
             }
