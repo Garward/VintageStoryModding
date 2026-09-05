@@ -4,6 +4,7 @@ using VRPG.Config;
 using VRPG.Data;
 using VRPG.Data.Definitions;
 using VRPG.Modules.Rpg.Players;
+using VRPG.Modules.Rpg.Movement;
 using VRPG.Modules.Rpg.Stats;
 using VRPG.Modules.Rpg.Talents;
 using VRPG.Network;
@@ -17,16 +18,11 @@ namespace VRPG.Modules.Rpg.Combat;
 
 public sealed class EvasiveStepService
 {
-    private const string KnockbackAttribute = "dmgkb";
-    private const string KnockbackXAttribute = "kbdirX";
-    private const string KnockbackYAttribute = "kbdirY";
-    private const string KnockbackZAttribute = "kbdirZ";
-
     private readonly ICoreServerAPI api;
     private readonly RpgPlayerStore playerStore;
-    private readonly IServerNetworkChannel channel;
     private readonly TalentTreeCatalog talents;
     private readonly CombatVisualBroadcaster visuals;
+    private readonly PlayerMovementEffectService movementEffects;
     private readonly long baseCooldownMs;
     private readonly long baseInvulnerabilityMs;
     private readonly double baseImpulse;
@@ -38,12 +34,13 @@ public sealed class EvasiveStepService
         RpgModuleConfig config,
         TalentTreeCatalog talents,
         RpgPlayerStore playerStore,
-        IServerNetworkChannel channel)
+        IServerNetworkChannel channel,
+        PlayerMovementEffectService movementEffects)
     {
         this.api = api;
         this.talents = talents;
         this.playerStore = playerStore;
-        this.channel = channel;
+        this.movementEffects = movementEffects;
         visuals = new CombatVisualBroadcaster(api, channel);
         baseCooldownMs = (long)(Math.Max(0.5f, config.EvasiveStepCooldownSeconds) * 1000f);
         baseInvulnerabilityMs = (long)(Math.Clamp(config.EvasiveStepInvulnerabilitySeconds, 0.1f, 0.75f) * 1000f);
@@ -91,10 +88,14 @@ public sealed class EvasiveStepService
         (double x, double z) = EscapeDirection(entityPlayer, source.GetCauseEntity());
         double motionX = x * impulse;
         double motionZ = z * impulse;
-        ApplyMotion(player.Entity, motionX, motionZ);
+        movementEffects.Apply(player, new MovementEffectRequest(
+            "vrpg:evasive-step",
+            MovementEffectMode.SetVelocity,
+            MovementEffectAxes.Horizontal,
+            new MovementVector(motionX, 0, motionZ),
+            Priority: 100));
         cooldownUntilByPlayer[player.PlayerUID] = now + cooldownMs;
         invulnerableUntilByPlayer[player.PlayerUID] = now + invulnerabilityMs;
-        channel.SendPacket(new EvasiveStepActivatedPacket { MotionX = motionX, MotionZ = motionZ }, player);
         SpawnBurst(player.Entity);
         return true;
     }
@@ -184,16 +185,6 @@ public sealed class EvasiveStepService
         }
 
         return (Math.Sin(player.Pos.Yaw), -Math.Cos(player.Pos.Yaw));
-    }
-
-    private static void ApplyMotion(EntityPlayer player, double motionX, double motionZ)
-    {
-        double motionY = player.Pos.Motion.Y;
-        player.Pos.Motion.Set(motionX, motionY, motionZ);
-        player.WatchedAttributes.SetDouble(KnockbackXAttribute, motionX);
-        player.WatchedAttributes.SetDouble(KnockbackYAttribute, motionY);
-        player.WatchedAttributes.SetDouble(KnockbackZAttribute, motionZ);
-        player.Attributes.SetInt(KnockbackAttribute, 1);
     }
 
     private void SpawnBurst(EntityPlayer player)

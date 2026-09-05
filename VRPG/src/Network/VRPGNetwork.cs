@@ -32,13 +32,17 @@ public static class VRPGNetwork
             .RegisterMessageType<SkillEquipRequestPacket>()
             .RegisterMessageType<TalentPlanRequestPacket>()
             .RegisterMessageType<UpdateHubOptionsPacket>()
-            .RegisterMessageType<EvasiveStepActivatedPacket>()
+            .RegisterMessageType<MovementEffectPacket>()
             .RegisterMessageType<SkillCastRequestPacket>()
             .RegisterMessageType<SkillChannelStatePacket>()
             .RegisterMessageType<SkillLoadoutPacket>()
             .RegisterMessageType<CombatVisualEventPacket>()
             .RegisterMessageType<GroundAreaUpsertPacket>()
-            .RegisterMessageType<GroundAreaRemovePacket>();
+            .RegisterMessageType<GroundAreaRemovePacket>()
+            .RegisterMessageType<CombatInteractionRequestPacket>()
+            .RegisterMessageType<CombatInteractionResultPacket>()
+            .RegisterMessageType<OnboardingStatePacket>()
+            .RegisterMessageType<PlayerMenuCapabilityPacket>();
     }
 
     public static IClientNetworkChannel RegisterClient(ICoreClientAPI api)
@@ -66,12 +70,16 @@ public static class VRPGNetwork
             .RegisterMessageType<SkillEquipRequestPacket>()
             .RegisterMessageType<TalentPlanRequestPacket>()
             .RegisterMessageType<UpdateHubOptionsPacket>()
-            .RegisterMessageType<EvasiveStepActivatedPacket>()
+            .RegisterMessageType<MovementEffectPacket>()
             .RegisterMessageType<SkillCastRequestPacket>()
             .RegisterMessageType<SkillChannelStatePacket>()
             .RegisterMessageType<SkillLoadoutPacket>()
             .RegisterMessageType<CombatVisualEventPacket>()
             .RegisterMessageType<GroundAreaUpsertPacket>()
-            .RegisterMessageType<GroundAreaRemovePacket>();
+            .RegisterMessageType<GroundAreaRemovePacket>()
+            .RegisterMessageType<CombatInteractionRequestPacket>()
+            .RegisterMessageType<CombatInteractionResultPacket>()
+            .RegisterMessageType<OnboardingStatePacket>()
+            .RegisterMessageType<PlayerMenuCapabilityPacket>();
     }
 }

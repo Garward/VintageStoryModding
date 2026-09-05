@@ -6,6 +6,9 @@ using VRPG.Core;
 using VRPG.Client;
 using VRPG.Client.UI;
 using VRPG.Client.Patches;
+using VRPG.Client.PlayerMenu;
+using VRPG.Client.Interactions;
+using VRPG.Client.Movement;
 using VRPG.Client.Visuals;
 using VRPG.Data;
 using VRPG.Data.Definitions;
@@ -15,8 +18,12 @@ using VRPG.Modules.Rpg;
 using VRPG.Modules.Rpg.Skills;
 using VRPG.Network;
 using VRPG.Patches;
+using VRPG.Interactions;
+using VRPG.Inventory;
+using VRPG.Inventory.Persistence;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
@@ -31,10 +38,14 @@ public sealed class VRPGModSystem : ModSystem
     private IServerNetworkChannel? serverChannel;
     private IClientNetworkChannel? clientChannel;
     private RpgModule? rpgModule;
+    private PlayerItemPersistenceModule? playerItemPersistence;
+    private EngineItemIngressService? engineItemIngress;
     private GuiDialogVRPGHub? clientHubDialog;
     private GuiDialogVRPGLibrary? clientLibraryDialog;
     private GuiDialogVRPGTalentEditor? clientTalentEditorDialog;
+    private GuiDialogVRPGStarterPreview? clientStarterPreviewDialog;
     private HudElementVRPGResources? clientResourceHud;
+    private HudElementVRPGCombatConsole? clientCombatConsole;
     private HudElementVRPGEntityHealthBars? clientEntityHud;
     private HudElementVRPGSkillHotbar? clientSkillHotbar;
     private HudElementVRPGPlayerStatus? clientPlayerStatusHud;
@@ -44,16 +55,25 @@ public sealed class VRPGModSystem : ModSystem
     private HudElementVRPGChannelBar? clientChannelBar;
     private GroundTelegraphRenderer? telegraphRenderer;
     private SkillTargetingPreview? skillTargetingPreview;
+    private CombatHeldItemController? combatHeldItemController;
+    private CombatInteractionController? combatInteractionController;
+    private ClientMovementEffectController? clientMovementEffects;
+    private HudElementVRPGInteractionPrompt? clientInteractionPrompt;
     private AuraEmitterSystem? auraEmitters;
     private Harmony? clientHarmony;
     private Harmony? serverHarmony;
+    private Harmony? characterRuntimeHarmony;
     private TalentTreeSnapshotPacket clientTalentTree = new TalentTreeSnapshotPacket();
     private SkillLoadoutPacket clientSkillLoadout = new SkillLoadoutPacket();
     private long clientSkillLoadoutAtMilliseconds;
     private readonly HashSet<int> heldSkillSlots = new HashSet<int>();
+    private readonly Dictionary<int, string> heldSkillInputCodes = new Dictionary<int, string>();
     private readonly Dictionary<int, HeldRepeatCast> heldRepeatCasts = new Dictionary<int, HeldRepeatCast>();
     private ICoreClientAPI? clientApi;
     private long skillInputTickListenerId;
+    private PlayerMenuCapabilityState clientPlayerMenuCapabilities = PlayerMenuCapabilityState.Unavailable;
+    private OnboardingStatePacket? clientOnboardingState;
+    private bool clientStarterPreviewDismissed;
 
     public VRPGDataRegistry DataRegistry => dataRegistry ?? throw new InvalidOperationException("VRPG data is not loaded yet.");
     public LibraryIndex LibraryIndex => libraryIndex;
@@ -74,6 +94,9 @@ public sealed class VRPGModSystem : ModSystem
         api.RegisterItemClass("vrpg.riftchart", typeof(ItemRiftChart));
         api.RegisterEntity("EntityVrpgSkillProjectile", typeof(EntityVrpgSkillProjectile));
         api.RegisterEntity("EntityVrpgTargetedDrop", typeof(EntityVrpgTargetedDrop));
+        api.RegisterEntityBehaviorClass(
+            EntityBehaviorVrpgInteractable.BehaviorCode,
+            typeof(EntityBehaviorVrpgInteractable));
         config = VRPGConfigStore.Load(api);
         dataRegistry = new VRPGDataRegistry();
     }
@@ -106,15 +129,47 @@ public sealed class VRPGModSystem : ModSystem
             .SetMessageHandler<SkillEquipRequestPacket>((player, packet) => HandleSkillEquipRequest(api, player, packet))
             .SetMessageHandler<TalentPlanRequestPacket>((player, packet) => HandleTalentPlanRequest(api, player, packet))
             .SetMessageHandler<UpdateHubOptionsPacket>((player, packet) => HandleHubOptionsRequest(api, player, packet))
-            .SetMessageHandler<SkillCastRequestPacket>((player, packet) => HandleSkillCastRequest(player, packet));
+            .SetMessageHandler<SkillCastRequestPacket>((player, packet) => HandleSkillCastRequest(player, packet))
+            .SetMessageHandler<CombatInteractionRequestPacket>((player, packet) =>
+                rpgModule?.HandleInteraction(player, packet));
         modules.Clear();
         rpgModule = null;
+        playerItemPersistence = null;
+        engineItemIngress = null;
+
+        if (config.Modules.Rpg.InventoryReplacement.Enabled)
+        {
+            playerItemPersistence = new PlayerItemPersistenceModule();
+            AddAndStart(api, playerItemPersistence);
+            if (playerItemPersistence.Service != null)
+            {
+                engineItemIngress = new EngineItemIngressService(
+                    playerItemPersistence.Service.Directory);
+            }
+        }
 
         if (config.Modules.Rpg.Enabled)
         {
+            EnsureCharacterRuntimeAuthority(api);
             serverHarmony = new Harmony("vrpg.server");
             EntityDamageScalingPatch.Patch(serverHarmony);
-            rpgModule = new RpgModule(config.Modules.Rpg, DataRegistry, serverChannel!);
+            EngineItemFlowPatch.OwnershipResolver = _ =>
+                config.Modules.Rpg.InventoryReplacement.Enabled
+                && config.Modules.Rpg.InventoryReplacement.ExperimentalDialogReplacement
+                && playerItemPersistence?.IsReady == true
+                && engineItemIngress != null;
+            EngineItemFlowPatch.Route = (playerUid, stack) =>
+                engineItemIngress?.Route(
+                    playerUid,
+                    stack,
+                    "engine-grant-" + Guid.NewGuid().ToString("N"))
+                ?? EngineItemIngressResult.PassThrough();
+            EngineItemFlowPatch.Patch(serverHarmony, api.Logger);
+            rpgModule = new RpgModule(
+                config.Modules.Rpg,
+                DataRegistry,
+                serverChannel!,
+                () => playerItemPersistence?.IsReady == true);
             AddAndStart(api, rpgModule);
         }
 
@@ -134,6 +189,8 @@ public sealed class VRPGModSystem : ModSystem
     {
         base.StartClientSide(api);
         clientApi = api;
+        EnsureCharacterRuntimeAuthority(api);
+        clientMovementEffects = new ClientMovementEffectController(api);
 
         clientChannel = VRPGNetwork.RegisterClient(api);
         clientChannel
@@ -144,16 +201,54 @@ public sealed class VRPGModSystem : ModSystem
             .SetMessageHandler<OpenLibraryPacket>(packet => OpenLibraryDialog(api, packet))
             .SetMessageHandler<RpgResourcePacket>(packet => OpenResourceHudPacket(api, packet))
             .SetMessageHandler<SkillLoadoutPacket>(packet => OpenSkillHotbarPacket(api, packet))
-            .SetMessageHandler<EvasiveStepActivatedPacket>(packet => ApplyEvasiveStepMotion(api, packet))
+            .SetMessageHandler<MovementEffectPacket>(packet => clientMovementEffects?.Receive(packet))
             .SetMessageHandler<SkillChannelStatePacket>(packet => clientChannelBar?.SetState(packet))
             .SetMessageHandler<CombatVisualEventPacket>(packet => visualDirector?.HandleEvent(packet))
             .SetMessageHandler<GroundAreaUpsertPacket>(packet => visualDirector?.HandleAreaUpsert(packet))
-            .SetMessageHandler<GroundAreaRemovePacket>(packet => visualDirector?.HandleAreaRemove(packet));
+            .SetMessageHandler<GroundAreaRemovePacket>(packet => visualDirector?.HandleAreaRemove(packet))
+            .SetMessageHandler<OnboardingStatePacket>(packet =>
+            {
+                clientOnboardingState = packet;
+                clientStarterPreviewDismissed = false;
+                TryOpenStarterPreview(api);
+            })
+            .SetMessageHandler<PlayerMenuCapabilityPacket>(packet =>
+                clientPlayerMenuCapabilities = PlayerMenuCapabilityState.FromPacket(packet))
+            .SetMessageHandler<CombatInteractionResultPacket>(packet =>
+                combatInteractionController?.HandleResult(packet));
 
         api.Input.RegisterHotKey(VrpgHotkeys.Hub, "VRPG — Open Hub", GlKeys.V, HotkeyType.GUIOrOtherControls);
         api.Input.SetHotKeyHandler(VrpgHotkeys.Hub, OnHubHotkey);
         RegisterSkillHotkeys(api);
-        skillInputTickListenerId = api.Event.RegisterGameTickListener(_ => PollReleasedSkillHotkeys(api), 25);
+        VrpgClientHudRuntime.IsCombatActionBarActive = () =>
+            config.Modules.Rpg.Enabled
+            && config.Modules.Rpg.Hud.Enabled
+            && config.Modules.Rpg.Hud.UnifiedCombatConsole
+            && CombatActionBarMode.IsActive(
+                config.Modules.Rpg.Hud.ReplaceHotbarInSurvival,
+                api.World?.Player?.WorldData?.CurrentGameMode ?? EnumGameMode.Guest);
+        VrpgClientHudRuntime.HandleCombatActionSlot = OnCombatActionSlot;
+        combatHeldItemController = new CombatHeldItemController(api);
+        VrpgClientHudRuntime.HandleCombatWeaponCycle = combatHeldItemController.CycleWeapon;
+        if (config.Modules.Rpg.Interactions.Enabled)
+        {
+            combatInteractionController = new CombatInteractionController(
+                api,
+                config.Modules.Rpg.Interactions,
+                DataRegistry,
+                clientChannel);
+            clientInteractionPrompt = new HudElementVRPGInteractionPrompt(api);
+            combatInteractionController.PromptChanged += clientInteractionPrompt.SetState;
+            clientInteractionPrompt.TryOpen();
+        }
+        skillInputTickListenerId = api.Event.RegisterGameTickListener(_ =>
+        {
+            PollReleasedSkillHotkeys(api);
+            combatHeldItemController?.Tick();
+            combatInteractionController?.Tick();
+            clientMovementEffects?.Tick();
+            TryOpenStarterPreview(api);
+        }, 25);
 
         if (config.Modules.Rpg.Enabled)
         {
@@ -184,7 +279,19 @@ public sealed class VRPGModSystem : ModSystem
             clientChannelBar = new HudElementVRPGChannelBar(api);
         }
 
-        if (config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
+        bool unifiedCombatConsole = config.Modules.Rpg.Enabled
+            && config.Modules.Rpg.Hud.Enabled
+            && config.Modules.Rpg.Hud.UnifiedCombatConsole;
+
+        if (unifiedCombatConsole)
+        {
+            clientCombatConsole = new HudElementVRPGCombatConsole(
+                api,
+                config.Modules.Rpg.Hud,
+                config.Modules.Rpg.SkillHotbar);
+            clientCombatConsole.TryOpen();
+        }
+        else if (config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
         {
             clientResourceHud = new HudElementVRPGResources(api, config.Modules.Rpg.Hud, () => PersistClientConfig(api));
             clientResourceHud.TryOpen();
@@ -196,7 +303,7 @@ public sealed class VRPGModSystem : ModSystem
             clientEntityHud.TryOpen();
         }
 
-        if (config.Modules.Rpg.Enabled && config.Modules.Rpg.SkillHotbar.Enabled)
+        if (!unifiedCombatConsole && config.Modules.Rpg.Enabled && config.Modules.Rpg.SkillHotbar.Enabled)
         {
             clientSkillHotbar = new HudElementVRPGSkillHotbar(api, config.Modules.Rpg.SkillHotbar, () => PersistClientConfig(api));
             clientSkillHotbar.TryOpen();
@@ -204,11 +311,20 @@ public sealed class VRPGModSystem : ModSystem
 
         VrpgClientHudRuntime.HideVanillaStatbar =
             config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled && config.Modules.Rpg.Hud.HideVanillaStatbar;
+        VrpgClientHudRuntime.HideVanillaHotbar = unifiedCombatConsole;
 
-        if (config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.HideVanillaStatbar)
+        if (VrpgClientHudRuntime.HideVanillaStatbar || VrpgClientHudRuntime.HideVanillaHotbar)
         {
             clientHarmony = new Harmony("vrpg.client");
-            HudStatbarPatch.Patch(clientHarmony);
+            if (VrpgClientHudRuntime.HideVanillaStatbar)
+            {
+                HudStatbarPatch.Patch(clientHarmony);
+            }
+            if (VrpgClientHudRuntime.HideVanillaHotbar)
+            {
+                HudHotbarPatch.Patch(clientHarmony);
+                CombatPlacementPatch.Patch(clientHarmony);
+            }
         }
 
         api.ChatCommands.Create("vrpglib")
@@ -245,8 +361,13 @@ public sealed class VRPGModSystem : ModSystem
         clientTalentEditorDialog?.TryClose();
         clientTalentEditorDialog?.Dispose();
         clientTalentEditorDialog = null;
+        clientStarterPreviewDialog?.TryClose();
+        clientStarterPreviewDialog?.Dispose();
+        clientStarterPreviewDialog = null;
         clientResourceHud?.Dispose();
         clientResourceHud = null;
+        clientCombatConsole?.Dispose();
+        clientCombatConsole = null;
         clientEntityHud?.Dispose();
         clientEntityHud = null;
         clientSkillHotbar?.Dispose();
@@ -280,24 +401,144 @@ public sealed class VRPGModSystem : ModSystem
             clientApi.Event.UnregisterGameTickListener(skillInputTickListenerId);
         }
         skillInputTickListenerId = 0;
+        combatHeldItemController?.Deactivate();
+        combatHeldItemController = null;
+        if (combatInteractionController != null && clientInteractionPrompt != null)
+        {
+            combatInteractionController.PromptChanged -= clientInteractionPrompt.SetState;
+        }
+        combatInteractionController?.Dispose();
+        combatInteractionController = null;
+        clientMovementEffects?.Reset();
+        clientMovementEffects = null;
+        clientInteractionPrompt?.Dispose();
+        clientInteractionPrompt = null;
         heldSkillSlots.Clear();
+        heldSkillInputCodes.Clear();
         heldRepeatCasts.Clear();
         clientSkillLoadout = new SkillLoadoutPacket();
         clientSkillLoadoutAtMilliseconds = 0L;
         clientApi = null;
-        VrpgClientHudRuntime.HideVanillaStatbar = false;
+        clientPlayerMenuCapabilities = PlayerMenuCapabilityState.Unavailable;
+        clientOnboardingState = null;
+        clientStarterPreviewDismissed = false;
+        VrpgClientHudRuntime.Reset();
         serverHarmony?.UnpatchAll("vrpg.server");
         serverHarmony = null;
         clientHarmony?.UnpatchAll("vrpg.client");
         clientHarmony = null;
+        characterRuntimeHarmony?.UnpatchAll("vrpg.character-runtime");
+        characterRuntimeHarmony = null;
+        SurvivalCharacterRuntimePatch.OwnershipResolver = null;
+        SurvivalCharacterRuntimePatch.MovementStatResolver = null;
+        VanillaClassRuntimePatch.OwnershipResolver = null;
+        VanillaClassRuntimePatch.ClientAppearanceOnlyResolver = null;
+        EngineItemFlowPatch.Reset();
         rpgModule = null;
+        playerItemPersistence = null;
+        engineItemIngress = null;
         base.Dispose();
+    }
+
+    private void TryOpenStarterPreview(ICoreClientAPI api)
+    {
+        if (!config.Modules.Rpg.InventoryReplacement.ExperimentalDialogReplacement
+            || clientStarterPreviewDismissed
+            || clientOnboardingState == null
+            || !string.Equals(clientOnboardingState.Stage, "starter", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        if (clientStarterPreviewDialog != null)
+        {
+            if (clientStarterPreviewDialog.IsOpened())
+            {
+                return;
+            }
+
+            clientStarterPreviewDialog.Dispose();
+            clientStarterPreviewDialog = null;
+            clientStarterPreviewDismissed = true;
+            return;
+        }
+
+        foreach (GuiDialog dialog in api.Gui.OpenedGuis)
+        {
+            if (dialog.IsOpened() && dialog.DialogType == EnumDialogType.Dialog)
+            {
+                return;
+            }
+        }
+
+        clientStarterPreviewDialog = new GuiDialogVRPGStarterPreview(api, clientOnboardingState);
+        clientStarterPreviewDialog.TryOpen();
     }
 
     private void AddAndStart(ICoreServerAPI api, IVrpgModule module)
     {
         modules.Add(module);
         module.StartServerSide(api);
+    }
+
+    private void EnsureCharacterRuntimeAuthority(ICoreAPI api)
+    {
+        RpgModuleConfig rpg = config.Modules.Rpg;
+        System.Func<Entity, bool> ownsCharacterRuntime = entity =>
+        {
+            if (entity is not EntityPlayer playerEntity)
+            {
+                return false;
+            }
+
+            IPlayer? player = entity.World?.PlayerByUid(playerEntity.PlayerUID);
+            EnumGameMode gameMode = player?.WorldData?.CurrentGameMode ?? EnumGameMode.Guest;
+            return CharacterRuntimeMode.IsOwned(
+                rpg.Enabled,
+                rpg.CharacterRuntime.Enabled,
+                gameMode);
+        };
+        SurvivalCharacterRuntimePatch.OwnershipResolver = ownsCharacterRuntime;
+        VanillaClassRuntimePatch.OwnershipResolver = ownsCharacterRuntime;
+        if (api.Side == EnumAppSide.Client)
+        {
+            VanillaClassRuntimePatch.ClientAppearanceOnlyResolver = () =>
+            {
+                EntityPlayer? player = clientApi?.World?.Player?.Entity;
+                return player != null && ownsCharacterRuntime(player);
+            };
+        }
+        SurvivalCharacterRuntimePatch.MovementStatResolver = (entity, stat) =>
+        {
+            if (entity is not EntityPlayer playerEntity)
+            {
+                return null;
+            }
+
+            IPlayer? player = entity.World?.PlayerByUid(playerEntity.PlayerUID);
+            EnumGameMode gameMode = player?.WorldData?.CurrentGameMode ?? EnumGameMode.Guest;
+            CharacterRuntimeAuthorityConfig authority = rpg.CharacterRuntime;
+            return CharacterMovementAuthority.TryResolve(
+                rpg.Enabled,
+                authority.Enabled,
+                gameMode,
+                stat,
+                authority.BaseWalkSpeedMultiplier,
+                authority.BaseJumpHeightMultiplier,
+                out float value)
+                ? value
+                : null;
+        };
+
+        if (!rpg.Enabled || !rpg.CharacterRuntime.Enabled || characterRuntimeHarmony != null)
+        {
+            return;
+        }
+
+        characterRuntimeHarmony = new Harmony("vrpg.character-runtime");
+        SurvivalCharacterRuntimePatch.Patch(characterRuntimeHarmony, api.Logger);
+        VanillaClassRuntimePatch.Patch(characterRuntimeHarmony, api.Logger);
+        api.Logger.Notification("[VRPG/Character] Survival hunger, nutrition-health, body-temperature, movement-stat, and Vanilla-class authority disabled for the Adventure profile.");
     }
 
     private void RegisterCommands(ICoreServerAPI api)
@@ -767,11 +1008,25 @@ public sealed class VRPGModSystem : ModSystem
             hotKey.TriggerOnUpAlso = true;
             api.Input.SetHotKeyHandler(
                 VrpgHotkeys.SkillCodes[i],
-                keyCombination => OnSkillHotkey(slot, pressed: !keyCombination.OnKeyUp));
+                keyCombination => OnSkillHotkey(
+                    slot,
+                    pressed: !keyCombination.OnKeyUp,
+                    VrpgHotkeys.SkillCodes[slot]));
         }
     }
 
-    private bool OnSkillHotkey(int slot, bool pressed)
+    private bool OnCombatActionSlot(int slot, bool pressed)
+    {
+        clientCombatConsole?.SetActionPressed(slot, pressed);
+        if (slot < 0 || slot >= VrpgHotkeys.SkillCodes.Length || EquippedClientSkill(slot) == null)
+        {
+            return true;
+        }
+
+        return OnSkillHotkey(slot, pressed, "hotbarslot" + (slot + 1));
+    }
+
+    private bool OnSkillHotkey(int slot, bool pressed, string inputCode)
     {
         if (!config.Modules.Rpg.Enabled)
         {
@@ -784,6 +1039,15 @@ public sealed class VRPGModSystem : ModSystem
         if (!stateChanged)
         {
             return true;
+        }
+
+        if (pressed)
+        {
+            heldSkillInputCodes[slot] = inputCode;
+        }
+        else
+        {
+            heldSkillInputCodes.Remove(slot);
         }
 
         if (pressed)
@@ -830,9 +1094,12 @@ public sealed class VRPGModSystem : ModSystem
         var held = new List<int>(heldSkillSlots);
         foreach (int slot in held)
         {
+            string inputCode = heldSkillInputCodes.TryGetValue(slot, out string? code)
+                ? code
+                : VrpgHotkeys.SkillCodes[Math.Clamp(slot, 0, VrpgHotkeys.SkillCodes.Length - 1)];
             if (slot < 0
                 || slot >= VrpgHotkeys.SkillCodes.Length
-                || !api.Input.IsHotKeyPressed(VrpgHotkeys.SkillCodes[slot]))
+                || !api.Input.IsHotKeyPressed(inputCode))
             {
                 released.Add(slot);
                 continue;
@@ -844,6 +1111,8 @@ public sealed class VRPGModSystem : ModSystem
         foreach (int slot in released)
         {
             heldSkillSlots.Remove(slot);
+            heldSkillInputCodes.Remove(slot);
+            clientCombatConsole?.SetActionPressed(slot, false);
             skillTargetingPreview?.End(slot);
             bool alreadyCast = heldRepeatCasts.Remove(slot, out HeldRepeatCast? repeat)
                 && (repeat.AutomaticCastStarted || repeat.Stopped);
@@ -951,22 +1220,6 @@ public sealed class VRPGModSystem : ModSystem
         public int RemainingBurstCharges { get; set; }
         public bool AutomaticCastStarted { get; set; }
         public bool Stopped { get; set; }
-    }
-
-    private static void ApplyEvasiveStepMotion(ICoreClientAPI api, EvasiveStepActivatedPacket packet)
-    {
-        if (api.World.Player?.Entity == null)
-        {
-            return;
-        }
-
-        var player = api.World.Player.Entity;
-        double motionY = player.Pos.Motion.Y;
-        player.Pos.Motion.Set(packet.MotionX, motionY, packet.MotionZ);
-        player.WatchedAttributes.SetDouble("kbdirX", packet.MotionX);
-        player.WatchedAttributes.SetDouble("kbdirY", motionY);
-        player.WatchedAttributes.SetDouble("kbdirZ", packet.MotionZ);
-        player.Attributes.SetInt("dmgkb", 1);
     }
 
     private void HandleSkillCastRequest(IServerPlayer player, SkillCastRequestPacket packet)
@@ -1152,6 +1405,13 @@ public sealed class VRPGModSystem : ModSystem
     {
         clientHubDialog?.UpdateResources(packet);
 
+        if (config.Modules.Rpg.Hud.UnifiedCombatConsole)
+        {
+            EnsureCombatConsole(api);
+            clientCombatConsole?.SetResources(packet);
+            return;
+        }
+
         if (clientResourceHud == null && config.Modules.Rpg.Enabled && config.Modules.Rpg.Hud.Enabled)
         {
             clientResourceHud = new HudElementVRPGResources(api, config.Modules.Rpg.Hud, () => PersistClientConfig(api));
@@ -1167,6 +1427,13 @@ public sealed class VRPGModSystem : ModSystem
         SkillLoadoutPacket snapshot = packet ?? new SkillLoadoutPacket();
         clientSkillLoadout = snapshot;
         clientSkillLoadoutAtMilliseconds = api.World.ElapsedMilliseconds;
+        if (config.Modules.Rpg.Hud.UnifiedCombatConsole)
+        {
+            EnsureCombatConsole(api);
+            clientCombatConsole?.SetSkills(snapshot);
+            return;
+        }
+
         if (clientSkillHotbar == null && config.Modules.Rpg.Enabled && config.Modules.Rpg.SkillHotbar.Enabled)
         {
             clientSkillHotbar = new HudElementVRPGSkillHotbar(api, config.Modules.Rpg.SkillHotbar, () => PersistClientConfig(api));
@@ -1181,9 +1448,27 @@ public sealed class VRPGModSystem : ModSystem
         int normalizedSlotCount = Math.Clamp(slotCount, 4, 8);
         clientSkillHotbar?.SetLocked(locked);
         clientSkillHotbar?.SetSlotCount(normalizedSlotCount);
+        clientCombatConsole?.SetSkillSlotCount(normalizedSlotCount);
         config.Modules.Rpg.SkillHotbar.Locked = locked;
         config.Modules.Rpg.SkillHotbar.SlotCount = normalizedSlotCount;
         PersistClientConfig(api);
+    }
+
+    private void EnsureCombatConsole(ICoreClientAPI api)
+    {
+        if (clientCombatConsole != null
+            || !config.Modules.Rpg.Enabled
+            || !config.Modules.Rpg.Hud.Enabled
+            || !config.Modules.Rpg.Hud.UnifiedCombatConsole)
+        {
+            return;
+        }
+
+        clientCombatConsole = new HudElementVRPGCombatConsole(
+            api,
+            config.Modules.Rpg.Hud,
+            config.Modules.Rpg.SkillHotbar);
+        clientCombatConsole.TryOpen();
     }
 
     private void SetClientAutoThrow(ICoreClientAPI api, bool enabled)

@@ -1,0 +1,30 @@
+{
+  "code": "tavern",
+  "variantgroups": [{ "code": "material", "states": ["stone", "timber", "slab", "lamp"] }],
+  "shapeByType": {
+    "*-slab": { "base": "game:block/basic/slab/slab-down" },
+    "*": { "base": "game:block/basic/cube" }
+  },
+  "texturesByType": {
+    "*-timber": { "all": { "base": "game:block/wood/planks/oak1" } },
+    "*": { "all": { "base": "game:block/stone/brick/granite1" } }
+  },
+  "collisionboxByType": {
+    "*-slab": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.5, "z2": 1 },
+    "*": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+  },
+  "selectionboxByType": {
+    "*-slab": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 0.5, "z2": 1 },
+    "*": { "x1": 0, "y1": 0, "z1": 0, "x2": 1, "y2": 1, "z2": 1 }
+  },
+  "sideSolidOpaqueAoByType": {
+    "*-slab": { "all": false, "down": true },
+    "*": { "all": true }
+  },
+  "lightHsvByType": { "*-lamp": [7, 2, 22], "*": [0, 0, 0] },
+  "blockmaterial": "Stone",
+  "resistance": 1000,
+  "replaceable": 0,
+  "drops": [],
+  "creativeinventory": {}
+}

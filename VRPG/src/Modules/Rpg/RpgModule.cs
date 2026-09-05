@@ -7,14 +7,18 @@ using VRPG.Core;
 using VRPG.Data;
 using VRPG.Data.Definitions;
 using VRPG.Network;
+using VRPG.Interactions;
 using VRPG.Modules.Rpg.Combat;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Scaling;
 using VRPG.Modules.Rpg.Skills;
+using VRPG.Modules.Rpg.Movement;
+using VRPG.Modules.Rpg.Onboarding;
 using VRPG.Modules.Rpg.Stats;
 using VRPG.Modules.Rpg.StatusEffects;
 using VRPG.Modules.Rpg.Talents;
 using VRPG.Patches;
+using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
 namespace VRPG.Modules.Rpg;
@@ -24,6 +28,7 @@ public sealed class RpgModule : IVrpgModule
     private readonly RpgModuleConfig config;
     private readonly VRPGDataRegistry data;
     private readonly IServerNetworkChannel channel;
+    private readonly Func<bool> itemStoreReady;
     private readonly RpgPlayerStore playerStore = new RpgPlayerStore();
     private readonly TalentTreeCatalog talentTree = new TalentTreeCatalog();
     private readonly SavedTalentTreeLibrary savedTalentTrees = new SavedTalentTreeLibrary();
@@ -31,6 +36,7 @@ public sealed class RpgModule : IVrpgModule
     private RpgResourceService? resources;
     private CombatStateService? combatStates;
     private EvasiveStepService? evasiveStep;
+    private PlayerMovementEffectService? movementEffects;
     private CreatureProgressionService? creatures;
     private SkillCastingService? skills;
     private SkillDamageResolver? skillDamage;
@@ -38,10 +44,13 @@ public sealed class RpgModule : IVrpgModule
     private GroundAreaService? groundAreas;
     private TalentAllocationService? talentAllocation;
     private AbilityFailureNotificationService? failureNotifications;
+    private CombatInteractionService? interactions;
     private long statusTickListenerId;
     private long resourceTickListenerId;
     private long loadoutTickListenerId;
     private long skillTickListenerId;
+    private long movementTickListenerId;
+    private long onboardingTickListenerId;
     private Vintagestory.API.Common.PlayerDelegate? groundAreaSnapshotHandler;
     private ICoreServerAPI? serverApi;
     private string savedTalentTreeHash = "";
@@ -49,11 +58,16 @@ public sealed class RpgModule : IVrpgModule
     private TalentTreeSnapshotPacket activeTalentTree = new TalentTreeSnapshotPacket { TreeCode = "vrpg:default" };
     private readonly Dictionary<string, TalentEditorDraft> talentEditorDrafts = new Dictionary<string, TalentEditorDraft>(StringComparer.OrdinalIgnoreCase);
 
-    public RpgModule(RpgModuleConfig config, VRPGDataRegistry data, IServerNetworkChannel channel)
+    public RpgModule(
+        RpgModuleConfig config,
+        VRPGDataRegistry data,
+        IServerNetworkChannel channel,
+        Func<bool>? itemStoreReady = null)
     {
         this.config = config;
         this.data = data;
         this.channel = channel;
+        this.itemStoreReady = itemStoreReady ?? (() => false);
         statusEffects = new StatusEffectTracker(data);
     }
 
@@ -84,7 +98,8 @@ public sealed class RpgModule : IVrpgModule
         combatStates = new CombatStateService(api, config.CombatStatLockSeconds);
         EntityDamageScalingPatch.HostileDamageObserved = combatStates.ObserveHostileDamage;
         resources = new RpgResourceService(api, config, data, talentTree, playerStore, channel, combatStates);
-        evasiveStep = new EvasiveStepService(api, config, talentTree, playerStore, channel);
+        movementEffects = new PlayerMovementEffectService(api, channel);
+        evasiveStep = new EvasiveStepService(api, config, talentTree, playerStore, channel, movementEffects);
         resources.EvasiveStepCooldownRemaining = evasiveStep.CooldownRemainingSeconds;
         EntityDamageScalingPatch.DamagePrevented = evasiveStep.TryPreventDamage;
         skillDamage = new SkillDamageResolver(talentTree);
@@ -93,6 +108,14 @@ public sealed class RpgModule : IVrpgModule
         skills = new SkillCastingService(api, data, playerStore, resources, skillDamage, channel, visualBroadcaster, groundAreas, statusEffects);
         talentAllocation = new TalentAllocationService(talentTree, playerStore, resources, combatStates);
         failureNotifications = new AbilityFailureNotificationService(api, playerStore);
+        var interactionHandlers = new CombatInteractionHandlerRegistry();
+        interactionHandlers.Register(new EntityBehaviorInteractionHandler());
+        interactions = new CombatInteractionService(
+            api,
+            config.Interactions,
+            data,
+            channel,
+            interactionHandlers);
         activeTalentTree = CreateTalentTreeSnapshot();
         savedTalentTreeHash = activeTalentTree.ContentHash;
         savedTalentCosts = BuildTalentCostIndex();
@@ -100,7 +123,11 @@ public sealed class RpgModule : IVrpgModule
         creatures = new CreatureProgressionService(api, scaling, resources);
         new RpgCommandSystem(api, config, data, playerStore, statusEffects, resources, skills, talentAllocation).Register();
         api.Event.PlayerNowPlaying += resources.OnPlayerNowPlaying;
+        api.Event.PlayerNowPlaying += AdvanceOnboardingAfterAppearance;
+        api.Event.PlayerNowPlaying += SendOnboardingState;
+        api.Event.PlayerNowPlaying += NormalizeCharacterRuntime;
         api.Event.PlayerNowPlaying += SendLoadout;
+        api.Event.PlayerNowPlaying += SendPlayerMenuCapabilities;
         groundAreaSnapshotHandler = player => groundAreas?.SendSnapshot(player);
         api.Event.PlayerNowPlaying += groundAreaSnapshotHandler;
         creatures.Start();
@@ -108,6 +135,10 @@ public sealed class RpgModule : IVrpgModule
         resourceTickListenerId = api.Event.RegisterGameTickListener(resources.Tick, 1000);
         loadoutTickListenerId = api.Event.RegisterGameTickListener(_ => BroadcastLoadouts(api), 1000);
         skillTickListenerId = api.Event.RegisterGameTickListener(skills.Tick, 50);
+        movementTickListenerId = api.Event.RegisterGameTickListener(movementEffects.Tick, 25);
+        onboardingTickListenerId = api.Event.RegisterGameTickListener(
+            _ => ReconcilePendingOnboarding(),
+            250);
 
         api.Logger.Notification(
             "[VRPG/RPG] Enabled. {0} stat points/level, {1} talent points/level. Data: {2}",
@@ -119,6 +150,116 @@ public sealed class RpgModule : IVrpgModule
     public bool TryCastSkill(IServerPlayer player, int slot, out string error)
     {
         return TryCastSkill(player, slot, out error, out _);
+    }
+
+    public void HandleInteraction(IServerPlayer player, CombatInteractionRequestPacket packet)
+    {
+        interactions?.Handle(player, packet);
+    }
+
+    private void SendPlayerMenuCapabilities(IServerPlayer player)
+    {
+        bool replacementEnabled = config.InventoryReplacement.Enabled;
+        channel.SendPacket(new PlayerMenuCapabilityPacket
+        {
+            ProtocolVersion = PlayerMenuCapabilityProtocol.CurrentVersion,
+            InventoryReplacementEnabled = replacementEnabled,
+            ItemStoreReady = replacementEnabled && itemStoreReady(),
+            DialogReplacementReady = false
+        }, player);
+    }
+
+    private static void NormalizeCharacterRuntime(IServerPlayer player)
+    {
+        if (player.Entity == null)
+        {
+            return;
+        }
+
+        SurvivalCharacterRuntimePatch.NormalizePlayer(player.Entity);
+        VanillaClassRuntimePatch.NormalizePlayer(player.Entity);
+    }
+
+    private void AdvanceOnboardingAfterAppearance(IServerPlayer player)
+    {
+        RpgPlayerState state = playerStore.GetOrCreate(player);
+        if (state.Onboarding.Stage != FirstRunOnboardingStage.Appearance
+            || !player.GetModData("createCharacter", false))
+        {
+            return;
+        }
+
+        if (FirstRunOnboardingFlow.ConfirmAppearance(state.Onboarding))
+        {
+            playerStore.Save();
+            SendOnboardingState(player);
+            serverApi?.Logger.Notification(
+                "[VRPG/Onboarding] Recorded appearance completion for {0}; starter selection is next.",
+                player.PlayerUID);
+        }
+    }
+
+    private void SendOnboardingState(IServerPlayer player)
+    {
+        RpgPlayerState state = playerStore.GetOrCreate(player);
+        var starters = new List<StarterChoicePacket>();
+        foreach (ClassDefinition definition in data.Classes.All)
+        {
+            StarterLoadoutDefinition? starter = definition.Starter;
+            if (starter == null)
+            {
+                continue;
+            }
+
+            SkillDefinition? skill = data.Skills.Get(starter.SkillCode);
+            starters.Add(new StarterChoicePacket
+            {
+                Code = definition.Code,
+                Name = definition.Name,
+                Description = definition.Description,
+                CombatPattern = starter.CombatPattern,
+                DefensiveApproach = starter.DefensiveApproach,
+                PrimaryAttribute = starter.PrimaryAttribute,
+                WeaponName = starter.Weapon.Name,
+                ArmorNames = Array.ConvertAll(starter.Armor, item => item.Name),
+                SkillName = skill?.Name ?? starter.SkillCode,
+                SkillDescription = skill?.Description ?? "",
+                Color = definition.Color
+            });
+        }
+
+        starters.Sort((left, right) =>
+        {
+            ClassDefinition? leftClass = data.Classes.Get(left.Code);
+            ClassDefinition? rightClass = data.Classes.Get(right.Code);
+            int order = (leftClass?.SortOrder ?? 0).CompareTo(rightClass?.SortOrder ?? 0);
+            return order != 0 ? order : string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
+        });
+
+        channel.SendPacket(new OnboardingStatePacket
+        {
+            Stage = state.Onboarding.Stage.ToString().ToLowerInvariant(),
+            Starters = starters.ToArray(),
+            CanConfirmStarter = false,
+            StatusMessage = "Starter grants are waiting on the new inventory bridge. Your choice is only a preview."
+        }, player);
+    }
+
+    private void ReconcilePendingOnboarding()
+    {
+        if (serverApi == null)
+        {
+            return;
+        }
+
+        IPlayer[] players = serverApi.World.AllOnlinePlayers;
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (players[i] is IServerPlayer player)
+            {
+                AdvanceOnboardingAfterAppearance(player);
+            }
+        }
     }
 
     public bool TryCastSkill(IServerPlayer player, int slot, out string error, out AbilityFailureKind failureKind)
@@ -854,6 +995,10 @@ public sealed class RpgModule : IVrpgModule
                 serverApi.Event.PlayerNowPlaying -= resources.OnPlayerNowPlaying;
             }
             serverApi.Event.PlayerNowPlaying -= SendLoadout;
+            serverApi.Event.PlayerNowPlaying -= AdvanceOnboardingAfterAppearance;
+            serverApi.Event.PlayerNowPlaying -= SendOnboardingState;
+            serverApi.Event.PlayerNowPlaying -= NormalizeCharacterRuntime;
+            serverApi.Event.PlayerNowPlaying -= SendPlayerMenuCapabilities;
             if (groundAreaSnapshotHandler != null)
             {
                 serverApi.Event.PlayerNowPlaying -= groundAreaSnapshotHandler;
@@ -863,6 +1008,8 @@ public sealed class RpgModule : IVrpgModule
             if (resourceTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(resourceTickListenerId);
             if (loadoutTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(loadoutTickListenerId);
             if (skillTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(skillTickListenerId);
+            if (movementTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(movementTickListenerId);
+            if (onboardingTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(onboardingTickListenerId);
         }
 
         if (combatStates != null && EntityDamageScalingPatch.HostileDamageObserved == combatStates.ObserveHostileDamage)

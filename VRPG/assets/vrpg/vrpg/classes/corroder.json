@@ -5,5 +5,16 @@
   "icon": "rust",
   "color": "#c66b31",
   "tags": ["caster", "intelligence", "rust"],
-  "sortOrder": 50
+  "sortOrder": 50,
+  "starter": {
+    "grantSchemaVersion": 1,
+    "combatPattern": "Launch rust-caged embers that burst across clustered enemies.",
+    "defensiveApproach": "Keep distance and shape where enemies can safely move.",
+    "primaryAttribute": "intelligence",
+    "weapon": { "code": "game:club-scrapmace-scrap", "name": "Scrap focus", "equipmentRole": "mainweapon" },
+    "armor": [
+      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    ],
+    "skillCode": "vrpg:cinder_orb"
+  }
 }

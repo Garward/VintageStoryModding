@@ -5,5 +5,16 @@
   "icon": "dagger",
   "color": "#65bf78",
   "tags": ["melee", "dexterity", "poison"],
-  "sortOrder": 30
+  "sortOrder": 30,
+  "starter": {
+    "grantSchemaVersion": 1,
+    "combatPattern": "Strike quickly, exploit openings, and disengage before the answer lands.",
+    "defensiveApproach": "Avoid pressure through timing and movement.",
+    "primaryAttribute": "dexterity",
+    "weapon": { "code": "game:knife-generic-iron", "name": "Iron knife", "equipmentRole": "mainweapon" },
+    "armor": [
+      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    ],
+    "skillCode": "vrpg:flurry"
+  }
 }

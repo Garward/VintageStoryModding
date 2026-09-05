@@ -28,7 +28,30 @@ public sealed class RpgModuleConfig
     public RpgSkillHotbarConfig SkillHotbar { get; set; } = new RpgSkillHotbarConfig();
     public RpgEntityHudConfig EntityHud { get; set; } = new RpgEntityHudConfig();
     public RpgResourceConfig Resources { get; set; } = new RpgResourceConfig();
+    public CharacterRuntimeAuthorityConfig CharacterRuntime { get; set; } = new CharacterRuntimeAuthorityConfig();
+    public InventoryReplacementConfig InventoryReplacement { get; set; } = new InventoryReplacementConfig();
+    public CombatInteractionConfig Interactions { get; set; } = new CombatInteractionConfig();
     public VRPG.Client.Visuals.CombatVisualsConfig CombatVisuals { get; set; } = new VRPG.Client.Visuals.CombatVisualsConfig();
+}
+
+public sealed class CharacterRuntimeAuthorityConfig
+{
+    public bool Enabled { get; set; } = true;
+    public float BaseWalkSpeedMultiplier { get; set; } = 1f;
+    public float BaseJumpHeightMultiplier { get; set; } = 1f;
+}
+
+public sealed class InventoryReplacementConfig
+{
+    public bool Enabled { get; set; } = true;
+    public bool ExperimentalDialogReplacement { get; set; }
+}
+
+public sealed class CombatInteractionConfig
+{
+    public bool Enabled { get; set; } = true;
+    public bool AllowAuditedVanillaFallback { get; set; } = true;
+    public string[] AuditedVanillaEntityCodes { get; set; } = Array.Empty<string>();
 }
 
 public sealed class RpgSkillHotbarConfig
@@ -45,6 +68,9 @@ public sealed class RpgSkillHotbarConfig
 
 public sealed class RpgHudConfig
 {
+    public const float MinimumCombatConsoleScale = 0.75f;
+    public const float MaximumCombatConsoleScale = 2f;
+    public const float DefaultCombatConsoleScale = 1f;
     public const int MinimumWidth = 180;
     public const int MaximumWidth = 700;
     public const int MinimumBarHeight = 14;
@@ -53,6 +79,9 @@ public sealed class RpgHudConfig
     public const int DefaultBarHeight = 22;
 
     public bool Enabled { get; set; } = true;
+    public bool UnifiedCombatConsole { get; set; } = true;
+    public bool ReplaceHotbarInSurvival { get; set; } = true;
+    public float CombatConsoleScale { get; set; } = DefaultCombatConsoleScale;
     public bool Locked { get; set; } = true;
     public bool HideVanillaStatbar { get; set; } = true;
     public string Anchor { get; set; } = "left-bottom";
@@ -198,8 +227,15 @@ public static class VRPGConfigStore
 
     private static void Normalize(VRPGConfig config)
     {
+        CharacterRuntimeAuthorityConfig character = config.Modules.Rpg.CharacterRuntime;
+        character.BaseWalkSpeedMultiplier = Math.Clamp(character.BaseWalkSpeedMultiplier, 0.1f, 5f);
+        character.BaseJumpHeightMultiplier = Math.Clamp(character.BaseJumpHeightMultiplier, 1f, 9f);
         config.Modules.Rpg.SkillHotbar.SlotCount = Math.Clamp(config.Modules.Rpg.SkillHotbar.SlotCount, 4, 8);
         RpgHudConfig hud = config.Modules.Rpg.Hud;
+        hud.CombatConsoleScale = Math.Clamp(
+            hud.CombatConsoleScale,
+            RpgHudConfig.MinimumCombatConsoleScale,
+            RpgHudConfig.MaximumCombatConsoleScale);
         hud.Width = Math.Clamp(hud.Width, RpgHudConfig.MinimumWidth, RpgHudConfig.MaximumWidth);
         hud.BarHeight = Math.Clamp(hud.BarHeight, RpgHudConfig.MinimumBarHeight, RpgHudConfig.MaximumBarHeight);
         hud.ShowExperience = true;

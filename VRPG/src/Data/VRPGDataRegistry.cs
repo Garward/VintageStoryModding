@@ -21,6 +21,7 @@ public sealed class VRPGDataRegistry
     public VrpgDataStore<DungeonThemeDefinition> DungeonThemes { get; } = new VrpgDataStore<DungeonThemeDefinition>("vrpg/dungeons/");
     public VrpgDataStore<DungeonRoomDefinition> DungeonRooms { get; } = new VrpgDataStore<DungeonRoomDefinition>("vrpg/rooms/");
     public VrpgDataStore<DungeonEncounterDefinition> DungeonEncounters { get; } = new VrpgDataStore<DungeonEncounterDefinition>("vrpg/encounters/");
+    public VrpgDataStore<InteractionDefinition> Interactions { get; } = new VrpgDataStore<InteractionDefinition>("vrpg/interactions/");
 
     public void Load(ICoreAPI api)
     {
@@ -40,12 +41,14 @@ public sealed class VRPGDataRegistry
         DungeonThemes.Load(api);
         DungeonRooms.Load(api);
         DungeonEncounters.Load(api);
+        Interactions.Load(api);
         SkillDefinitionValidator.Validate(api, this);
         DungeonContentValidator.ValidateOrThrow(DungeonThemes.All, DungeonRooms.All, DungeonEncounters.All);
+        InteractionDefinitionValidator.ValidateOrThrow(Interactions.All);
     }
 
     public string Summary()
     {
-        return $"{Stats.Count} stats, {StatFamilies.Count} stat-family files, {Scaling.Count} scaling files, {DamageTypes.Count} damage types, {Classes.Count} classes, {Rarities.Count} rarities, {Affixes.Count} affixes, {Talents.Count} talents, {TalentTreeTemplates.Count} talent templates, {Skills.Count} skills, {SkillFxPresets.Count} impact FX presets, {StatusEffects.Count} status effects, {Library.Count} library entries, {DungeonThemes.Count} dungeon themes, {DungeonRooms.Count} dungeon rooms, {DungeonEncounters.Count} dungeon encounters";
+        return $"{Stats.Count} stats, {StatFamilies.Count} stat-family files, {Scaling.Count} scaling files, {DamageTypes.Count} damage types, {Classes.Count} classes, {Rarities.Count} rarities, {Affixes.Count} affixes, {Talents.Count} talents, {TalentTreeTemplates.Count} talent templates, {Skills.Count} skills, {SkillFxPresets.Count} impact FX presets, {StatusEffects.Count} status effects, {Library.Count} library entries, {DungeonThemes.Count} dungeon themes, {DungeonRooms.Count} dungeon rooms, {DungeonEncounters.Count} dungeon encounters, {Interactions.Count} interactions";
     }
 }

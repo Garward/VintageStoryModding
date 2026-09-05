@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VRPG.Modules.Rpg.Onboarding;
 
 namespace VRPG.Modules.Rpg.Players;
 
@@ -25,19 +26,29 @@ public sealed class RpgPlayerState
     public List<string> Talents { get; set; } = new List<string>();
     public Dictionary<string, int> SkillLevels { get; set; } = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
     public string[] EquippedSkills { get; set; } = new string[8];
+    public FirstRunOnboardingState Onboarding { get; set; } = new FirstRunOnboardingState();
 
     public void Normalize()
     {
         StartingAttributeAffinity ??= "";
         BaseStats ??= new Dictionary<string, int>();
         Talents ??= new List<string>();
-        SkillLevels ??= new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
+        SkillLevels = SkillLevels == null
+            ? new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, int>(SkillLevels, System.StringComparer.OrdinalIgnoreCase);
+        Onboarding ??= new FirstRunOnboardingState();
+        Onboarding.Normalize();
 
         if (EquippedSkills == null || EquippedSkills.Length != 8)
         {
             string[] previous = EquippedSkills ?? System.Array.Empty<string>();
             EquippedSkills = new string[8];
             System.Array.Copy(previous, EquippedSkills, System.Math.Min(previous.Length, EquippedSkills.Length));
+        }
+
+        for (int i = 0; i < EquippedSkills.Length; i++)
+        {
+            EquippedSkills[i] ??= "";
         }
     }
 

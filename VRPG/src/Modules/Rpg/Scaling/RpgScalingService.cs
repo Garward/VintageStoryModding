@@ -221,6 +221,15 @@ public sealed class RpgScalingService
 
     private int DistanceLevel(Entity entity, CreatureLevelScalingDefinition levels)
     {
+        // A brand-new world loads entities before worldgen has chosen its default
+        // spawn. IWorldAccessor.DefaultSpawnPosition dereferences that absent
+        // value, so early creatures must stay at the neutral level until the
+        // authoritative spawn exists.
+        if (api.WorldManager.SaveGame.DefaultSpawn == null)
+        {
+            return 1;
+        }
+
         EntityPos spawn = api.World.DefaultSpawnPosition;
         double dx = entity.Pos.X - spawn.X;
         double dz = entity.Pos.Z - spawn.Z;

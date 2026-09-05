@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "profileVersion": "seraph-claymore-experimental-adaptive-v1",
+  "range": [0,35],
+  "fps": 30,
+  "maxSampleGap": 1,
+  "adaptiveSampling": {
+    "minStep": 0.125,
+    "maxOrientationStepDegrees": 15,
+    "maxDirectionChangeDegrees": 30
+  },
+  "bindings": {"blade":{"element":"weapon::blademiddle1","axis":[1,0,0]}},
+  "phases": [
+    {"name":"preparation","range":[0,17],"limits":{"blade":{"maxAbsTwistDegrees":90,"maxAngularSpeedDegPerSecond":1200,"maxStepDegrees":60}}},
+    {"name":"strike","range":[17,21],"limits":{"blade":{"maxAbsTwistDegrees":10,"maxAngularSpeedDegPerSecond":1800,"maxStepDegrees":75}}},
+    {"name":"contact","range":[21,24],"limits":{"blade":{"maxAbsTwistDegrees":5,"maxAngularSpeedDegPerSecond":300,"maxStepDegrees":15}}},
+    {"name":"recovery","range":[24,35],"limits":{"blade":{"maxAbsTwistDegrees":20,"maxAngularSpeedDegPerSecond":900,"maxStepDegrees":45}}}
+  ]
+}

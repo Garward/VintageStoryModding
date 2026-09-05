@@ -1,0 +1,127 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using Newtonsoft.Json;
+
+namespace VRPG.Inventory.Persistence;
+
+public sealed class PlayerItemArchiveSerializer
+{
+    private const int MaximumUncompressedBytes = 512 * 1024 * 1024;
+    private readonly JsonSerializerSettings settings = new()
+    {
+        Formatting = Formatting.None,
+        MaxDepth = 128,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        TypeNameHandling = TypeNameHandling.None
+    };
+
+    public byte[] Serialize(PlayerItemArchive archive)
+    {
+        ArgumentNullException.ThrowIfNull(archive);
+        string json = JsonConvert.SerializeObject(archive, settings);
+        byte[] source = Encoding.UTF8.GetBytes(json);
+        using var output = new MemoryStream();
+        using (var gzip = new GZipStream(output, CompressionLevel.Optimal, leaveOpen: true))
+            gzip.Write(source, 0, source.Length);
+        return output.ToArray();
+    }
+
+    public bool TryDeserialize(byte[]? compressed, out PlayerItemArchive archive, out string error)
+    {
+        archive = new PlayerItemArchive();
+        error = "";
+        if (compressed == null || compressed.Length == 0)
+        {
+            error = "The archive payload is empty.";
+            return false;
+        }
+
+        try
+        {
+            using var input = new MemoryStream(compressed, writable: false);
+            using var gzip = new GZipStream(input, CompressionMode.Decompress);
+            using var output = new MemoryStream();
+            byte[] buffer = new byte[81920];
+            while (true)
+            {
+                int read = gzip.Read(buffer, 0, buffer.Length);
+                if (read == 0) break;
+                if (output.Length + read > MaximumUncompressedBytes)
+                    throw new InvalidDataException("The inventory archive exceeds its decoded size limit.");
+                output.Write(buffer, 0, read);
+            }
+
+            string json = Encoding.UTF8.GetString(output.ToArray());
+            PlayerItemArchive? decoded = JsonConvert.DeserializeObject<PlayerItemArchive>(json, settings);
+            if (decoded == null)
+                throw new InvalidDataException("The inventory archive contains no document.");
+            if (!TryMigrate(decoded, out error)) return false;
+            archive = decoded;
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException
+            or InvalidDataException
+            or JsonException
+            or ArgumentException)
+        {
+            error = exception.Message;
+            return false;
+        }
+    }
+
+    private static bool TryMigrate(PlayerItemArchive archive, out string error)
+    {
+        error = "";
+        if (archive.SchemaVersion < 0
+            || archive.SchemaVersion > PlayerItemPersistenceSchema.CurrentVersion)
+        {
+            error = $"Unsupported player-item archive schema {archive.SchemaVersion}.";
+            return false;
+        }
+
+        // Schema 0 was the unversioned development shape. Its known fields map
+        // directly to schema 1; normalization supplies collections omitted by JSON.
+        if (archive.SchemaVersion == 0)
+            archive.SchemaVersion = 1;
+        archive.Players ??= new Dictionary<string, PlayerItemStoreState>(
+            StringComparer.OrdinalIgnoreCase);
+        archive.Migrations ??= new Dictionary<string, PlayerItemMigrationJournalState>(
+            StringComparer.OrdinalIgnoreCase);
+
+        var normalized = new Dictionary<string, PlayerItemStoreState>(
+            StringComparer.OrdinalIgnoreCase);
+        foreach ((string playerUid, PlayerItemStoreState state) in archive.Players)
+        {
+            if (string.IsNullOrWhiteSpace(playerUid) || state == null
+                || !normalized.TryAdd(playerUid.Trim(), state))
+            {
+                error = "The archive contains an invalid or duplicated player UID.";
+                return false;
+            }
+            state.Entries ??= Array.Empty<PlayerItemEntryState>();
+            state.Equipment ??= Array.Empty<EquippedPlayerItemRecord>();
+            state.Reservations ??= Array.Empty<PlayerItemReservationState>();
+            state.CompletedRequests ??= Array.Empty<PlayerItemCompletedRequestState>();
+        }
+        archive.Players = normalized;
+
+        var migrations = new Dictionary<string, PlayerItemMigrationJournalState>(
+            StringComparer.OrdinalIgnoreCase);
+        foreach ((string playerUid, PlayerItemMigrationJournalState migration) in archive.Migrations)
+        {
+            if (string.IsNullOrWhiteSpace(playerUid) || migration == null
+                || !migrations.TryAdd(playerUid.Trim(), migration))
+            {
+                error = "The archive contains an invalid or duplicated migration player UID.";
+                return false;
+            }
+            migration.SourceSlots ??= Array.Empty<LegacyItemSlotState>();
+            migration.PriorStore ??= new PlayerItemStoreState();
+        }
+        archive.Migrations = migrations;
+        return true;
+    }
+}

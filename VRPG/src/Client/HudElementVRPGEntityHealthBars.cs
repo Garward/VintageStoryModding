@@ -54,7 +54,10 @@ public sealed class HudElementVRPGEntityHealthBars : HudElement
 
     public override void OnRenderGUI(float deltaTime)
     {
-        if (!config.Enabled || IsOffMode() || capi.World?.Player?.Entity == null)
+        if (!config.Enabled
+            || IsOffMode()
+            || capi.World?.Player?.Entity == null
+            || HasBlockingDialogOpen())
         {
             return;
         }
@@ -74,6 +77,21 @@ public sealed class HudElementVRPGEntityHealthBars : HudElement
         {
             capi.Render.Render2DLoadedTexture(texture, 0, 0, 2200f);
         }
+    }
+
+    private bool HasBlockingDialogOpen()
+    {
+        List<GuiDialog> opened = capi.Gui.OpenedGuis;
+        for (int i = 0; i < opened.Count; i++)
+        {
+            GuiDialog dialog = opened[i];
+            if (dialog != this && dialog.IsOpened() && dialog.DialogType == EnumDialogType.Dialog)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public override void Dispose()

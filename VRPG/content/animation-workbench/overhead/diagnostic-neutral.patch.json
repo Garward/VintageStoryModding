@@ -1,0 +1,17 @@
+[
+  {
+    "op": "add",
+    "path": "/animations/-",
+    "value": {
+      "name": "Diagnostic neutral",
+      "code": "diagnostic-neutral",
+      "quantityframes": 1,
+      "keyframes": [
+        {
+          "frame": 0,
+          "elements": {}
+        }
+      ]
+    }
+  }
+]

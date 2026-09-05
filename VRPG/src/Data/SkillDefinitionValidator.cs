@@ -75,7 +75,7 @@ public static class SkillDefinitionValidator
         {
             ValidateSkill(api, data, skill, errors);
         }
-        ValidateClasses(data, errors);
+        ValidateClasses(api, data, errors);
         ValidateTalents(data, errors);
 
         if (errors.Count == 0)
@@ -731,7 +731,7 @@ public static class SkillDefinitionValidator
         }
     }
 
-    private static void ValidateClasses(VRPGDataRegistry data, List<string> errors)
+    private static void ValidateClasses(ICoreAPI api, VRPGDataRegistry data, List<string> errors)
     {
         foreach (ClassDefinition definition in data.Classes.All)
         {
@@ -739,7 +739,27 @@ public static class SkillDefinitionValidator
             if (string.IsNullOrWhiteSpace(definition.Name)) errors.Add(label + ": class name is required.");
             if (string.IsNullOrWhiteSpace(definition.Icon)) errors.Add(label + ": class icon is required.");
             if (!TryParseColor(definition.Color, out _)) errors.Add(label + ": class color must be #RRGGBB or #RRGGBBAA.");
+
+            if (definition.Starter != null)
+            {
+                StarterLoadoutDefinitionValidator.Validate(
+                    definition,
+                    data.Skills.All,
+                    code => AssetExists(api, code),
+                    errors);
+            }
         }
+    }
+
+    private static bool AssetExists(ICoreAPI api, string code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return false;
+        }
+
+        var location = new AssetLocation(code.Trim());
+        return api.World.GetItem(location) != null || api.World.GetBlock(location) != null;
     }
 
     private static void ValidateTalents(VRPGDataRegistry data, List<string> errors)

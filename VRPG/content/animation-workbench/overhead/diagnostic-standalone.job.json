@@ -1,0 +1,17 @@
+{
+  "project": "claymore-tp-preview.json",
+  "patches": [
+    "diagnostic-neutral.patch.json"
+  ],
+  "animation": "diagnostic-neutral",
+  "frames": [
+    0
+  ],
+  "cameras": [
+    "front",
+    "side",
+    "three-quarter"
+  ],
+  "width": 1440,
+  "height": 1080
+}

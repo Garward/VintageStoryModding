@@ -1,0 +1,21 @@
+{
+  "project": "../../../../ActionCombat/assets/actioncombat/shapes/entity/humanoid/seraph-faceless.json",
+  "patches": [
+    "candidate.patch.json"
+  ],
+  "animation": "vrpg-2h-overhead-v1",
+  "frames": [
+    0
+  ],
+  "cameras": [
+    "side"
+  ],
+  "width": 1440,
+  "height": 1080,
+  "attachments": [
+    {
+      "project": "isolate-blade.json",
+      "parent": "ItemAnchor"
+    }
+  ]
+}

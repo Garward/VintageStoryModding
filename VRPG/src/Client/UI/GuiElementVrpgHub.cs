@@ -57,7 +57,7 @@ public sealed class GuiElementVrpgHub : GuiElement
 
     private static readonly string[] Tabs = { "Stats", "Skills", "Talents", "Library", "Options" };
     private static readonly string[] BaseStatCodes = { "strength", "dexterity", "intelligence" };
-    private static readonly string[] OptionsCategories = { "Notifications", "Combat Hotbar", "Resource HUD", "Combat Visuals" };
+    private static readonly string[] OptionsCategories = { "Notifications", "Action Bar", "Combat HUD", "Combat Visuals" };
 
     public GuiElementVrpgHub(
         ICoreClientAPI api,
@@ -738,6 +738,21 @@ public sealed class GuiElementVrpgHub : GuiElement
 
     private void DrawResourceHudOptions(Context ctx, double x, double y, double width, double height)
     {
+        if (resourceHud.UnifiedCombatConsole)
+        {
+            DrawText(ctx, "Combat HUD", x, y + scaled(31.0), scaled(20.0), bold: true, ColorGold(), maxWidth: width);
+            DrawWrappedText(ctx,
+                "Health, mana, experience, held items, and skills now share one centered combat console. It follows Vintage Story's GUI scale and stays locked to the safe area.",
+                x,
+                y + scaled(68.0),
+                width,
+                scaled(12.0),
+                ColorText(),
+                4);
+            DrawText(ctx, "Layout controls will return as whole-console scale and safe-area options.", x, y + scaled(168.0), scaled(11.0), bold: false, ColorMuted(), maxWidth: width);
+            return;
+        }
+
         DrawText(ctx, "Resource HUD", x, y + scaled(31.0), scaled(20.0), bold: true, ColorGold(), maxWidth: width);
         DrawText(ctx, "HP, MP, and XP layout is saved only on this client.", x, y + scaled(58.0), scaled(12.0), bold: false, ColorMuted(), maxWidth: width);
         DrawOptionRow(
@@ -867,33 +882,47 @@ public sealed class GuiElementVrpgHub : GuiElement
 
     private void DrawHotbarOptions(Context ctx, double x, double y, double width, double height)
     {
-        DrawText(ctx, "Combat Hotbar", x, y + scaled(31.0), scaled(20.0), bold: true, ColorGold(), maxWidth: width);
+        DrawText(ctx, resourceHud.UnifiedCombatConsole ? "Action Bar" : "Combat Hotbar", x, y + scaled(31.0), scaled(20.0), bold: true, ColorGold(), maxWidth: width);
         DrawText(ctx, "The hotbar always reflects the server loadout and the bindings configured in Vintage Story controls.", x, y + scaled(58.0), scaled(12.0), bold: false, ColorMuted(), maxWidth: width);
-        DrawOptionRow(
-            ctx,
-            x,
-            y + scaled(92.0),
-            width,
-            "Lock hotbar position",
-            packet.Options.SkillHotbarLocked
-                ? "Locked against accidental movement. Turn this off to drag the hotbar while a cursor is visible."
-                : "Unlocked. Drag the hotbar to place it, then lock it here.",
-            packet.Options.SkillHotbarLocked,
-            ClickKind.ToggleHotbarLock);
+        if (resourceHud.UnifiedCombatConsole)
+        {
+            DrawWrappedText(ctx,
+                "The compatibility slice shows real held items and equipped skills in one fixed console. Action-profile assignment replaces this split in the next inventory/loadout slice.",
+                x,
+                y + scaled(102.0),
+                width,
+                scaled(12.0),
+                ColorText(),
+                4);
+        }
+        else
+        {
+            DrawOptionRow(
+                ctx,
+                x,
+                y + scaled(92.0),
+                width,
+                "Lock hotbar position",
+                packet.Options.SkillHotbarLocked
+                    ? "Locked against accidental movement. Turn this off to drag the hotbar while a cursor is visible."
+                    : "Unlocked. Drag the hotbar to place it, then lock it here.",
+                packet.Options.SkillHotbarLocked,
+                ClickKind.ToggleHotbarLock);
+        }
 
-        DrawHotbarSlotCountRow(ctx, x, y + scaled(180.0), width);
+        DrawHotbarSlotCountRow(ctx, x, y + scaled(resourceHud.UnifiedCombatConsole ? 190.0 : 180.0), width);
         DrawOptionRow(
             ctx,
             x,
-            y + scaled(268.0),
+            y + scaled(resourceHud.UnifiedCombatConsole ? 278.0 : 268.0),
             width,
             "Hold to auto-throw charged skills",
             "For supported aimed skills: tap to throw once on release, or hold to spend the charges available when the hold began.",
             packet.Options.HoldToRepeatChargedSkills,
             ClickKind.ToggleAutoThrow);
 
-        DrawText(ctx, "Assignment & bindings", x, y + scaled(365.0), scaled(15.0), bold: true, ColorGold(), maxWidth: width);
-        DrawWrappedText(ctx, "Assign learned skills from the Skills page. Configure the VRPG-prefixed slot keys in Vintage Story's Controls menu; hidden hotbar slots retain their assignments.", x, y + scaled(392.0), width, scaled(12.0), ColorText(), 3);
+        DrawText(ctx, "Assignment & bindings", x, y + scaled(375.0), scaled(15.0), bold: true, ColorGold(), maxWidth: width);
+        DrawWrappedText(ctx, "Assign learned skills from the Skills page. Configure the VRPG-prefixed slot keys in Vintage Story's Controls menu; hidden skill positions retain their assignments.", x, y + scaled(402.0), width, scaled(12.0), ColorText(), 3);
     }
 
     private void DrawHotbarSlotCountRow(Context ctx, double x, double y, double width)

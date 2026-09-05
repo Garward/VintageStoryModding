@@ -1,0 +1,4415 @@
+{
+  "editor": {
+    "collapsedPaths": "Root/root/LowerTorso/UpperFootL,Root/root/LowerTorso/UpperTorso/Neck,Root/root/LowerTorso/UpperFootR,Root/origin,Root/root/LowerTorso/UpperTorso/UpperArmR/LowerArmR/ItemAnchor/origin,Root/root/LowerTorso/UpperTorso/UpperArmL/LowerArmL",
+    "allAngles": true,
+    "entityTextureMode": true
+  },
+  "textureWidth": 32,
+  "textureHeight": 76,
+  "textureSizes": {
+    "seraph": [
+      32,
+      76
+    ],
+    "blackbronze": [
+      16,
+      16
+    ],
+    "metal": [
+      16,
+      16
+    ],
+    "wood": [
+      16,
+      16
+    ],
+    "handle": [
+      16,
+      16
+    ]
+  },
+  "textures": {},
+  "elements": [
+    {
+      "name": "root",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        0,
+        0,
+        0
+      ],
+      "uv": [
+        0,
+        0
+      ],
+      "rotationOrigin": [
+        8,
+        0,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#null",
+          "uv": [
+            0,
+            0.5,
+            0.5,
+            1
+          ],
+          "enabled": false
+        },
+        "east": {
+          "texture": "#null",
+          "uv": [
+            0.5,
+            0.5,
+            1,
+            1
+          ],
+          "enabled": false
+        },
+        "south": {
+          "texture": "#null",
+          "uv": [
+            1,
+            0.5,
+            1.5,
+            1
+          ],
+          "enabled": false
+        },
+        "west": {
+          "texture": "#null",
+          "uv": [
+            1.5,
+            0.5,
+            2,
+            1
+          ],
+          "enabled": false
+        },
+        "up": {
+          "texture": "#null",
+          "uv": [
+            0,
+            0,
+            0.5,
+            0.5
+          ],
+          "enabled": false
+        },
+        "down": {
+          "texture": "#null",
+          "uv": [
+            0.5,
+            0,
+            1,
+            0.5
+          ],
+          "enabled": false
+        }
+      },
+      "children": [
+        {
+          "name": "LowerTorso",
+          "from": [
+            6,
+            15,
+            5
+          ],
+          "to": [
+            11,
+            20,
+            11
+          ],
+          "unwrapMode": 4,
+          "autoUnwrap": false,
+          "uv": [
+            8,
+            17.5
+          ],
+          "rotationOrigin": [
+            8,
+            15,
+            8
+          ],
+          "rotationZ": 3,
+          "faces": {
+            "north": {
+              "texture": "#seraph",
+              "uv": [
+                8,
+                22,
+                13,
+                27
+              ]
+            },
+            "east": {
+              "texture": "#seraph",
+              "uv": [
+                24,
+                22,
+                30,
+                27
+              ]
+            },
+            "south": {
+              "texture": "#seraph",
+              "uv": [
+                19,
+                22,
+                24,
+                27
+              ]
+            },
+            "west": {
+              "texture": "#seraph",
+              "uv": [
+                13,
+                22,
+                19,
+                27
+              ]
+            },
+            "up": {
+              "texture": "#seraph",
+              "uv": [
+                0.5,
+                22.5,
+                6.5,
+                27.5
+              ],
+              "rotation": 90,
+              "windMode": [
+                -1,
+                -1,
+                -1,
+                -1
+              ],
+              "windData": [
+                1,
+                1,
+                1,
+                1
+              ]
+            },
+            "down": {
+              "texture": "#seraph",
+              "uv": [
+                13,
+                27,
+                19,
+                32
+              ],
+              "rotation": 90,
+              "windMode": [
+                -1,
+                -1,
+                -1,
+                -1
+              ]
+            }
+          },
+          "children": [
+            {
+              "name": "UpperTorso",
+              "from": [
+                0,
+                4.3,
+                -0.1
+              ],
+              "to": [
+                5,
+                9.3,
+                6.1
+              ],
+              "unwrapMode": 4,
+              "autoUnwrap": false,
+              "uv": [
+                8,
+                12.5
+              ],
+              "rotationOrigin": [
+                2,
+                5,
+                3
+              ],
+              "rotationZ": -6,
+              "faces": {
+                "north": {
+                  "texture": "#seraph",
+                  "uv": [
+                    8,
+                    17.5,
+                    13,
+                    22.5
+                  ]
+                },
+                "east": {
+                  "texture": "#seraph",
+                  "uv": [
+                    24,
+                    17.5,
+                    30,
+                    22.5
+                  ]
+                },
+                "south": {
+                  "texture": "#seraph",
+                  "uv": [
+                    19,
+                    17.5,
+                    24,
+                    22.5
+                  ]
+                },
+                "west": {
+                  "texture": "#seraph",
+                  "uv": [
+                    13,
+                    17.5,
+                    19,
+                    22.5
+                  ]
+                },
+                "up": {
+                  "texture": "#seraph",
+                  "uv": [
+                    13,
+                    12.5,
+                    19,
+                    17.5
+                  ],
+                  "rotation": 90
+                },
+                "down": {
+                  "texture": "#seraph",
+                  "uv": [
+                    0.5,
+                    17.5,
+                    6.5,
+                    22.5
+                  ],
+                  "rotation": 90
+                }
+              },
+              "children": [
+                {
+                  "name": "UpperArmR",
+                  "from": [
+                    1,
+                    -2.1,
+                    -1.2
+                  ],
+                  "to": [
+                    4,
+                    4.9,
+                    0.8
+                  ],
+                  "unwrapMode": 4,
+                  "autoUnwrap": false,
+                  "uv": [
+                    1,
+                    29
+                  ],
+                  "rotationOrigin": [
+                    2,
+                    4.7,
+                    0.8
+                  ],
+                  "rotationX": 10,
+                  "rotationZ": 7,
+                  "faces": {
+                    "north": {
+                      "texture": "#seraph",
+                      "uv": [
+                        3,
+                        31.5,
+                        6,
+                        38.5
+                      ]
+                    },
+                    "east": {
+                      "texture": "#seraph",
+                      "uv": [
+                        1,
+                        31.5,
+                        3,
+                        38.5
+                      ]
+                    },
+                    "south": {
+                      "texture": "#seraph",
+                      "uv": [
+                        8,
+                        31.5,
+                        11,
+                        38.5
+                      ]
+                    },
+                    "west": {
+                      "texture": "#seraph",
+                      "uv": [
+                        6,
+                        31.5,
+                        8,
+                        38.5
+                      ]
+                    },
+                    "up": {
+                      "texture": "#seraph",
+                      "uv": [
+                        6,
+                        28.5,
+                        8,
+                        31.5
+                      ],
+                      "rotation": 90
+                    },
+                    "down": {
+                      "texture": "#seraph",
+                      "uv": [
+                        12,
+                        36,
+                        14,
+                        39
+                      ],
+                      "rotation": 90
+                    }
+                  },
+                  "children": [
+                    {
+                      "name": "LowerArmR",
+                      "from": [
+                        0.1,
+                        -7.3,
+                        0.1
+                      ],
+                      "to": [
+                        2.6,
+                        0.7,
+                        2.1
+                      ],
+                      "unwrapMode": 4,
+                      "autoUnwrap": false,
+                      "uv": [
+                        31.5,
+                        49
+                      ],
+                      "rotationOrigin": [
+                        1.3,
+                        0.7,
+                        1.1
+                      ],
+                      "rotationX": -8,
+                      "rotationZ": -6,
+                      "faces": {
+                        "north": {
+                          "texture": "#seraph",
+                          "uv": [
+                            3.5,
+                            38,
+                            6,
+                            46
+                          ]
+                        },
+                        "east": {
+                          "texture": "#seraph",
+                          "uv": [
+                            1.5,
+                            38,
+                            3.5,
+                            46
+                          ]
+                        },
+                        "south": {
+                          "texture": "#seraph",
+                          "uv": [
+                            8,
+                            38,
+                            10.5,
+                            46
+                          ]
+                        },
+                        "west": {
+                          "texture": "#seraph",
+                          "uv": [
+                            6,
+                            38,
+                            8,
+                            46
+                          ]
+                        },
+                        "up": {
+                          "texture": "#seraph",
+                          "uv": [
+                            12,
+                            39,
+                            14,
+                            41.5
+                          ],
+                          "rotation": 90
+                        },
+                        "down": {
+                          "texture": "#seraph",
+                          "uv": [
+                            6,
+                            46,
+                            8,
+                            48.5
+                          ],
+                          "rotation": 90
+                        }
+                      },
+                      "children": [
+                        {
+                          "name": "ItemAnchor",
+                          "from": [
+                            1.5,
+                            0.5,
+                            1
+                          ],
+                          "to": [
+                            2.5,
+                            1.5,
+                            2
+                          ],
+                          "uv": [
+                            0,
+                            0
+                          ],
+                          "rotationOrigin": [
+                            1,
+                            1,
+                            1
+                          ],
+                          "faces": {
+                            "north": {
+                              "texture": "#null",
+                              "uv": [
+                                0,
+                                1,
+                                1,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "east": {
+                              "texture": "#null",
+                              "uv": [
+                                1,
+                                1,
+                                2,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "south": {
+                              "texture": "#null",
+                              "uv": [
+                                2,
+                                1,
+                                3,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "west": {
+                              "texture": "#null",
+                              "uv": [
+                                3,
+                                1,
+                                4,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "up": {
+                              "texture": "#null",
+                              "uv": [
+                                0,
+                                0,
+                                1,
+                                1
+                              ],
+                              "enabled": false
+                            },
+                            "down": {
+                              "texture": "#null",
+                              "uv": [
+                                1,
+                                0,
+                                2,
+                                1
+                              ],
+                              "enabled": false
+                            }
+                          },
+                          "children": [
+                            {
+                              "name": "origin",
+                              "from": [
+                                -1.32,
+                                0.48,
+                                -0.19
+                              ],
+                              "to": [
+                                -1.32,
+                                0.48,
+                                -0.19
+                              ],
+                              "uv": [
+                                999,
+                                999
+                              ],
+                              "rotationOrigin": [
+                                -1.3174,
+                                0.4761,
+                                -0.1934
+                              ],
+                              "rotationX": 87.9938,
+                              "rotationY": 2.1025,
+                              "rotationZ": -180,
+                              "faces": {
+                                "north": {
+                                  "texture": "#null",
+                                  "uv": [
+                                    0,
+                                    0,
+                                    0.5,
+                                    0.5
+                                  ],
+                                  "enabled": false
+                                },
+                                "east": {
+                                  "texture": "#null",
+                                  "uv": [
+                                    0,
+                                    0,
+                                    0.5,
+                                    0.5
+                                  ],
+                                  "enabled": false
+                                },
+                                "south": {
+                                  "texture": "#null",
+                                  "uv": [
+                                    0,
+                                    0,
+                                    0.5,
+                                    0.5
+                                  ],
+                                  "enabled": false
+                                },
+                                "west": {
+                                  "texture": "#null",
+                                  "uv": [
+                                    0,
+                                    0,
+                                    0.5,
+                                    0.5
+                                  ],
+                                  "enabled": false
+                                },
+                                "up": {
+                                  "texture": "#null",
+                                  "uv": [
+                                    0,
+                                    0,
+                                    0.5,
+                                    0.5
+                                  ],
+                                  "enabled": false
+                                },
+                                "down": {
+                                  "texture": "#null",
+                                  "uv": [
+                                    0,
+                                    0,
+                                    0.5,
+                                    0.5
+                                  ],
+                                  "enabled": false
+                                }
+                              },
+                              "children": [
+                                {
+                                  "name": "handle",
+                                  "from": [
+                                    -4,
+                                    -0.5,
+                                    -0.75
+                                  ],
+                                  "to": [
+                                    4,
+                                    0.5,
+                                    0.75
+                                  ],
+                                  "uv": [
+                                    0,
+                                    2
+                                  ],
+                                  "faces": {
+                                    "north": {
+                                      "texture": "#handle",
+                                      "uv": [
+                                        1,
+                                        9,
+                                        9,
+                                        10
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "east": {
+                                      "texture": "#handle",
+                                      "uv": [
+                                        6,
+                                        5,
+                                        7.5,
+                                        6
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "south": {
+                                      "texture": "#handle",
+                                      "uv": [
+                                        0,
+                                        2,
+                                        8,
+                                        3
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "west": {
+                                      "texture": "#handle",
+                                      "uv": [
+                                        8,
+                                        1,
+                                        9.5,
+                                        2
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "up": {
+                                      "texture": "#handle",
+                                      "uv": [
+                                        3.5,
+                                        7,
+                                        11.5,
+                                        8.5
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "down": {
+                                      "texture": "#handle",
+                                      "uv": [
+                                        6,
+                                        10.5,
+                                        14,
+                                        12
+                                      ],
+                                      "enabled": false
+                                    }
+                                  },
+                                  "children": [
+                                    {
+                                      "name": "pommel1",
+                                      "from": [
+                                        -4,
+                                        0,
+                                        0
+                                      ],
+                                      "to": [
+                                        0,
+                                        1,
+                                        1.5
+                                      ],
+                                      "uv": [
+                                        0.5,
+                                        0
+                                      ],
+                                      "rotationOrigin": [
+                                        0,
+                                        0.5,
+                                        0.75
+                                      ],
+                                      "faces": {
+                                        "north": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            11,
+                                            13.5,
+                                            15,
+                                            14.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "east": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            2.5,
+                                            11,
+                                            4,
+                                            12
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "south": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            7.5,
+                                            0,
+                                            11.5,
+                                            1
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "west": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            8,
+                                            13,
+                                            9.5,
+                                            14
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "up": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            0.5,
+                                            8,
+                                            4.5,
+                                            9.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "down": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            6.5,
+                                            3.5,
+                                            10.5,
+                                            5
+                                          ],
+                                          "enabled": false
+                                        }
+                                      },
+                                      "children": [
+                                        {
+                                          "name": "pommel2",
+                                          "from": [
+                                            1,
+                                            -0.3,
+                                            -0.2
+                                          ],
+                                          "to": [
+                                            2.6,
+                                            1.3,
+                                            1.7
+                                          ],
+                                          "uv": [
+                                            0.5,
+                                            1
+                                          ],
+                                          "rotationOrigin": [
+                                            1.8,
+                                            0.5,
+                                            0.75
+                                          ],
+                                          "faces": {
+                                            "north": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                4,
+                                                1,
+                                                5.5,
+                                                2.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "east": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                3.5,
+                                                11.5,
+                                                5,
+                                                13
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "south": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                5,
+                                                7,
+                                                6.5,
+                                                8.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "west": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                1,
+                                                11,
+                                                2.5,
+                                                12.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "up": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0.5,
+                                                1.5,
+                                                2,
+                                                3
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "down": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                2.5,
+                                                6.5,
+                                                4,
+                                                8
+                                              ],
+                                              "enabled": false
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "name": "pommel3",
+                                          "from": [
+                                            -1,
+                                            0.1,
+                                            0.35
+                                          ],
+                                          "to": [
+                                            0,
+                                            0.9,
+                                            1.15
+                                          ],
+                                          "uv": [
+                                            5,
+                                            0
+                                          ],
+                                          "rotationOrigin": [
+                                            -1,
+                                            0.5,
+                                            0.75
+                                          ],
+                                          "faces": {
+                                            "north": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                6.5,
+                                                11.5,
+                                                7.5,
+                                                12
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "east": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                8.5,
+                                                9,
+                                                9,
+                                                9.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "south": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                8.5,
+                                                0,
+                                                9.5,
+                                                0.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "west": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                8,
+                                                15,
+                                                8.5,
+                                                15.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "up": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                5,
+                                                5,
+                                                6,
+                                                5.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "down": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                14,
+                                                11.5,
+                                                15,
+                                                12
+                                              ],
+                                              "enabled": false
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "name": "hilt",
+                                      "from": [
+                                        8,
+                                        -0.2,
+                                        -1.25
+                                      ],
+                                      "to": [
+                                        9.2,
+                                        1.2,
+                                        2.75
+                                      ],
+                                      "uv": [
+                                        0.5,
+                                        0.5
+                                      ],
+                                      "rotationOrigin": [
+                                        8,
+                                        0.5,
+                                        0.75
+                                      ],
+                                      "faces": {
+                                        "north": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            1.5,
+                                            3.5,
+                                            2.5,
+                                            4.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "east": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            6.5,
+                                            3,
+                                            10.5,
+                                            4
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "south": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            0.5,
+                                            0.5,
+                                            1.5,
+                                            1.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "west": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            7.5,
+                                            9.5,
+                                            11.5,
+                                            10.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "up": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            12,
+                                            6,
+                                            13,
+                                            10
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "down": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            11.5,
+                                            10,
+                                            12.5,
+                                            14
+                                          ],
+                                          "enabled": false
+                                        }
+                                      },
+                                      "children": [
+                                        {
+                                          "name": "crossguard",
+                                          "from": [
+                                            0.2,
+                                            0.3,
+                                            -2.5
+                                          ],
+                                          "to": [
+                                            1,
+                                            1.1,
+                                            6.5
+                                          ],
+                                          "uv": [
+                                            0.5,
+                                            1
+                                          ],
+                                          "rotationOrigin": [
+                                            0.6,
+                                            0.7,
+                                            2
+                                          ],
+                                          "rotationZ": -45,
+                                          "faces": {
+                                            "north": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                2.5,
+                                                6,
+                                                3,
+                                                6.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "east": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0.5,
+                                                4.5,
+                                                9.5,
+                                                5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "south": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                13,
+                                                3.5,
+                                                13.5,
+                                                4
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "west": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                3,
+                                                11,
+                                                12,
+                                                11.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "up": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                2,
+                                                3.5,
+                                                2.5,
+                                                12.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "down": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                1.5,
+                                                1,
+                                                2,
+                                                10
+                                              ],
+                                              "enabled": false
+                                            }
+                                          },
+                                          "children": [
+                                            {
+                                              "name": "hiltcap1",
+                                              "from": [
+                                                -0.1,
+                                                -0.1,
+                                                -1
+                                              ],
+                                              "to": [
+                                                0.9,
+                                                0.9,
+                                                0
+                                              ],
+                                              "uv": [
+                                                0.5,
+                                                1.5
+                                              ],
+                                              "rotationOrigin": [
+                                                0.4,
+                                                0.4,
+                                                0
+                                              ],
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    13,
+                                                    11.5,
+                                                    14,
+                                                    12.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    13,
+                                                    6,
+                                                    14,
+                                                    7
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    8.5,
+                                                    3.5,
+                                                    9.5,
+                                                    4.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    1.5,
+                                                    12.5,
+                                                    2.5,
+                                                    13.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0.5,
+                                                    1.5,
+                                                    1.5,
+                                                    2.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    13.5,
+                                                    3.5,
+                                                    14.5,
+                                                    4.5
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              }
+                                            },
+                                            {
+                                              "name": "hiltcap2",
+                                              "from": [
+                                                -0.1,
+                                                -0.1,
+                                                9
+                                              ],
+                                              "to": [
+                                                0.9,
+                                                0.9,
+                                                10
+                                              ],
+                                              "uv": [
+                                                1.5,
+                                                2.5
+                                              ],
+                                              "rotationOrigin": [
+                                                0.4,
+                                                0.4,
+                                                9
+                                              ],
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    9,
+                                                    9.5,
+                                                    10,
+                                                    10.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    8,
+                                                    5,
+                                                    9,
+                                                    6
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    7.5,
+                                                    12.5,
+                                                    8.5,
+                                                    13.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    13,
+                                                    2.5,
+                                                    14,
+                                                    3.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    1.5,
+                                                    4,
+                                                    2.5,
+                                                    5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    3,
+                                                    11,
+                                                    4,
+                                                    12
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "name": "blademiddle1",
+                                          "from": [
+                                            1.2,
+                                            0.45,
+                                            1.75
+                                          ],
+                                          "to": [
+                                            17.2,
+                                            0.95,
+                                            2.25
+                                          ],
+                                          "uv": [
+                                            0,
+                                            3.5
+                                          ],
+                                          "rotationOrigin": [
+                                            1.2,
+                                            0.6,
+                                            2
+                                          ],
+                                          "faces": {
+                                            "north": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                3,
+                                                16,
+                                                3.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "east": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                6.5,
+                                                1,
+                                                7,
+                                                1.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "south": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                13,
+                                                16,
+                                                13.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "west": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                8,
+                                                3.5,
+                                                8.5,
+                                                4
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "up": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                3.5,
+                                                16,
+                                                4
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "down": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                11,
+                                                16,
+                                                11.5
+                                              ],
+                                              "enabled": false
+                                            }
+                                          },
+                                          "children": [
+                                            {
+                                              "name": "blademiddle2",
+                                              "from": [
+                                                16,
+                                                0,
+                                                0
+                                              ],
+                                              "to": [
+                                                32,
+                                                0.5,
+                                                0.5
+                                              ],
+                                              "uv": [
+                                                0,
+                                                2
+                                              ],
+                                              "rotationOrigin": [
+                                                16,
+                                                0.25,
+                                                0.25
+                                              ],
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    8,
+                                                    16,
+                                                    8.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0.5,
+                                                    14,
+                                                    1,
+                                                    14.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    8,
+                                                    16,
+                                                    8.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    3.5,
+                                                    1.5,
+                                                    4,
+                                                    2
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    2,
+                                                    16,
+                                                    2.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    11.5,
+                                                    16,
+                                                    12
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              },
+                                              "children": [
+                                                {
+                                                  "name": "tip",
+                                                  "from": [
+                                                    23.6,
+                                                    0.15,
+                                                    -0.09
+                                                  ],
+                                                  "to": [
+                                                    24.2,
+                                                    0.35,
+                                                    0.46
+                                                  ],
+                                                  "uv": [
+                                                    0,
+                                                    0.5
+                                                  ],
+                                                  "rotationOrigin": [
+                                                    23.9,
+                                                    0.25,
+                                                    0.2
+                                                  ],
+                                                  "rotationY": 45,
+                                                  "faces": {
+                                                    "north": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        1.5,
+                                                        13,
+                                                        2,
+                                                        13.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "east": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        13,
+                                                        9,
+                                                        13.5,
+                                                        9.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "south": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        14.5,
+                                                        10,
+                                                        15,
+                                                        10.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "west": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        11.5,
+                                                        4,
+                                                        12,
+                                                        4.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "up": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        10,
+                                                        9,
+                                                        10.5,
+                                                        9.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "down": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        0.5,
+                                                        0.5,
+                                                        1
+                                                      ],
+                                                      "enabled": false
+                                                    }
+                                                  }
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "name": "blade1S",
+                                              "from": [
+                                                -0.1,
+                                                0.15,
+                                                0.5
+                                              ],
+                                              "to": [
+                                                15.9,
+                                                0.35,
+                                                1.5
+                                              ],
+                                              "uv": [
+                                                0,
+                                                0
+                                              ],
+                                              "rotationOrigin": [
+                                                0,
+                                                0.25,
+                                                1
+                                              ],
+                                              "rotationY": 0.5,
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    8.5,
+                                                    16,
+                                                    9
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    7,
+                                                    0,
+                                                    8,
+                                                    0.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    11,
+                                                    16,
+                                                    11.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    14.5,
+                                                    9,
+                                                    15.5,
+                                                    9.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    3,
+                                                    16,
+                                                    4
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    6,
+                                                    16,
+                                                    7
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              },
+                                              "children": [
+                                                {
+                                                  "name": "blade2S",
+                                                  "from": [
+                                                    16,
+                                                    0.01,
+                                                    0.2
+                                                  ],
+                                                  "to": [
+                                                    32,
+                                                    0.21,
+                                                    1
+                                                  ],
+                                                  "uv": [
+                                                    0,
+                                                    3
+                                                  ],
+                                                  "rotationOrigin": [
+                                                    16,
+                                                    0.1,
+                                                    1
+                                                  ],
+                                                  "rotationY": 1,
+                                                  "faces": {
+                                                    "north": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        4,
+                                                        16,
+                                                        4.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "east": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        10,
+                                                        12.5,
+                                                        10.5,
+                                                        13
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "south": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        14.5,
+                                                        16,
+                                                        15
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "west": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        13,
+                                                        10.5,
+                                                        13.5,
+                                                        11
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "up": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        3,
+                                                        16,
+                                                        3.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "down": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        13,
+                                                        16,
+                                                        13.5
+                                                      ],
+                                                      "enabled": false
+                                                    }
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "name": "blade3S",
+                                                      "from": [
+                                                        16,
+                                                        -0.01,
+                                                        0.1
+                                                      ],
+                                                      "to": [
+                                                        24,
+                                                        0.19,
+                                                        0.8
+                                                      ],
+                                                      "uv": [
+                                                        1,
+                                                        3
+                                                      ],
+                                                      "rotationOrigin": [
+                                                        16,
+                                                        0.1,
+                                                        0.8
+                                                      ],
+                                                      "rotationY": 1,
+                                                      "faces": {
+                                                        "north": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            1,
+                                                            13.5,
+                                                            9,
+                                                            14
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "east": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            13.5,
+                                                            9.5,
+                                                            14,
+                                                            10
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "south": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            5.5,
+                                                            4.5,
+                                                            13.5,
+                                                            5
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "west": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            11,
+                                                            3,
+                                                            11.5,
+                                                            3.5
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "up": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            1,
+                                                            5.5,
+                                                            9,
+                                                            6
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "down": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            2,
+                                                            15,
+                                                            10,
+                                                            15.5
+                                                          ],
+                                                          "enabled": false
+                                                        }
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "name": "blade1N",
+                                              "from": [
+                                                -0.1,
+                                                0.15,
+                                                -1
+                                              ],
+                                              "to": [
+                                                15.9,
+                                                0.35,
+                                                0
+                                              ],
+                                              "uv": [
+                                                0,
+                                                0
+                                              ],
+                                              "rotationOrigin": [
+                                                0,
+                                                0.25,
+                                                -0.5
+                                              ],
+                                              "rotationY": -0.5,
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    4,
+                                                    16,
+                                                    4.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    5,
+                                                    0,
+                                                    6,
+                                                    0.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    0.5,
+                                                    16,
+                                                    1
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    8,
+                                                    11.5,
+                                                    9,
+                                                    12
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    5,
+                                                    16,
+                                                    6
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    0,
+                                                    16,
+                                                    1
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              },
+                                              "children": [
+                                                {
+                                                  "name": "blade2N",
+                                                  "from": [
+                                                    16,
+                                                    0.01,
+                                                    0
+                                                  ],
+                                                  "to": [
+                                                    32,
+                                                    0.21,
+                                                    0.8
+                                                  ],
+                                                  "uv": [
+                                                    0,
+                                                    6
+                                                  ],
+                                                  "rotationOrigin": [
+                                                    16,
+                                                    0.1,
+                                                    0
+                                                  ],
+                                                  "rotationY": -1,
+                                                  "faces": {
+                                                    "north": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        14.5,
+                                                        16,
+                                                        15
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "east": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        10,
+                                                        7.5,
+                                                        10.5,
+                                                        8
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "south": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        6,
+                                                        16,
+                                                        6.5
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "west": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        14,
+                                                        0.5,
+                                                        14.5,
+                                                        1
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "up": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        12.5,
+                                                        16,
+                                                        13
+                                                      ],
+                                                      "enabled": false
+                                                    },
+                                                    "down": {
+                                                      "texture": "#blackbronze",
+                                                      "uv": [
+                                                        0,
+                                                        8,
+                                                        16,
+                                                        8.5
+                                                      ],
+                                                      "enabled": false
+                                                    }
+                                                  },
+                                                  "children": [
+                                                    {
+                                                      "name": "blade3N",
+                                                      "from": [
+                                                        16,
+                                                        0.01,
+                                                        0
+                                                      ],
+                                                      "to": [
+                                                        24,
+                                                        0.21,
+                                                        0.7
+                                                      ],
+                                                      "uv": [
+                                                        4,
+                                                        4.5
+                                                      ],
+                                                      "rotationOrigin": [
+                                                        16,
+                                                        0.1,
+                                                        0
+                                                      ],
+                                                      "faces": {
+                                                        "north": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            6.5,
+                                                            13,
+                                                            14.5,
+                                                            13.5
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "east": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            9,
+                                                            8,
+                                                            9.5,
+                                                            8.5
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "south": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            6.5,
+                                                            4.5,
+                                                            14.5,
+                                                            5
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "west": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            6,
+                                                            7,
+                                                            6.5,
+                                                            7.5
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "up": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            5,
+                                                            12.5,
+                                                            13,
+                                                            13
+                                                          ],
+                                                          "enabled": false
+                                                        },
+                                                        "down": {
+                                                          "texture": "#blackbronze",
+                                                          "uv": [
+                                                            4,
+                                                            14.5,
+                                                            12,
+                                                            15
+                                                          ],
+                                                          "enabled": false
+                                                        }
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "name": "fuller1N",
+                                          "from": [
+                                            1.2,
+                                            0.35,
+                                            1.45
+                                          ],
+                                          "to": [
+                                            17.2,
+                                            0.85,
+                                            1.95
+                                          ],
+                                          "uv": [
+                                            0,
+                                            2
+                                          ],
+                                          "rotationOrigin": [
+                                            1.2,
+                                            0.6,
+                                            1.7
+                                          ],
+                                          "rotationX": -45,
+                                          "faces": {
+                                            "north": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                5.5,
+                                                16,
+                                                6
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "east": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                9.5,
+                                                13,
+                                                10,
+                                                13.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "south": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                3.5,
+                                                16,
+                                                4
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "west": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                6,
+                                                14.5,
+                                                6.5,
+                                                15
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "up": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                12,
+                                                16,
+                                                12.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "down": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                2,
+                                                16,
+                                                2.5
+                                              ],
+                                              "enabled": false
+                                            }
+                                          },
+                                          "children": [
+                                            {
+                                              "name": "fuller2N",
+                                              "from": [
+                                                16,
+                                                0,
+                                                0
+                                              ],
+                                              "to": [
+                                                19,
+                                                0.5,
+                                                0.5
+                                              ],
+                                              "uv": [
+                                                0,
+                                                1
+                                              ],
+                                              "rotationOrigin": [
+                                                16,
+                                                0.25,
+                                                0.25
+                                              ],
+                                              "rotationY": -4,
+                                              "rotationZ": -4,
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    12,
+                                                    1,
+                                                    15,
+                                                    1.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    1,
+                                                    9.5,
+                                                    1.5,
+                                                    10
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    6,
+                                                    4,
+                                                    9,
+                                                    4.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    12,
+                                                    7.5,
+                                                    12.5,
+                                                    8
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    4,
+                                                    3,
+                                                    4.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    1,
+                                                    11,
+                                                    4,
+                                                    11.5
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "name": "fuller1S",
+                                          "from": [
+                                            1.2,
+                                            0.35,
+                                            2.15
+                                          ],
+                                          "to": [
+                                            17.2,
+                                            0.85,
+                                            2.65
+                                          ],
+                                          "uv": [
+                                            0,
+                                            6.5
+                                          ],
+                                          "rotationOrigin": [
+                                            1.2,
+                                            0.6,
+                                            2.4
+                                          ],
+                                          "rotationX": -45,
+                                          "faces": {
+                                            "north": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                14,
+                                                16,
+                                                14.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "east": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                14.5,
+                                                6.5,
+                                                15,
+                                                7
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "south": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                10,
+                                                16,
+                                                10.5
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "west": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                7.5,
+                                                6.5,
+                                                8,
+                                                7
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "up": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                6.5,
+                                                16,
+                                                7
+                                              ],
+                                              "enabled": false
+                                            },
+                                            "down": {
+                                              "texture": "#blackbronze",
+                                              "uv": [
+                                                0,
+                                                10.5,
+                                                16,
+                                                11
+                                              ],
+                                              "enabled": false
+                                            }
+                                          },
+                                          "children": [
+                                            {
+                                              "name": "fuller2S",
+                                              "from": [
+                                                16,
+                                                0,
+                                                0
+                                              ],
+                                              "to": [
+                                                19,
+                                                0.5,
+                                                0.5
+                                              ],
+                                              "uv": [
+                                                0,
+                                                5
+                                              ],
+                                              "rotationOrigin": [
+                                                16,
+                                                0.25,
+                                                0.25
+                                              ],
+                                              "rotationY": 4,
+                                              "rotationZ": 4,
+                                              "faces": {
+                                                "north": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0,
+                                                    13,
+                                                    3,
+                                                    13.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "east": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    11.5,
+                                                    5,
+                                                    12,
+                                                    5.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "south": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    11.5,
+                                                    14.5,
+                                                    14.5,
+                                                    15
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "west": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    0.5,
+                                                    15,
+                                                    1,
+                                                    15.5
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "up": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    12,
+                                                    13.5,
+                                                    15,
+                                                    14
+                                                  ],
+                                                  "enabled": false
+                                                },
+                                                "down": {
+                                                  "texture": "#blackbronze",
+                                                  "uv": [
+                                                    6.5,
+                                                    13.5,
+                                                    9.5,
+                                                    14
+                                                  ],
+                                                  "enabled": false
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "name": "band",
+                                      "from": [
+                                        3.5,
+                                        -0.1,
+                                        -0.1
+                                      ],
+                                      "to": [
+                                        4.5,
+                                        1.1,
+                                        1.6
+                                      ],
+                                      "uv": [
+                                        0.5,
+                                        4
+                                      ],
+                                      "rotationOrigin": [
+                                        4,
+                                        0.5,
+                                        0.75
+                                      ],
+                                      "faces": {
+                                        "north": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            11.5,
+                                            4,
+                                            12.5,
+                                            5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "east": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            7,
+                                            7.5,
+                                            8.5,
+                                            8.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "south": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            7,
+                                            8.5,
+                                            8,
+                                            9.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "west": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            0.5,
+                                            4.5,
+                                            2,
+                                            5.5
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "up": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            2,
+                                            5.5,
+                                            3,
+                                            7
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "down": {
+                                          "texture": "#blackbronze",
+                                          "uv": [
+                                            7,
+                                            6.5,
+                                            8,
+                                            8
+                                          ],
+                                          "enabled": false
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "Knife",
+                              "from": [
+                                -8.5,
+                                0.2,
+                                -0.3
+                              ],
+                              "to": [
+                                1.5,
+                                1.2,
+                                0.2
+                              ],
+                              "unwrapMode": 3,
+                              "unwrapRotation": 1,
+                              "uv": [
+                                28.5,
+                                5.5
+                              ],
+                              "rotationOrigin": [
+                                1,
+                                1.2,
+                                -0.3
+                              ],
+                              "rotationZ": 17.5,
+                              "faces": {
+                                "north": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    30.5,
+                                    6,
+                                    31.5,
+                                    16
+                                  ],
+                                  "rotation": 270,
+                                  "enabled": false
+                                },
+                                "east": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    29,
+                                    5.5,
+                                    30,
+                                    6
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "south": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    29,
+                                    6,
+                                    30,
+                                    16
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "west": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    29,
+                                    16,
+                                    30,
+                                    16.5
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "up": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    28.5,
+                                    6,
+                                    29,
+                                    16
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "down": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    30,
+                                    6,
+                                    30.5,
+                                    16
+                                  ],
+                                  "rotation": 270,
+                                  "enabled": false
+                                }
+                              }
+                            },
+                            {
+                              "name": "saw",
+                              "from": [
+                                -9.5,
+                                -3.4,
+                                0
+                              ],
+                              "to": [
+                                4,
+                                -2.4,
+                                1
+                              ],
+                              "unwrapMode": 1,
+                              "unwrapRotation": 1,
+                              "uv": [
+                                28,
+                                2.5
+                              ],
+                              "rotationOrigin": [
+                                1,
+                                -0.4,
+                                0
+                              ],
+                              "rotationZ": 6,
+                              "faces": {
+                                "north": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    29,
+                                    3.5,
+                                    30,
+                                    17
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "east": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    29,
+                                    17,
+                                    30,
+                                    18
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "south": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    31,
+                                    3.5,
+                                    32,
+                                    17
+                                  ],
+                                  "rotation": 270,
+                                  "enabled": false
+                                },
+                                "west": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    29,
+                                    2.5,
+                                    30,
+                                    3.5
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "up": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    28,
+                                    3.5,
+                                    29,
+                                    17
+                                  ],
+                                  "rotation": 270,
+                                  "enabled": false
+                                },
+                                "down": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    30,
+                                    3.5,
+                                    31,
+                                    17
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                }
+                              },
+                              "children": [
+                                {
+                                  "name": "saw2",
+                                  "from": [
+                                    0,
+                                    1,
+                                    0
+                                  ],
+                                  "to": [
+                                    1,
+                                    7,
+                                    1
+                                  ],
+                                  "uv": [
+                                    0,
+                                    0
+                                  ],
+                                  "rotationOrigin": [
+                                    0,
+                                    1,
+                                    0
+                                  ],
+                                  "faces": {
+                                    "north": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        0,
+                                        1,
+                                        1,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "east": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1,
+                                        1,
+                                        2,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "south": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        2,
+                                        1,
+                                        3,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "west": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        3,
+                                        1,
+                                        4,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "up": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        0,
+                                        0,
+                                        1,
+                                        1
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "down": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1,
+                                        0,
+                                        2,
+                                        1
+                                      ],
+                                      "enabled": false
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "saw3",
+                                  "from": [
+                                    12.5,
+                                    1,
+                                    0
+                                  ],
+                                  "to": [
+                                    13.5,
+                                    7,
+                                    1
+                                  ],
+                                  "uv": [
+                                    0,
+                                    0
+                                  ],
+                                  "rotationOrigin": [
+                                    12.5,
+                                    1,
+                                    0
+                                  ],
+                                  "faces": {
+                                    "north": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        0,
+                                        1,
+                                        1,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "east": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1,
+                                        1,
+                                        2,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "south": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        2,
+                                        1,
+                                        3,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "west": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        3,
+                                        1,
+                                        4,
+                                        7
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "up": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        0,
+                                        0,
+                                        1,
+                                        1
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "down": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1,
+                                        0,
+                                        2,
+                                        1
+                                      ],
+                                      "enabled": false
+                                    }
+                                  },
+                                  "children": [
+                                    {
+                                      "name": "saw4",
+                                      "from": [
+                                        -11.5,
+                                        2,
+                                        0
+                                      ],
+                                      "to": [
+                                        0,
+                                        3,
+                                        1
+                                      ],
+                                      "uv": [
+                                        0,
+                                        0
+                                      ],
+                                      "rotationOrigin": [
+                                        -11.5,
+                                        2,
+                                        0
+                                      ],
+                                      "faces": {
+                                        "north": {
+                                          "texture": "#seraph",
+                                          "uv": [
+                                            0,
+                                            1,
+                                            11.5,
+                                            2
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "east": {
+                                          "texture": "#seraph",
+                                          "uv": [
+                                            11.5,
+                                            1,
+                                            12.5,
+                                            2
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "south": {
+                                          "texture": "#seraph",
+                                          "uv": [
+                                            12.5,
+                                            1,
+                                            24,
+                                            2
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "west": {
+                                          "texture": "#seraph",
+                                          "uv": [
+                                            24,
+                                            1,
+                                            25,
+                                            2
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "up": {
+                                          "texture": "#seraph",
+                                          "uv": [
+                                            0,
+                                            0,
+                                            11.5,
+                                            1
+                                          ],
+                                          "enabled": false
+                                        },
+                                        "down": {
+                                          "texture": "#seraph",
+                                          "uv": [
+                                            11.5,
+                                            0,
+                                            23,
+                                            1
+                                          ],
+                                          "enabled": false
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "Shovel1",
+                              "from": [
+                                -15,
+                                0.2,
+                                -0.4
+                              ],
+                              "to": [
+                                1,
+                                1.2,
+                                0.6
+                              ],
+                              "unwrapMode": 5,
+                              "unwrapRotation": 1,
+                              "uv": [
+                                2.5,
+                                21
+                              ],
+                              "rotationOrigin": [
+                                0,
+                                0.2,
+                                -0.4
+                              ],
+                              "rotationZ": 10,
+                              "faces": {
+                                "north": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    2.5,
+                                    22,
+                                    3.5,
+                                    38
+                                  ],
+                                  "rotation": 270,
+                                  "enabled": false
+                                },
+                                "east": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    3.5,
+                                    21,
+                                    4.5,
+                                    22
+                                  ],
+                                  "rotation": 180,
+                                  "enabled": false
+                                },
+                                "south": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    4.5,
+                                    22,
+                                    5.5,
+                                    38
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "west": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    3.5,
+                                    38,
+                                    4.5,
+                                    39
+                                  ],
+                                  "enabled": false
+                                },
+                                "up": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    3.5,
+                                    22,
+                                    4.5,
+                                    38
+                                  ],
+                                  "rotation": 90,
+                                  "enabled": false
+                                },
+                                "down": {
+                                  "texture": "#seraph",
+                                  "uv": [
+                                    5.5,
+                                    22,
+                                    6.5,
+                                    38
+                                  ],
+                                  "rotation": 270,
+                                  "enabled": false
+                                }
+                              },
+                              "children": [
+                                {
+                                  "name": "Shovel2",
+                                  "from": [
+                                    -10,
+                                    0,
+                                    0
+                                  ],
+                                  "to": [
+                                    0,
+                                    1,
+                                    1
+                                  ],
+                                  "unwrapMode": 5,
+                                  "unwrapRotation": 1,
+                                  "uv": [
+                                    0.5,
+                                    17
+                                  ],
+                                  "rotationOrigin": [
+                                    -10,
+                                    0,
+                                    0
+                                  ],
+                                  "faces": {
+                                    "north": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        0.5,
+                                        18,
+                                        1.5,
+                                        28
+                                      ],
+                                      "rotation": 270,
+                                      "enabled": false
+                                    },
+                                    "east": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1.5,
+                                        17,
+                                        2.5,
+                                        18
+                                      ],
+                                      "rotation": 180,
+                                      "enabled": false
+                                    },
+                                    "south": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        2.5,
+                                        18,
+                                        3.5,
+                                        28
+                                      ],
+                                      "rotation": 90,
+                                      "enabled": false
+                                    },
+                                    "west": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1.5,
+                                        28,
+                                        2.5,
+                                        29
+                                      ],
+                                      "enabled": false
+                                    },
+                                    "up": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        1.5,
+                                        18,
+                                        2.5,
+                                        28
+                                      ],
+                                      "rotation": 90,
+                                      "enabled": false
+                                    },
+                                    "down": {
+                                      "texture": "#seraph",
+                                      "uv": [
+                                        3.5,
+                                        18,
+                                        4.5,
+                                        28
+                                      ],
+                                      "rotation": 270,
+                                      "enabled": false
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ],
+                          "attachmentpoints": [
+                            {
+                              "code": "RightHand",
+                              "posX": "0.0",
+                              "posY": "0.0",
+                              "posZ": "0.0",
+                              "rotationX": "0.0",
+                              "rotationY": "-180.0",
+                              "rotationZ": "0.0"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "UpperArmL",
+                  "from": [
+                    1,
+                    -2.1,
+                    5.4
+                  ],
+                  "to": [
+                    4,
+                    4.9,
+                    7.4
+                  ],
+                  "unwrapMode": 4,
+                  "autoUnwrap": false,
+                  "uv": [
+                    21,
+                    29
+                  ],
+                  "rotationOrigin": [
+                    2,
+                    4.7,
+                    5.2
+                  ],
+                  "rotationX": -10,
+                  "rotationZ": 7,
+                  "faces": {
+                    "north": {
+                      "texture": "#seraph",
+                      "uv": [
+                        21,
+                        31.5,
+                        24,
+                        38.5
+                      ]
+                    },
+                    "east": {
+                      "texture": "#seraph",
+                      "uv": [
+                        29,
+                        31.5,
+                        31,
+                        38.5
+                      ]
+                    },
+                    "south": {
+                      "texture": "#seraph",
+                      "uv": [
+                        26,
+                        31.5,
+                        29,
+                        38.5
+                      ]
+                    },
+                    "west": {
+                      "texture": "#seraph",
+                      "uv": [
+                        24,
+                        31.5,
+                        26,
+                        38.5
+                      ]
+                    },
+                    "up": {
+                      "texture": "#seraph",
+                      "uv": [
+                        24,
+                        28.5,
+                        26,
+                        31.5
+                      ],
+                      "rotation": 90
+                    },
+                    "down": {
+                      "texture": "#seraph",
+                      "uv": [
+                        18,
+                        36,
+                        20,
+                        39
+                      ],
+                      "rotation": 90
+                    }
+                  },
+                  "children": [
+                    {
+                      "name": "LowerArmL",
+                      "from": [
+                        0.2,
+                        -7.3,
+                        -0.1
+                      ],
+                      "to": [
+                        2.7,
+                        0.7,
+                        1.9
+                      ],
+                      "unwrapMode": 4,
+                      "autoUnwrap": false,
+                      "uv": [
+                        21.5,
+                        36.5
+                      ],
+                      "rotationOrigin": [
+                        1.4,
+                        0.7,
+                        0.9
+                      ],
+                      "rotationX": 8,
+                      "rotationZ": -6,
+                      "faces": {
+                        "north": {
+                          "texture": "#seraph",
+                          "uv": [
+                            21.5,
+                            38,
+                            24,
+                            46
+                          ]
+                        },
+                        "east": {
+                          "texture": "#seraph",
+                          "uv": [
+                            28.5,
+                            38,
+                            30.5,
+                            46
+                          ]
+                        },
+                        "south": {
+                          "texture": "#seraph",
+                          "uv": [
+                            26,
+                            38,
+                            28.5,
+                            46
+                          ]
+                        },
+                        "west": {
+                          "texture": "#seraph",
+                          "uv": [
+                            24,
+                            38,
+                            26,
+                            46
+                          ]
+                        },
+                        "up": {
+                          "texture": "#seraph",
+                          "uv": [
+                            18,
+                            39,
+                            20,
+                            41.5
+                          ],
+                          "rotation": 90
+                        },
+                        "down": {
+                          "texture": "#seraph",
+                          "uv": [
+                            24,
+                            46,
+                            26,
+                            48.5
+                          ],
+                          "rotation": 90
+                        }
+                      },
+                      "children": [
+                        {
+                          "name": "ItemAnchorL",
+                          "from": [
+                            1.5,
+                            0.5,
+                            1
+                          ],
+                          "to": [
+                            2.5,
+                            1.5,
+                            2
+                          ],
+                          "uv": [
+                            0,
+                            0
+                          ],
+                          "rotationOrigin": [
+                            1,
+                            1,
+                            1
+                          ],
+                          "faces": {
+                            "north": {
+                              "texture": "#null",
+                              "uv": [
+                                0,
+                                1,
+                                1,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "east": {
+                              "texture": "#null",
+                              "uv": [
+                                1,
+                                1,
+                                2,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "south": {
+                              "texture": "#null",
+                              "uv": [
+                                2,
+                                1,
+                                3,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "west": {
+                              "texture": "#null",
+                              "uv": [
+                                3,
+                                1,
+                                4,
+                                2
+                              ],
+                              "enabled": false
+                            },
+                            "up": {
+                              "texture": "#null",
+                              "uv": [
+                                0,
+                                0,
+                                1,
+                                1
+                              ],
+                              "enabled": false
+                            },
+                            "down": {
+                              "texture": "#null",
+                              "uv": [
+                                1,
+                                0,
+                                2,
+                                1
+                              ],
+                              "enabled": false
+                            }
+                          },
+                          "attachmentpoints": [
+                            {
+                              "code": "LeftHand",
+                              "posX": "0.0",
+                              "posY": "0.0",
+                              "posZ": "0.0",
+                              "rotationX": "0.0",
+                              "rotationY": "-180.0",
+                              "rotationZ": "0.0"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "ShoulderAttachment",
+                      "from": [
+                        3,
+                        7,
+                        2
+                      ],
+                      "to": [
+                        3,
+                        7,
+                        2
+                      ],
+                      "uv": [
+                        0,
+                        0
+                      ],
+                      "rotationOrigin": [
+                        3,
+                        7,
+                        2
+                      ],
+                      "faces": {
+                        "north": {
+                          "texture": "#null",
+                          "uv": [
+                            0,
+                            0.5,
+                            0.5,
+                            1
+                          ],
+                          "enabled": false
+                        },
+                        "east": {
+                          "texture": "#null",
+                          "uv": [
+                            0.5,
+                            0.5,
+                            1,
+                            1
+                          ],
+                          "enabled": false
+                        },
+                        "south": {
+                          "texture": "#null",
+                          "uv": [
+                            1,
+                            0.5,
+                            1.5,
+                            1
+                          ],
+                          "enabled": false
+                        },
+                        "west": {
+                          "texture": "#null",
+                          "uv": [
+                            1.5,
+                            0.5,
+                            2,
+                            1
+                          ],
+                          "enabled": false
+                        },
+                        "up": {
+                          "texture": "#null",
+                          "uv": [
+                            0,
+                            0,
+                            0.5,
+                            0.5
+                          ],
+                          "enabled": false
+                        },
+                        "down": {
+                          "texture": "#null",
+                          "uv": [
+                            0.5,
+                            0,
+                            1,
+                            0.5
+                          ],
+                          "enabled": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "Neck",
+                  "from": [
+                    1.5,
+                    3.9,
+                    1.6
+                  ],
+                  "to": [
+                    4.5,
+                    7.9,
+                    4.6
+                  ],
+                  "unwrapMode": 4,
+                  "uv": [
+                    13,
+                    1
+                  ],
+                  "rotationOrigin": [
+                    3.2,
+                    3.6,
+                    3.1
+                  ],
+                  "rotationZ": 12,
+                  "faces": {
+                    "north": {
+                      "texture": "#seraph",
+                      "uv": [
+                        13,
+                        1,
+                        16,
+                        5
+                      ]
+                    },
+                    "east": {
+                      "texture": "#seraph",
+                      "uv": [
+                        22,
+                        1,
+                        25,
+                        5
+                      ]
+                    },
+                    "south": {
+                      "texture": "#seraph",
+                      "uv": [
+                        19,
+                        1,
+                        22,
+                        5
+                      ]
+                    },
+                    "west": {
+                      "texture": "#seraph",
+                      "uv": [
+                        16,
+                        1,
+                        19,
+                        5
+                      ]
+                    },
+                    "up": {
+                      "texture": "#null",
+                      "uv": [
+                        16,
+                        1,
+                        19,
+                        4
+                      ],
+                      "rotation": 90,
+                      "enabled": false
+                    },
+                    "down": {
+                      "texture": "#null",
+                      "uv": [
+                        16,
+                        8,
+                        19,
+                        11
+                      ],
+                      "rotation": 90,
+                      "enabled": false
+                    }
+                  },
+                  "children": [
+                    {
+                      "name": "Head",
+                      "from": [
+                        -1.7,
+                        2.1,
+                        -1
+                      ],
+                      "to": [
+                        3.8,
+                        7.1,
+                        4
+                      ],
+                      "unwrapMode": 4,
+                      "uv": [
+                        1,
+                        0.5
+                      ],
+                      "rotationOrigin": [
+                        1.7,
+                        2.1,
+                        1.5
+                      ],
+                      "rotationZ": -7,
+                      "faces": {
+                        "north": {
+                          "texture": "#seraph",
+                          "uv": [
+                            1,
+                            6,
+                            6.5,
+                            11
+                          ]
+                        },
+                        "east": {
+                          "texture": "#seraph",
+                          "uv": [
+                            17,
+                            6,
+                            22,
+                            11
+                          ]
+                        },
+                        "south": {
+                          "texture": "#seraph",
+                          "uv": [
+                            11.5,
+                            6,
+                            17,
+                            11
+                          ]
+                        },
+                        "west": {
+                          "texture": "#seraph",
+                          "uv": [
+                            6.5,
+                            6,
+                            11.5,
+                            11
+                          ]
+                        },
+                        "up": {
+                          "texture": "#seraph",
+                          "uv": [
+                            6.5,
+                            0.5,
+                            11.5,
+                            6
+                          ],
+                          "rotation": 90
+                        },
+                        "down": {
+                          "texture": "#seraph",
+                          "uv": [
+                            6.5,
+                            11,
+                            11.5,
+                            16.5
+                          ],
+                          "rotation": 90
+                        }
+                      },
+                      "attachmentpoints": [
+                        {
+                          "code": "Eyes",
+                          "posX": "1.3",
+                          "posY": "3.5",
+                          "posZ": "2.5",
+                          "rotationX": "0.0",
+                          "rotationY": "-90.0",
+                          "rotationZ": "0.0"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "UpperBackAttachment",
+                  "from": [
+                    5.5,
+                    2,
+                    3
+                  ],
+                  "to": [
+                    5.5,
+                    2,
+                    3
+                  ],
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "rotationOrigin": [
+                    5.5,
+                    2,
+                    3
+                  ],
+                  "faces": {
+                    "north": {
+                      "texture": "#null",
+                      "uv": [
+                        0,
+                        0.5,
+                        0.5,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "east": {
+                      "texture": "#null",
+                      "uv": [
+                        0.5,
+                        0.5,
+                        1,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "south": {
+                      "texture": "#null",
+                      "uv": [
+                        1,
+                        0.5,
+                        1.5,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "west": {
+                      "texture": "#null",
+                      "uv": [
+                        1.5,
+                        0.5,
+                        2,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "up": {
+                      "texture": "#null",
+                      "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                      ],
+                      "enabled": false
+                    },
+                    "down": {
+                      "texture": "#null",
+                      "uv": [
+                        0.5,
+                        0,
+                        1,
+                        0.5
+                      ],
+                      "enabled": false
+                    }
+                  }
+                }
+              ],
+              "attachmentpoints": [
+                {
+                  "code": "Back",
+                  "posX": "5.0",
+                  "posY": "3.0",
+                  "posZ": "3.0",
+                  "rotationX": "0.0",
+                  "rotationY": "0.0",
+                  "rotationZ": "0.0"
+                }
+              ]
+            },
+            {
+              "name": "UpperFootL",
+              "from": [
+                0.4,
+                -6,
+                3
+              ],
+              "to": [
+                4.6,
+                3,
+                6.2
+              ],
+              "unwrapMode": 4,
+              "autoUnwrap": false,
+              "uv": [
+                16.5,
+                49
+              ],
+              "rotationOrigin": [
+                1.5,
+                0.5,
+                4.6
+              ],
+              "rotationX": -3,
+              "rotationZ": -5,
+              "faces": {
+                "north": {
+                  "texture": "#seraph",
+                  "uv": [
+                    16.5,
+                    53,
+                    20.5,
+                    62
+                  ],
+                  "windMode": [
+                    -1,
+                    -1,
+                    -1,
+                    -1
+                  ]
+                },
+                "east": {
+                  "texture": "#seraph",
+                  "uv": [
+                    27.5,
+                    53,
+                    30.5,
+                    62
+                  ]
+                },
+                "south": {
+                  "texture": "#seraph",
+                  "uv": [
+                    23.5,
+                    53,
+                    27.5,
+                    62
+                  ]
+                },
+                "west": {
+                  "texture": "#seraph",
+                  "uv": [
+                    20.5,
+                    53,
+                    23.5,
+                    62
+                  ]
+                },
+                "up": {
+                  "texture": "#seraph",
+                  "uv": [
+                    20.5,
+                    49,
+                    23.5,
+                    53
+                  ],
+                  "rotation": 90
+                },
+                "down": {
+                  "texture": "#seraph",
+                  "uv": [
+                    16.5,
+                    43.5,
+                    19.5,
+                    47.5
+                  ],
+                  "rotation": 90
+                }
+              },
+              "children": [
+                {
+                  "name": "LowerFootL",
+                  "from": [
+                    0.1,
+                    -9,
+                    0.1
+                  ],
+                  "to": [
+                    4.1,
+                    1,
+                    3.1
+                  ],
+                  "unwrapMode": 4,
+                  "autoUnwrap": false,
+                  "uv": [
+                    16.5,
+                    58
+                  ],
+                  "rotationOrigin": [
+                    2.1,
+                    0.5,
+                    1.4
+                  ],
+                  "rotationX": 2,
+                  "rotationZ": 2,
+                  "faces": {
+                    "north": {
+                      "texture": "#seraph",
+                      "uv": [
+                        16.5,
+                        61,
+                        20.5,
+                        71
+                      ],
+                      "windMode": [
+                        -1,
+                        -1,
+                        -1,
+                        -1
+                      ]
+                    },
+                    "east": {
+                      "texture": "#seraph",
+                      "uv": [
+                        27.5,
+                        61,
+                        30.5,
+                        71
+                      ]
+                    },
+                    "south": {
+                      "texture": "#seraph",
+                      "uv": [
+                        23.5,
+                        61,
+                        27.5,
+                        71
+                      ]
+                    },
+                    "west": {
+                      "texture": "#seraph",
+                      "uv": [
+                        20.5,
+                        61,
+                        23.5,
+                        71
+                      ]
+                    },
+                    "up": {
+                      "texture": "#seraph",
+                      "uv": [
+                        16.5,
+                        47.5,
+                        19.5,
+                        51.5
+                      ],
+                      "rotation": 90
+                    },
+                    "down": {
+                      "texture": "#seraph",
+                      "uv": [
+                        20.5,
+                        71,
+                        23.5,
+                        75
+                      ],
+                      "rotation": 90
+                    }
+                  }
+                },
+                {
+                  "name": "FootAttachmentL",
+                  "from": [
+                    2,
+                    5,
+                    3.2
+                  ],
+                  "to": [
+                    2,
+                    5,
+                    3.2
+                  ],
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "rotationOrigin": [
+                    2,
+                    5,
+                    3.2
+                  ],
+                  "faces": {
+                    "north": {
+                      "texture": "#null",
+                      "uv": [
+                        0,
+                        0.5,
+                        0.5,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "east": {
+                      "texture": "#null",
+                      "uv": [
+                        0.5,
+                        0.5,
+                        1,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "south": {
+                      "texture": "#null",
+                      "uv": [
+                        1,
+                        0.5,
+                        1.5,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "west": {
+                      "texture": "#null",
+                      "uv": [
+                        1.5,
+                        0.5,
+                        2,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "up": {
+                      "texture": "#null",
+                      "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                      ],
+                      "enabled": false
+                    },
+                    "down": {
+                      "texture": "#null",
+                      "uv": [
+                        0.5,
+                        0,
+                        1,
+                        0.5
+                      ],
+                      "enabled": false
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "UpperFootR",
+              "from": [
+                0.4,
+                -6,
+                -0.2
+              ],
+              "to": [
+                4.6,
+                3,
+                3
+              ],
+              "unwrapMode": 4,
+              "autoUnwrap": false,
+              "uv": [
+                4.5,
+                49
+              ],
+              "rotationOrigin": [
+                1.5,
+                0.5,
+                1.4
+              ],
+              "rotationX": 3,
+              "rotationZ": -5,
+              "faces": {
+                "north": {
+                  "texture": "#seraph",
+                  "uv": [
+                    4.5,
+                    53,
+                    8.5,
+                    62
+                  ],
+                  "windMode": [
+                    -1,
+                    -1,
+                    -1,
+                    -1
+                  ]
+                },
+                "east": {
+                  "texture": "#seraph",
+                  "uv": [
+                    1.5,
+                    53,
+                    4.5,
+                    62
+                  ]
+                },
+                "south": {
+                  "texture": "#seraph",
+                  "uv": [
+                    11.5,
+                    53,
+                    15.5,
+                    62
+                  ]
+                },
+                "west": {
+                  "texture": "#seraph",
+                  "uv": [
+                    8.5,
+                    53,
+                    11.5,
+                    62
+                  ]
+                },
+                "up": {
+                  "texture": "#seraph",
+                  "uv": [
+                    8.5,
+                    49,
+                    11.5,
+                    53
+                  ],
+                  "rotation": 90
+                },
+                "down": {
+                  "texture": "#seraph",
+                  "uv": [
+                    12.5,
+                    43.5,
+                    15.5,
+                    47.5
+                  ],
+                  "rotation": 90
+                }
+              },
+              "children": [
+                {
+                  "name": "LowerFootR",
+                  "from": [
+                    0.1,
+                    -9,
+                    0.1
+                  ],
+                  "to": [
+                    4.1,
+                    1,
+                    3.1
+                  ],
+                  "unwrapMode": 4,
+                  "autoUnwrap": false,
+                  "uv": [
+                    4.5,
+                    58
+                  ],
+                  "rotationOrigin": [
+                    2.1,
+                    0.5,
+                    1.4
+                  ],
+                  "rotationX": -2,
+                  "rotationZ": 2,
+                  "faces": {
+                    "north": {
+                      "texture": "#seraph",
+                      "uv": [
+                        4.5,
+                        61,
+                        8.5,
+                        71
+                      ],
+                      "windMode": [
+                        -1,
+                        -1,
+                        -1,
+                        -1
+                      ]
+                    },
+                    "east": {
+                      "texture": "#seraph",
+                      "uv": [
+                        1.5,
+                        61,
+                        4.5,
+                        71
+                      ]
+                    },
+                    "south": {
+                      "texture": "#seraph",
+                      "uv": [
+                        11.5,
+                        61,
+                        15.5,
+                        71
+                      ]
+                    },
+                    "west": {
+                      "texture": "#seraph",
+                      "uv": [
+                        8.5,
+                        61,
+                        11.5,
+                        71
+                      ]
+                    },
+                    "up": {
+                      "texture": "#seraph",
+                      "uv": [
+                        12.5,
+                        47.5,
+                        15.5,
+                        51.5
+                      ],
+                      "rotation": 90
+                    },
+                    "down": {
+                      "texture": "#seraph",
+                      "uv": [
+                        8.5,
+                        71,
+                        11.5,
+                        75
+                      ],
+                      "rotation": 90
+                    }
+                  }
+                },
+                {
+                  "name": "FootAttachmentR",
+                  "from": [
+                    2,
+                    5,
+                    -0.2
+                  ],
+                  "to": [
+                    2,
+                    5,
+                    -0.2
+                  ],
+                  "uv": [
+                    0,
+                    0
+                  ],
+                  "rotationOrigin": [
+                    2,
+                    5,
+                    -0.2
+                  ],
+                  "faces": {
+                    "north": {
+                      "texture": "#null",
+                      "uv": [
+                        0,
+                        0.5,
+                        0.5,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "east": {
+                      "texture": "#null",
+                      "uv": [
+                        0.5,
+                        0.5,
+                        1,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "south": {
+                      "texture": "#null",
+                      "uv": [
+                        1,
+                        0.5,
+                        1.5,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "west": {
+                      "texture": "#null",
+                      "uv": [
+                        1.5,
+                        0.5,
+                        2,
+                        1
+                      ],
+                      "enabled": false
+                    },
+                    "up": {
+                      "texture": "#null",
+                      "uv": [
+                        0,
+                        0,
+                        0.5,
+                        0.5
+                      ],
+                      "enabled": false
+                    },
+                    "down": {
+                      "texture": "#null",
+                      "uv": [
+                        0.5,
+                        0,
+                        1,
+                        0.5
+                      ],
+                      "enabled": false
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "LowerBackAttachment",
+              "from": [
+                5.4,
+                1.4,
+                3
+              ],
+              "to": [
+                5.4,
+                1.4,
+                3
+              ],
+              "uv": [
+                0,
+                0
+              ],
+              "rotationOrigin": [
+                5.4,
+                1.4,
+                3
+              ],
+              "faces": {
+                "north": {
+                  "texture": "#null",
+                  "uv": [
+                    0,
+                    0.5,
+                    0.5,
+                    1
+                  ],
+                  "enabled": false
+                },
+                "east": {
+                  "texture": "#null",
+                  "uv": [
+                    0.5,
+                    0.5,
+                    1,
+                    1
+                  ],
+                  "enabled": false
+                },
+                "south": {
+                  "texture": "#null",
+                  "uv": [
+                    1,
+                    0.5,
+                    1.5,
+                    1
+                  ],
+                  "enabled": false
+                },
+                "west": {
+                  "texture": "#null",
+                  "uv": [
+                    1.5,
+                    0.5,
+                    2,
+                    1
+                  ],
+                  "enabled": false
+                },
+                "up": {
+                  "texture": "#null",
+                  "uv": [
+                    0,
+                    0,
+                    0.5,
+                    0.5
+                  ],
+                  "enabled": false
+                },
+                "down": {
+                  "texture": "#null",
+                  "uv": [
+                    0.5,
+                    0,
+                    1,
+                    0.5
+                  ],
+                  "enabled": false
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "animations": []
+}

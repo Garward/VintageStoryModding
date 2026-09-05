@@ -15,11 +15,18 @@ public static class HudStatbarPatch
     {
         MethodInfo composeGuis = AccessTools.Method(typeof(HudStatbar), "ComposeGuis");
         MethodInfo updateHealth = AccessTools.Method(typeof(HudStatbar), "UpdateHealth");
+        MethodInfo renderHud = AccessTools.Method(typeof(HudStatbar), nameof(HudStatbar.OnRenderGUI));
         MethodInfo renderStatbar = AccessTools.Method(typeof(GuiElementStatbar), nameof(GuiElementStatbar.RenderInteractiveElements));
 
         harmony.Patch(composeGuis, postfix: new HarmonyMethod(typeof(HudStatbarPatch), nameof(ComposeGuisPostfix)));
         harmony.Patch(updateHealth, postfix: new HarmonyMethod(typeof(HudStatbarPatch), nameof(UpdateHealthPostfix)));
+        harmony.Patch(renderHud, prefix: new HarmonyMethod(typeof(HudStatbarPatch), nameof(RenderHudPrefix)));
         harmony.Patch(renderStatbar, prefix: new HarmonyMethod(typeof(HudStatbarPatch), nameof(RenderStatbarPrefix)));
+    }
+
+    public static bool RenderHudPrefix()
+    {
+        return !VrpgClientHudRuntime.HideVanillaStatbar;
     }
 
     public static void ComposeGuisPostfix(HudStatbar __instance)

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
+using Newtonsoft.Json;
 using VRPG.Data.Definitions;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
@@ -8,13 +10,33 @@ namespace VRPG.Modules.Rpg.Players;
 
 public sealed class RpgPlayerStore
 {
-    private const string StoreFileName = "vrpg-playerdata.json";
-    private readonly Dictionary<string, RpgPlayerState> states = new Dictionary<string, RpgPlayerState>();
+    private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+    {
+        Formatting = Formatting.None,
+        MaxDepth = 64,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        TypeNameHandling = TypeNameHandling.None
+    };
+    private readonly Dictionary<string, RpgPlayerState> states =
+        new Dictionary<string, RpgPlayerState>(StringComparer.OrdinalIgnoreCase);
     private ICoreServerAPI? api;
+    private IRpgPlayerStateStorage? storage;
 
     public RpgPlayerState GetOrCreate(IServerPlayer player)
     {
-        if (states.TryGetValue(player.PlayerUID, out RpgPlayerState? state))
+        ArgumentNullException.ThrowIfNull(player);
+        return GetOrCreate(player.PlayerUID);
+    }
+
+    public RpgPlayerState GetOrCreate(string playerUid)
+    {
+        if (string.IsNullOrWhiteSpace(playerUid))
+        {
+            throw new ArgumentException("Player UID is required.", nameof(playerUid));
+        }
+
+        string normalizedUid = playerUid.Trim();
+        if (states.TryGetValue(normalizedUid, out RpgPlayerState? state))
         {
             state.Normalize();
             return state;
@@ -22,7 +44,7 @@ public sealed class RpgPlayerStore
 
         state = new RpgPlayerState();
         state.Normalize();
-        states[player.PlayerUID] = state;
+        states[normalizedUid] = state;
         Save();
         return state;
     }
@@ -30,32 +52,56 @@ public sealed class RpgPlayerStore
     public void Load(ICoreServerAPI api)
     {
         this.api = api;
+        storage = new SaveGameRpgPlayerStateStorage(api.WorldManager.SaveGame);
+        Load(storage);
+    }
+
+    public void Load(IRpgPlayerStateStorage storage)
+    {
+        this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         states.Clear();
 
         try
         {
-            Dictionary<string, RpgPlayerState>? loaded = api.LoadModConfig<Dictionary<string, RpgPlayerState>>(StoreFileName);
+            byte[]? payload = storage.Read();
+            Dictionary<string, RpgPlayerState>? loaded = payload == null || payload.Length == 0
+                ? null
+                : JsonConvert.DeserializeObject<Dictionary<string, RpgPlayerState>>(
+                    Encoding.UTF8.GetString(payload),
+                    serializerSettings);
             if (loaded != null)
             {
                 foreach (var entry in loaded)
                 {
+                    if (string.IsNullOrWhiteSpace(entry.Key))
+                    {
+                        continue;
+                    }
+
                     RpgPlayerState state = entry.Value ?? new RpgPlayerState();
                     state.Normalize();
-                    states[entry.Key] = state;
+                    states[entry.Key.Trim()] = state;
                 }
             }
         }
         catch (Exception ex)
         {
-            api.Logger.Warning("[VRPG/RPG] Failed to load player RPG data; starting empty: {0}", ex.Message);
+            api?.Logger.Error(
+                "[VRPG/RPG] Failed to load world-owned player RPG data; progression starts unavailable for this server session: {0}",
+                ex.Message);
+            throw;
         }
-
-        Save();
     }
 
     public void Save()
     {
-        api?.StoreModConfig(states, StoreFileName);
+        if (storage == null)
+        {
+            return;
+        }
+
+        string json = JsonConvert.SerializeObject(states, serializerSettings);
+        storage.Write(Encoding.UTF8.GetBytes(json));
     }
 
     public int ReconcileTalents(

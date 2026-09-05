@@ -5,5 +5,16 @@
   "icon": "gear",
   "color": "#c58a48",
   "tags": ["ranged", "strength", "engineering", "scrap", "physical"],
-  "sortOrder": 70
+  "sortOrder": 70,
+  "starter": {
+    "grantSchemaVersion": 1,
+    "combatPattern": "Mark a landing point, then hurl unstable salvage into the crowd.",
+    "defensiveApproach": "Create space with movement and well-timed impacts.",
+    "primaryAttribute": "strength",
+    "weapon": { "code": "game:club-scrap-scrap", "name": "Scrap club", "equipmentRole": "mainweapon" },
+    "armor": [
+      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    ],
+    "skillCode": "vrpg:junk_toss"
+  }
 }

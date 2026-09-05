@@ -5,5 +5,16 @@
   "icon": "anvil",
   "color": "#d98b3a",
   "tags": ["melee", "strength", "armor"],
-  "sortOrder": 10
+  "sortOrder": 10,
+  "starter": {
+    "grantSchemaVersion": 1,
+    "combatPattern": "Break enemy footing with deliberate hammer blows.",
+    "defensiveApproach": "Stay close and rely on sturdy armor.",
+    "primaryAttribute": "strength",
+    "weapon": { "code": "game:hammer-iron", "name": "Iron hammer", "equipmentRole": "mainweapon" },
+    "armor": [
+      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    ],
+    "skillCode": "vrpg:hammer_blow"
+  }
 }

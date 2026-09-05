@@ -1,0 +1,10 @@
+{
+  "project": "../../../../ActionCombat/assets/actioncombat/shapes/entity/humanoid/seraph-faceless.json",
+  "patches": ["candidate.patch.json"],
+  "animation": "vrpg-2h-overhead-v1",
+  "frames": [0,6,10,12,15,18,21,27,35],
+  "cameras": ["front","side","three-quarter"],
+  "width": 1440,
+  "height": 1080,
+  "attachments": [{"project":"claymore-tp-preview.json","parent":"ItemAnchor"}]
+}

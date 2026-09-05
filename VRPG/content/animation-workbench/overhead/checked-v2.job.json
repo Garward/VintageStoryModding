@@ -1,0 +1,37 @@
+{
+  "project": "../../../../ActionCombat/assets/actioncombat/shapes/entity/humanoid/seraph-faceless.json",
+  "patches": [
+    "candidate-v2.patch.json"
+  ],
+  "animation": "vrpg-2h-overhead-v2",
+  "frames": [
+    0,
+    21,
+    35
+  ],
+  "cameras": [
+    "side",
+    "three-quarter"
+  ],
+  "width": 1440,
+  "height": 1080,
+  "attachments": [
+    {
+      "project": "claymore-tp-preview.json",
+      "parent": "ItemAnchor",
+      "instance": "weapon"
+    }
+  ],
+  "visibility": {
+    "hide": [
+      "base::origin"
+    ]
+  },
+  "expectations": [
+    {
+      "role": "weapon",
+      "marker": "crossguard",
+      "count": 1
+    }
+  ]
+}

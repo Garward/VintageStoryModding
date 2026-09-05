@@ -5,5 +5,16 @@
   "icon": "ward",
   "color": "#67bfc6",
   "tags": ["support", "strength", "intelligence"],
-  "sortOrder": 40
+  "sortOrder": 40,
+  "starter": {
+    "grantSchemaVersion": 1,
+    "combatPattern": "Hold a line and drive force through several enemies at once.",
+    "defensiveApproach": "Control approach lanes and protect safer ground.",
+    "primaryAttribute": "strength",
+    "weapon": { "code": "game:spear-generic-iron", "name": "Iron spear", "equipmentRole": "mainweapon" },
+    "armor": [
+      { "code": "game:armor-body-jerkin-leather", "name": "Leather jerkin", "equipmentRole": "armorbody" }
+    ],
+    "skillCode": "vrpg:thrust"
+  }
 }

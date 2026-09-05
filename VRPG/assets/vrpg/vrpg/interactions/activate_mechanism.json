@@ -1,0 +1,12 @@
+{
+  "code": "vrpg:activate_mechanism",
+  "name": "Activate mechanism",
+  "promptKey": "vrpg-interaction-prompt-activate",
+  "handlerCode": "vrpg:entity-behavior",
+  "targetTags": [ "mechanism" ],
+  "allowedContexts": [ "adventure" ],
+  "range": 4.0,
+  "requireLineOfSight": true,
+  "priority": 100,
+  "cooldownSeconds": 0.25
+}

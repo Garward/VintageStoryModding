@@ -1,4 +1,21 @@
 {
   "item-riftchart": "Rift Chart",
-  "heldhelp-vrpg-open-rift-chart": "Open temporal crack"
+  "heldhelp-vrpg-open-rift-chart": "Open temporal crack",
+  "placefailure-vrpg-combat-build-disabled": "Building is unavailable in combat areas.",
+  "vrpg-interaction-pending": "Working…",
+  "vrpg-interaction-prompt-interact": "Interact",
+  "vrpg-interaction-prompt-activate": "Activate",
+  "vrpg-interaction-success": "Done",
+  "vrpg-interaction-unavailable": "Unavailable",
+  "vrpg-interaction-invalid-request": "Unavailable",
+  "vrpg-interaction-player-unavailable": "Unavailable right now",
+  "vrpg-interaction-target-missing": "No longer here",
+  "vrpg-interaction-target-unavailable": "Unavailable right now",
+  "vrpg-interaction-wrong-context": "Unavailable here",
+  "vrpg-interaction-too-far": "Too far away",
+  "vrpg-interaction-obstructed": "Path blocked",
+  "vrpg-interaction-not-offered": "Unavailable",
+  "vrpg-interaction-permission-denied": "You cannot use this",
+  "vrpg-interaction-cooling-down": "Not ready yet",
+  "vrpg-interaction-handler-unavailable": "Unavailable"
 }
