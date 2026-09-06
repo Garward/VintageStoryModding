@@ -57,7 +57,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
             return;
         }
         if (intent == "close") { TryClose(); return; }
-        if (intent == "back") { session.Update(session.Current with { Focus = "" }); controller.Back(); if (!session.IsOpen) { TryClose(); return; } }
+        if (intent == "back") { session.Update(session.Current with { Focus = "" }); controller.Back(layout?.AlternatePanes == true); if (!session.IsOpen) { TryClose(); return; } }
         else if (intent.StartsWith("page:", StringComparison.Ordinal)) session.Navigate(Enum.Parse<PlayerMenuPage>(intent[5..]));
         else if (intent.StartsWith("entry:", StringComparison.Ordinal)) session.Update(session.Current with { SelectedEntry = intent[6..], InspectorOnly = layout?.AlternatePanes == true, InspectorScroll = 0 });
         else if (intent == "category-next")

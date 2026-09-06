@@ -20,7 +20,7 @@ public sealed class PlayerMenuController
         Changed?.Invoke();
     }
     public void Close() { Session.Close(); Items.CloseMenu(); Changed?.Invoke(); }
-    public void Back() { Session.Back(); if (!Session.IsOpen) Items.CloseMenu(); Changed?.Invoke(); }
+    public void Back(bool alternatePanes = false) { Session.Back(alternatePanes); if (!Session.IsOpen) Items.CloseMenu(); Changed?.Invoke(); }
     public void SetWorld(string identity)
     {
         if (worldIdentity == identity) return;

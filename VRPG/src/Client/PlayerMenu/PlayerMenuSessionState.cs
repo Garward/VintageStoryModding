@@ -36,11 +36,13 @@ public sealed class PlayerMenuSessionState
         if (page == PlayerMenuPage.Library && Page != page) libraryReturn = Page;
         Page = page;
     }
-    public void Back()
+    public void Back(bool alternatePanes = false)
     {
+        // InspectorOnly is retained across resizing as a view preference, but is not a visible layer in a wide layout.
+        if (!alternatePanes && Current.InspectorOnly) Update(Current with { InspectorOnly = false });
         if (Current.Focus.Length > 0) Update(Current with { Focus = "" });
         else if (Current.InspectorOnly) Update(Current with { InspectorOnly = false });
-        else if (Current.EquipmentExpanded) Update(Current with { EquipmentExpanded = false });
+        else if (Current.EquipmentExpanded && !alternatePanes) Update(Current with { EquipmentExpanded = false });
         else if (Page == PlayerMenuPage.Library) Navigate(libraryReturn);
         else Close();
     }
