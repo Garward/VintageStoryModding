@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using VRPG.Inventory;
 using VRPG.Data.Definitions;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
@@ -13,6 +14,7 @@ public sealed class RpgPlayerStore
     public void Clear()
     {
         states.Clear();
+        buildRevisions.Clear();
         storage = null;
         api = null;
     }
@@ -25,8 +27,18 @@ public sealed class RpgPlayerStore
     };
     private readonly Dictionary<string, RpgPlayerState> states =
         new Dictionary<string, RpgPlayerState>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, RpgBuildRevision> buildRevisions = new(StringComparer.OrdinalIgnoreCase);
     private ICoreServerAPI? api;
     private IRpgPlayerStateStorage? storage;
+
+    public long GetBuildRevision(string playerUid, PlayerEquipmentSnapshot equipment)
+    {
+        var state = GetOrCreate(playerUid);
+        string uid = playerUid.Trim();
+        if (!buildRevisions.TryGetValue(uid, out var revision))
+            buildRevisions[uid] = revision = new RpgBuildRevision();
+        return revision.Observe(state, equipment);
+    }
 
     public RpgPlayerState GetOrCreate(IServerPlayer player)
     {
@@ -66,6 +78,7 @@ public sealed class RpgPlayerStore
     {
         this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
         states.Clear();
+        buildRevisions.Clear();
 
         try
         {

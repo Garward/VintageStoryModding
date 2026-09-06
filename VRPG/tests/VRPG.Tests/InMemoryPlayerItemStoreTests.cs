@@ -68,11 +68,13 @@ public sealed class InMemoryPlayerItemStoreTests
     [Fact]
     public void BoundsQueryPageSize()
     {
+        int entryCount = InMemoryPlayerItemStore.MaximumPageSize + 20;
         var ids = new Queue<string>();
-        for (int i = 0; i < 120; i++) ids.Enqueue("entry-" + i);
-        var store = new InMemoryPlayerItemStore(ids.Dequeue);
+        for (int i = 0; i < entryCount; i++) ids.Enqueue("entry-" + i);
+        var store = new InMemoryPlayerItemStore(ids.Dequeue,
+            capacity: PlayerItemCapacity.Default with { UniqueEntryLimit = entryCount });
         long revision = 0;
-        for (int i = 0; i < 120; i++)
+        for (int i = 0; i < entryCount; i++)
         {
             var unique = new PlayerItemPrototype(
                 PlayerItemStorageKind.Unique,
@@ -85,7 +87,7 @@ public sealed class InMemoryPlayerItemStoreTests
 
         PlayerItemPage page = store.Query(new PlayerItemQuery("Gear", "", 0, 10_000));
 
-        Assert.Equal(120, page.Total);
+        Assert.Equal(entryCount, page.Total);
         Assert.Equal(InMemoryPlayerItemStore.MaximumPageSize, page.Entries.Length);
     }
 

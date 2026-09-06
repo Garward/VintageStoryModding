@@ -32,6 +32,19 @@ public enum PlayerItemSortOrder
     AssetCode
 }
 
+[Flags]
+public enum PlayerItemFilters
+{
+    None = 0,
+    Favorite = 1,
+    Protected = 2,
+    Junk = 4,
+    Available = 8,
+    Reserved = 16,
+    Unique = 32,
+    Aggregate = 64
+}
+
 /// <summary>Canonical identity and display metadata supplied to the item store.</summary>
 public sealed record PlayerItemPrototype(
     PlayerItemStorageKind Kind,
@@ -73,7 +86,8 @@ public sealed record PlayerItemQuery(
     int Offset,
     int Limit,
     PlayerItemLocation Location = PlayerItemLocation.Stored,
-    PlayerItemSortOrder Sort = PlayerItemSortOrder.Name);
+    PlayerItemSortOrder Sort = PlayerItemSortOrder.Name,
+    PlayerItemFilters Filters = PlayerItemFilters.None);
 
 public sealed record PlayerItemPage(
     long Revision,

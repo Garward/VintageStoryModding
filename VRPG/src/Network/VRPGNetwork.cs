@@ -42,7 +42,15 @@ public static class VRPGNetwork
             .RegisterMessageType<CombatInteractionRequestPacket>()
             .RegisterMessageType<CombatInteractionResultPacket>()
             .RegisterMessageType<OnboardingStatePacket>()
-            .RegisterMessageType<PlayerMenuCapabilityPacket>();
+            .RegisterMessageType<PlayerMenuCapabilityPacket>()
+            .RegisterMessageType<PlayerItemQueryRequest>()
+            .RegisterMessageType<PlayerItemQueryResult>()
+            .RegisterMessageType<PlayerItemDetailRequest>()
+            .RegisterMessageType<PlayerItemDetailResult>()
+            .RegisterMessageType<PlayerItemActionRequest>()
+            .RegisterMessageType<PlayerItemActionResult>()
+            .RegisterMessageType<PlayerItemSessionPacket>()
+            .RegisterMessageType<PlayerItemInvalidationPacket>();
     }
 
     public static IClientNetworkChannel RegisterClient(ICoreClientAPI api)
@@ -80,6 +88,14 @@ public static class VRPGNetwork
             .RegisterMessageType<CombatInteractionRequestPacket>()
             .RegisterMessageType<CombatInteractionResultPacket>()
             .RegisterMessageType<OnboardingStatePacket>()
-            .RegisterMessageType<PlayerMenuCapabilityPacket>();
+            .RegisterMessageType<PlayerMenuCapabilityPacket>()
+            .RegisterMessageType<PlayerItemQueryRequest>()
+            .RegisterMessageType<PlayerItemQueryResult>()
+            .RegisterMessageType<PlayerItemDetailRequest>()
+            .RegisterMessageType<PlayerItemDetailResult>()
+            .RegisterMessageType<PlayerItemActionRequest>()
+            .RegisterMessageType<PlayerItemActionResult>()
+            .RegisterMessageType<PlayerItemSessionPacket>()
+            .RegisterMessageType<PlayerItemInvalidationPacket>();
     }
 }

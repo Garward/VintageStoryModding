@@ -9,7 +9,7 @@ namespace VRPG.Inventory;
 /// <summary>Revision-safe storage core. Persistence and ItemStack materialization are separate adapters.</summary>
 public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
 {
-    public const int MaximumPageSize = 100;
+    public const int MaximumPageSize = 128;
     private readonly object sync = new();
     private readonly Func<string> createEntryId;
     private readonly Func<string> createReservationId;
@@ -76,6 +76,9 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
                     || entry.Prototype.AssetCode.Contains(search, StringComparison.OrdinalIgnoreCase));
             }
 
+            matching = matching.Where(entry => MatchesFilters(entry, query.Filters));
+            int total = matching.Count();
+
             IOrderedEnumerable<StoredEntry> sorted = query.Sort switch
             {
                 PlayerItemSortOrder.QuantityDescending => matching
@@ -87,16 +90,28 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
                     entry => entry.Prototype.DisplayName,
                     StringComparer.OrdinalIgnoreCase)
             };
-            StoredEntry[] ordered = sorted
+            PlayerItemSummary[] page = sorted
                 .ThenBy(entry => entry.EntryId, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-            PlayerItemSummary[] page = ordered
                 .Skip(offset)
                 .Take(limit)
                 .Select(Summary)
                 .ToArray();
-            return new PlayerItemPage(revision, ordered.Length, page);
+            return new PlayerItemPage(revision, total, page);
         }
+    }
+
+    private bool MatchesFilters(StoredEntry entry, PlayerItemFilters filters)
+    {
+        if (filters.HasFlag(PlayerItemFilters.Favorite) && !entry.Flags.HasFlag(PlayerItemFlags.Favorite)) return false;
+        if (filters.HasFlag(PlayerItemFilters.Protected) && !entry.Flags.HasFlag(PlayerItemFlags.Protected)) return false;
+        if (filters.HasFlag(PlayerItemFilters.Junk) && !entry.Flags.HasFlag(PlayerItemFlags.Junk)) return false;
+        long reserved = ReservedQuantity(entry.EntryId);
+        if (filters.HasFlag(PlayerItemFilters.Reserved) && reserved == 0) return false;
+        if (filters.HasFlag(PlayerItemFilters.Available) && (reserved >= entry.Quantity
+            || entry.Location != PlayerItemLocation.Stored || entry.Flags.HasFlag(PlayerItemFlags.Protected))) return false;
+        if (filters.HasFlag(PlayerItemFilters.Unique) && entry.Prototype.Kind != PlayerItemStorageKind.Unique) return false;
+        if (filters.HasFlag(PlayerItemFilters.Aggregate) && entry.Prototype.Kind == PlayerItemStorageKind.Unique) return false;
+        return true;
     }
 
     public bool TryGet(string entryId, out PlayerItemDetail? detail)
