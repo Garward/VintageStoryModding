@@ -223,9 +223,9 @@ public sealed class RpgResourceService
         return true;
     }
 
-    public void SetResource(IServerPlayer player, string resource, float current, float max)
+    public bool SetResource(IServerPlayer player, string resource, float current, float max)
     {
-        if (!IsAvailable(player)) return;
+        if (!IsAvailable(player)) return false;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
 
@@ -259,17 +259,19 @@ public sealed class RpgResourceService
 
         playerStore.Save();
         SendSnapshot(player);
+        return true;
     }
 
-    public void SetExperience(IServerPlayer player, long experience, long toNextLevel)
+    public bool SetExperience(IServerPlayer player, long experience, long toNextLevel)
     {
-        if (!IsAvailable(player)) return;
+        if (!IsAvailable(player)) return false;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
         state.Experience = Math.Max(0, experience);
         state.ExperienceToNextLevel = Math.Max(1, toNextLevel);
         playerStore.Save();
         SendSnapshot(player);
+        return true;
     }
 
     public void AddExperience(IServerPlayer player, long amount, int maxLevel, System.Func<int, long> experienceToNextLevel)

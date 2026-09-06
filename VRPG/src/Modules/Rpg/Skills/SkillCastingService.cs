@@ -92,8 +92,10 @@ public sealed class SkillCastingService
         statusEffects = new SkillStatusEffectService(statusTracker, visuals);
     }
 
-    public void SetEmpowered(string playerUid, string skillCode, bool on)
+    public bool SetEmpowered(IServerPlayer player, string skillCode, bool on, out string message)
     {
+        if (!CheckAvailable(player, out message)) return false;
+        string playerUid = player.PlayerUID;
         if (!empoweredSkills.TryGetValue(playerUid, out HashSet<string>? codes))
         {
             codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -109,6 +111,7 @@ public sealed class SkillCastingService
         {
             codes.Remove(normalized);
         }
+        return true;
     }
 
     public bool TryCastSlot(IServerPlayer player, int slot, out string error)
@@ -265,6 +268,7 @@ public sealed class SkillCastingService
 
     public bool Learn(IServerPlayer player, string code, int level, out string message)
     {
+        if (!CheckAvailable(player, out message)) return false;
         SkillDefinition? skill = data.Skills.Get(NormalizeCode(code));
         if (skill == null)
         {
@@ -280,9 +284,10 @@ public sealed class SkillCastingService
         return true;
     }
 
-    public int LearnAll(IServerPlayer player, int level)
+    public bool LearnAll(IServerPlayer player, int level, out int count, out string message)
     {
-        int count = 0;
+        count = 0;
+        if (!CheckAvailable(player, out message)) return false;
         foreach (SkillDefinition skill in data.Skills.All)
         {
             int clamped = Math.Clamp(level, 1, Math.Max(1, skill.MaxLevel));
@@ -291,11 +296,33 @@ public sealed class SkillCastingService
         }
 
         playerStore.Save();
-        return count;
+        return true;
+    }
+
+    public bool Remove(IServerPlayer player, string code, out string message)
+    {
+        if (!CheckAvailable(player, out message)) return false;
+        string normalized = NormalizeCode(code);
+        RpgPlayerState state = playerStore.GetOrCreate(player);
+        if (!state.SkillLevels.Remove(normalized))
+        {
+            message = "Skill is not learned: " + normalized;
+            return false;
+        }
+
+        for (int i = 0; i < state.EquippedSkills.Length; i++)
+        {
+            if (string.Equals(NormalizeCode(state.EquippedSkills[i] ?? ""), normalized, StringComparison.OrdinalIgnoreCase))
+                state.EquippedSkills[i] = "";
+        }
+        playerStore.Save();
+        message = "Removed " + normalized + " and cleared it from the loadout.";
+        return true;
     }
 
     public bool Equip(IServerPlayer player, int slot, string code, out string message)
     {
+        if (!CheckAvailable(player, out message)) return false;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         if (slot < 0 || slot >= state.EquippedSkills.Length)
         {
@@ -333,6 +360,7 @@ public sealed class SkillCastingService
 
     public string FormatLoadout(IServerPlayer player)
     {
+        if (!CheckAvailable(player, out string message)) return message;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         var lines = new List<string> { "VRPG skill loadout (slots 1 through 8):" };
         for (int i = 0; i < state.EquippedSkills.Length; i++)
@@ -349,6 +377,7 @@ public sealed class SkillCastingService
 
     public SkillLoadoutPacket BuildLoadout(IServerPlayer player)
     {
+        if (!IsAvailable(player)) return new SkillLoadoutPacket();
         RpgPlayerState state = playerStore.GetOrCreate(player);
         var slots = new SkillLoadoutSlotPacket[state.EquippedSkills.Length];
         long now = api.World.ElapsedMilliseconds;
@@ -607,6 +636,7 @@ public sealed class SkillCastingService
             if (player != null && !IsAvailable(player))
             {
                 unavailable.Add(entry.Key);
+                if (skill != null) SendChannelState(player, skill, cast.Slot, active: false);
                 continue;
             }
             if (skill == null || player?.Entity == null || !player.Entity.Alive || now >= cast.EndMilliseconds)

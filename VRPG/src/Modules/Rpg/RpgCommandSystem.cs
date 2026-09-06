@@ -131,7 +131,9 @@ public sealed class RpgCommandSystem
                 .BeginSubCommand("loadout")
                     .WithDescription("Show your learned and equipped skill slots.")
                     .RequiresPlayer()
-                    .HandleWith(args => WithPlayer(args, player => TextCommandResult.Success(skills.FormatLoadout(player))))
+                    .HandleWith(args => WithPlayer(args, player => skills.IsAvailable(player)
+                        ? TextCommandResult.Success(skills.FormatLoadout(player))
+                        : TextCommandResult.Error("Skills are unavailable right now.")))
                 .EndSubCommand()
                 .BeginSubCommand("grant")
                     .WithDescription("Admin: grant yourself a skill at a specified skill level.")
@@ -252,7 +254,8 @@ public sealed class RpgCommandSystem
 
     private TextCommandResult GrantAllSkills(IServerPlayer player, int level)
     {
-        int count = skills.LearnAll(player, Math.Max(1, level));
+        if (!skills.LearnAll(player, Math.Max(1, level), out int count, out string message))
+            return TextCommandResult.Error(message);
         return TextCommandResult.Success($"Granted {count} skill(s) at requested level {Math.Max(1, level)}.");
     }
 
@@ -275,29 +278,15 @@ public sealed class RpgCommandSystem
             return TextCommandResult.Error("Target player is not available on the server.");
         }
 
-        int count = skills.LearnAll(serverPlayer, Math.Max(1, level));
+        if (!skills.LearnAll(serverPlayer, Math.Max(1, level), out int count, out string message))
+            return TextCommandResult.Error(message);
         return TextCommandResult.Success($"Granted {count} skill(s) to {serverPlayer.PlayerName} at requested level {Math.Max(1, level)}.");
     }
 
     private TextCommandResult RemoveSkill(IServerPlayer player, string code)
     {
-        string normalized = NormalizeCode(code);
-        RpgPlayerState state = playerStore.GetOrCreate(player);
-        if (!state.SkillLevels.Remove(normalized))
-        {
-            return TextCommandResult.Error("Skill is not learned: " + normalized);
-        }
-
-        for (int i = 0; i < state.EquippedSkills.Length; i++)
-        {
-            if (SameCode(state.EquippedSkills[i] ?? "", normalized))
-            {
-                state.EquippedSkills[i] = "";
-            }
-        }
-
-        playerStore.Save();
-        return TextCommandResult.Success("Removed " + normalized + " and cleared it from the loadout.");
+        return skills.Remove(player, code, out string message)
+            ? TextCommandResult.Success(message) : TextCommandResult.Error(message);
     }
 
     private TextCommandResult EquipSkill(IServerPlayer player, int slot, string code)
@@ -344,7 +333,8 @@ public sealed class RpgCommandSystem
     {
         try
         {
-            resources.SetResource(player, resource, current, max);
+            if (!resources.SetResource(player, resource, current, max))
+                return TextCommandResult.Error("Resources are unavailable right now.");
             return TextCommandResult.Success("Set " + resource + " to " + Format(current) + "/" + Format(max) + ".");
         }
         catch (ArgumentException ex)
@@ -355,13 +345,9 @@ public sealed class RpgCommandSystem
 
     private TextCommandResult SetExperience(IServerPlayer player, long experience, long toNextLevel)
     {
-        resources.SetExperience(player, experience, toNextLevel);
+        if (!resources.SetExperience(player, experience, toNextLevel))
+            return TextCommandResult.Error("Resources are unavailable right now.");
         return TextCommandResult.Success("Set XP to " + experience + "/" + toNextLevel + ".");
-    }
-
-    private static bool SameCode(string left, string right)
-    {
-        return string.Equals(NormalizeCode(left), NormalizeCode(right), StringComparison.OrdinalIgnoreCase);
     }
 
     private static string NormalizeCode(string code)

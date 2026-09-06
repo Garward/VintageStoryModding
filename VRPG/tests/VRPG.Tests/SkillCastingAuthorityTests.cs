@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using HarmonyLib;
 using Newtonsoft.Json;
 using VRPG.Config;
@@ -57,7 +58,14 @@ public sealed class SkillCastingAuthorityTests
         f.Skills.Tick(1);
         Assert.Equal(before, JsonConvert.SerializeObject(f.State));
         Assert.Equal(writes, f.Storage.Writes);
-        Assert.Equal(packets, f.Packets);
+        Assert.Equal(packets + (mode == "channel" ? 1 : 0), f.Packets);
+        if (mode == "channel")
+        {
+            var stopped = Assert.IsType<VRPG.Network.SkillChannelStatePacket>(f.SentPackets[^1]);
+            Assert.False(stopped.Active);
+            Assert.Equal(0, stopped.Slot);
+            Assert.Equal("vrpg:test", stopped.SkillCode);
+        }
         Assert.Equal(queries, f.TargetQueries);
         Assert.Equal(cooldowns, JsonConvert.SerializeObject(AccessTools.Field(typeof(SkillCastingService), "cooldownEnds").GetValue(f.Skills)));
         Assert.Empty((IDictionary)AccessTools.Field(typeof(SkillCastingService), "activeChannels").GetValue(f.Skills)!);
@@ -120,7 +128,7 @@ public sealed class SkillCastingAuthorityTests
         Assert.False(success);
     }
 
-    private sealed class Fixture
+    internal sealed class Fixture
     {
         public readonly SkillPlayer Player = new();
         public readonly RpgPlayerStore Store = new();
@@ -129,6 +137,9 @@ public sealed class SkillCastingAuthorityTests
         public readonly SkillCastingService Skills;
         public readonly SkillDefinition Skill;
         public readonly IServerNetworkChannel Channel;
+        public readonly ICoreServerAPI Api;
+        public readonly VRPGDataRegistry Data;
+        public readonly List<object> SentPackets = new();
         public int Packets, TargetQueries;
         public long Now = 1000;
         public RpgPlayerState State => Store.GetOrCreate(Player);
@@ -138,6 +149,7 @@ public sealed class SkillCastingAuthorityTests
             Store.Load(Storage);
             Player.Entity.WatchedAttributes["health"] = new TreeAttribute();
             var data = new VRPGDataRegistry();
+            Data = data;
             data.Skills.Load(new[] { new SkillDefinition
             {
                 Code = "vrpg:test", Name = "Test", Delivery = targeted ? "targeted_drop" : "circle",
@@ -166,12 +178,19 @@ public sealed class SkillCastingAuthorityTests
                 }
             });
             Player.Entity.World = world;
-            var api = PlayerDefenseServiceTests.Proxy.Create<ICoreServerAPI>((name, _) =>
-                name == "get_World" ? world : throw new NotSupportedException(name));
-            var channel = PlayerDefenseServiceTests.Proxy.Create<IServerNetworkChannel>((name, _) =>
+            var logger = PlayerDefenseServiceTests.Proxy.Create<ILogger>((_, _) => null);
+            var api = PlayerDefenseServiceTests.Proxy.Create<ICoreServerAPI>((name, _) => name switch
+            {
+                "get_World" => world,
+                "get_Logger" => logger,
+                _ => throw new NotSupportedException(name)
+            });
+            Api = api;
+            var channel = PlayerDefenseServiceTests.Proxy.Create<IServerNetworkChannel>((name, args) =>
             {
                 if (name != "SendPacket") throw new NotSupportedException(name);
                 Packets++;
+                SentPackets.Add(args![0]!);
                 return null;
             });
             Channel = channel;
@@ -183,14 +202,14 @@ public sealed class SkillCastingAuthorityTests
         }
     }
 
-    private sealed class MemoryStorage : IRpgPlayerStateStorage
+    internal sealed class MemoryStorage : IRpgPlayerStateStorage
     {
         public int Writes;
         public byte[]? Read() => null;
         public void Write(byte[] bytes) => Writes++;
     }
 
-    private sealed class SkillPlayer() : Vintagestory.Server.ServerPlayer(null!,
+    internal sealed class SkillPlayer() : Vintagestory.Server.ServerPlayer(null!,
         new Vintagestory.Server.ServerWorldPlayerData { EntityPlayer = new EntityPlayer() })
     {
         public override string PlayerUID => "p";

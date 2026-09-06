@@ -767,9 +767,9 @@ public sealed class VRPGModSystem : ModSystem
 
     private TextCommandResult HandleVfxEmpower(TextCommandCallingArgs args)
     {
-        if (args.Caller.Player is not IServerPlayer player || rpgModule == null)
+        if (args.Caller.Player is not IServerPlayer player || rpgModule?.SkillsAvailable(player) != true)
         {
-            return TextCommandResult.Error("The VRPG rpg runtime is not available.");
+            return TextCommandResult.Error("Skills are unavailable right now.");
         }
 
         int slot = (int)args[0] - 1;
@@ -780,7 +780,8 @@ public sealed class VRPGModSystem : ModSystem
         }
 
         bool on = string.Equals((string)args[1], "on", StringComparison.OrdinalIgnoreCase);
-        rpgModule.SetSkillEmpowered(player, loadout.Slots[slot].Code, on);
+        if (!rpgModule.SetSkillEmpowered(player, loadout.Slots[slot].Code, on, out string message))
+            return TextCommandResult.Error(message);
         return TextCommandResult.Success((on ? "Empowered " : "Cleared ") + loadout.Slots[slot].Name + ".");
     }
 

@@ -353,12 +353,12 @@ public sealed partial class RpgModule : IVrpgModule
     {
         if (skills == null)
         {
-            message = "The VRPG skill runtime is not available.";
+            message = "Skills are unavailable right now.";
             return false;
         }
 
         bool equipped = skills.Equip(player, slot, string.IsNullOrWhiteSpace(skillCode) ? "clear" : skillCode, out message);
-        SendLoadout(player);
+        if (equipped) SendLoadout(player);
         return equipped;
     }
 
@@ -367,10 +367,14 @@ public sealed partial class RpgModule : IVrpgModule
         return skills?.BuildLoadout(player) ?? new SkillLoadoutPacket();
     }
 
-    public void SetSkillEmpowered(IServerPlayer player, string skillCode, bool on)
+    public bool SkillsAvailable(IServerPlayer player) => skills?.IsAvailable(player) == true;
+
+    public bool SetSkillEmpowered(IServerPlayer player, string skillCode, bool on, out string message)
     {
-        skills?.SetEmpowered(player.PlayerUID, skillCode, on);
+        message = "Skills are unavailable right now.";
+        if (skills?.SetEmpowered(player, skillCode, on, out message) != true) return false;
         SendLoadout(player);
+        return true;
     }
 
     public bool ApplyStatus(long entityId, string code, int stacks, float magnitude, float seconds)
@@ -380,7 +384,7 @@ public sealed partial class RpgModule : IVrpgModule
 
     private void SendLoadout(IServerPlayer player)
     {
-        if (skills != null)
+        if (skills?.IsAvailable(player) == true)
         {
             channel.SendPacket(skills.BuildLoadout(player), player);
         }
