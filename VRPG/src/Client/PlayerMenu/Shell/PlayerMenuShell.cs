@@ -89,22 +89,31 @@ public sealed class PlayerMenuShell : GuiElement
     {
         var bounds = Layout.Browser;
         Fill(ctx, bounds, PlayerMenuTheme.Iron950);
-        double tabWidth = (bounds.Width - 24) / 3;
-        var categories = TypedTabStrip.Categories;
-        for (int i = 0; i < categories.Length; i++)
-            Button(ctx, "category:" + categories[i], "category-" + categories[i],
-                new(bounds.X + 12 + i % 3 * tabWidth, bounds.Y + 10 + i / 3 * 38, tabWidth - 4, 34),
-                session.Current.Category == categories[i] ? MenuControlState.Selected : MenuControlState.Default);
-        Button(ctx, "count", "gallery-count", new(bounds.X + 12 + 2 * tabWidth, bounds.Y + 48, tabWidth - 4, 34));
-        controls.Add(("search", new(bounds.X + 12, bounds.Y + 94, bounds.Width - 24, 30), new("search", "search", MenuControlState.Default)));
+        if (Layout.CondensedBrowserChrome)
+        {
+            double half = (bounds.Width - 28) / 2;
+            Button(ctx, "category-next", "category-" + session.Current.Category, new(bounds.X + 12, bounds.Y + 2, half, 34), MenuControlState.Selected);
+            Button(ctx, "count", "gallery-count", new(bounds.X + 16 + half, bounds.Y + 2, half, 34));
+        }
+        else
+        {
+            double tabWidth = (bounds.Width - 24) / 3;
+            var categories = TypedTabStrip.Categories;
+            for (int i = 0; i < categories.Length; i++)
+                Button(ctx, "category:" + categories[i], "category-" + categories[i],
+                    new(bounds.X + 12 + i % 3 * tabWidth, bounds.Y + 10 + i / 3 * 38, tabWidth - 4, 34),
+                    session.Current.Category == categories[i] ? MenuControlState.Selected : MenuControlState.Default);
+            Button(ctx, "count", "gallery-count", new(bounds.X + 12 + 2 * tabWidth, bounds.Y + 48, tabWidth - 4, 34));
+        }
+        controls.Add(("search", Layout.BrowserSearch, new("search", "search", MenuControlState.Default)));
         var entries = FilteredEntries();
-        var clip = new MenuRect(bounds.X + 8, bounds.Y + PlayerMenuLayout.BrowserHeaderHeight, bounds.Width - 16, Math.Max(0, bounds.Height - PlayerMenuLayout.BrowserHeaderHeight - 4));
+        var clip = Layout.BrowserContent;
         ctx.Save(); ctx.Rectangle(clip.X, clip.Y, clip.Width, clip.Height); ctx.Clip();
         if (entries.Length == 0) Text(ctx, T(gallery.Entries(session.Current.Category).Count == 0 ? "empty-category" : "empty-search"), clip with { Height = 90 }, 18);
         int start = Math.Min(session.Current.ScrollAnchor, Math.Max(0, entries.Length - Layout.VisibleRows));
         foreach (var pair in entries.Skip(start).Take(Layout.RenderRowLimit).Select((entry, index) => (entry, index)))
         {
-            var row = new MenuRect(clip.X + 4, clip.Y + pair.index * PlayerMenuLayout.RowHeight, clip.Width - 8, 48);
+            var row = Layout.BrowserRow(pair.index);
             bool selected = session.Current.SelectedEntry == pair.entry.Id;
             Button(ctx, "entry:" + pair.entry.Id, "", row, selected ? MenuControlState.Selected : MenuControlState.Default);
             Text(ctx, T(pair.entry.NameKey) + " " + (start + pair.index + 1), new(row.X + 50, row.Y + 4, row.Width - 60, 22), 15);
@@ -228,6 +237,22 @@ public sealed class PlayerMenuShell : GuiElement
     }
     public override void OnKeyDown(ICoreClientAPI api, KeyEvent args)
     {
+        PlayerMenuBrowseKey? browseKey = args.KeyCode switch
+        {
+            (int)GlKeys.Up => PlayerMenuBrowseKey.Up,
+            (int)GlKeys.Down => PlayerMenuBrowseKey.Down,
+            (int)GlKeys.PageUp => PlayerMenuBrowseKey.PageUp,
+            (int)GlKeys.PageDown => PlayerMenuBrowseKey.PageDown,
+            (int)GlKeys.Home => PlayerMenuBrowseKey.Home,
+            (int)GlKeys.End => PlayerMenuBrowseKey.End,
+            _ => null
+        };
+        if (browseKey != null && PlayerMenuNavigation.BrowserHasKeyboardFocus(session.Current, Layout.AlternatePanes))
+        {
+            session.Update(PlayerMenuNavigation.MoveBrowserFocus(session.Current,
+                FilteredEntries().Select(entry => entry.Id).ToArray(), browseKey.Value, Layout.VisibleRows));
+            focus = session.Current.Focus; args.Handled = true; Refresh(); return;
+        }
         if (args.KeyCode == (int)GlKeys.Tab)
         {
             AdvanceFocus(args.ShiftPressed); args.Handled = true;

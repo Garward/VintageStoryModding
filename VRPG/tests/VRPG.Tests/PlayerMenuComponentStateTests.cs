@@ -11,6 +11,42 @@ namespace VRPG.Tests;
 
 public sealed class PlayerMenuComponentStateTests
 {
+    [Theory]
+    [InlineData(120, 400, 350)]
+    [InlineData(512, 800, 520)]
+    public void KeyboardCanReachEveryEntryWhileKeepingFocusVisibleAndSelectionSeparate(int count, int width, int height)
+    {
+        var layout = PlayerMenuLayout.Resolve(width, height);
+        string[] ids = Enumerable.Range(0, count).Select(index => "preview-" + index).ToArray();
+        var view = new PlayerMenuViewState(SelectedEntry: "kept-selection");
+        for (int index = 0; index < count; index++)
+        {
+            view = PlayerMenuNavigation.MoveBrowserFocus(view, ids, PlayerMenuBrowseKey.Down, layout.VisibleRows);
+            Assert.Equal("entry:" + ids[index], view.Focus);
+            Assert.Equal("kept-selection", view.SelectedEntry);
+            Assert.InRange(index - view.ScrollAnchor, 0, layout.VisibleRows - 1);
+            Assert.True(layout.BrowserRow(index - view.ScrollAnchor).Bottom <= layout.BrowserContent.Bottom);
+        }
+        view = PlayerMenuNavigation.MoveBrowserFocus(view, ids, PlayerMenuBrowseKey.Home, layout.VisibleRows);
+        Assert.Equal("entry:preview-0", view.Focus); Assert.Equal(0, view.ScrollAnchor);
+        view = PlayerMenuNavigation.MoveBrowserFocus(view, ids, PlayerMenuBrowseKey.End, layout.VisibleRows);
+        Assert.Equal("entry:preview-" + (count - 1), view.Focus);
+        Assert.Equal(count - layout.VisibleRows, view.ScrollAnchor);
+    }
+
+    [Fact]
+    public void PagingUsesFocusedBrowserAndDoesNotMoveInspectorScroll()
+    {
+        string[] ids = Enumerable.Range(0, 120).Select(index => "preview-" + index).ToArray();
+        var view = new PlayerMenuViewState(Focus: "entry:preview-0", InspectorScroll: 96);
+        Assert.True(PlayerMenuNavigation.BrowserHasKeyboardFocus(view, alternatePanes: false));
+        view = PlayerMenuNavigation.MoveBrowserFocus(view, ids, PlayerMenuBrowseKey.PageDown, 5);
+        Assert.Equal("entry:preview-5", view.Focus); Assert.Equal(96, view.InspectorScroll);
+        view = PlayerMenuNavigation.MoveBrowserFocus(view, ids, PlayerMenuBrowseKey.PageUp, 5);
+        Assert.Equal("entry:preview-0", view.Focus);
+        Assert.False(PlayerMenuNavigation.BrowserHasKeyboardFocus(view with { InspectorOnly = true }, alternatePanes: true));
+        Assert.False(PlayerMenuNavigation.BrowserHasKeyboardFocus(view with { Focus = "equipment" }, alternatePanes: false));
+    }
     [Fact]
     public void ClosedDisclosureHasNoInteractiveChildrenAndReducedMotionIsImmediate()
     {

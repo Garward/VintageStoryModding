@@ -7,6 +7,22 @@ namespace VRPG.Tests;
 public sealed class PlayerMenuSessionStateTests
 {
     [Fact]
+    public void CharacterShowsEquipmentInAlternatePaneAndBackReturnsToBrowse()
+    {
+        var state = new PlayerMenuSessionState();
+        state.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        state.Update(state.Current with { SelectedEntry = "preview-1", InspectorScroll = 200 });
+        state.Close();
+        state.Enter(PlayerMenuEntryPoint.CharacterMenu);
+        Assert.True(state.Current.InspectorOnly, "Character must reveal the equipment-bearing pane when only one pane fits.");
+        Assert.True(state.Current.EquipmentExpanded);
+        Assert.Equal("", state.Current.SelectedEntry);
+        Assert.Equal(0, state.Current.InspectorScroll);
+        state.Back();
+        Assert.True(state.IsOpen);
+        Assert.False(state.Current.InspectorOnly);
+    }
+    [Fact]
     public void RestoresCategorySelectionAndScrollWhileCharacterForcesGear()
     {
         var state = new PlayerMenuSessionState();

@@ -14,8 +14,12 @@ public sealed record PlayerMenuLayout(double Width, double Height, bool Alternat
     MenuRect Close, MenuRect Back, MenuRect Browser, MenuRect Inspector, MenuRect PrimaryAction)
 {
     public const double RowHeight = 54;
-    public const double BrowserHeaderHeight = 142;
-    public int VisibleRows => Math.Max(0, (int)((Browser.Height - BrowserHeaderHeight) / RowHeight));
+    public bool CondensedBrowserChrome => Browser.Height < 142 + RowHeight + 4;
+    public double BrowserHeaderHeight => CondensedBrowserChrome ? 78 : 142;
+    public MenuRect BrowserSearch => new(Browser.X + 12, Browser.Y + (CondensedBrowserChrome ? 40 : 94), Browser.Width - 24, 30);
+    public MenuRect BrowserContent => new(Browser.X + 8, Browser.Y + BrowserHeaderHeight, Browser.Width - 16, Math.Max(0, Browser.Height - BrowserHeaderHeight - 4));
+    public MenuRect BrowserRow(int visibleIndex) => new(BrowserContent.X + 4, BrowserContent.Y + visibleIndex * RowHeight, BrowserContent.Width - 8, 48);
+    public int VisibleRows => Math.Max(0, (int)((BrowserContent.Height + RowHeight - 48) / RowHeight));
     public int RenderRowLimit => VisibleRows + 2;
     public static PlayerMenuLayout ForViewport(double width, double height, double scale) =>
         Resolve(Math.Min(1120, Math.Max(0, width / Math.Max(.25, scale) - 24)),

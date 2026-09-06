@@ -5,6 +5,17 @@ namespace VRPG.Tests;
 
 public sealed class PlayerMenuLayoutTests
 {
+    [Fact]
+    public void SmallWindowKeepsASelectableBrowserRowBelowItsChrome()
+    {
+        var layout = PlayerMenuLayout.Resolve(400, 350);
+        Assert.True(layout.VisibleRows >= 1, "The smallest supported window must expose a complete selectable row.");
+        var row = layout.BrowserRow(0);
+        Assert.True(layout.BrowserSearch.Bottom <= layout.BrowserContent.Y);
+        Assert.True(row.Y >= layout.BrowserContent.Y && row.Bottom <= layout.BrowserContent.Bottom);
+        Assert.True(row.X >= layout.BrowserContent.X && row.Right <= layout.BrowserContent.Right);
+        Assert.True(layout.BrowserContent.Contains(row.X + row.Width / 2, row.Y + row.Height / 2));
+    }
     [Theory]
     [InlineData(1120, 680)][InlineData(800, 520)][InlineData(640, 480)][InlineData(400, 350)]
     public void CriticalControlsStayInsideAndPanesDoNotOverlap(double width, double height)

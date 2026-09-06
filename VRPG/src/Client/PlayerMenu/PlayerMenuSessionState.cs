@@ -24,7 +24,11 @@ public sealed class PlayerMenuSessionState
         var action = PlayerMenuNavigation.Resolve(entry, IsOpen);
         if (action.ShouldClose) { Close(); return; }
         IsOpen = true; Navigate(action.Page);
-        if (action.ExpandEquipment) Update(Current with { Category = PlayerItemCategories.Gear, EquipmentExpanded = true, InspectorOnly = false });
+        if (action.ExpandEquipment) Update(Current with
+        {
+            Category = PlayerItemCategories.Gear, EquipmentExpanded = true, InspectorOnly = true,
+            SelectedEntry = "", InspectorScroll = 0
+        });
     }
     public void Navigate(PlayerMenuPage page)
     {

@@ -34,8 +34,8 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
             .AddInteractiveElement(shell, "shell");
         if (!layout.AlternatePanes || !controller.Session.Current.InspectorOnly)
         {
-            var b = layout.Browser;
-            composer.AddTextInput(ElementBounds.Fixed(b.X + 12, b.Y + 94, b.Width - 24, 30), value =>
+            var searchBounds = layout.BrowserSearch;
+            composer.AddTextInput(ElementBounds.Fixed(searchBounds.X, searchBounds.Y, searchBounds.Width, searchBounds.Height), value =>
             {
                 var input = new SearchField(); input.SetText(value ?? "");
                 controller.Session.Update(controller.Session.Current with { Search = input.Text, ScrollAnchor = 0 });
@@ -60,6 +60,11 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         if (intent == "back") { session.Update(session.Current with { Focus = "" }); controller.Back(); if (!session.IsOpen) { TryClose(); return; } }
         else if (intent.StartsWith("page:", StringComparison.Ordinal)) session.Navigate(Enum.Parse<PlayerMenuPage>(intent[5..]));
         else if (intent.StartsWith("entry:", StringComparison.Ordinal)) session.Update(session.Current with { SelectedEntry = intent[6..], InspectorOnly = layout?.AlternatePanes == true, InspectorScroll = 0 });
+        else if (intent == "category-next")
+        {
+            var categories = TypedTabStrip.Categories;
+            session.Update(session.Current with { Category = categories[(Array.IndexOf(categories, session.Current.Category) + 1) % categories.Length], SelectedEntry = "", ScrollAnchor = 0, EquipmentExpanded = false });
+        }
         else if (intent.StartsWith("category:", StringComparison.Ordinal))
         {
             session.Update(session.Current with { Category = intent[9..], SelectedEntry = "", ScrollAnchor = 0, EquipmentExpanded = false });
