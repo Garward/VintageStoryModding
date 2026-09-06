@@ -27,6 +27,103 @@ namespace VRPG.Tests;
 public sealed class SkillPacketAuthorityTests
 {
     [Theory]
+    [InlineData("disabled", false)]
+    [InlineData("disabled", true)]
+    [InlineData("module", false)]
+    [InlineData("module", true)]
+    [InlineData("service", false)]
+    [InlineData("service", true)]
+    public void UnavailableFeedbackThrottlesAcrossInputsWithoutProfileAccess(string path, bool malformed)
+    {
+        using var f = new Fixture();
+        if (malformed)
+        {
+            var profile = f.Store.GetOrCreate(f.Player);
+            profile.SkillLevels = null!;
+            profile.EquippedSkills = new string[] { null! };
+            f.Store.Save();
+        }
+        f.ConfigureFeedback(path);
+        string before = JsonConvert.SerializeObject(f.Profiles);
+        byte[]? persisted = f.Storage.Bytes?.ToArray();
+        int writes = f.Storage.Writes;
+
+        f.FeedbackBurst(path, f.Player);
+        Assert.Single(f.Player.Messages);
+        f.Now = 2599;
+        f.Feedback(path, f.Player);
+        Assert.Single(f.Player.Messages);
+        f.Now = 2600;
+        f.Feedback(path, f.Player);
+        Assert.Equal(2, f.Player.Messages.Count);
+        Assert.All(f.Player.Messages, message => Assert.Equal("Skills are unavailable right now.", message));
+        Assert.Equal(before, JsonConvert.SerializeObject(f.Profiles));
+        Assert.Equal(persisted, f.Storage.Bytes);
+        Assert.Equal(writes, f.Storage.Writes);
+        Assert.Empty(f.Packets);
+    }
+
+    [Theory]
+    [InlineData("disabled", "PlayerLeave")]
+    [InlineData("disabled", "PlayerDisconnect")]
+    [InlineData("disabled", "dispose")]
+    [InlineData("module", "PlayerLeave")]
+    [InlineData("module", "dispose")]
+    public void FallbackFeedbackCleanupRespectsPlayerAndWorldLifetimes(string path, string cleanup)
+    {
+        using var f = new Fixture();
+        f.ConfigureFeedback(path);
+        var other = new TestPlayer("other");
+        other.Entity.World = f.Player.Entity.World;
+        f.FeedbackBurst(path, f.Player);
+        f.FeedbackBurst(path, other);
+        Assert.Single(f.Player.Messages);
+        Assert.Single(other.Messages);
+
+        if (cleanup == "dispose")
+        {
+            if (path == "disabled")
+            {
+                f.System.Dispose();
+                Assert.All(f.EventHandlers.Values, handler => Assert.Null(handler));
+                f.ConfigureFeedback(path);
+            }
+            else f.Module.Dispose();
+        }
+        else if (path == "disabled") f.Raise(cleanup, f.Player);
+        else AccessTools.Method(typeof(RpgModule), "OnPlayerLeave").Invoke(f.Module, new object[] { f.Player });
+
+        string before = JsonConvert.SerializeObject(f.Profiles);
+        int writes = f.Storage.Writes;
+        f.FeedbackBurst(path, f.Player);
+        f.FeedbackBurst(path, other);
+        Assert.Equal(2, f.Player.Messages.Count);
+        Assert.Equal(cleanup == "dispose" ? 2 : 1, other.Messages.Count);
+        Assert.Equal(before, JsonConvert.SerializeObject(f.Profiles));
+        Assert.Equal(writes, f.Storage.Writes);
+        Assert.Empty(f.Packets);
+    }
+
+    [Theory]
+    [InlineData("disabled")]
+    [InlineData("module")]
+    public void FallbackFeedbackStateDoesNotLeakBetweenWorldOwners(string path)
+    {
+        using var first = new Fixture();
+        using var second = new Fixture();
+        first.ConfigureFeedback(path);
+        second.ConfigureFeedback(path);
+        first.Feedback(path, first.Player);
+        second.Feedback(path, second.Player);
+        Assert.Single(first.Player.Messages);
+        Assert.Single(second.Player.Messages);
+        Assert.Empty(first.Profiles);
+        Assert.Empty(second.Profiles);
+        Assert.Equal(0, first.Storage.Writes);
+        Assert.Equal(0, second.Storage.Writes);
+    }
+
+    [Theory]
     [InlineData("equip", false)]
     [InlineData("equip", true)]
     [InlineData("press", false)]
@@ -113,8 +210,10 @@ public sealed class SkillPacketAuthorityTests
         public readonly AbilityFailureNotificationService Notifications;
         public readonly VRPGModSystem System = new();
         public readonly List<object> Packets = new();
+        public readonly Dictionary<string, Delegate?> EventHandlers = new();
         private readonly ICoreServerAPI api;
         public bool Active;
+        public long Now = 1000;
         public Dictionary<string, RpgPlayerState> Profiles => Field<Dictionary<string, RpgPlayerState>>(Store, "states");
 
         public Fixture()
@@ -124,24 +223,49 @@ public sealed class SkillPacketAuthorityTests
                 Resource = new() { Type = "mana", Base = 5 } } });
             var world = PlayerDefenseServiceTests.Proxy.Create<IServerWorldAccessor>((name, _) => name switch
             {
-                "get_ElapsedMilliseconds" => 1000L,
+                "get_ElapsedMilliseconds" => Now,
                 "get_Side" => EnumAppSide.Server,
                 "PlayerByUid" => Player,
                 "get_AllOnlinePlayers" => Array.Empty<IPlayer>(),
                 _ => throw new NotSupportedException(name)
             });
             var logger = PlayerDefenseServiceTests.Proxy.Create<ILogger>((_, _) => null);
+            var events = PlayerDefenseServiceTests.Proxy.Create<IServerEventAPI>((name, args) =>
+            {
+                string key = name[(name.IndexOf('_') + 1)..];
+                EventHandlers.TryGetValue(key, out var current);
+                if (name.StartsWith("add_", StringComparison.Ordinal)) EventHandlers[key] = Delegate.Combine(current, (Delegate)args![0]!);
+                else if (name.StartsWith("remove_", StringComparison.Ordinal)) EventHandlers[key] = Delegate.Remove(current, (Delegate)args![0]!);
+                else throw new NotSupportedException(name);
+                return null;
+            });
+            IChatCommand? command = null;
+            command = PlayerDefenseServiceTests.Proxy.Create<IChatCommand>((_, _) => command);
+            var parsers = new CommandArgumentParsers(null!);
+            var commands = PlayerDefenseServiceTests.Proxy.Create<IChatCommandApi>((name, _) => name switch
+            {
+                "GetOrCreate" => command,
+                "get_Parsers" => parsers,
+                _ => throw new NotSupportedException(name)
+            });
+            IServerNetworkChannel? channel = null;
+            channel = PlayerDefenseServiceTests.Proxy.Create<IServerNetworkChannel>((name, args) =>
+            {
+                if (name is "RegisterMessageType" or "SetMessageHandler") return channel;
+                if (name != "SendPacket") throw new NotSupportedException(name);
+                Packets.Add(args![0]!);
+                return null;
+            });
+            var network = PlayerDefenseServiceTests.Proxy.Create<IServerNetworkAPI>((name, _) =>
+                name == "RegisterChannel" ? channel : throw new NotSupportedException(name));
             api = PlayerDefenseServiceTests.Proxy.Create<ICoreServerAPI>((name, _) => name switch
             {
                 "get_World" => world,
                 "get_Logger" => logger,
+                "get_Event" => events,
+                "get_Network" => network,
+                "get_ChatCommands" => commands,
                 _ => throw new NotSupportedException(name)
-            });
-            var channel = PlayerDefenseServiceTests.Proxy.Create<IServerNetworkChannel>((name, args) =>
-            {
-                if (name != "SendPacket") throw new NotSupportedException(name);
-                Packets.Add(args![0]!);
-                return null;
             });
             Player.Entity.World = world;
             Player.Entity.WatchedAttributes["health"] = new TreeAttribute();
@@ -160,6 +284,7 @@ public sealed class SkillPacketAuthorityTests
             AccessTools.Field(typeof(RpgModule), "skills").SetValue(Module, Skills);
             AccessTools.Field(typeof(RpgModule), "failureNotifications").SetValue(Module, Notifications);
             AccessTools.Field(typeof(VRPGModSystem), "rpgModule").SetValue(System, Module);
+            AccessTools.Field(typeof(VRPGModSystem), "dataRegistry").SetValue(System, data);
             AccessTools.Field(typeof(VRPGModSystem), "serverChannel").SetValue(System, channel);
             AccessTools.Field(typeof(VRPGModSystem), "libraryIndex").SetValue(System, LibraryIndex.Build(data));
             AssertSharedStore();
@@ -173,11 +298,37 @@ public sealed class SkillPacketAuthorityTests
             Assert.Same(Store, Field<RpgPlayerStore>(Notifications, "playerStore"));
         }
 
-        public void Equip(string code) => AccessTools.Method(typeof(VRPGModSystem), "HandleSkillEquipRequest").Invoke(System,
-            new object[] { api, Player, new SkillEquipRequestPacket { Slot = 2, SkillCode = code } });
-        public void Cast(bool pressed) => AccessTools.Method(typeof(VRPGModSystem), "HandleSkillCastRequest").Invoke(System,
-            new object[] { Player, new SkillCastRequestPacket { Slot = 0, Pressed = pressed } });
-        public void Dispose() => Module.Dispose();
+        public void Equip(string code, IServerPlayer? player = null) => AccessTools.Method(typeof(VRPGModSystem), "HandleSkillEquipRequest").Invoke(System,
+            new object[] { api, player ?? Player, new SkillEquipRequestPacket { Slot = 2, SkillCode = code } });
+        public void Cast(bool pressed, IServerPlayer? player = null) => AccessTools.Method(typeof(VRPGModSystem), "HandleSkillCastRequest").Invoke(System,
+            new object[] { player ?? Player, new SkillCastRequestPacket { Slot = 0, Pressed = pressed } });
+        public void ConfigureFeedback(string path)
+        {
+            if (path == "module") AccessTools.Field(typeof(RpgModule), "failureNotifications").SetValue(Module, null);
+            if (path != "disabled") return;
+            System.Config.Modules.Rpg.Enabled = false;
+            System.Config.Modules.Rpg.InventoryReplacement.Enabled = false;
+            System.Config.Modules.Dungeons.Enabled = false;
+            System.StartServerSide(api);
+            Assert.Null(Field<RpgModule?>(System, "rpgModule"));
+        }
+        public void Feedback(string path, IServerPlayer player)
+        {
+            if (path == "disabled") Cast(true, player);
+            else Module.NotifyAbilityFailure(player, AbilityFailureKind.Other, "unused");
+        }
+        public void FeedbackBurst(string path, IServerPlayer player)
+        {
+            Feedback(path, player);
+            if (path == "disabled") { Cast(false, player); Equip("test", player); }
+            else { Feedback(path, player); Feedback(path, player); }
+        }
+        public void Raise(string name, IServerPlayer player)
+        {
+            Assert.True(EventHandlers.TryGetValue(name, out var handler), "No " + name + " cleanup handler was registered.");
+            Assert.IsAssignableFrom<Delegate>(handler).DynamicInvoke(player);
+        }
+        public void Dispose() { System.Dispose(); Module.Dispose(); }
     }
 
     private static T Field<T>(object owner, string name) => (T)AccessTools.Field(owner.GetType(), name).GetValue(owner)!;
@@ -190,11 +341,11 @@ public sealed class SkillPacketAuthorityTests
         public void Write(byte[] bytes) { Writes++; Bytes = bytes.ToArray(); }
     }
 
-    private sealed class TestPlayer() : Vintagestory.Server.ServerPlayer(null!,
+    private sealed class TestPlayer(string uid = "p") : Vintagestory.Server.ServerPlayer(null!,
         new Vintagestory.Server.ServerWorldPlayerData { EntityPlayer = new EntityPlayer() }), IServerPlayer
     {
         public readonly List<string> Messages = new();
-        public override string PlayerUID => "p";
+        public override string PlayerUID => uid;
         public override bool HasPrivilege(string privilegeCode) => true;
         void IServerPlayer.SendMessage(int groupId, string message, EnumChatType chatType, string data) => Messages.Add(message);
         protected override void Init() { }

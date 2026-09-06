@@ -79,6 +79,7 @@ public sealed partial class RpgModule
         combatStates?.RemovePlayer(player.PlayerUID);
         interactions?.RemovePlayer(player.PlayerUID);
         failureNotifications?.RemovePlayer(player.PlayerUID);
+        unavailableSkillNotifications.RemovePlayer(player.PlayerUID);
         groundAreas?.RemovePlayer(player.PlayerUID);
         if (player.Entity != null)
         {

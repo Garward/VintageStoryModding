@@ -47,6 +47,7 @@ public sealed partial class RpgModule : IVrpgModule
     private GroundAreaService? groundAreas;
     private TalentAllocationService? talentAllocation;
     private AbilityFailureNotificationService? failureNotifications;
+    private readonly UnavailableSkillNotificationService unavailableSkillNotifications = new();
     private CombatInteractionService? interactions;
     private long statusTickListenerId;
     private long resourceTickListenerId;
@@ -321,7 +322,7 @@ public sealed partial class RpgModule : IVrpgModule
         if (!SkillsAvailable(player))
         {
             if (failureNotifications != null) failureNotifications.NotifyUnavailable(player);
-            else AbilityFailureNotificationService.SendUnavailable(player);
+            else unavailableSkillNotifications.Notify(player);
             return;
         }
         failureNotifications?.Notify(player, kind, error);
@@ -1061,6 +1062,7 @@ public sealed partial class RpgModule : IVrpgModule
         combatStates?.Clear();
         interactions?.Clear();
         failureNotifications?.Clear();
+        unavailableSkillNotifications.Clear();
         statusEffects.Clear();
         talentEditorDrafts.Clear();
         playerStore.Save();

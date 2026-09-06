@@ -49,8 +49,6 @@ public sealed class AbilityFailureNotificationService
         NotifyCore(player, AbilityFailureKind.Other, "Skills are unavailable right now.");
     }
 
-    public static void SendUnavailable(IServerPlayer player) => Send(player, "Skills are unavailable right now.");
-
     private void NotifyCore(IServerPlayer player, AbilityFailureKind kind, string message)
     {
         long now = api.World.ElapsedMilliseconds;

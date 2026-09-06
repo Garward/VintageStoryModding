@@ -38,6 +38,8 @@ public sealed class VRPGModSystem : ModSystem
     private IServerNetworkChannel? serverChannel;
     private IClientNetworkChannel? clientChannel;
     private RpgModule? rpgModule;
+    private readonly UnavailableSkillNotificationService unavailableSkillNotifications = new();
+    private IServerEventAPI? skillNotificationEvents;
     private PlayerItemPersistenceModule? playerItemPersistence;
     private EngineItemIngressService? engineItemIngress;
     private GuiDialogVRPGHub? clientHubDialog;
@@ -112,6 +114,10 @@ public sealed class VRPGModSystem : ModSystem
     public override void StartServerSide(ICoreServerAPI api)
     {
         base.StartServerSide(api);
+
+        skillNotificationEvents = api.Event;
+        skillNotificationEvents.PlayerLeave += OnSkillNotificationPlayerLeave;
+        skillNotificationEvents.PlayerDisconnect += OnSkillNotificationPlayerLeave;
 
         serverChannel = VRPGNetwork.RegisterServer(api)
             .SetMessageHandler<OpenHubRequestPacket>((player, packet) => HandleOpenHubRequest(api, player, packet))
@@ -341,6 +347,14 @@ public sealed class VRPGModSystem : ModSystem
 
     public override void Dispose()
     {
+        if (skillNotificationEvents != null)
+        {
+            skillNotificationEvents.PlayerLeave -= OnSkillNotificationPlayerLeave;
+            skillNotificationEvents.PlayerDisconnect -= OnSkillNotificationPlayerLeave;
+            skillNotificationEvents = null;
+        }
+        unavailableSkillNotifications.Clear();
+
         for (int i = modules.Count - 1; i >= 0; i--)
         {
             try
@@ -1285,8 +1299,11 @@ public sealed class VRPGModSystem : ModSystem
     private void NotifyUnavailableSkills(IServerPlayer player)
     {
         if (rpgModule != null) rpgModule.NotifyAbilityFailure(player, AbilityFailureKind.Other, "");
-        else AbilityFailureNotificationService.SendUnavailable(player);
+        else unavailableSkillNotifications.Notify(player);
     }
+
+    private void OnSkillNotificationPlayerLeave(IServerPlayer player) =>
+        unavailableSkillNotifications.RemovePlayer(player.PlayerUID);
 
     private void HandleTalentPlanRequest(ICoreServerAPI api, IServerPlayer player, TalentPlanRequestPacket packet)
     {
