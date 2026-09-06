@@ -1,7 +1,7 @@
 # Usable Player-Menu Replacement Checklist
 
 Status: Active critical path  
-Updated: 2026-09-05  
+Updated: 2026-09-06
 Parents: [Native player-menu implementation](native-player-menu-implementation-plan.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md)  
 Index: [VRPG design index](README.md)
 
@@ -20,7 +20,7 @@ or `C` keys, register substitute physical hotkeys, or rewrite player mappings.
 For the complete end-state menu beyond the first usable overwrite, see the
 [unified player-menu design](../superpowers/specs/2026-09-06-unified-player-menu-design.md)
 and [delivery plan](../superpowers/plans/2026-09-06-unified-player-menu.md).
-These proposed documents preserve this file's activation gates.
+The approved delivery plan is now being implemented and preserves this file's activation gates.
 
 ## Current progress
 
@@ -35,14 +35,16 @@ These proposed documents preserve this file's activation gates.
 | 5A. Character runtime authority | In progress | Hunger/nutrition/temperature verified; class step removed in a fresh-world run; movement-stat ownership and generic movement-effect runtime implemented; live movement/Evasive Step verification remains |
 | 6. Engine item flows | In progress | Common all-or-nothing grant ingress implemented behind the experimental ownership flag; live coverage and materialization remain |
 | 7. Combat and Home/Build loadouts | Not started | — |
-| 8. Inventory network service | Not started | Capability packet only |
-| 9. Native menu shell | Not started | Navigation scaffolding only |
+| 8. Inventory network service | In progress | Bounded protocol/cache reviewed through `b1ca60f`; production lifecycle/mutation attachment and transport admission remain |
+| 9. Native menu shell | In progress | Isolated shell and clarity fixes reviewed through `1a7d7ca`; focused menu regressions 45/45, final Back/resize coverage 23/23. Native checks require sign-in and remain unperformed |
 | 10. Inventory and Equipment pages | Not started | — |
 | 10A. Character creation and onboarding | In progress | Durable state/transition rules, appearance-only Vanilla bridge, validated starter definitions, experimental starter preview, and deterministic tavern preparation verified; grant, Welcome, live arrival, and protection remain |
 | 11. Transactional semantic-dialog ownership | Not started | Pure replacement planning only |
 | 12. Usable-replacement validation | Not started | — |
 
 Update this table and the detailed checkbox together after each verified slice.
+
+Unified-menu prerequisite verified (`f828913`, `d29e396`): shared ordinary capacity, system/user protection, lossless category fallback, and explicit frozen recovery policy. Archive migration preserves pending quest reservations in recoverable custody. Full suite: 721 passed before the migration fix; fix coverage: 92 passed. Automatic unsafe-engine-content classification and live item bridges remain step 6. The isolated native shell exists; live replacement activation remains unimplemented.
 
 ## Definition of usable
 

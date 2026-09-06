@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Proposed delivery plan for review. No implementation or runtime readiness is claimed. Existing code must be rechecked before each task; extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1 and 2 are implemented and reviewed through `b1ca60f`. The isolated Task 4 shell and clarity fixes are source-reviewed through `1a7d7ca`, with focused menu regressions 45/45, final Back/resize coverage 23/23, and corrected compact/narrow browser captures. Native verification requires user sign-in and remains unperformed, so Task 4's native acceptance gate is still open. Task 4 precedes Task 3 as allowed by the dependency graph; engine bridges remain pending. No native replacement or runtime readiness is claimed. Existing code must be rechecked before each task; extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -78,9 +78,9 @@ Each task names a focused class/filter to substitute in the first command. Use t
 
 **Consumes:** Current `PlayerItemCapacity`, canonical payload, `IPlayerItemStore`, `PlayerItemStorageKind` and flags. **Produces:** one shared classification/capacity rule for insert, recover and restore; persisted protection source; effective capacity summary. System protection is distinct from user protection. Addon categories have registered stable definitions and Miscellaneous fallback.
 
-- [ ] Add a red test for an ordinary aggregate limit of one: one material fills it, a distinct ordinary material is refused, a Ledger and protected quest record still insert and survive restore. Protecting an ordinary material must not exempt it from capacity.
-- [ ] Add tests preventing `SetFlags` from clearing system protection or junk-marking quest records; retain user-unprotect behavior for ordinary items. Version/migrate new protection metadata, preserving unknown fields.
-- [ ] Add the test below using existing APIs, and run the focused contract/transaction filters. It captures the present capacity gap without inventing a GUI dependency.
+- [x] Add a red test for an ordinary aggregate limit of one: one material fills it, a distinct ordinary material is refused, a Ledger and protected quest record still insert and survive restore. Protecting an ordinary material must not exempt it from capacity.
+- [x] Add tests preventing `SetFlags` from clearing system protection or junk-marking quest records; retain user-unprotect behavior for ordinary items. Version/migrate new protection metadata, preserving unknown fields.
+- [x] Add the test below using existing APIs, and run the focused contract/transaction filters. It captures the present capacity gap without inventing a GUI dependency.
 
 ```csharp
 [Fact]
@@ -97,9 +97,11 @@ public void QuestRecordsDoNotConsumeOrdinaryAggregateCapacity()
 }
 ```
 
-- [ ] Centralize policy evaluation and apply it to live mutations and archive validation. Freeze attributes for unsafe time-dependent content in recovery or require an audited evolution adapter; do not normalize temperature/perish state to force merging.
-- [ ] Test missing/renamed addon category fallback, hash collisions, checked quantity overflow, equipped unique capacity, ordinary consumable shared capacity and lossless migration from the old archive.
-- [ ] Run the three focused suites and full suite; commit `feat: align inventory capacity and protection policies`.
+- [x] Centralize policy evaluation and apply it to live mutations and archive validation. Freeze attributes for unsafe time-dependent content in recovery or require an audited evolution adapter; do not normalize temperature/perish state to force merging.
+- [x] Test missing/renamed addon category fallback, hash collisions, checked quantity overflow, equipped unique capacity, ordinary consumable shared capacity and lossless migration from the old archive.
+- [x] Run the three focused suites and full suite; commit `feat: align inventory capacity and protection policies`.
+
+Evidence: 75 focused / 721 full-suite tests passed at `f828913`; the reviewed legacy-reservation migration fix `d29e396` passed 92 covering tests. Schema 0/1 pending quest reservations retain their identities and quantities in explicit recovery until rollback. `FrozenInRecovery` is a trusted classification contract, not automatic engine detection; Task 3 must wire unsafe-content classification before live activation. Addon registry snapshots must also be supplied when restoring addon-aware stores.
 
 **Gate:** A full ordinary inventory cannot lose a protected reward or currency; it also cannot be enlarged by toggling Protect.
 
@@ -125,13 +127,15 @@ ActionResult: RequestId, Success, RejectionCode, StoreRevision, BuildRevision,
 
 Packet implementation uses established protobuf conventions with stable field numbers; never renumber deployed members. Server derives player UID from the connection. Bind candidate/role/build context to comparison results; raw client combat values are not accepted.
 
-- [ ] Write failing serialization tests for `9_007_199_254_740_993` and `long.MaxValue`; add request-limit, bad enum, malformed search, invalid identity, replay/conflicting-request and unauthorized-player cases.
-- [ ] Write query tests for all-category search, typed filters, deterministic ties, zero/maximum volume and recovery paging. Extend the current query/index layer rather than fetch all entries and filter client-side.
-- [ ] Implement page/detail services with server limits and localizable reason codes; resolve comparisons using actual gear effects and selected equipment role. Include conditions, gained/lost transformations, level requirement and reference level for mitigation.
-- [ ] Test equal inventory revision but changed build revision invalidates comparison; return exact differences with units and no gear score. A stale selection or old query generation cannot replace newer client state.
-- [ ] Implement client debounce, cancellation/generation checks, bounded cache eviction and mutation lifetime independent of menu lifetime. On reconnect, discard old-generation responses and refresh before writes.
-- [ ] Add rate/payload limits before expensive allocation; record query time and bytes. Send bounded invalidations/pages, not the full item store or `OpenHubPacket` after every pickup.
-- [ ] Run the four new focused suites and full suite; commit `feat: add bounded inventory menu protocol`.
+- [x] Write failing serialization tests for `9_007_199_254_740_993` and `long.MaxValue`; add request-limit, bad enum, malformed search, invalid identity, replay/conflicting-request and unauthorized-player cases.
+- [x] Write query tests for all-category search, typed filters, deterministic ties, zero/maximum volume and recovery paging. Extend the current query/index layer rather than fetch all entries and filter client-side.
+- [x] Implement page/detail services with server limits and localizable reason codes; resolve comparisons using actual gear effects and selected equipment role. Include conditions, gained/lost transformations, level requirement and reference level for mitigation.
+- [x] Test equal inventory revision but changed build revision invalidates comparison; return exact differences with units and no gear score. A stale selection or old query generation cannot replace newer client state.
+- [x] Implement client debounce, cancellation/generation checks, bounded cache eviction and mutation lifetime independent of menu lifetime. On reconnect, discard old-generation responses and refresh before writes.
+- [x] Add rate/payload limits before expensive allocation; record query time and bytes. Send bounded invalidations/pages, not the full item store or `OpenHubPacket` after every pickup.
+- [x] Run the four new focused suites and full suite; commit `feat: add bounded inventory menu protocol`.
+
+Evidence: `c67ee1e` passed 773 full-suite tests; `9c62db0` corrected the approved 200 ms debounce with focused evidence; reviewed fix `b1ca60f` passed 59 protocol/query/comparison/client tests. Empty-role detail requests now discover the canonical equipment role, and affix units distinguish percentage points and regeneration per second. Transformation arrays exist but remain empty because no active transformation authority currently exists; new mechanics are not invented here. Production currently registers message types only. Tasks 6/8 must attach real mutation/lifecycle handlers, invalidate runtime content changes, and establish transport-level frame limits before activation; typed post-deserialization bounds are not transport limits. An early detail-admission rejection correlation issue remains deferred for pending-state integration.
 
 **Gate:** A test client can inspect 10,000 units as one entry, query equipment and meaningful comparisons, and reject out-of-order data without native GUI involvement.
 
@@ -171,6 +175,8 @@ Unknown/partial external result -> ReconcileRequired (no blind replay)
 - [ ] Run focused suites; inspect native gallery states and long labels at 80/100/125/150% scales. Record screenshots with viewport, scale and build. Commit `feat: add native player menu shell`.
 
 **Gate:** Truthful native component states/layout work without replacing either Vanilla menu owner. The gallery does not advertise inventory readiness.
+
+Implementation evidence: `66480d1`, `241017c`, `1a7d7ca`; full suite 810 before final gallery refinements, subsequent focused menu coverage 45/45 and final Back/resize coverage 23/23. Two scoped fix reviews are clean. Compact 125% and narrow 150% prototype defects were corrected and recaptured. The native state/scale/input inspection checkbox stays open: the isolated engine launch reached an expired session, not a loaded world. These source and browser results do not establish native acceptance or authorize live replacement.
 
 ## Task 5: Implement all five browse views and recovery inspection
 
