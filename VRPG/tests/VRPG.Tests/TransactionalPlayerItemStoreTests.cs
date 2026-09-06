@@ -4,12 +4,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VRPG.Inventory;
+using VRPG.Inventory.Persistence;
 using Xunit;
 
 namespace VRPG.Tests;
 
 public sealed class TransactionalPlayerItemStoreTests
 {
+    [Fact]
+    public void MigratedQuestTransactionsRequireExplicitRollbackBeforeRecovery()
+    {
+        var serializer = new PlayerItemArchiveSerializer();
+        Assert.True(serializer.TryDeserialize(serializer.Serialize(LegacyQuestReservationFixture.Archive()),
+            out var archive, out var error), error);
+        Assert.True(InMemoryPlayerItemStore.TryRestore(archive.Players["player"], out var store, out error), error);
+        long revision = store!.Revision;
+        Assert.Equal(PlayerItemOperationRejection.EntryUnavailable, store.CommitReservation("commit", "transaction").Rejection);
+        Assert.Equal(revision, store.Revision);
+        Assert.Equal(PlayerItemOperationRejection.EntryReserved, store.Recover("early-recover", "quest", revision).Rejection);
+        Assert.Equal(PlayerItemOperationRejection.EntryReserved,
+            store.SetFlags("unprotect", "quest", PlayerItemFlags.None, revision).Rejection);
+        Assert.True(store.RollbackReservation("rollback", "transaction").Success);
+        Assert.True(store.RollbackReservation("rollback", "transaction").Success);
+        Assert.Equal(PlayerItemOperationRejection.EntryReserved,
+            store.Recover("still-reserved", "quest", store.Revision).Rejection);
+        Assert.True(store.RollbackReservation("rollback-second", "second-transaction").Success);
+        Assert.Equal(PlayerItemOperationRejection.EntryProtected,
+            store.SetFlags("still-protected", "quest", PlayerItemFlags.None, store.Revision).Rejection);
+        Assert.True(store.Recover("recover", "quest", store.Revision).Success);
+        Assert.Equal(PlayerItemMutationRejection.EntryProtected,
+            store.Extract("extract", "quest", 1, store.Revision).Rejection);
+        Assert.True(store.TryGet("quest", out var quest));
+        Assert.Equal(5, quest!.Quantity);
+        Assert.True(store.TryGet("material", out var material));
+        Assert.Equal(7, material!.Quantity);
+        Assert.True(store.Reserve("material-use", new[] { new PlayerItemAmount("material", 7) }, store.Revision).Success);
+    }
+
     [Theory]
     [InlineData(PlayerItemStorageKind.Aggregate)]
     [InlineData(PlayerItemStorageKind.Ledger)]

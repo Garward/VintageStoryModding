@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace VRPG.Inventory;
 
@@ -79,6 +80,10 @@ public sealed partial class InMemoryPlayerItemStore
                 return Remember(requestId, fingerprint, PlayerItemOperationResult.Rejected(
                     revision, requestId, PlayerItemOperationRejection.ReservationMissing));
 
+            if (reservation.RequiresRecovery)
+                return Remember(requestId, fingerprint, PlayerItemOperationResult.Rejected(
+                    revision, requestId, PlayerItemOperationRejection.EntryUnavailable));
+
             foreach (PlayerItemAmount amount in reservation.Amounts)
             {
                 if (!byId.TryGetValue(amount.EntryId, out StoredEntry? entry)
@@ -127,7 +132,7 @@ public sealed partial class InMemoryPlayerItemStore
                 };
                 return new PlayerItemReservedEntry(entry.EntryId, prototype, amount.Quantity);
             }).ToArray();
-            return new PlayerItemReservationSnapshot(revision, true, reservationId, entries);
+            return new PlayerItemReservationSnapshot(revision, true, reservationId, entries, reservation.RequiresRecovery);
         }
     }
 
@@ -341,6 +346,8 @@ public sealed partial class InMemoryPlayerItemStore
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryMissing);
             if (entry.Location is not (PlayerItemLocation.Overflow or PlayerItemLocation.Unresolved))
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
+            if (ReservedQuantity(entryId) != 0)
+                return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryReserved);
             if (PlayerItemPolicy.RequiresRecovery(entry.Prototype))
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
             StoredEntry? aggregateTarget = entry.Prototype.Kind == PlayerItemStorageKind.Unique
@@ -623,5 +630,9 @@ public sealed partial class InMemoryPlayerItemStore
             : $"{reference.AssetKind}:{reference.SourceRegistryId}:{reference.AssetCode?.Trim().ToLowerInvariant() ?? "invalid"}";
 
     private sealed record CachedRequest(string Fingerprint, object Result);
-    private sealed record PendingReservation(string ReservationId, PlayerItemAmount[] Amounts);
+    private sealed record PendingReservation(
+        string ReservationId,
+        PlayerItemAmount[] Amounts,
+        bool RequiresRecovery = false,
+        IDictionary<string, JToken>? ExtensionData = null);
 }

@@ -73,7 +73,8 @@ public sealed record PlayerItemReservationSnapshot(
     long Revision,
     bool Exists,
     string ReservationId,
-    PlayerItemReservedEntry[] Entries);
+    PlayerItemReservedEntry[] Entries,
+    bool RequiresRecovery = false);
 
 public sealed record PlayerEquipmentSnapshot(
     long Revision,

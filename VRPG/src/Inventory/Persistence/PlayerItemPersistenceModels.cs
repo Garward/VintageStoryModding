@@ -118,6 +118,8 @@ public sealed class PlayerItemReservationState
 {
     public string ReservationId { get; set; } = "";
     public PlayerItemAmount[] Amounts { get; set; } = Array.Empty<PlayerItemAmount>();
+    /// <summary>A migrated interrupted transaction retains custody and can only be rolled back.</summary>
+    public bool RequiresRecovery { get; set; }
 
     [JsonExtensionData]
     public IDictionary<string, JToken>? ExtensionData { get; set; }

@@ -127,11 +127,31 @@ public sealed class PlayerItemArchiveSerializer
 
     private static void MigrateProtection(PlayerItemStoreState state)
     {
+        var newlyProtected = new Dictionary<string, PlayerItemEntryState>(StringComparer.OrdinalIgnoreCase);
         foreach (PlayerItemEntryState entry in state.Entries ?? Array.Empty<PlayerItemEntryState>())
         {
             if (entry?.Prototype == null) continue;
+            bool wasProtected = entry.Flags.HasFlag(PlayerItemFlags.Protected);
             entry.ProtectionSource ??= PlayerItemPolicy.LegacyProtection(entry.Prototype, entry.Flags);
             entry.Flags = PlayerItemPolicy.EffectiveFlags(entry.Flags, entry.ProtectionSource.Value);
+            if (!wasProtected && entry.ProtectionSource.Value.HasFlag(PlayerItemProtectionSource.System)
+                && !string.IsNullOrWhiteSpace(entry.EntryId))
+                newlyProtected.TryAdd(entry.EntryId, entry);
+        }
+
+        // A legacy reservation was legal before its quest record acquired system protection.
+        // Preserve the complete transaction and every quantity, but require explicit rollback.
+        foreach (PlayerItemReservationState reservation in state.Reservations ?? Array.Empty<PlayerItemReservationState>())
+        {
+            if (reservation?.Amounts == null) continue;
+            foreach (PlayerItemAmount amount in reservation.Amounts)
+            {
+                if (amount?.EntryId == null || !newlyProtected.TryGetValue(amount.EntryId, out var entry)) continue;
+                reservation.RequiresRecovery = true;
+                entry.Location = PlayerItemLocation.Unresolved;
+                entry.RecoveryReason = PlayerItemRecoveryReason.InterruptedTransaction;
+                entry.RecoverySource = PlayerItemPolicy.ProtectionMigrationRecoverySource;
+            }
         }
     }
 }

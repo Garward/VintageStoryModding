@@ -5,6 +5,8 @@ namespace VRPG.Inventory;
 /// <summary>Shared custody rules; presentation categories and user flags cannot grant capacity.</summary>
 public static class PlayerItemPolicy
 {
+    public const string ProtectionMigrationRecoverySource = "migration:system-protection";
+
     public static bool RequiresRecovery(PlayerItemPrototype prototype) =>
         prototype.StatePolicy == PlayerItemStatePolicy.FrozenInRecovery;
 

@@ -45,7 +45,9 @@ public sealed partial class InMemoryPlayerItemStore
                 .Select(value => new PlayerItemReservationState
                 {
                     ReservationId = value.ReservationId,
-                    Amounts = value.Amounts.ToArray()
+                    Amounts = value.Amounts.ToArray(),
+                    RequiresRecovery = value.RequiresRecovery,
+                    ExtensionData = CloneExtensions(value.ExtensionData)
                 })
                 .ToArray();
             PlayerItemCompletedRequestState[] requestStates = requestCache
@@ -204,11 +206,19 @@ public sealed partial class InMemoryPlayerItemStore
             {
                 return Fail("A persisted reservation is invalid or duplicated.", out error);
             }
+            bool hasRecoverableCustody = false;
             foreach (PlayerItemAmount amount in normalized)
             {
-                if (!restored.byId.TryGetValue(amount.EntryId, out StoredEntry? entry)
-                    || entry.Location != PlayerItemLocation.Stored
-                    || entry.Flags.HasFlag(PlayerItemFlags.Protected))
+                if (!restored.byId.TryGetValue(amount.EntryId, out StoredEntry? entry))
+                    return Fail("A persisted reservation references a missing entry.", out error);
+                bool recoverable = reservationState.RequiresRecovery
+                    && entry.Location == PlayerItemLocation.Unresolved
+                    && entry.ProtectionSource.HasFlag(PlayerItemProtectionSource.System)
+                    && entry.RecoveryReason == PlayerItemRecoveryReason.InterruptedTransaction
+                    && entry.RecoverySource == PlayerItemPolicy.ProtectionMigrationRecoverySource;
+                hasRecoverableCustody |= recoverable;
+                if (!recoverable && (entry.Location != PlayerItemLocation.Stored
+                    || entry.Flags.HasFlag(PlayerItemFlags.Protected)))
                 {
                     return Fail("A persisted reservation references an unavailable entry.", out error);
                 }
@@ -217,9 +227,12 @@ public sealed partial class InMemoryPlayerItemStore
                     return Fail("Persisted reservations exceed an entry quantity.", out error);
                 restored.reservedByEntry[entry.EntryId] = existing + amount.Quantity;
             }
+            if (reservationState.RequiresRecovery && !hasRecoverableCustody)
+                return Fail("A recovery transaction has no recoverable custody.", out error);
             restored.reservations.Add(
                 reservationState.ReservationId,
-                new PendingReservation(reservationState.ReservationId, normalized));
+                new PendingReservation(reservationState.ReservationId, normalized,
+                    reservationState.RequiresRecovery, CloneExtensions(reservationState.ExtensionData)));
         }
 
         foreach (PlayerItemCompletedRequestState requestState in state.CompletedRequests)

@@ -15,6 +15,78 @@ namespace VRPG.Tests;
 public sealed class PlayerItemPersistenceTests
 {
     [Fact]
+    public void LegacyQuestReservationsMigrateLosslesslyInPlayersAndPriorStoreJournals()
+    {
+        var serializer = new PlayerItemArchiveSerializer();
+        Assert.True(serializer.TryDeserialize(serializer.Serialize(LegacyQuestReservationFixture.Archive()),
+            out var archive, out var error), error);
+        foreach (var state in new[] { archive.Players["player"], archive.Migrations["player"].PriorStore })
+        {
+            Assert.True(InMemoryPlayerItemStore.TryRestore(state, out var store, out error), error);
+            Assert.True(store!.TryGet("quest", out var quest));
+            Assert.Equal(5, quest!.Quantity);
+            Assert.Equal(new byte[] { 1, 2, 3 }, quest.Prototype.ExactState);
+            Assert.Equal(PlayerItemProtectionSource.System, quest.ProtectionSource);
+            Assert.Equal(PlayerItemLocation.Unresolved, quest.Location);
+            Assert.Equal(PlayerItemRecoveryReason.InterruptedTransaction, Assert.Single(store.Recovery().Entries).Reason);
+            var reservation = store.Reservation("transaction");
+            Assert.True(reservation.Exists);
+            Assert.True(reservation.RequiresRecovery);
+            Assert.Equal(2, reservation.Entries.Single(e => e.EntryId == "quest").Quantity);
+            Assert.Equal(3, reservation.Entries.Single(e => e.EntryId == "material").Quantity);
+            Assert.Equal(1, store.Reservation("second-transaction").Entries.Single().Quantity);
+            Assert.True(InMemoryPlayerItemStore.TryRestore(store.Capture().State, out var restarted, out error), error);
+            Assert.True(restarted!.Reservation("transaction").Exists);
+            Assert.True(restarted.Reservation("transaction").RequiresRecovery);
+            Assert.False(restarted.CommitReservation("commit", "transaction").Success);
+            Assert.Equal(42, (int)state.Reservations[0].ExtensionData!["futureTransaction"]);
+            Assert.Equal(42, (int)restarted.Capture().State.Reservations
+                .Single(r => r.ReservationId == "transaction").ExtensionData!["futureTransaction"]);
+        }
+    }
+
+    [Fact]
+    public void ArchiveServiceLoadsAndRewritesMigratedPendingQuestCustody()
+    {
+        var storage = new MemoryArchiveStorage();
+        var repository = new PlayerItemArchiveRepository(storage);
+        Assert.True(repository.Save(LegacyQuestReservationFixture.Archive()).Success);
+        var service = new PlayerItemArchiveService(repository);
+        var loaded = service.Load();
+        Assert.True(loaded.Success, loaded.Error);
+        var store = Assert.IsType<InMemoryPlayerItemStore>(service.Directory.ForPlayer("player"));
+        Assert.True(store.Insert("other", Material("game:other"), 1, store.Revision).Success);
+        Assert.True(service.SaveDirty().Success);
+        var restartedService = new PlayerItemArchiveService(repository);
+        var restarted = restartedService.Load();
+        Assert.True(restarted.Success, restarted.Error);
+        var restartedStore = restartedService.Directory.ForPlayer("player");
+        Assert.True(restartedStore.Reservation("transaction").RequiresRecovery);
+        Assert.Equal(2, restartedStore.Reservation("transaction").Entries.Single(e => e.EntryId == "quest").Quantity);
+        Assert.True(restartedStore.TryGet("quest", out var quest));
+        Assert.Equal(5, quest!.Quantity);
+        Assert.Equal(PlayerItemFlags.Protected, quest.Flags);
+        Assert.Equal(42, (int)restarted.Archive.Players["player"].Reservations
+            .Single(r => r.ReservationId == "transaction").ExtensionData!["futureTransaction"]);
+        Assert.True(restarted.Archive.Migrations["player"].PriorStore.Reservations[0].RequiresRecovery);
+    }
+
+    [Fact]
+    public void RecoveryReservationMarkerCannotAuthorizeProtectedActiveEntriesOrExcessQuantities()
+    {
+        var serializer = new PlayerItemArchiveSerializer();
+        Assert.True(serializer.TryDeserialize(serializer.Serialize(LegacyQuestReservationFixture.Archive()),
+            out var archive, out var error), error);
+        var state = archive.Players["player"];
+        state.Entries.Single(e => e.EntryId == "quest").Location = PlayerItemLocation.Stored;
+        Assert.False(InMemoryPlayerItemStore.TryRestore(state, out _, out error));
+        state.Entries.Single(e => e.EntryId == "quest").Location = PlayerItemLocation.Unresolved;
+        state.Reservations[1].Amounts = new[] { new PlayerItemAmount("quest", 4) };
+        Assert.False(InMemoryPlayerItemStore.TryRestore(state, out _, out error));
+        Assert.Contains("quantit", error);
+    }
+
+    [Fact]
     public void FrozenStateSurvivesRestoreAndCannotBeActivatedByArchiveLocation()
     {
         var store = new InMemoryPlayerItemStore();
@@ -659,5 +731,49 @@ public sealed class PlayerItemPersistenceTests
             byte[] value = values[key];
             values[key] = value.Take(Math.Max(1, value.Length / 2)).ToArray();
         }
+    }
+}
+
+internal static class LegacyQuestReservationFixture
+{
+    public static PlayerItemArchive Archive()
+    {
+        var state = new PlayerItemStoreState
+        {
+            Revision = 4,
+            Entries = new[]
+            {
+                new PlayerItemEntryState
+                {
+                    EntryId = "quest", Quantity = 5,
+                    Prototype = new(PlayerItemStorageKind.Protected, "vrpg:key", PlayerItemCategories.KeysAndQuest,
+                        "Key", new byte[] { 1, 2, 3 })
+                },
+                new PlayerItemEntryState
+                {
+                    EntryId = "material", Quantity = 7,
+                    Prototype = new(PlayerItemStorageKind.Aggregate, "game:stone", PlayerItemCategories.Materials,
+                        "Stone", new byte[] { 4, 5, 6 })
+                }
+            },
+            Reservations = new[]
+            {
+                new PlayerItemReservationState
+                {
+                    ReservationId = "transaction",
+                    Amounts = new[] { new PlayerItemAmount("quest", 2), new PlayerItemAmount("material", 3) },
+                    ExtensionData = new Dictionary<string, JToken> { ["futureTransaction"] = new JValue(42) }
+                },
+                new PlayerItemReservationState
+                {
+                    ReservationId = "second-transaction", Amounts = new[] { new PlayerItemAmount("quest", 1) }
+                }
+            }
+        };
+        return new PlayerItemArchive
+        {
+            SchemaVersion = 1, Players = new() { ["player"] = state },
+            Migrations = new() { ["player"] = new() { MigrationVersion = 1, PriorStore = state } }
+        };
     }
 }
