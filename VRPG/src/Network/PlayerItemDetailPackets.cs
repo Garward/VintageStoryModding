@@ -9,6 +9,7 @@ public sealed class PlayerItemDetailRequest
     [ProtoMember(1)] public long ConnectionGeneration { get; set; }
     [ProtoMember(2)] public long QueryId { get; set; }
     [ProtoMember(3)] public string EntryId { get; set; } = "";
+    /// <summary>Empty requests discovery of the validated candidate role before comparison.</summary>
     [ProtoMember(4)] public string RoleCode { get; set; } = "";
     [ProtoMember(5)] public int ProtocolVersion { get; set; } = 1;
 }
@@ -19,6 +20,7 @@ public sealed class PlayerItemDetailResult
     [ProtoMember(1)] public long ConnectionGeneration { get; set; }
     [ProtoMember(2)] public long QueryId { get; set; }
     [ProtoMember(3)] public string EntryId { get; set; } = "";
+    /// <summary>The requested role, or the server-discovered candidate role when the request was empty.</summary>
     [ProtoMember(4)] public string RoleCode { get; set; } = "";
     [ProtoMember(5)] public long StoreRevision { get; set; }
     [ProtoMember(6)] public long BuildRevision { get; set; }

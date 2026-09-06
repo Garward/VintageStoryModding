@@ -135,4 +135,31 @@ public sealed class GearComparisonServiceTests
         Assert.Empty(result.Effects);
         Assert.Empty(result.Comparison);
     }
+
+    [Theory]
+    [InlineData("vrpg:max_health_percent", "add", "percentage-points")]
+    [InlineData("vrpg:health_regeneration", "add", "points-per-second")]
+    [InlineData("vrpg:mana_regen", "add", "points-per-second")]
+    [InlineData("vrpg:blood_regen", "add", "points-per-second")]
+    [InlineData("vrpg:magic_shield_regen", "add", "points-per-second")]
+    [InlineData("vrpg:health_regeneration", "increased", "percent")]
+    [InlineData("vrpg:health_regeneration", "more", "percent")]
+    [InlineData("vrpg:max_mana", "add", "points")]
+    [InlineData("vrpg:strength", "add", "points")]
+    public void EffectUnitsRespectTheRuntimeStatAndOperation(string stat, string operation, string unit)
+    {
+        var f = new GearReadinessValidatorTests.Fixture();
+        var gear = GearReadinessValidatorTests.Instance() with { Affixes = new[] { new GearAffixRoll("vrpg:flat-power", 1,
+            new[] { new GearModifierRoll(stat, operation, 7.5f) }) } };
+        string id = f.Insert(GearItemStateCodec.Encode(gear));
+        var talents = new TalentTreeCatalog();
+        var service = new PlayerItemDetailService(new GearComparisonService(f.Data, new(talents), new(new RpgModuleConfig(), talents)));
+        var result = service.Detail(f.Store, new() { Level = 20 }, 1, new() { ConnectionGeneration = 1, QueryId = 1,
+            EntryId = id, RoleCode = gear.EquipmentRole });
+        Assert.Equal("", result.RejectionCode);
+        var effect = Assert.Single(result.Effects.Where(x => x.StatCode == stat));
+        Assert.Equal(unit, effect.UnitCode);
+        Assert.Equal(operation, effect.Operation);
+        Assert.Equal(7.5, effect.Value);
+    }
 }

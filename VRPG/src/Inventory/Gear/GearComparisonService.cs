@@ -33,6 +33,9 @@ public sealed class GearComparisonService
             || detail.Quantity != 1 || detail.Location is not (PlayerItemLocation.Stored or PlayerItemLocation.Equipped)
             || !GearItemStateCodec.TryDecode(detail.Prototype.ExactState, out var candidate, out _)
             || candidate == null || !GearReadinessValidator.ValidateDefinitions(candidate, data, out _)) return "invalid-gear";
+        if (!PlayerItemQueryService.Text(candidate.EquipmentRole, 128, true)) return "metadata-limit";
+        // An unqualified selection discovers its role from validated mechanical state, never visual chassis.
+        if (role.Length == 0) result.RoleCode = role = candidate.EquipmentRole;
         if (role != candidate.EquipmentRole || data.GearBases.Get(candidate.BaseCode)?.EquipmentRole != role)
             return "equipment-role-mismatch";
         var modifiers = candidate.Affixes.SelectMany(x => x.Modifiers).Where(x => !GearModifierContract.IsBaked(x.Stat));
@@ -109,6 +112,14 @@ public sealed class GearComparisonService
             yield return new() { StatCode = codes[i], Operation = "resolved", Value = values[i], UnitCode = i >= 4 ? "fraction" : "points" };
         foreach (var modifier in gear.Affixes.SelectMany(x => x.Modifiers).Where(x => !GearModifierContract.IsBaked(x.Stat)))
             yield return new() { StatCode = modifier.Stat, Operation = modifier.Operation, Value = modifier.Value,
-                UnitCode = modifier.Operation == "add" ? "points" : "percent", ConditionCode = "applicable-runtime-stat" };
+                UnitCode = ModifierUnit(modifier), ConditionCode = "applicable-runtime-stat" };
+    }
+
+    private static string ModifierUnit(GearModifierRoll modifier)
+    {
+        if (modifier.Operation != GearModifierOperations.Add) return "percent";
+        if (GearModifierContract.IsHealthPercentage(modifier.Stat)) return "percentage-points";
+        if (GearModifierContract.RegenerationResource(modifier.Stat) != GearResourceStat.None) return "points-per-second";
+        return "points";
     }
 }

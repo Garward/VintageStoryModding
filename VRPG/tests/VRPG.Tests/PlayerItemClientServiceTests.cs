@@ -56,6 +56,22 @@ public sealed class PlayerItemClientServiceTests
     }
 
     [Fact]
+    public void DiscoveryAcceptsOnlyBoundedServerRoleForCurrentEntryAndQuery()
+    {
+        var client = Connected();
+        var selection = client.Select("a", "");
+        var result = Detail(selection, 1);
+        result.RoleCode = PlayerEquipmentRoles.MainWeapon;
+        Assert.True(client.Receive(result));
+        Assert.Equal(PlayerEquipmentRoles.MainWeapon, client.CurrentDetail!.RoleCode);
+        var next = client.Select("b", "");
+        Assert.False(client.Receive(result));
+        var oversized = Detail(next, 1);
+        oversized.RoleCode = new('x', 129);
+        Assert.False(client.Receive(oversized));
+    }
+
+    [Fact]
     public void MenuClosureDoesNotCancelPendingMutation()
     {
         var client = Ready();

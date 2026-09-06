@@ -91,7 +91,8 @@ public sealed class PlayerItemClientService
         return request;
     }
 
-    public PlayerItemDetailRequest Select(string entryId, string roleCode)
+    /// <summary>An empty role asks the server to discover and compare the entry's actual equipment role.</summary>
+    public PlayerItemDetailRequest Select(string entryId, string roleCode = "")
     {
         selected = new() { ConnectionGeneration = ConnectionGeneration, QueryId = checked(++queryId),
             EntryId = entryId, RoleCode = roleCode };
@@ -117,7 +118,9 @@ public sealed class PlayerItemClientService
     public bool Receive(PlayerItemDetailResult result)
     {
         if (selected == null || result.ConnectionGeneration != ConnectionGeneration || ConnectionGeneration == 0
-            || result.QueryId != selected.QueryId || result.EntryId != selected.EntryId || result.RoleCode != selected.RoleCode
+            || result.QueryId != selected.QueryId || result.EntryId != selected.EntryId
+            || !PlayerItemQueryService.Text(result.RoleCode, 128)
+            || !string.IsNullOrEmpty(selected.RoleCode) && result.RoleCode != selected.RoleCode
             || result.StoreRevision < StoreRevision || result.BuildRevision < BuildRevision
             || result.Effects == null || result.Effects.Length > 128 || result.Comparison == null || result.Comparison.Length > 128
             || result.Actions == null || result.Actions.Length > 16 || !ValidDetail(result)) return false;

@@ -140,6 +140,35 @@ public sealed class PlayerItemProtocolTests
         Assert.True(client.CanWrite);
     }
 
+    [Fact]
+    public void QuerySelectionDiscoversGearRoleWithoutKnowingItsVisualChassis()
+    {
+        var f = new Fixture();
+        f.Players.GetOrCreate("p").Level = 20;
+        var gear = GearReadinessValidatorTests.Instance();
+        var store = f.Items.ForPlayer("p");
+        store.Insert("gear", new(PlayerItemStorageKind.Unique, "game:gear-rusty", PlayerItemCategories.Gear,
+            "Shared fallback appearance", GearItemStateCodec.Encode(gear)), 1, store.Revision);
+        var client = new VRPG.Client.PlayerMenu.Inventory.PlayerItemClientService();
+        client.BeginSession(new() { ConnectionGeneration = 1 });
+        client.QueueQuery(new() { Category = PlayerItemCategories.Gear }, 0);
+        Assert.True(client.Receive(Serializer.DeepClone(f.Service.Query(f.Player, client.Pump(200)!))));
+        var entry = Assert.Single(client.CurrentPage!.Entries);
+        Assert.Equal("game:gear-rusty", entry.AssetCode);
+        var discovery = client.Select(entry.EntryId, "");
+        var discovered = Serializer.DeepClone(f.Service.Detail(f.Player, discovery));
+        Assert.Equal("", discovered.RejectionCode);
+        Assert.Equal(gear.EquipmentRole, discovered.RoleCode);
+        Assert.True(client.Receive(discovered));
+        Assert.NotEmpty(client.CurrentDetail!.Comparison);
+        // A later explicit-role request uses only what the server exposed in discovery.
+        var request = client.Select(entry.EntryId, client.CurrentDetail.RoleCode);
+        var compared = Serializer.DeepClone(f.Service.Detail(f.Player, request));
+        Assert.Equal("", compared.RejectionCode);
+        Assert.True(client.Receive(compared));
+        Assert.NotEmpty(client.CurrentDetail!.Comparison);
+    }
+
     [Theory]
     [InlineData(typeof(PlayerItemQueryRequest), "ProtocolVersion", 1)]
     [InlineData(typeof(PlayerItemQueryRequest), "Limit", 10)]
