@@ -19,8 +19,8 @@ public sealed class PlayerItemClientServiceTests
         var client = Connected();
         long first = client.QueueQuery(new() { Search = "a" }, 0);
         long second = client.QueueQuery(new() { Search = "ab" }, 100);
-        Assert.Null(client.Pump(249));
-        Assert.Equal(second, client.Pump(250)!.QueryId);
+        Assert.Null(client.Pump(299));
+        Assert.Equal(second, client.Pump(300)!.QueryId);
         Assert.Null(client.Pump(500));
         Assert.False(client.Receive(Page(first)));
         Assert.True(client.Receive(Page(second)));
@@ -81,7 +81,7 @@ public sealed class PlayerItemClientServiceTests
         Assert.Null(client.Submit(new() { Action = PlayerItemAction.Destroy, EntryId = "a", Quantity = 1 }));
         Assert.False(client.Receive(new PlayerItemActionResult { ConnectionGeneration = 1, RequestId = mutation.RequestId }));
         long query = client.QueueQuery(new(), 0);
-        client.Pump(150);
+        client.Pump(200);
         Assert.False(client.Receive(Page(query)));
         var page = Page(query); page.ConnectionGeneration = 2;
         Assert.True(client.Receive(page));
@@ -95,7 +95,7 @@ public sealed class PlayerItemClientServiceTests
         for (int i = 0; i < 40; i++)
         {
             long query = client.QueueQuery(new(), 0);
-            client.Pump(150);
+            client.Pump(200);
             Assert.True(client.Receive(Page(query)));
             var selected = client.Select("a", PlayerEquipmentRoles.Head);
             Assert.True(client.Receive(Detail(selected, 1)));
@@ -113,7 +113,7 @@ public sealed class PlayerItemClientServiceTests
         var client = Ready();
         var request = client.Submit(new() { Action = PlayerItemAction.Destroy, EntryId = "a", Quantity = 1 })!;
         long query = client.QueueQuery(new(), 0);
-        client.Pump(150);
+        client.Pump(200);
         var newer = Page(query); newer.StoreRevision = 3; newer.BuildRevision = 4;
         Assert.True(client.Receive(newer));
         Assert.True(client.Receive(new PlayerItemActionResult { ConnectionGeneration = 1, RequestId = request.RequestId,
@@ -127,7 +127,7 @@ public sealed class PlayerItemClientServiceTests
     {
         var client = Connected();
         long query = client.QueueQuery(new(), 0);
-        client.Pump(150);
+        client.Pump(200);
         var response = Page(query); response.Entries = new PlayerItemEntryPacket[129];
         Assert.False(client.Receive(response));
         Assert.Equal(0, client.CachedPages);
@@ -138,7 +138,7 @@ public sealed class PlayerItemClientServiceTests
     {
         var client = Connected();
         long query = client.QueueQuery(new(), 0);
-        client.Pump(150);
+        client.Pump(200);
         var response = Page(query);
         response.Entries = new[] { new PlayerItemEntryPacket { EntryId = "a", DisplayName = new('x', 257), Quantity = 1 } };
         Assert.False(client.Receive(response));
@@ -159,7 +159,7 @@ public sealed class PlayerItemClientServiceTests
     {
         var client = Connected();
         long query = client.QueueQuery(new(), 0);
-        client.Pump(150);
+        client.Pump(200);
         Assert.True(client.Receive(Page(query)));
         return client;
     }

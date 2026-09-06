@@ -133,7 +133,7 @@ public sealed class PlayerItemProtocolTests
         var client = new VRPG.Client.PlayerMenu.Inventory.PlayerItemClientService();
         client.BeginSession(new() { ConnectionGeneration = 1 });
         client.QueueQuery(new(), 0);
-        var request = client.Pump(150)!;
+        var request = client.Pump(200)!;
         var response = Serializer.DeepClone(f.Service.Query(f.Player, request));
         Assert.True(client.Receive(response));
         Assert.Equal(10000, Assert.Single(client.CurrentPage!.Entries).Quantity);

@@ -14,7 +14,7 @@ public sealed class PlayerItemClientService
 {
     public const int PageCacheCapacity = 8;
     public const int DetailCacheCapacity = 32;
-    public const int DebounceMilliseconds = 150;
+    public const int DebounceMilliseconds = 200;
     private readonly Dictionary<long, PlayerItemQueryResult> pages = new();
     private readonly Dictionary<long, PlayerItemDetailResult> details = new();
     private readonly Dictionary<string, PlayerItemActionRequest> mutations = new(StringComparer.Ordinal);
