@@ -194,7 +194,7 @@ Each page presents one current decision and one contextual explanation. This is 
 
 - At most two major panes are visible during ordinary use: the task surface and its inspector.
 - Health, mana and combat state remain on the combat HUD and are not repeated in Stats unless a selected choice directly changes them.
-- Derived values, worn equipment, affixes, technical registry details, topology tools and extended filters begin behind fitted disclosure plates.
+- Derived values, worn equipment, affix roll ranges, technical registry details, topology tools and extended filters begin behind fitted disclosure plates. Decision-changing affix effects and transformations stay visible in the selected-item comparison, as required by the gear foundation design.
 - A disclosure plate opens like a mechanism: its edge heats, the plate releases, and the contents slide into the newly claimed space. Closing reverses the motion. Reduced-motion mode changes state immediately.
 - Pages use broad internal margins and quiet iron between controls. Empty space is an active part of the hierarchy, not a region to fill with counters.
 - Large fitted buttons represent meaningful actions. Small terminal-like key/value rows are reserved for true comparisons, not used as the default visual vocabulary.
@@ -258,7 +258,7 @@ The ordinary layout is a browse pane plus reading pane. Category selection is a 
 - **Primary decision:** The action on the selected entry.
 - **Required information:** Active type tab, relevant capacity policy, selected entry, quantity and build-relevant effects/comparison.
 - **Excluded by default:** Every worn slot, empty slot grids, backpack slots, aggregate implementation details and unrelated currencies.
-- **Details path:** Equipment and affixes open as fitted disclosure plates. Selecting equippable gear may automatically open only its relevant comparison.
+- **Details path:** Equipment, affix roll ranges, lore and formula details open as fitted disclosure plates. Decision-changing affix effects remain visible in the relevant equipped-item comparison. Selecting equippable gear may automatically open that comparison.
 - **Authority:** Browse/search state is local; custody, quantities, equipment and transformations are server-authoritative and revision-safe.
 
 Inventory opens first on `E`. Default typed tabs are Gear, Materials, Consumables, Keys & Quest and Miscellaneous. Unique gear uses fixed entry capacity; commodities render one indexed entry with a high quantity; protected records and currencies do not pretend to be physical stacks. The full intended capacity exists from character creation and no backpack slot appears when inventory replacement owns the player store.

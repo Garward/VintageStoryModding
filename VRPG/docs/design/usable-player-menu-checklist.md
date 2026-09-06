@@ -17,6 +17,11 @@ Inventory and Character semantic actions. It does not replace the physical `E`
 or `C` keys, register substitute physical hotkeys, or rewrite player mappings.
 `E` and `C` are only Vanilla's defaults; remapped actions must work unchanged.
 
+For the complete end-state menu beyond the first usable overwrite, see the
+[unified player-menu design](../superpowers/specs/2026-09-06-unified-player-menu-design.md)
+and [delivery plan](../superpowers/plans/2026-09-06-unified-player-menu.md).
+These proposed documents preserve this file's activation gates.
+
 ## Current progress
 
 | Step | Status | Evidence |
@@ -54,8 +59,10 @@ The first replacement is usable only when all of these statements are true:
   Vanilla dialog.
 - Inventory and equipment survive save/load, death, disconnect, reconnect, and
   server restart.
-- Disabling the feature or failing startup validation leaves the untouched
-  Vanilla Inventory and Character dialogs available.
+- Disabling the feature or failing startup validation before custody migration
+  leaves Vanilla ownership available. After migration commits, recover the
+  canonical menu or complete a journaled reverse migration before Vanilla resumes
+  item access.
 - Adventure combat, Home/Build tools, and addon items all have an explicit item
   bridge or a safe rejection/recovery path.
 - The hidden Vanilla Character systems do not remain active behind the new UI:
@@ -322,7 +329,8 @@ scales without owning the Inventory or Character semantic actions yet.
 - [ ] Preserve useful selection, search, scroll, and focus across refreshes.
 - [ ] Show item identity, quantity, relevant comparison, protection/favorite state,
   and why an action is unavailable.
-- [ ] Put affixes and technical details behind deliberate disclosure.
+- [ ] Keep decision-changing affixes visible in comparison; put roll ranges, lore
+  and technical details behind deliberate disclosure.
 - [ ] Implement Equipment as a disclosure within Inventory, using the same store
   revision as the item list.
 - [ ] Implement equip and unequip first, then use/bind, split, favorite/protect,
@@ -392,7 +400,10 @@ and entirely free of Vanilla class gameplay while preserving cosmetic choice.
   the experimental config flag remains the final opt-in during testing.
 
 Gate: default and remapped semantic actions always open one owner, and induced
-startup failure restores both Vanilla dialogs rather than replacing only one.
+startup failure before custody commit restores both Vanilla dialogs rather than
+replacing only one. Failure after custody commit preserves recoverable canonical
+ownership until menu repair or journaled lossless reverse migration; restoring
+dialog references alone must not unlock a competing item owner.
 
 ## 12. Validate the first usable replacement
 

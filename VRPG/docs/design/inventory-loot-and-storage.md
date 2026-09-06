@@ -47,6 +47,8 @@ Changing inventory ownership on an existing world requires a restart and a migra
 4. Record the source mode and completed schema version so the migration is idempotent.
 5. Refuse activation if lossless transfer cannot be guaranteed.
 
+Restoring Vanilla dialog registrations does not reverse committed item custody. Before migration commits, failed activation keeps Vanilla ownership intact. After commit, keep canonical custody recoverable and locked against competing access until the client menu recovers or a journaled lossless reverse migration completes. Feature-off on a populated canonical store requires that reverse-migration gate; it is not a live UI toggle.
+
 The implemented scanner treats the hotbar, offhand, mouse-held stack, crafting
 inputs, character equipment, backpack items, and backpack contents as one source.
 Backpack contents are flattened into independent canonical records while a cloned
@@ -183,7 +185,7 @@ Inventory is the default page of the unified player menu:
 - The Survival character/equipment window is replaced. Equipment is a disclosure within the Gear view, not a separate inventory owner or an always-visible paper-doll dashboard.
 - `C` may remain as a configurable direct shortcut to the Gear view with Equipment expanded. Both inputs reach the same screen state and server inventory.
 - There is no backpack region when `InventoryReplacement.Enabled` owns capacity.
-- The normal composition is two panes: typed browse/search and selected-item context. Filters, equipment, affixes and technical details expand only when requested.
+- The normal composition is two panes: typed browse/search and selected-item context. Filters, equipment, affix roll ranges and technical details expand only when requested. Decision-changing affix effects and transformations remain visible in the selected-item comparison.
 - Broad margins and fitted buttons take priority over dense grids of labeled values. Opening a disclosure uses a short plate-release/slide animation, with an immediate reduced-motion alternative.
 
 Native integration replaces menus, not keys. Vanilla associates `GuiDialogInventory` with the `inventorydialog` action and `GuiDialogCharacter` with the `characterdialog` action through `ToggleKeyCombinationCode`. Their default mappings are `E` and `C`, but VRPG never reads, writes or hard-codes those physical keys. When inventory replacement is enabled, the client transactionally replaces the two registered dialog owners:

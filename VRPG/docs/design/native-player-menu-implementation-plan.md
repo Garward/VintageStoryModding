@@ -4,6 +4,11 @@ Status: Implementation plan; navigation contract started
 Parents: [UI visual language](ui-visual-language-and-hub.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md)  
 Index: [VRPG design index](README.md)
 
+For the complete end-state menu beyond the first usable overwrite, see the
+[unified player-menu design](../superpowers/specs/2026-09-06-unified-player-menu-design.md)
+and [delivery plan](../superpowers/plans/2026-09-06-unified-player-menu.md).
+These proposed documents preserve this file's activation gates.
+
 ## 1. Goal and safety boundary
 
 Replace the separate Vanilla inventory, Vanilla character window, VRPG Hub and VRPG Library with one native player menu:
@@ -163,9 +168,9 @@ Do not globally raise Vanilla stack limits. Materialization into a Vanilla `Item
 5. Request current page data only when opening, while coalescing repeated requests.
 6. Close the unified dialog without changing server state when toggled.
 7. Log the replaced dialog types and semantic actions once at debug level.
-8. Refuse activation if either expected dialog owner, the inventory feature, network protocol or required store capability is unavailable. Failure leaves Vanilla ownership intact.
+8. Refuse activation if either expected dialog owner, the inventory feature, network protocol or required store capability is unavailable. Failure before custody migration leaves Vanilla ownership intact; already-migrated players follow the recovery rule below.
 
-The replacement must be transactional: discover and validate both targets first, then swap both. Never remove one Vanilla dialog if the other target or either replacement adapter is unavailable. The coordinator retains the prior dialog references so disposal or failed startup can restore the original registration cleanly.
+The replacement must be transactional: discover and validate both targets first, then swap both. Never remove one Vanilla dialog if the other target or either replacement adapter is unavailable. The coordinator retains the prior dialog references so disposal or failed startup can restore the original registration cleanly. Registration restoration does not reverse item custody: before migration commits, failure leaves Vanilla usable; after commit, canonical custody stays recoverable and locked against competing access until menu repair or journaled reverse migration. Client preparation, durable migration and activation acknowledgement must be coordinated across reconnects; they are not one in-process transaction.
 
 The coordinator has no drawing code and never changes a control mapping. `VRPGModSystem` should create and dispose it, then delegate rather than accumulating more menu ownership logic.
 
@@ -224,5 +229,5 @@ The experimental overwrite is ready only when:
 - Equip is revision-safe and explains rejection beside the action.
 - Closing or changing tabs cannot lose, duplicate or strand an item.
 - No backpack or Vanilla character dialog can expose a competing owner.
-- The feature disables cleanly at restart and restores untouched Vanilla behavior.
+- The feature disables cleanly at restart after a validated lossless reverse migration when canonical items exist; otherwise it refuses the ownership change before mutation.
 - The native Inventory screen passes the full scale, input and volume matrix.

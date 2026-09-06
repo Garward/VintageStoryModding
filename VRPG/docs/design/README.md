@@ -12,6 +12,15 @@ Every inherited Survival system must answer one question:
 
 If the answer is unclear or merely “more upkeep,” the system is disabled by default as safely as possible and exposed through an optional server toggle when a reliable compatibility boundary exists.
 
+## Full player-menu end goal
+
+The [unified Inventory, Character, and Hub design](../superpowers/specs/2026-09-06-unified-player-menu-design.md)
+consolidates the complete six-page target, five inventory categories, high quantities,
+equipment comparison, recovery, character-creation handoff and service integrations.
+Its [delivery plan](../superpowers/plans/2026-09-06-unified-player-menu.md) starts from
+the current store/gear foundations. Both are proposed for review; the existing
+usable-replacement checklist remains the first custody gate.
+
 ## Documents
 
 | Document | Use it for |
