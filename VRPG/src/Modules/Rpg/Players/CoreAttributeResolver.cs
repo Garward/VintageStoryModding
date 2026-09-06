@@ -1,4 +1,6 @@
 using System;
+using VRPG.Inventory.Gear;
+using VRPG.Modules.Rpg.Stats;
 
 namespace VRPG.Modules.Rpg.Players;
 
@@ -44,6 +46,22 @@ public static class CoreAttributeResolver
         }
 
         return state.BaseStats.TryGetValue(normalized, out value) ? Math.Max(0, value) : 0;
+    }
+
+    /// <summary>Resolves transient equipped attributes without rewriting allocated stats or class authority.</summary>
+    public static double GetEffectiveValue(RpgPlayerState state, string code, EquippedGearStats gear)
+    {
+        string canonical = "vrpg:" + Normalize(code);
+        var modifiers = new StatModifierAccumulator();
+        if (gear.Valid)
+        {
+            foreach (var modifier in gear.Modifiers)
+            {
+                if (GearModifierContract.IsCoreAttribute(modifier.Stat) && modifier.Stat == canonical)
+                    modifiers.Add(modifier.Operation, StatValueMath.ModifierValue(modifier));
+            }
+        }
+        return modifiers.Resolve(GetValue(state, code));
     }
 
     public static int TotalAllocated(RpgPlayerState state)

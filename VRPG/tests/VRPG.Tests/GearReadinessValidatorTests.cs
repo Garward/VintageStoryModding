@@ -19,6 +19,8 @@ public sealed class GearReadinessValidatorTests
     [InlineData("affix")]
     [InlineData("schema")]
     [InlineData("operation")]
+    [InlineData("modifier")]
+    [InlineData("unique-wire")]
     [InlineData("role")]
     [InlineData("equipped-role")]
     [InlineData("fallback")]
@@ -27,11 +29,14 @@ public sealed class GearReadinessValidatorTests
         var f = new Fixture();
         byte[] bytes = GearItemStateCodec.Encode(Instance());
         if (failure == "malformed") bytes = new byte[] { 1, 2, 3 };
-        else if (failure is "schema" or "operation")
+        else if (failure is "schema" or "operation" or "modifier" or "unique-wire")
         {
             TreeAttribute root = ItemStackCodec.DecodeCanonicalState(bytes);
             ITreeAttribute tree = root.GetTreeAttribute("vrpgGear");
             if (failure == "schema") tree.SetInt("schemaVersion", 99);
+            else if (failure == "unique-wire") tree.SetInt("uniqueCode", 0);
+            else if (failure == "modifier") ((TreeArrayAttribute)((TreeArrayAttribute)tree["affixes"]).value[0]["modifiers"]).value[0]
+                .SetString("stat", "vrpg:unsupported_stat");
             else ((TreeArrayAttribute)((TreeArrayAttribute)tree["affixes"]).value[0]["modifiers"]).value[0]
                 .SetString("operation", "unsupported");
             bytes = ItemStackCodec.EncodeCanonicalState(root);

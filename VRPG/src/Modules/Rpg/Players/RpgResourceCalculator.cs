@@ -2,6 +2,7 @@ using System;
 using VRPG.Config;
 using VRPG.Data;
 using VRPG.Data.Definitions;
+using VRPG.Inventory.Gear;
 using VRPG.Modules.Rpg.Stats;
 using VRPG.Modules.Rpg.Talents;
 
@@ -28,7 +29,7 @@ public sealed class RpgResourceCalculator
             Math.Max(0d, config.Resources.BaseMaxMagicShield) + gear.MaximumMagicShield);
 
         ApplyMaximumLevelGrowth(totals, state);
-        ApplyMaximumAttributeScaling(totals, state);
+        ApplyMaximumAttributeScaling(totals, state, gear);
         ApplyTalentModifiers(totals, state, ResourceTotalKind.Maximum);
         foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Maximum);
 
@@ -44,6 +45,7 @@ public sealed class RpgResourceCalculator
 
     public RpgResourceRegeneration CalculateRegeneration(RpgPlayerState state, EquippedGearStats? gear = null)
     {
+        gear = gear?.Valid == true ? gear : EquippedGearStats.Empty;
         ResourceRegenConfig regen = config.Resources.Regen;
         var totals = new ResourceTotals(
             Math.Max(0f, regen.BaseHealthRegenPerSecond),
@@ -52,10 +54,9 @@ public sealed class RpgResourceCalculator
             Math.Max(0f, regen.BaseMagicShieldRegenPerSecond));
 
         ApplyRegenerationLevelGrowth(totals, state);
-        ApplyRegenerationAttributeScaling(totals, state);
+        ApplyRegenerationAttributeScaling(totals, state, gear);
         ApplyTalentModifiers(totals, state, ResourceTotalKind.Regeneration);
-        if (gear?.Valid == true)
-            foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Regeneration);
+        foreach (StatModifierDefinition modifier in gear.Modifiers) ApplyModifier(totals, modifier, ResourceTotalKind.Regeneration);
 
         double health = totals.Health.FinalAllowZero();
         double bloodBase = health * Math.Max(0d, config.Resources.BloodRegenHealthRatio);
@@ -86,11 +87,11 @@ public sealed class RpgResourceCalculator
         totals.MagicShield.AddFlat(growth.MagicShieldRegenPerLevel * levelSteps);
     }
 
-    private void ApplyMaximumAttributeScaling(ResourceTotals totals, RpgPlayerState state)
+    private void ApplyMaximumAttributeScaling(ResourceTotals totals, RpgPlayerState state, EquippedGearStats gear)
     {
         AttributeResourceScalingConfig scaling = config.Resources.AttributeScaling;
-        double strength = GetStatPoints(state, "vrpg:strength");
-        double intelligence = GetStatPoints(state, "vrpg:intelligence");
+        double strength = CoreAttributeResolver.GetEffectiveValue(state, "strength", gear);
+        double intelligence = CoreAttributeResolver.GetEffectiveValue(state, "intelligence", gear);
 
         totals.Health.AddFlat(strength * scaling.HealthPerStrength);
         totals.Health.AddPercent(strength * scaling.HealthPercentPerStrength);
@@ -105,11 +106,11 @@ public sealed class RpgResourceCalculator
         totals.Blood.AddPercent(strength * scaling.BloodPercentPerStrength);
     }
 
-    private void ApplyRegenerationAttributeScaling(ResourceTotals totals, RpgPlayerState state)
+    private void ApplyRegenerationAttributeScaling(ResourceTotals totals, RpgPlayerState state, EquippedGearStats gear)
     {
         AttributeResourceScalingConfig scaling = config.Resources.AttributeScaling;
-        double strength = GetStatPoints(state, "vrpg:strength");
-        double intelligence = GetStatPoints(state, "vrpg:intelligence");
+        double strength = CoreAttributeResolver.GetEffectiveValue(state, "strength", gear);
+        double intelligence = CoreAttributeResolver.GetEffectiveValue(state, "intelligence", gear);
 
         totals.Health.AddFlat(strength * scaling.HealthRegenPerStrength);
         totals.Health.AddPercent(strength * scaling.HealthRegenPercentPerStrength);
@@ -143,6 +144,12 @@ public sealed class RpgResourceCalculator
 
     private static void ApplyModifier(ResourceTotals totals, StatModifierDefinition modifier, ResourceTotalKind kind)
     {
+        if (GearModifierContract.IsHealthPercentage(modifier.Stat))
+        {
+            if (kind == ResourceTotalKind.Maximum && modifier.Operation == GearModifierOperations.Add)
+                totals.Health.AddPercent(StatValueMath.ModifierValue(modifier));
+            return;
+        }
         if (!TryGetResourceTotal(totals, modifier.Stat, kind, out ResourceTotal? total) || total == null)
         {
             return;
@@ -151,98 +158,20 @@ public sealed class RpgResourceCalculator
         total.Add(modifier.Operation, StatValueMath.ModifierValue(modifier));
     }
 
-    private int GetStatPoints(RpgPlayerState state, string stat)
-    {
-        if (state.BaseStats.TryGetValue(stat, out int value))
-        {
-            return value;
-        }
-
-        string shortCode = stat.StartsWith("vrpg:", StringComparison.OrdinalIgnoreCase) ? stat.Substring("vrpg:".Length) : stat;
-        return state.BaseStats.TryGetValue(shortCode, out value) ? value : 0;
-    }
-
     private static bool TryGetResourceTotal(ResourceTotals totals, string stat, ResourceTotalKind kind, out ResourceTotal? total)
     {
-        string normalized = NormalizeStat(stat);
-        switch (kind)
+        GearResourceStat resource = kind == ResourceTotalKind.Maximum
+            ? GearModifierContract.MaximumResource(stat)
+            : GearModifierContract.RegenerationResource(stat);
+        total = resource switch
         {
-            case ResourceTotalKind.Maximum:
-                return TryGetMaximumTotal(totals, normalized, out total);
-            case ResourceTotalKind.Regeneration:
-                return TryGetRegenerationTotal(totals, normalized, out total);
-        }
-
-        total = null;
-        return false;
-    }
-
-    private static bool TryGetMaximumTotal(ResourceTotals totals, string normalized, out ResourceTotal? total)
-    {
-        switch (normalized)
-        {
-            case "maxhealth":
-            case "health":
-                total = totals.Health;
-                return true;
-            case "maxmana":
-            case "mana":
-                total = totals.Mana;
-                return true;
-            case "maxblood":
-            case "blood":
-                total = totals.Blood;
-                return true;
-            case "maxmagicshield":
-            case "magicshield":
-            case "shield":
-                total = totals.MagicShield;
-                return true;
-            default:
-                total = null;
-                return false;
-        }
-    }
-
-    private static bool TryGetRegenerationTotal(ResourceTotals totals, string normalized, out ResourceTotal? total)
-    {
-        switch (normalized)
-        {
-            case "healthregen":
-            case "healthregeneration":
-            case "hpregen":
-                total = totals.Health;
-                return true;
-            case "manaregen":
-            case "manaregeneration":
-            case "mpregen":
-                total = totals.Mana;
-                return true;
-            case "bloodregen":
-            case "bloodregeneration":
-                total = totals.Blood;
-                return true;
-            case "magicshieldregen":
-            case "magicshieldregeneration":
-            case "shieldregen":
-            case "shieldregeneration":
-                total = totals.MagicShield;
-                return true;
-            default:
-                total = null;
-                return false;
-        }
-    }
-
-    private static string NormalizeStat(string stat)
-    {
-        string value = (stat ?? "").Trim().ToLowerInvariant();
-        if (value.StartsWith("vrpg:", StringComparison.Ordinal))
-        {
-            value = value.Substring("vrpg:".Length);
-        }
-
-        return value.Replace("_", "").Replace("-", "").Replace(" ", "");
+            GearResourceStat.Health => totals.Health,
+            GearResourceStat.Mana => totals.Mana,
+            GearResourceStat.Blood => totals.Blood,
+            GearResourceStat.MagicShield => totals.MagicShield,
+            _ => null
+        };
+        return total != null;
     }
 
     private sealed class ResourceTotals

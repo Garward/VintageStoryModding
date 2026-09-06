@@ -301,6 +301,8 @@ public static class GearItemStateCodec
     private static string OptionalNormalized(ITreeAttribute tree, string key)
     {
         if (!tree.HasAttribute(key)) return string.Empty;
+        if (tree[key] is not StringAttribute)
+            throw new InvalidDataException($"Gear field '{key}' must use StringAttribute.");
         string? value = tree.GetString(key);
         ValidateOptionalNormalized(value, key);
         return value ?? string.Empty;

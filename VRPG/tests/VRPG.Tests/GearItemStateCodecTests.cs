@@ -9,6 +9,27 @@ namespace VRPG.Tests;
 public sealed class GearItemStateCodecTests
 {
     [Fact]
+    public void OptionalUniqueCodeRequiresStringWireTypeWhenPresent()
+    {
+        AssertWrongWireType(gear => gear.SetInt("uniqueCode", 0), "uniqueCode", "StringAttribute");
+        AssertWrongWireType(gear => gear.SetBytes("uniqueCode", Array.Empty<byte>()), "uniqueCode", "StringAttribute");
+        AssertWrongWireType(gear => gear["uniqueCode"] = new TreeAttribute(), "uniqueCode", "StringAttribute");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void OptionalUniqueCodeMayBeAbsentOrEmpty(bool absent)
+    {
+        TreeAttribute root = ItemStackCodec.DecodeCanonicalState(GearItemStateCodec.Encode(CreateFixture()));
+        ITreeAttribute gear = root.GetTreeAttribute("vrpgGear");
+        if (absent) gear.RemoveAttribute("uniqueCode");
+        else gear.SetString("uniqueCode", "");
+        Assert.True(GearItemStateCodec.TryDecode(ItemStackCodec.EncodeCanonicalState(root), out var decoded, out var error), error);
+        Assert.Empty(decoded!.UniqueCode);
+    }
+
+    [Fact]
     public void ExactInstanceRoundTripsWithoutRecalculation()
     {
         GearInstance expected = CreateFixture();

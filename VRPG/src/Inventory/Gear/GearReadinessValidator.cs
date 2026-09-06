@@ -81,6 +81,13 @@ public static class GearReadinessValidator
                     error = $"Missing affix '{roll.AffixCode}'.";
                     break;
                 }
+                foreach (GearModifierRoll modifier in roll.Modifiers)
+                {
+                    if (GearModifierContract.IsSupported(modifier.Stat, modifier.Operation)) continue;
+                    error = $"Unsupported gear modifier '{modifier.Stat}' with operation '{modifier.Operation}'.";
+                    break;
+                }
+                if (error.Length > 0) break;
             }
         }
         // Current authoring ranges, counts and scalars are not historical acceptance rules.

@@ -87,7 +87,7 @@ public sealed class EquippedGearStatResolver
             foreach (GearModifierRoll modifier in entry.Instance.Affixes.SelectMany(affix => affix.Modifiers))
             {
                 // These nine stats were permanently resolved by GearInstanceAuthor, including all layers.
-                if (IsBaked(modifier.Stat) || !IsDownstream(modifier.Stat)) continue;
+                if (GearModifierContract.IsBaked(modifier.Stat)) continue;
                 modifiers.Add(new StatModifierDefinition
                 {
                     Stat = modifier.Stat, Operation = modifier.Operation, Min = modifier.Value, Max = modifier.Value
@@ -126,7 +126,7 @@ public sealed class EquippedGearStatResolver
                 foreach (GearModifierRoll modifier in affix.Modifiers)
                 {
                     if (!Normalized(modifier.Stat) || !float.IsFinite(modifier.Value)
-                        || !GearModifierOperations.IsSupported(modifier.Operation)) return false;
+                        || !GearModifierContract.IsSupported(modifier.Stat, modifier.Operation)) return false;
                 }
             }
         }
@@ -137,21 +137,6 @@ public sealed class EquippedGearStatResolver
         stats.MaximumHealth, stats.MaximumMagicShield, stats.Evasion, stats.FireResistance,
         stats.ColdResistance, stats.LightningResistance, stats.RustResistance };
 
-    private static bool IsBaked(string stat) => stat is "vrpg:weapon_power" or "vrpg:armor"
-        or "vrpg:max_health" or "vrpg:max_magic_shield" or "vrpg:evasion" or "vrpg:fire_resistance"
-        or "vrpg:cold_resistance" or "vrpg:lightning_resistance" or "vrpg:rust_resistance";
-
     private static bool Normalized(string? code) => !string.IsNullOrWhiteSpace(code)
         && code == code.Trim().ToLowerInvariant();
-
-    private static bool IsDownstream(string stat)
-    {
-        string code = stat.Substring(stat.IndexOf(':') + 1);
-        // Damage categories are selected by skill tags/type. Resource categories match the calculator.
-        if (code == "damage" || code == "area_dmg" || code.EndsWith("_damage", StringComparison.Ordinal)) return true;
-        return code.Replace("_", "").Replace("-", "") is "mana" or "maxmana" or "blood" or "maxblood"
-            or "healthregen" or "healthregeneration" or "hpregen" or "manaregen" or "manaregeneration"
-            or "mpregen" or "bloodregen" or "bloodregeneration" or "magicshieldregen" or "magicshieldregeneration"
-            or "shieldregen" or "shieldregeneration";
-    }
 }

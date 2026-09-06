@@ -411,6 +411,11 @@ public static class GearDefinitionValidator
             if (definition == null) continue;
             definition.Code = NormalizeCode(definition.Code);
             definition.UniqueCode = NormalizeOptionalCode(definition.UniqueCode);
+            definition.VisualChassis = NormalizeCode(definition.VisualChassis);
+            definition.EquipmentRole = NormalizeToken(definition.EquipmentRole);
+            definition.Family = NormalizeToken(definition.Family);
+            definition.Tags = NormalizeTokens(definition.Tags);
+            definition.AffixFamilies = NormalizeTokens(definition.AffixFamilies);
             CanonicalizeModifierStats(definition.Implicits);
         }
         foreach (GearRarityDefinition rarity in rarities)
@@ -422,6 +427,12 @@ public static class GearDefinitionValidator
             if (affix == null) continue;
             affix.Code = NormalizeCode(affix.Code);
             affix.MinimumRarityCode = NormalizeCode(affix.MinimumRarityCode);
+            affix.Family = NormalizeToken(affix.Family);
+            affix.MutualExclusionGroup = NormalizeToken(affix.MutualExclusionGroup);
+            affix.RequiredTags = NormalizeTokens(affix.RequiredTags);
+            affix.ExcludedTags = NormalizeTokens(affix.ExcludedTags);
+            affix.AllowedEquipmentRoles = NormalizeTokens(affix.AllowedEquipmentRoles);
+            affix.ExcludedEquipmentRoles = NormalizeTokens(affix.ExcludedEquipmentRoles);
             foreach (GearAffixTierDefinition tier in affix.Tiers ?? Array.Empty<GearAffixTierDefinition>())
             {
                 if (tier != null) CanonicalizeModifierStats(tier.Modifiers);
@@ -468,6 +479,10 @@ public static class GearDefinitionValidator
             {
                 errors.Add(modifierLabel + " has an unsupported operation.");
             }
+            else if (!GearModifierContract.IsSupported(modifier.Stat, modifier.Operation))
+            {
+                errors.Add(modifierLabel + $" has an unsupported stat/operation pair '{modifier.Stat}' / '{modifier.Operation}'.");
+            }
             if (!float.IsFinite(modifier.Min) || !float.IsFinite(modifier.Max))
             {
                 errors.Add(modifierLabel + " rolls must be finite.");
@@ -488,6 +503,10 @@ public static class GearDefinitionValidator
         for (int index = 0; index < values.Length; index++)
         {
             StatModifierDefinition? modifier = values[index];
+            if (modifier != null && !GearModifierContract.IsBaked(modifier.Stat))
+            {
+                errors.Add(label + $" implicit modifier[{index}] must target a resolved base stat; other implicits are not stored by gear schema 1.");
+            }
             if (modifier != null
                 && float.IsFinite(modifier.Min)
                 && float.IsFinite(modifier.Max)
@@ -546,9 +565,14 @@ public static class GearDefinitionValidator
 
     private static string NormalizeCode(string? code)
     {
-        string value = (code ?? "").Trim();
+        string value = NormalizeToken(code);
         return value.Length == 0 || value.Contains(':') ? value : "vrpg:" + value;
     }
+
+    private static string NormalizeToken(string? value) => (value ?? "").Trim().ToLowerInvariant();
+
+    private static string[] NormalizeTokens(string[]? values) =>
+        (values ?? Array.Empty<string>()).Select(NormalizeToken).ToArray();
 
     private static string NormalizeOptionalCode(string? code)
     {

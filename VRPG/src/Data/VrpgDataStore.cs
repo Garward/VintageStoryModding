@@ -87,7 +87,7 @@ public sealed class VrpgDataStore<T> where T : class, IVrpgDataRecord
 
     private static string NormalizeCode(string? code)
     {
-        string value = (code ?? "").Trim();
+        string value = (code ?? "").Trim().ToLowerInvariant();
         return value.Length == 0 || value.Contains(':') ? value : "vrpg:" + value;
     }
 

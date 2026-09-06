@@ -10,6 +10,116 @@ namespace VRPG.Tests;
 
 public sealed class GearInstanceAuthorTests
 {
+    [Fact]
+    public void ResolvedValueBeyondFloatMaximumIsRejectedEvenWhenCastingWouldRoundDown()
+    {
+        VRPGDataRegistry data = TestGearDefinitions.RegistryWithValidDefinitions(registry =>
+            registry.GearBases.Get("vrpg:test-sword")!.Implicits = new[]
+            {
+                new StatModifierDefinition { Stat = "vrpg:max_health", Operation = "add", Min = float.MaxValue / 2, Max = float.MaxValue / 2 },
+                new StatModifierDefinition { Stat = "vrpg:max_health", Operation = "add", Min = float.MaxValue / 2, Max = float.MaxValue / 2 },
+                new StatModifierDefinition { Stat = "vrpg:max_health", Operation = "add", Min = 1e30f, Max = 1e30f }
+            });
+        GearAuthoringResult result = new GearInstanceAuthor(data).Author(Request("vrpg:test-sword", 1, "vrpg:common", Array.Empty<GearAffixSelection>()));
+        Assert.False(result.Success);
+        Assert.Null(result.Instance);
+        Assert.Contains("resolved", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void MalformedIdentityAfterValidationCannotProduceAnUnencodableInstance()
+    {
+        VRPGDataRegistry data = TestGearDefinitions.Registry(registry =>
+            registry.GearBases.Get("vrpg:test-sword")!.VisualChassis = " GAME:TEST-SWORD ");
+        GearAuthoringResult result = new GearInstanceAuthor(data).Author(Request("vrpg:test-sword", 1, "vrpg:common", Array.Empty<GearAffixSelection>()));
+        Assert.False(result.Success);
+        Assert.Null(result.Instance);
+    }
+
+    [Theory]
+    [InlineData(0f, -float.MaxValue)]
+    [InlineData(0.5f, 0f)]
+    [InlineData(1f, float.MaxValue)]
+    public void ExtremeFiniteEndpointsAuthorExactEncodableRolls(float roll01, float expected)
+    {
+        VRPGDataRegistry data = TestGearDefinitions.RegistryWithValidDefinitions(registry =>
+            registry.Affixes.Get("vrpg:flat-power")!.Tiers[0].Modifiers = new[]
+            {
+                new StatModifierDefinition { Stat = "vrpg:physical_damage", Operation = "add", Min = -float.MaxValue, Max = float.MaxValue }
+            });
+        GearAuthoringResult result = new GearInstanceAuthor(data).Author(Request("vrpg:test-sword", 1, "vrpg:common",
+            new[] { new GearAffixSelection("vrpg:flat-power", 1, roll01) }));
+        Assert.True(result.Success, result.Error);
+        Assert.Equal(expected, result.Instance!.Affixes[0].Modifiers[0].Value);
+        GearInstance decoded = Decode(GearItemStateCodec.Encode(result.Instance));
+        Assert.Equal(expected, decoded.Affixes[0].Modifiers[0].Value);
+    }
+
+    [Theory]
+    [InlineData(float.NaN)]
+    [InlineData(float.PositiveInfinity)]
+    [InlineData(float.NegativeInfinity)]
+    public void NonFiniteAffixEndpointCannotProduceASuccessfulUnencodableInstance(float endpoint)
+    {
+        VRPGDataRegistry data = TestGearDefinitions.Registry(registry =>
+            registry.Affixes.Get("vrpg:flat-power")!.Tiers[0].Modifiers = new[]
+            {
+                new StatModifierDefinition { Stat = "vrpg:physical_damage", Operation = "add", Min = 0, Max = endpoint }
+            });
+        GearAuthoringResult result = new GearInstanceAuthor(data).Author(Request("vrpg:test-sword", 1, "vrpg:common",
+            new[] { new GearAffixSelection("vrpg:flat-power", 1, 1) }));
+        Assert.False(result.Success);
+        Assert.Null(result.Instance);
+        Assert.Contains("finite", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ValidatedMixedCaseGraphAuthorsEncodableCanonicalMechanics()
+    {
+        VRPGDataRegistry data = TestGearDefinitions.Registry(registry =>
+        {
+            GearBaseDefinition gear = registry.GearBases.Get("test-sword")!;
+            gear.Code = " TEST-SWORD ";
+            gear.UniqueCode = " VRPG:TEST-SWORD-UNIQUE ";
+            gear.VisualChassis = " GAME:TEST-SWORD ";
+            gear.EquipmentRole = " WEAPON.MAIN ";
+            gear.Family = " SWORD ";
+            gear.Tags = new[] { " WEAPON ", " SWORD " };
+            gear.AffixFamilies = new[] { " OFFENSE " };
+            foreach (StatModifierDefinition modifier in gear.Implicits) modifier.Stat = modifier.Stat.ToUpperInvariant();
+            registry.GearBases.Load(registry.GearBases.All.ToArray());
+            foreach (GearRarityDefinition rarity in registry.Rarities.All) rarity.Code = rarity.Code.ToUpperInvariant();
+            registry.Rarities.Load(registry.Rarities.All.ToArray());
+            foreach (GearAffixDefinition affix in registry.Affixes.All)
+            {
+                affix.Code = affix.Code.ToUpperInvariant();
+                affix.MinimumRarityCode = " COMMON ";
+                affix.Family = " OFFENSE ";
+                affix.RequiredTags = new[] { " WEAPON " };
+                affix.AllowedEquipmentRoles = new[] { " WEAPON.MAIN " };
+                foreach (StatModifierDefinition modifier in affix.Tiers.SelectMany(tier => tier.Modifiers))
+                    modifier.Stat = modifier.Stat.ToUpperInvariant();
+            }
+            registry.Affixes.Load(registry.Affixes.All.ToArray());
+        });
+        GearDefinitionValidator.ValidateOrThrow(data.GearBases.All, data.Rarities.All, data.Affixes.All, TestGearDefinitions.ChassisExists);
+        GearAuthoringResult result = new GearInstanceAuthor(data).Author(Request("TEST-SWORD", 1, "COMMON",
+            new[] { new GearAffixSelection("FLAT-POWER", 1, 0) }));
+        Assert.True(result.Success, result.Error);
+        GearInstance decoded = Decode(GearItemStateCodec.Encode(result.Instance!));
+        Assert.Equal("vrpg:test-sword", decoded.BaseCode);
+        Assert.Equal("vrpg:common", decoded.RarityCode);
+        Assert.Equal("weapon.main", decoded.EquipmentRole);
+        Assert.Equal("game:test-sword", decoded.VisualChassisAssetCode);
+        Assert.Equal("vrpg:flat-power", decoded.Affixes[0].AffixCode);
+        Assert.Equal("vrpg:weapon_power", decoded.Affixes[0].Modifiers[0].Stat);
+        Assert.Equal(14f, decoded.Resolved.WeaponPower);
+        Assert.Equal(11f, decoded.Resolved.MaximumHealth);
+        GearAuthoringResult unique = new GearInstanceAuthor(data).Author(Request("TEST-SWORD", 1, "UNIQUE", Array.Empty<GearAffixSelection>()));
+        Assert.True(unique.Success, unique.Error);
+        Assert.Equal("vrpg:test-sword-unique", Decode(GearItemStateCodec.Encode(unique.Instance!)).UniqueCode);
+    }
+
     [Theory]
     [InlineData(1, 12f)]
     [InlineData(100, 361.6395f)]

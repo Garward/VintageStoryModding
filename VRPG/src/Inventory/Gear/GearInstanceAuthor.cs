@@ -77,6 +77,12 @@ public sealed class GearInstanceAuthor
                 return GearAuthoringResult.Reject(
                     $"Gear base '{gearBase.Code}' implicits must use fixed finite Min == Max values.");
             }
+            if (!GearModifierContract.IsBaked(implicitModifier.Stat)
+                || !GearModifierContract.IsSupported(implicitModifier.Stat, implicitModifier.Operation))
+            {
+                return GearAuthoringResult.Reject(
+                    $"Gear base '{gearBase.Code}' implicits must target a supported resolved base stat.");
+            }
         }
 
         GearAffixSelection[] selections = request.Affixes ?? Array.Empty<GearAffixSelection>();
@@ -139,10 +145,17 @@ public sealed class GearInstanceAuthor
                     $"Gear affix '{affix.Code}' tier {selection.Tier} is unavailable at required level {request.RequiredLevel}.");
             }
 
-            GearModifierRoll[] modifiers = (tier.Modifiers ?? Array.Empty<StatModifierDefinition>())
-                .Select(modifier => Roll(modifier, selection.Roll01))
-                .ToArray();
-            rolls.Add(new GearAffixRoll(affix.Code, tier.Tier, modifiers));
+            try
+            {
+                GearModifierRoll[] modifiers = (tier.Modifiers ?? Array.Empty<StatModifierDefinition>())
+                    .Select(modifier => Roll(modifier, selection.Roll01))
+                    .ToArray();
+                rolls.Add(new GearAffixRoll(affix.Code, tier.Tier, modifiers));
+            }
+            catch (ArgumentException exception)
+            {
+                return GearAuthoringResult.Reject($"Gear affix '{affix.Code}' is invalid: " + exception.Message);
+            }
         }
 
         if (rolls.Count < rarity.MinAffixes || rolls.Count > rarity.MaxAffixes)
@@ -158,7 +171,8 @@ public sealed class GearInstanceAuthor
         }
         foreach (GearAffixRoll affix in rolls)
         {
-            foreach (GearModifierRoll modifier in affix.Modifiers) Add(values, modifier);
+            foreach (GearModifierRoll modifier in affix.Modifiers)
+                if (GearModifierContract.IsBaked(modifier.Stat)) Add(values, modifier);
         }
 
         GearResolvedStats resolved;
@@ -184,13 +198,28 @@ public sealed class GearInstanceAuthor
             new GearProvenance(request.SourceKind, request.SourceCode, request.SourceTags, request.SelectionSeed),
             rarity.UniqueLike ? gearBase.UniqueCode : "",
             Array.Empty<byte>());
+        try
+        {
+            // Validate the same immutable wire boundary used by prototypes, including mutated definition identities.
+            GearItemStateCodec.Encode(instance);
+        }
+        catch (ArgumentException exception)
+        {
+            return GearAuthoringResult.Reject("Gear instance is invalid: " + exception.Message);
+        }
         return GearAuthoringResult.Accept(instance);
     }
 
     private static GearModifierRoll Roll(StatModifierDefinition modifier, float roll01)
     {
-        float value = modifier.Min + (modifier.Max - modifier.Min) * roll01;
-        return new GearModifierRoll(modifier.Stat, modifier.Operation, value);
+        if (modifier == null || !GearModifierContract.IsSupported(modifier.Stat, modifier.Operation))
+            throw new ArgumentException("Unsupported gear modifier stat/operation pair.");
+        if (!float.IsFinite(modifier.Min) || !float.IsFinite(modifier.Max) || modifier.Max < modifier.Min)
+            throw new ArgumentException("Gear modifier endpoints must be finite and ordered.");
+        double value = modifier.Min + ((double)modifier.Max - modifier.Min) * roll01;
+        if (!double.IsFinite(value) || value < -float.MaxValue || value > float.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(modifier), "Gear modifier value must be finite and float-representable.");
+        return new GearModifierRoll(modifier.Stat, modifier.Operation, (float)value);
     }
 
     private static GearResolvedStats ResolveStats(
@@ -237,7 +266,7 @@ public sealed class GearInstanceAuthor
     private static float ToFloat(double value)
     {
         float result = (float)value;
-        if (!float.IsFinite(result) || result < 0)
+        if (!double.IsFinite(value) || value > float.MaxValue || value < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(value), value, "Resolved gear values must be finite and non-negative.");
         }

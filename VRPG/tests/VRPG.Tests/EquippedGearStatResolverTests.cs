@@ -81,7 +81,6 @@ public sealed class EquippedGearStatResolverTests
                 new GearModifierRoll("vrpg:weapon_power", "more", 50),
                 new GearModifierRoll("vrpg:armor", "increased", 20),
                 new GearModifierRoll("vrpg:max_health", "add", 15),
-                new GearModifierRoll("vrpg:unused_category", "more", 200),
                 new GearModifierRoll("vrpg:fire_damage", "more", 17.25f)
             }) }
         };
