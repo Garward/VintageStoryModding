@@ -40,6 +40,19 @@ public sealed class AbilityFailureNotificationService
             return;
         }
 
+        NotifyCore(player, kind, message);
+    }
+
+    public void NotifyUnavailable(IServerPlayer player)
+    {
+        // Availability feedback must not create or normalize a saved profile to read preferences.
+        NotifyCore(player, AbilityFailureKind.Other, "Skills are unavailable right now.");
+    }
+
+    public static void SendUnavailable(IServerPlayer player) => Send(player, "Skills are unavailable right now.");
+
+    private void NotifyCore(IServerPlayer player, AbilityFailureKind kind, string message)
+    {
         long now = api.World.ElapsedMilliseconds;
         string key = player.PlayerUID + ":" + kind;
         if (!rateLimits.TryGetValue(key, out RateLimitState? limit))

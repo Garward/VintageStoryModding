@@ -318,6 +318,12 @@ public sealed partial class RpgModule : IVrpgModule
 
     public void NotifyAbilityFailure(IServerPlayer player, AbilityFailureKind kind, string error)
     {
+        if (!SkillsAvailable(player))
+        {
+            if (failureNotifications != null) failureNotifications.NotifyUnavailable(player);
+            else AbilityFailureNotificationService.SendUnavailable(player);
+            return;
+        }
         failureNotifications?.Notify(player, kind, error);
     }
 

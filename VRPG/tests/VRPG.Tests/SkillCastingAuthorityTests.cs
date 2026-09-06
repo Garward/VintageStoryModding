@@ -24,6 +24,28 @@ namespace VRPG.Tests;
 [Collection("EntityDamageScalingPatch")]
 public sealed class SkillCastingAuthorityTests
 {
+    [Fact]
+    public void AuthorityLossStopsChannelEvenWhenReloadRemovedItsDefinition()
+    {
+        var f = new Fixture(false);
+        f.Skill.Timing.Mode = "channel";
+        Assert.True(f.Skills.TryCastSlot(f.Player, 0, out _));
+        int packets = f.Packets;
+        string cooldowns = JsonConvert.SerializeObject(AccessTools.Field(typeof(SkillCastingService), "cooldownEnds").GetValue(f.Skills));
+        f.Data.Skills.Load(Array.Empty<SkillDefinition>());
+        f.Resources.IsActive = _ => false;
+        f.Now += 1000;
+        f.Skills.Tick(1);
+        Assert.Equal(packets + 1, f.Packets);
+        var stopped = Assert.IsType<VRPG.Network.SkillChannelStatePacket>(f.SentPackets[^1]);
+        Assert.False(stopped.Active);
+        Assert.Equal(0, stopped.Slot);
+        Assert.Equal("vrpg:test", stopped.SkillCode);
+        Assert.Equal(cooldowns, JsonConvert.SerializeObject(AccessTools.Field(typeof(SkillCastingService), "cooldownEnds").GetValue(f.Skills)));
+        f.Skills.Tick(1);
+        Assert.Equal(packets + 1, f.Packets);
+    }
+
     [Theory]
     [InlineData("press")]
     [InlineData("release")]

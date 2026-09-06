@@ -631,14 +631,19 @@ public sealed class SkillCastingService
         foreach (KeyValuePair<string, ActiveTimedCast> entry in activeChannels)
         {
             ActiveTimedCast cast = entry.Value;
-            SkillDefinition? skill = data.Skills.Get(cast.SkillCode);
             IServerPlayer? player = api.World.PlayerByUid(cast.PlayerUid) as IServerPlayer;
             if (player != null && !IsAvailable(player))
             {
                 unavailable.Add(entry.Key);
-                if (skill != null) SendChannelState(player, skill, cast.Slot, active: false);
+                channel.SendPacket(new SkillChannelStatePacket
+                {
+                    Active = false,
+                    Slot = cast.Slot,
+                    SkillCode = cast.SkillCode
+                }, player);
                 continue;
             }
+            SkillDefinition? skill = data.Skills.Get(cast.SkillCode);
             if (skill == null || player?.Entity == null || !player.Entity.Alive || now >= cast.EndMilliseconds)
             {
                 ended.Add(entry.Key);

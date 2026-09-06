@@ -1227,6 +1227,12 @@ public sealed class VRPGModSystem : ModSystem
 
     private void HandleSkillCastRequest(IServerPlayer player, SkillCastRequestPacket packet)
     {
+        if (rpgModule?.SkillsAvailable(player) != true)
+        {
+            NotifyUnavailableSkills(player);
+            return;
+        }
+
         string error = "";
         AbilityFailureKind failureKind = AbilityFailureKind.Other;
         if (rpgModule?.TryHandleSkillInput(player, packet.Slot, packet.Pressed, out error, out failureKind) == true)
@@ -1265,9 +1271,21 @@ public sealed class VRPGModSystem : ModSystem
 
     private void HandleSkillEquipRequest(ICoreServerAPI api, IServerPlayer player, SkillEquipRequestPacket packet)
     {
+        if (rpgModule?.SkillsAvailable(player) != true)
+        {
+            NotifyUnavailableSkills(player);
+            return;
+        }
+
         string message = "The VRPG skill runtime is not available.";
         bool success = rpgModule?.TryEquipSkill(player, packet.Slot - 1, packet.SkillCode, out message) == true;
         SendHubPacket(api, player, message, !success);
+    }
+
+    private void NotifyUnavailableSkills(IServerPlayer player)
+    {
+        if (rpgModule != null) rpgModule.NotifyAbilityFailure(player, AbilityFailureKind.Other, "");
+        else AbilityFailureNotificationService.SendUnavailable(player);
     }
 
     private void HandleTalentPlanRequest(ICoreServerAPI api, IServerPlayer player, TalentPlanRequestPacket packet)

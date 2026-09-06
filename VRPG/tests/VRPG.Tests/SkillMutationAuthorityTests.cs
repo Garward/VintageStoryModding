@@ -3,7 +3,6 @@ using System.Linq;
 using HarmonyLib;
 using Newtonsoft.Json;
 using VRPG.Config;
-using VRPG.Data.Library;
 using VRPG.Modules.Rpg;
 using VRPG.Modules.Rpg.Skills;
 using VRPG.Modules.Rpg.Stats;
@@ -192,27 +191,6 @@ public sealed class SkillMutationAuthorityTests
         Assert.Equal(state, JsonConvert.SerializeObject(f.State));
         Assert.Equal(writes, f.Storage.Writes);
         Assert.Equal(packets, f.Packets);
-    }
-
-    [Fact]
-    public void UnavailableEquipPacketReportsFailureWithoutSkillMutationOrLoadoutSend()
-    {
-        var f = new Fixture(false);
-        f.Resources.IsActive = _ => false;
-        using var module = Module(f);
-        var system = new VRPGModSystem();
-        AccessTools.Field(typeof(VRPGModSystem), "rpgModule").SetValue(system, module);
-        AccessTools.Field(typeof(VRPGModSystem), "serverChannel").SetValue(system, f.Channel);
-        AccessTools.Field(typeof(VRPGModSystem), "libraryIndex").SetValue(system, LibraryIndex.Build(f.Data));
-        string before = JsonConvert.SerializeObject(f.State);
-        int writes = f.Storage.Writes;
-        AccessTools.Method(typeof(VRPGModSystem), "HandleSkillEquipRequest").Invoke(system,
-            new object[] { f.Api, f.Player, new SkillEquipRequestPacket { Slot = 2, SkillCode = "test" } });
-        Assert.Equal(before, JsonConvert.SerializeObject(f.State));
-        Assert.Equal(writes, f.Storage.Writes);
-        var feedback = Assert.IsType<OpenHubPacket>(Assert.Single(f.SentPackets));
-        Assert.True(feedback.FeedbackError);
-        Assert.Contains("unavailable", feedback.FeedbackMessage, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

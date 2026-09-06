@@ -51,7 +51,7 @@ an explicitly identified immediate coding target.
 
 #### B. One safe item and equipment owner
 
-Gear foundation integration evidence (2026-09-05): 637 Release tests pass,
+Gear foundation integration evidence (2026-09-05): 649 Release tests pass,
 including archive readiness/recovery, exact fallback preservation, shared
 equipment stats, damage ordering, and delegate cleanup. A disposable dedicated
 server loaded all 30 starter bases, inspected all five six-piece starter sets
