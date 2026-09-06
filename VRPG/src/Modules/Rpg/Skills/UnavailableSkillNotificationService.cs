@@ -11,10 +11,17 @@ internal sealed class UnavailableSkillNotificationService
 {
     private const long MessageIntervalMs = 1600;
     private readonly Dictionary<string, long> nextMessageMs = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Func<long> milliseconds;
+
+    public UnavailableSkillNotificationService(Func<long>? milliseconds = null)
+    {
+        // Fix the monotonic clock domain for this lifetime, independent of player/world availability.
+        this.milliseconds = milliseconds ?? (static () => Environment.TickCount64);
+    }
 
     public void Notify(IServerPlayer player)
     {
-        long now = player.Entity?.World?.ElapsedMilliseconds ?? Environment.TickCount64;
+        long now = milliseconds();
         if (nextMessageMs.TryGetValue(player.PlayerUID, out long next) && now < next) return;
 
         player.SendMessage(GlobalConstants.GeneralChatGroup, "Skills are unavailable right now.", EnumChatType.Notification);

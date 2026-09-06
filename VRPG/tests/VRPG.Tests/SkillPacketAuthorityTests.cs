@@ -27,6 +27,52 @@ namespace VRPG.Tests;
 public sealed class SkillPacketAuthorityTests
 {
     [Theory]
+    [InlineData("disabled")]
+    [InlineData("module")]
+    public void ProductionFallbackClockDoesNotRequireAnyPlayerWorldAccess(string path)
+    {
+        using var f = new Fixture(injectFallbackClock: false);
+        f.ConfigureFeedback(path);
+        f.Player.Entity.World = PlayerDefenseServiceTests.Proxy.Create<IServerWorldAccessor>((name, _) =>
+            throw new NotSupportedException(name));
+        Assert.Null(Record.Exception(() => f.Feedback(path, f.Player)));
+        Assert.Single(f.Player.Messages);
+        Assert.Empty(f.Profiles);
+        Assert.Equal(0, f.Storage.Writes);
+        Assert.Empty(f.Packets);
+    }
+
+    [Theory]
+    [InlineData("disabled", false)]
+    [InlineData("disabled", true)]
+    [InlineData("module", false)]
+    [InlineData("module", true)]
+    public void FallbackFeedbackKeepsItsClockDomainWhenPlayerWorldChanges(string path, bool startsWithWorld)
+    {
+        using var f = new Fixture();
+        f.ConfigureFeedback(path);
+        var world = f.Player.Entity.World;
+        if (!startsWithWorld) f.Player.Entity.World = null!;
+        f.Feedback(path, f.Player);
+        Assert.Single(f.Player.Messages);
+
+        f.Now = 2599;
+        f.Player.Entity.World = startsWithWorld ? null! : world;
+        f.Feedback(path, f.Player);
+        Assert.Single(f.Player.Messages);
+        f.Now = 2600;
+        f.Feedback(path, f.Player);
+        Assert.Equal(2, f.Player.Messages.Count);
+
+        f.Player.Entity.World = startsWithWorld ? world : null!;
+        f.FeedbackBurst(path, f.Player);
+        Assert.Equal(2, f.Player.Messages.Count);
+        Assert.Empty(f.Profiles);
+        Assert.Equal(0, f.Storage.Writes);
+        Assert.Empty(f.Packets);
+    }
+
+    [Theory]
     [InlineData("disabled", false)]
     [InlineData("disabled", true)]
     [InlineData("module", false)]
@@ -216,7 +262,7 @@ public sealed class SkillPacketAuthorityTests
         public long Now = 1000;
         public Dictionary<string, RpgPlayerState> Profiles => Field<Dictionary<string, RpgPlayerState>>(Store, "states");
 
-        public Fixture()
+        public Fixture(bool injectFallbackClock = true)
         {
             var data = new VRPGDataRegistry();
             data.Skills.Load(new[] { new SkillDefinition { Code = "vrpg:test", Name = "Test", Delivery = "circle",
@@ -287,7 +333,22 @@ public sealed class SkillPacketAuthorityTests
             AccessTools.Field(typeof(VRPGModSystem), "dataRegistry").SetValue(System, data);
             AccessTools.Field(typeof(VRPGModSystem), "serverChannel").SetValue(System, channel);
             AccessTools.Field(typeof(VRPGModSystem), "libraryIndex").SetValue(System, LibraryIndex.Build(data));
+            if (injectFallbackClock)
+            {
+                UseFallbackClock(Module);
+                UseFallbackClock(System);
+            }
             AssertSharedStore();
+        }
+
+        private void UseFallbackClock(object owner)
+        {
+            var field = AccessTools.Field(owner.GetType(), "unavailableSkillNotifications");
+            var constructor = field.FieldType.GetConstructor(new[] { typeof(Func<long>) });
+            Assert.NotNull(constructor);
+            var notifications = constructor.Invoke(new object[] { (Func<long>)(() => Now) });
+            field.SetValue(owner, notifications);
+            Assert.Same(notifications, field.GetValue(owner));
         }
 
         public void AssertSharedStore()
