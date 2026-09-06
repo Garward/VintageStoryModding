@@ -26,6 +26,8 @@ public sealed class RpgResourceService
     public System.Func<IServerPlayer, bool>? IsActive { get; set; }
     public System.Func<IServerPlayer, bool>? EvasiveStepAvailable { get; set; }
 
+    public bool IsAvailable(IServerPlayer player) => IsActive?.Invoke(player) != false && Equipped(player).Valid;
+
     public RpgResourceService(
         ICoreServerAPI api,
         RpgModuleConfig config,
@@ -45,7 +47,7 @@ public sealed class RpgResourceService
 
     public void OnPlayerNowPlaying(IServerPlayer player)
     {
-        if (IsActive?.Invoke(player) == false) return;
+        if (!IsAvailable(player)) return;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
         SyncPlayerCombatAttributes(player, state);
@@ -58,7 +60,7 @@ public sealed class RpgResourceService
         IPlayer[] players = api.World.AllOnlinePlayers;
         for (int i = 0; i < players.Length; i++)
         {
-            if (players[i] is not IServerPlayer player || IsActive?.Invoke(player) == false)
+            if (players[i] is not IServerPlayer player || !IsAvailable(player))
             {
                 continue;
             }
@@ -74,7 +76,7 @@ public sealed class RpgResourceService
 
     public RpgResourcePacket BuildSnapshot(IServerPlayer player)
     {
-        if (IsActive?.Invoke(player) == false)
+        if (!IsAvailable(player))
             return new RpgResourcePacket { HudEnabled = false, HideVanillaStatbar = false };
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EquippedGearStats gear = Equipped(player);
@@ -132,7 +134,7 @@ public sealed class RpgResourceService
 
     public void RefreshAfterTalentTreeSave(IServerPlayer player)
     {
-        if (IsActive?.Invoke(player) == false) return;
+        if (!IsAvailable(player)) return;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
         SyncPlayerCombatAttributes(player, state);
@@ -142,6 +144,7 @@ public sealed class RpgResourceService
 
     public void RefreshAfterEquipmentChange(IServerPlayer player)
     {
+        if (!IsAvailable(player)) return;
         RefreshAfterTalentTreeSave(player);
         playerStore.Save();
     }
@@ -149,6 +152,7 @@ public sealed class RpgResourceService
     public float AbsorbMagicShield(IServerPlayer player, float incomingDamage)
     {
         if (!float.IsFinite(incomingDamage) || incomingDamage <= 0f) return 0f;
+        if (!IsAvailable(player)) return incomingDamage;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         float shield = float.IsFinite(state.MagicShield) ? Math.Max(0f, state.MagicShield) : 0f;
         float absorbed = Math.Min(incomingDamage, shield);
@@ -165,6 +169,11 @@ public sealed class RpgResourceService
         if (!float.IsFinite(amount)) throw new ArgumentOutOfRangeException(nameof(amount));
         error = "";
         insufficientResource = false;
+        if (!IsAvailable(player))
+        {
+            error = "Skills are unavailable right now.";
+            return false;
+        }
         float cost = Math.Max(0f, amount);
         string normalized = NormalizeResource(resource);
         if (normalized == "" || normalized == "none" || cost <= 0f)
@@ -216,6 +225,7 @@ public sealed class RpgResourceService
 
     public void SetResource(IServerPlayer player, string resource, float current, float max)
     {
+        if (!IsAvailable(player)) return;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
 
@@ -253,6 +263,7 @@ public sealed class RpgResourceService
 
     public void SetExperience(IServerPlayer player, long experience, long toNextLevel)
     {
+        if (!IsAvailable(player)) return;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         EnsureDefaults(state, Equipped(player));
         state.Experience = Math.Max(0, experience);
@@ -263,7 +274,7 @@ public sealed class RpgResourceService
 
     public void AddExperience(IServerPlayer player, long amount, int maxLevel, System.Func<int, long> experienceToNextLevel)
     {
-        if (amount <= 0)
+        if (amount <= 0 || !IsAvailable(player))
         {
             return;
         }

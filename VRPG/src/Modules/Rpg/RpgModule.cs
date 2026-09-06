@@ -285,9 +285,9 @@ public sealed partial class RpgModule : IVrpgModule
 
     public bool TryCastSkill(IServerPlayer player, int slot, out string error, out AbilityFailureKind failureKind)
     {
-        if (skills == null)
+        if (skills == null || !skills.IsAvailable(player))
         {
-            error = "The VRPG skill runtime is not available.";
+            error = "Skills are unavailable right now.";
             failureKind = AbilityFailureKind.Other;
             return false;
         }
@@ -304,9 +304,9 @@ public sealed partial class RpgModule : IVrpgModule
         out string error,
         out AbilityFailureKind failureKind)
     {
-        if (skills == null)
+        if (skills == null || !skills.IsAvailable(player))
         {
-            error = "The VRPG skill runtime is not available.";
+            error = "Skills are unavailable right now.";
             failureKind = AbilityFailureKind.Other;
             return false;
         }

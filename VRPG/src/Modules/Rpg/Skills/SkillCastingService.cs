@@ -66,6 +66,8 @@ public sealed class SkillCastingService
     private readonly List<ActiveTimedCast> activeSequences = new List<ActiveTimedCast>();
     private readonly ConditionalWeakTable<Entity, EquippedGearStats> projectileGear = new();
     public System.Func<IServerPlayer, EquippedGearStats>? EquippedStatsProvider { get; set; }
+    public bool IsAvailable(IServerPlayer player) => resources.IsAvailable(player)
+        && (EquippedStatsProvider?.Invoke(player) ?? EquippedGearStats.Empty).Valid;
     private readonly Dictionary<string, HashSet<string>> empoweredSkills = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
 
     public SkillCastingService(
@@ -116,6 +118,8 @@ public sealed class SkillCastingService
 
     public bool TryCastSlot(IServerPlayer player, int slot, out string error, out AbilityFailureKind failureKind)
     {
+        failureKind = AbilityFailureKind.Other;
+        if (!CheckAvailable(player, out error)) return false;
         if (TryGetTargetedReleaseSkill(player, slot, out SkillDefinition? targetedSkill))
         {
             return CommitTargetedCast(player, targetedSkill, out error, out failureKind);
@@ -133,6 +137,7 @@ public sealed class SkillCastingService
     {
         error = "";
         failureKind = AbilityFailureKind.Other;
+        if (!CheckAvailable(player, out error)) return false;
         if (!pressed)
         {
             if (TryGetTargetedReleaseSkill(player, slot, out SkillDefinition? targetedSkill))
@@ -395,7 +400,7 @@ public sealed class SkillCastingService
     public bool HandleProjectileImpact(EntityVrpgSkillProjectile projectile)
     {
         if (projectile.FiredBy is not EntityPlayer entityPlayer
-            || entityPlayer.Player is not IServerPlayer player)
+            || entityPlayer.Player is not IServerPlayer player || !IsAvailable(player))
         {
             return false;
         }
@@ -416,7 +421,7 @@ public sealed class SkillCastingService
     public bool HandleTargetedDropImpact(EntityVrpgTargetedDrop drop, Vec3d target)
     {
         if (drop.FiredBy is not EntityPlayer entityPlayer
-            || entityPlayer.Player is not IServerPlayer player)
+            || entityPlayer.Player is not IServerPlayer player || !IsAvailable(player))
         {
             return false;
         }
@@ -512,8 +517,13 @@ public sealed class SkillCastingService
 
     private bool ExecuteHit(IServerPlayer player, SkillDefinition skill, int skillLevel, out string error, EquippedGearStats? gear = null)
     {
+        if (!CheckAvailable(player, out error)) return false;
         gear ??= EquippedStatsProvider?.Invoke(player) ?? EquippedGearStats.Empty;
-        error = "";
+        if (!gear.Valid)
+        {
+            error = "Skills are unavailable right now.";
+            return false;
+        }
         switch (skill.Delivery.ToLowerInvariant())
         {
             case "raycast_aoe":
@@ -554,7 +564,7 @@ public sealed class SkillCastingService
 
             SkillDefinition? skill = data.Skills.Get(cast.SkillCode);
             IServerPlayer? player = api.World.PlayerByUid(cast.PlayerUid) as IServerPlayer;
-            if (skill == null || player?.Entity == null || !player.Entity.Alive)
+            if (skill == null || player?.Entity == null || !player.Entity.Alive || !IsAvailable(player))
             {
                 activeSequences.RemoveAt(i);
                 continue;
@@ -588,11 +598,17 @@ public sealed class SkillCastingService
         }
 
         var ended = new List<string>();
+        var unavailable = new List<string>();
         foreach (KeyValuePair<string, ActiveTimedCast> entry in activeChannels)
         {
             ActiveTimedCast cast = entry.Value;
             SkillDefinition? skill = data.Skills.Get(cast.SkillCode);
             IServerPlayer? player = api.World.PlayerByUid(cast.PlayerUid) as IServerPlayer;
+            if (player != null && !IsAvailable(player))
+            {
+                unavailable.Add(entry.Key);
+                continue;
+            }
             if (skill == null || player?.Entity == null || !player.Entity.Alive || now >= cast.EndMilliseconds)
             {
                 ended.Add(entry.Key);
@@ -613,6 +629,8 @@ public sealed class SkillCastingService
             }
         }
 
+        // Losing authority cancels pending work, not a completed cast which earns a cooldown.
+        foreach (string playerUid in unavailable) activeChannels.Remove(playerUid);
         foreach (string playerUid in ended)
         {
             EndChannel(playerUid, now);
@@ -1064,6 +1082,7 @@ public sealed class SkillCastingService
     {
         error = "";
         failureKind = AbilityFailureKind.Other;
+        if (!CheckAvailable(player, out error)) return false;
         RpgPlayerState state = playerStore.GetOrCreate(player);
         int skillLevel = state.GetSkillLevel(skill.Code);
         if (skillLevel <= 0 || !UsesTargetedRelease(skill))
@@ -1131,6 +1150,13 @@ public sealed class SkillCastingService
 
         skill = equipped;
         return true;
+    }
+
+    private bool CheckAvailable(IServerPlayer player, out string error)
+    {
+        bool available = IsAvailable(player);
+        error = available ? "" : "Skills are unavailable right now.";
+        return available;
     }
 
     private static bool UsesTargetedRelease(SkillDefinition skill)

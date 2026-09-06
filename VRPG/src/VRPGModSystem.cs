@@ -512,7 +512,7 @@ public sealed class VRPGModSystem : ModSystem
         }
         SurvivalCharacterRuntimePatch.MovementStatResolver = (entity, stat) =>
         {
-            if (entity is not EntityPlayer playerEntity)
+            if (entity is not EntityPlayer playerEntity || !ownsCharacterRuntime(entity))
             {
                 return null;
             }

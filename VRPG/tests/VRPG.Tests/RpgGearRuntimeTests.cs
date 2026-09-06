@@ -17,6 +17,43 @@ namespace VRPG.Tests;
 [Collection("EntityDamageScalingPatch")]
 public sealed class RpgGearRuntimeTests
 {
+    [Theory]
+    [InlineData(EnumAppSide.Server, false)]
+    [InlineData(EnumAppSide.Client, false)]
+    [InlineData(EnumAppSide.Server, true)]
+    [InlineData(EnumAppSide.Client, true)]
+    public void UnreadyMovementCompositionPreservesNativeModifiers(EnumAppSide side, bool persistenceEnabled)
+    {
+        var fixture = new PlayerDefenseServiceTests.Fixture();
+        HarmonyLib.AccessTools.Field(typeof(Vintagestory.Server.ServerWorldPlayerData), "connected")
+            .SetValue(fixture.Player.WorldData, true);
+        ((Vintagestory.Server.ServerWorldPlayerData)fixture.Player.WorldData).GameMode = EnumGameMode.Survival;
+        var system = new VRPGModSystem();
+        var config = new VRPGConfig();
+        config.Modules.Rpg.InventoryReplacement.Enabled = persistenceEnabled;
+        config.Modules.Rpg.CharacterRuntime.BaseWalkSpeedMultiplier = 2;
+        HarmonyLib.AccessTools.Field(typeof(VRPGModSystem), "config").SetValue(system, config);
+        // Authority composition is the unit under test, not installing unrelated engine hooks.
+        HarmonyLib.AccessTools.Field(typeof(VRPGModSystem), "characterRuntimeHarmony")
+            .SetValue(system, new HarmonyLib.Harmony("vrpg.tests.movement-readiness"));
+        var api = PlayerDefenseServiceTests.Proxy.Create<ICoreAPI>((name, _) =>
+            name == "get_Side" ? side : throw new NotSupportedException(name));
+        try
+        {
+            HarmonyLib.AccessTools.Method(typeof(VRPGModSystem), "EnsureCharacterRuntimeAuthority").Invoke(system, new object[] { api });
+            Assert.False(SurvivalCharacterRuntimePatch.OwnershipResolver!(fixture.Player.Entity));
+            Assert.Null(SurvivalCharacterRuntimePatch.MovementStatResolver!(fixture.Player.Entity, "walkspeed"));
+            Assert.Null(SurvivalCharacterRuntimePatch.MovementStatResolver!(fixture.Player.Entity, "jumpHeightMul"));
+        }
+        finally
+        {
+            SurvivalCharacterRuntimePatch.OwnershipResolver = null;
+            SurvivalCharacterRuntimePatch.MovementStatResolver = null;
+            VanillaClassRuntimePatch.OwnershipResolver = null;
+            VanillaClassRuntimePatch.ClientAppearanceOnlyResolver = null;
+        }
+    }
+
     [Fact]
     public void UnreadyClassSkillPreviewDoesNotAdvertiseFallbackWeaponDamage()
     {

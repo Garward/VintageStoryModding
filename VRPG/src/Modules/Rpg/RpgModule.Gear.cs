@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using VRPG.Inventory.Gear;
 using VRPG.Modules.Rpg.Stats;
+using VRPG.Modules.Rpg.StatusEffects;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -79,6 +80,12 @@ public sealed partial class RpgModule
         interactions?.RemovePlayer(player.PlayerUID);
         failureNotifications?.RemovePlayer(player.PlayerUID);
         groundAreas?.RemovePlayer(player.PlayerUID);
-        if (player.Entity != null) statusEffects.RemoveEntity(player.Entity.EntityId);
+        if (player.Entity != null)
+        {
+            statusEffects.RemoveEntity(player.Entity.EntityId);
+            // The entity may already be absent from World.GetEntityById during disconnect.
+            StatusSync.Write(player.Entity.WatchedAttributes, statusEffects.Get(player.Entity.EntityId));
+            player.Entity.WatchedAttributes.MarkPathDirty(StatusSync.TreeKey);
+        }
     }
 }

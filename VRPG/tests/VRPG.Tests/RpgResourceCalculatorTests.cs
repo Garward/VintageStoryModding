@@ -19,6 +19,89 @@ namespace VRPG.Tests;
 
 public sealed class RpgResourceCalculatorTests
 {
+    [Theory]
+    [InlineData("shield", false)]
+    [InlineData("resource", false)]
+    [InlineData("experience", false)]
+    [InlineData("reward", false)]
+    [InlineData("shield", true)]
+    [InlineData("resource", true)]
+    [InlineData("experience", true)]
+    [InlineData("reward", true)]
+    public void UnavailableResourceMutationPreservesExactState(string operation, bool invalidGear)
+    {
+        var (service, player, store, storage, channel) = ResourceService();
+        var state = store.GetOrCreate(player);
+        state.MagicShield = 42;
+        state.MaxMagicShield = 84;
+        service.IsActive = _ => invalidGear;
+        service.EquippedStatsProvider = _ => invalidGear ? EquippedGearStats.Invalid : EquippedGearStats.Empty;
+        string before = Newtonsoft.Json.JsonConvert.SerializeObject(state);
+        int writes = storage.Writes, packets = channel.Packets;
+        switch (operation)
+        {
+            case "shield": Assert.Equal(10, service.AbsorbMagicShield(player, 10)); break;
+            case "resource": service.SetResource(player, "mana", 25, 50); break;
+            case "experience": service.SetExperience(player, 25, 50); break;
+            case "reward": service.AddExperience(player, 25, 100, _ => 1000); break;
+        }
+        Assert.Equal(before, Newtonsoft.Json.JsonConvert.SerializeObject(state));
+        Assert.Equal(writes, storage.Writes);
+        Assert.Equal(packets, channel.Packets);
+    }
+
+    [Theory]
+    [InlineData(false, true, 5f)]
+    [InlineData(false, true, 0f)]
+    [InlineData(true, false, 5f)]
+    [InlineData(true, false, 0f)]
+    public void UnavailableSpendingRejectsBeforeAnyResourceMutation(bool active, bool validGear, float amount)
+    {
+        var (service, player, store, storage, channel) = ResourceService();
+        var state = store.GetOrCreate(player);
+        state.ResourcesInitialized = true;
+        state.Mana = 37.25f;
+        state.MagicShield = 42f;
+        state.MaxMagicShield = 84f;
+        service.IsActive = _ => active;
+        service.EquippedStatsProvider = _ => validGear ? EquippedGearStats.Empty : EquippedGearStats.Invalid;
+        string before = Newtonsoft.Json.JsonConvert.SerializeObject(state);
+        int writes = storage.Writes, packets = channel.Packets;
+        Assert.False(service.TrySpend(player, "mana", amount, out string error, out bool insufficient));
+        Assert.False(insufficient);
+        Assert.NotEmpty(error);
+        Assert.Equal(before, Newtonsoft.Json.JsonConvert.SerializeObject(state));
+        Assert.Equal(writes, storage.Writes);
+        Assert.Equal(packets, channel.Packets);
+    }
+
+    [Theory]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    public void UnavailableEquipmentRefreshPreservesSavedShieldAndNativeHealth(bool active, bool validGear)
+    {
+        var (service, player, store, storage, channel) = ResourceService();
+        var state = store.GetOrCreate(player);
+        state.ResourcesInitialized = true;
+        state.MagicShield = 42f;
+        state.MaxMagicShield = 84f;
+        var tree = player.Entity.WatchedAttributes.GetTreeAttribute("health");
+        tree.SetFloat("currenthealth", 7);
+        tree.SetFloat("maxhealth", 15);
+        service.IsActive = _ => active;
+        service.EquippedStatsProvider = _ => validGear ? EquippedGearStats.Empty : EquippedGearStats.Invalid;
+        string before = Newtonsoft.Json.JsonConvert.SerializeObject(state);
+        int writes = storage.Writes, packets = channel.Packets;
+        service.RefreshAfterEquipmentChange(player);
+        Assert.Equal(before, Newtonsoft.Json.JsonConvert.SerializeObject(state));
+        Assert.Equal(7, tree.GetFloat("currenthealth"));
+        Assert.Equal(15, tree.GetFloat("maxhealth"));
+        Assert.Equal(writes, storage.Writes);
+        Assert.Equal(packets, channel.Packets);
+        Assert.False(service.BuildSnapshot(player).HudEnabled);
+        Assert.Equal(before, Newtonsoft.Json.JsonConvert.SerializeObject(state));
+    }
+
     [Fact]
     public void InactiveRuntimePreservesNativeHealthAndDoesNotAdvertiseEvasiveStep()
     {

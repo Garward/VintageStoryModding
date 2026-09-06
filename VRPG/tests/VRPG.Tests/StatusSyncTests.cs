@@ -7,8 +7,27 @@ using Xunit;
 
 namespace VRPG.Tests;
 
+[Collection("EntityDamageScalingPatch")]
 public sealed class StatusSyncTests
 {
+    [Fact]
+    public void LeavingClearsSynchronizedStatusEvenWhenEntityIsNoLongerInWorldLookup()
+    {
+        var data = new VRPG.Data.VRPGDataRegistry();
+        data.StatusEffects.Load(new[] { new StatusEffectDefinition { Code = "vrpg:burn", DefaultDurationSeconds = 20 } });
+        using var module = new VRPG.Modules.Rpg.RpgModule(new VRPG.Config.RpgModuleConfig(), data, null!);
+        var player = new PlayerDefenseServiceTests.Fixture().Player;
+        var tracker = (StatusEffectTracker)HarmonyLib.AccessTools.Field(typeof(VRPG.Modules.Rpg.RpgModule), "statusEffects").GetValue(module)!;
+        Assert.True(tracker.Apply(player.Entity.EntityId, "burn"));
+        StatusSync.Write(player.Entity.WatchedAttributes, tracker.Get(player.Entity.EntityId));
+        Assert.Single(StatusSync.Read(player.Entity.WatchedAttributes));
+
+        HarmonyLib.AccessTools.Method(typeof(VRPG.Modules.Rpg.RpgModule), "OnPlayerLeave").Invoke(module, new object[] { player });
+
+        Assert.Empty(tracker.Get(player.Entity.EntityId));
+        Assert.Empty(StatusSync.Read(player.Entity.WatchedAttributes));
+    }
+
     private static StatusEffectInstance Instance(string code, float remainingSeconds, int stacks, float magnitude)
     {
         var definition = new StatusEffectDefinition { Code = code, MaxStacks = 10 };
