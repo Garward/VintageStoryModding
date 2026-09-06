@@ -1,0 +1,25 @@
+.style-vrpg .vrpg-inventory-shell.vrpg-task4 { display:flex; flex-direction:column; gap:14px; padding:16px; box-sizing:border-box; }
+.style-vrpg .vrpg-task4 .menu-preview-bar { display:flex; align-items:center; flex-wrap:wrap; gap:12px; color:#eadfce; font-size:14px; min-height:32px; }
+.style-vrpg .vrpg-task4 .menu-preview-bar span { flex:1; }
+.style-vrpg .vrpg-task4 .menu-preview-bar button { background:#1c211f; color:#eadfce; border:1px solid #9b6a42; min-height:32px; padding:6px 14px; }
+.style-vrpg .vrpg-task4 .vrpg-menu-header { position:static; display:block; height:auto; padding:0; flex:none; }
+.style-vrpg .vrpg-task4 .vrpg-logo { display:none; }
+.style-vrpg .vrpg-task4 .vrpg-tab-strip { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:4px; }
+.style-vrpg .vrpg-task4.is-alternate .vrpg-tab-strip { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.style-vrpg .vrpg-task4 .vrpg-header-tab { font-size:calc(15px * var(--ui-scale)); white-space:normal; min-height:32px; padding:4px; }
+.style-vrpg .vrpg-task4 .vrpg-inventory-workspace { position:static; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:20px; flex:1; min-height:0; }
+.style-vrpg .vrpg-task4.is-alternate .vrpg-inventory-workspace { grid-template-columns:minmax(0,1fr); }
+.style-vrpg .vrpg-task4 [hidden] { display:none !important; }
+.style-vrpg .vrpg-task4 .vrpg-inventory-browser,
+.style-vrpg .vrpg-task4 .vrpg-inventory-inspector { padding:16px; min-width:0; min-height:0; }
+.style-vrpg .vrpg-task4 .vrpg-inventory-tabs { flex-wrap:wrap; padding-bottom:8px; gap:6px; }
+.style-vrpg .vrpg-task4 .vrpg-inventory-tabs button { flex:1 1 100px; white-space:normal; min-width:0; padding:7px; font-size:calc(14px * var(--ui-scale)); }
+.style-vrpg .vrpg-task4 .vrpg-inventory-tools { grid-template-columns:minmax(0,1fr); gap:8px; }
+.style-vrpg .vrpg-task4 .vrpg-inventory-tools > span { font-size:calc(13px * var(--ui-scale)); }
+.style-vrpg .vrpg-task4 .vrpg-inventory-grid { grid-template-columns:minmax(0,1fr); overflow-x:hidden; }
+.style-vrpg .vrpg-task4 .vrpg-item-plate { grid-template-columns:40px minmax(0,1fr); grid-template-rows:auto auto; gap:8px 12px; height:auto; min-height:calc(92px * var(--ui-scale)); padding:12px; box-sizing:border-box; align-content:start; }
+.style-vrpg .vrpg-task4 .vrpg-item-plate strong { overflow-wrap:anywhere; font-size:calc(15px * var(--ui-scale)); }
+.style-vrpg .vrpg-task4 .vrpg-item-plate b { grid-column:2; overflow-wrap:anywhere; font-size:calc(13px * var(--ui-scale)); }
+.style-vrpg .vrpg-task4 .vrpg-large-quantity { overflow-wrap:anywhere; font-size:calc(19px * var(--ui-scale)); font-variant-numeric:tabular-nums; }
+.style-vrpg .vrpg-task4 .vrpg-item-effects span { font-size:calc(15px * var(--ui-scale)); }
+.style-vrpg .vrpg-task4 button:focus-visible { outline:2px solid #ffc44f; outline-offset:2px; }
