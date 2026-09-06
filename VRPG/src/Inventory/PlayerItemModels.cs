@@ -40,7 +40,8 @@ public sealed record PlayerItemPrototype(
     string DisplayName,
     byte[] ExactState,
     PlayerItemAssetKind AssetKind = PlayerItemAssetKind.Item,
-    CanonicalCollectibleReference[]? EmbeddedReferences = null);
+    CanonicalCollectibleReference[]? EmbeddedReferences = null,
+    PlayerItemStatePolicy StatePolicy = PlayerItemStatePolicy.ExactSnapshot);
 
 /// <summary>Immutable, bounded information safe for inventory query results.</summary>
 public sealed record PlayerItemSummary(
@@ -53,7 +54,9 @@ public sealed record PlayerItemSummary(
     PlayerItemAssetKind AssetKind = PlayerItemAssetKind.Item,
     PlayerItemLocation Location = PlayerItemLocation.Stored,
     PlayerItemFlags Flags = PlayerItemFlags.None,
-    long ReservedQuantity = 0);
+    long ReservedQuantity = 0,
+    PlayerItemProtectionSource ProtectionSource = PlayerItemProtectionSource.None,
+    string AuthoredCategory = "");
 
 /// <summary>Clone-owned canonical entry data for trusted server-side consumers.</summary>
 public sealed record PlayerItemDetail(
@@ -61,7 +64,8 @@ public sealed record PlayerItemDetail(
     PlayerItemPrototype Prototype,
     long Quantity,
     PlayerItemLocation Location,
-    PlayerItemFlags Flags);
+    PlayerItemFlags Flags,
+    PlayerItemProtectionSource ProtectionSource = PlayerItemProtectionSource.None);
 
 public sealed record PlayerItemQuery(
     string Category,

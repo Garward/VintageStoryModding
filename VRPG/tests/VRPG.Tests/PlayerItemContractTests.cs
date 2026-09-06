@@ -5,6 +5,18 @@ namespace VRPG.Tests;
 
 public sealed class PlayerItemContractTests
 {
+    [Fact]
+    public void ClassifierRetainsUnknownAddonCategoryIdentityForLaterRegistration()
+    {
+        var classifier = new PlayerItemClassifier();
+        classifier.Register("addon:gem", new PlayerItemClassification(PlayerItemStorageKind.Aggregate, "addon:gems"));
+        var classification = classifier.Classify(Context(PlayerItemAssetKind.Item, 64, code: "addon:gem"));
+        Assert.Equal("addon:gems", classification.Category);
+        Assert.Equal(PlayerItemCategories.Miscellaneous, new PlayerItemCategoryRegistry().Resolve(classification.Category).Code);
+        var registered = new PlayerItemCategoryRegistry(new[] { new PlayerItemCategoryDefinition("addon:gems", "Gemstones") });
+        Assert.Equal("Gemstones", registered.Resolve(classification.Category).DisplayName);
+    }
+
     [Theory]
     [InlineData("gear", "gear")]
     [InlineData(" MATERIALS ", "materials")]

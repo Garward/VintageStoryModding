@@ -278,7 +278,16 @@ public sealed partial class InMemoryPlayerItemStore
             if (ReservedQuantity(entryId) != 0)
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryReserved);
 
+            if (entry.ProtectionSource.HasFlag(PlayerItemProtectionSource.System)
+                && (!flags.HasFlag(PlayerItemFlags.Protected) || flags.HasFlag(PlayerItemFlags.Junk)))
+            {
+                return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryProtected);
+            }
+
             entry.Flags = flags;
+            entry.ProtectionSource = entry.ProtectionSource.HasFlag(PlayerItemProtectionSource.System)
+                ? entry.ProtectionSource : flags.HasFlag(PlayerItemFlags.Protected)
+                    ? PlayerItemProtectionSource.User : PlayerItemProtectionSource.None;
             AdvanceRevision();
             return Remember(requestId, fingerprint,
                 PlayerItemOperationResult.Accepted(revision, requestId, entryId));
@@ -332,9 +341,11 @@ public sealed partial class InMemoryPlayerItemStore
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryMissing);
             if (entry.Location is not (PlayerItemLocation.Overflow or PlayerItemLocation.Unresolved))
                 return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
+            if (PlayerItemPolicy.RequiresRecovery(entry.Prototype))
+                return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
             StoredEntry? aggregateTarget = entry.Prototype.Kind == PlayerItemStorageKind.Unique
                 ? null
-                : ExactMatch(entry.Key, entry.Prototype);
+                : ExactMatch(entry.Key, entry.Prototype, entry);
             if (aggregateTarget != null)
             {
                 long merged;
@@ -346,7 +357,7 @@ public sealed partial class InMemoryPlayerItemStore
                 {
                     return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
                 }
-                if (merged > capacity.AggregateQuantityPerEntry)
+                if (!PlayerItemPolicy.QuantityFits(entry.Prototype, merged, capacity))
                     return RejectAndRemember(requestId, fingerprint, PlayerItemOperationRejection.EntryUnavailable);
                 aggregateTarget.Quantity = merged;
                 Remove(entry);
@@ -389,8 +400,7 @@ public sealed partial class InMemoryPlayerItemStore
             if (!IsValid(prototype, quantity)
                 || destination is not (PlayerItemLocation.Overflow or PlayerItemLocation.Unresolved)
                 || string.IsNullOrWhiteSpace(source)
-                || prototype.Kind != PlayerItemStorageKind.Unique
-                    && quantity > capacity.AggregateQuantityPerEntry)
+                || !PlayerItemPolicy.QuantityFits(prototype, quantity, capacity))
             {
                 return Remember(requestId, fingerprint, PlayerItemMutationResult.Rejected(
                     revision, PlayerItemMutationRejection.InvalidRequest, requestId));
@@ -504,9 +514,7 @@ public sealed partial class InMemoryPlayerItemStore
 
     private bool HasCapacityToRecover(StoredEntry entry)
     {
-        return entry.Prototype.Kind == PlayerItemStorageKind.Unique
-            ? ActiveCount(PlayerItemStorageKind.Unique) < capacity.UniqueEntryLimit
-            : ActiveAggregateCount() < capacity.AggregateEntryLimit;
+        return HasRoom(entry.Prototype);
     }
 
     private void ReleaseReservation(PendingReservation reservation)
@@ -595,7 +603,7 @@ public sealed partial class InMemoryPlayerItemStore
     {
         if (prototype?.ExactState == null) return "invalid";
         byte[] hash = SHA256.HashData(prototype.ExactState);
-        return string.Join('|',
+        string fingerprint = string.Join('|',
             prototype.Kind,
             prototype.AssetKind,
             prototype.AssetCode?.Trim().ToLowerInvariant(),
@@ -604,6 +612,9 @@ public sealed partial class InMemoryPlayerItemStore
             string.Join(',', (prototype.EmbeddedReferences ?? Array.Empty<CanonicalCollectibleReference>())
                 .Select(ReferenceFingerprint)
                 .OrderBy(value => value, StringComparer.Ordinal)));
+        // Keep schema-1 request fingerprints replayable for unchanged exact snapshots.
+        return prototype.StatePolicy == PlayerItemStatePolicy.ExactSnapshot
+            ? fingerprint : $"{fingerprint}|state-policy:{(int)prototype.StatePolicy}";
     }
 
     private static string ReferenceFingerprint(CanonicalCollectibleReference? reference) =>

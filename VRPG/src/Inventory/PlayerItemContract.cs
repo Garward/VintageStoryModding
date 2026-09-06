@@ -134,6 +134,57 @@ public enum PlayerItemFlags
     Junk = 1 << 2
 }
 
+[Flags]
+public enum PlayerItemProtectionSource
+{
+    None = 0,
+    User = 1,
+    System = 2
+}
+
+/// <summary>Unsafe evolving content stays frozen in recovery until an audited adapter exists.</summary>
+public enum PlayerItemStatePolicy
+{
+    ExactSnapshot,
+    FrozenInRecovery
+}
+
+public sealed record PlayerItemCapacitySummary(
+    long Revision,
+    int UniqueEntriesUsed,
+    int AggregateEntriesUsed,
+    PlayerItemCapacity Limits);
+
+/// <summary>Stable addon identity is independent of its display label.</summary>
+public sealed record PlayerItemCategoryDefinition(string Code, string DisplayName, int Order = 0);
+
+/// <summary>An immutable registry snapshot. Missing definitions affect presentation only.</summary>
+public sealed class PlayerItemCategoryRegistry
+{
+    private readonly Dictionary<string, PlayerItemCategoryDefinition> definitions =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    public PlayerItemCategoryRegistry(IEnumerable<PlayerItemCategoryDefinition>? addons = null)
+    {
+        foreach (string code in PlayerItemCategories.Required)
+            definitions.Add(code, new PlayerItemCategoryDefinition(code, code));
+        if (addons == null) return;
+        foreach (PlayerItemCategoryDefinition definition in addons)
+        {
+            if (definition == null || string.IsNullOrWhiteSpace(definition.Code)
+                || string.IsNullOrWhiteSpace(definition.DisplayName))
+                throw new ArgumentException("Category definitions require stable codes and display names.", nameof(addons));
+            string code = definition.Code.Trim().ToLowerInvariant();
+            if (!definitions.TryAdd(code, definition with { Code = code }))
+                throw new ArgumentException("Category codes must be distinct from registered and built-in codes.", nameof(addons));
+        }
+    }
+
+    public PlayerItemCategoryDefinition Resolve(string? authoredCategory) =>
+        definitions.TryGetValue(authoredCategory?.Trim() ?? "", out PlayerItemCategoryDefinition? definition)
+            ? definition : definitions[PlayerItemCategories.Miscellaneous];
+}
+
 /// <summary>The canonical stored entry; localized display data is resolved separately.</summary>
 public sealed record CanonicalPlayerItemRecord(
     int SchemaVersion,
@@ -186,7 +237,8 @@ public sealed class PlayerItemClassifier
             throw new ArgumentException("An asset code is required.", nameof(assetCode));
         ArgumentNullException.ThrowIfNull(classification);
 
-        string category = PlayerItemCategories.NormalizeOrFallback(classification.Category);
+        string category = string.IsNullOrWhiteSpace(classification.Category)
+            ? PlayerItemCategories.Miscellaneous : classification.Category.Trim().ToLowerInvariant();
         overrides[assetCode.Trim()] = classification with { Category = category };
     }
 

@@ -7,7 +7,7 @@ namespace VRPG.Inventory.Persistence;
 
 public static class PlayerItemPersistenceSchema
 {
-    public const int CurrentVersion = 1;
+    public const int CurrentVersion = 2;
     public const int SlotFormatVersion = 1;
 }
 
@@ -79,6 +79,8 @@ public sealed class LegacyItemSlotState
 public sealed class PlayerItemStoreState
 {
     public long Revision { get; set; }
+    // Populate would mutate the shared default record through its init-only properties.
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public PlayerItemCapacity Capacity { get; set; } = PlayerItemCapacity.Default;
     public PlayerItemEntryState[] Entries { get; set; } = Array.Empty<PlayerItemEntryState>();
     public EquippedPlayerItemRecord[] Equipment { get; set; } = Array.Empty<EquippedPlayerItemRecord>();
@@ -103,6 +105,8 @@ public sealed class PlayerItemEntryState
     public long Quantity { get; set; }
     public PlayerItemLocation Location { get; set; }
     public PlayerItemFlags Flags { get; set; }
+    // Null identifies old records whose protection was encoded only as a flag.
+    public PlayerItemProtectionSource? ProtectionSource { get; set; }
     public PlayerItemRecoveryReason RecoveryReason { get; set; }
     public string RecoverySource { get; set; } = "";
 

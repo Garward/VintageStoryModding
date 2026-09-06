@@ -82,10 +82,7 @@ public sealed class PlayerItemArchiveSerializer
             return false;
         }
 
-        // Schema 0 was the unversioned development shape. Its known fields map
-        // directly to schema 1; normalization supplies collections omitted by JSON.
-        if (archive.SchemaVersion == 0)
-            archive.SchemaVersion = 1;
+        bool migrateProtection = archive.SchemaVersion < 2;
         archive.Players ??= new Dictionary<string, PlayerItemStoreState>(
             StringComparer.OrdinalIgnoreCase);
         archive.Migrations ??= new Dictionary<string, PlayerItemMigrationJournalState>(
@@ -105,6 +102,7 @@ public sealed class PlayerItemArchiveSerializer
             state.Equipment ??= Array.Empty<EquippedPlayerItemRecord>();
             state.Reservations ??= Array.Empty<PlayerItemReservationState>();
             state.CompletedRequests ??= Array.Empty<PlayerItemCompletedRequestState>();
+            if (migrateProtection) MigrateProtection(state);
         }
         archive.Players = normalized;
 
@@ -120,8 +118,20 @@ public sealed class PlayerItemArchiveSerializer
             }
             migration.SourceSlots ??= Array.Empty<LegacyItemSlotState>();
             migration.PriorStore ??= new PlayerItemStoreState();
+            if (migrateProtection) MigrateProtection(migration.PriorStore);
         }
         archive.Migrations = migrations;
+        archive.SchemaVersion = PlayerItemPersistenceSchema.CurrentVersion;
         return true;
+    }
+
+    private static void MigrateProtection(PlayerItemStoreState state)
+    {
+        foreach (PlayerItemEntryState entry in state.Entries ?? Array.Empty<PlayerItemEntryState>())
+        {
+            if (entry?.Prototype == null) continue;
+            entry.ProtectionSource ??= PlayerItemPolicy.LegacyProtection(entry.Prototype, entry.Flags);
+            entry.Flags = PlayerItemPolicy.EffectiveFlags(entry.Flags, entry.ProtectionSource.Value);
+        }
     }
 }

@@ -10,6 +10,159 @@ namespace VRPG.Tests;
 
 public sealed class TransactionalPlayerItemStoreTests
 {
+    [Theory]
+    [InlineData(PlayerItemStorageKind.Aggregate)]
+    [InlineData(PlayerItemStorageKind.Ledger)]
+    [InlineData(PlayerItemStorageKind.Protected)]
+    public void RecoveryOverflowPreservesBothQuantitiesAndLocations(PlayerItemStorageKind kind)
+    {
+        var store = new InMemoryPlayerItemStore();
+        var prototype = Material() with { Kind = kind };
+        var active = store.Insert("active", prototype, long.MaxValue, 0);
+        var overflow = store.ImportRecovery("overflow", prototype, 1, PlayerItemLocation.Overflow,
+            PlayerItemRecoveryReason.CapacityExceeded, "test", store.Revision);
+        long revision = store.Revision;
+        Assert.Equal(PlayerItemOperationRejection.EntryUnavailable,
+            store.Recover("recover", overflow.EntryId, revision).Rejection);
+        Assert.Equal(revision, store.Revision);
+        Assert.True(store.TryGet(active.EntryId, out var activeDetail));
+        Assert.Equal(long.MaxValue, activeDetail!.Quantity);
+        Assert.True(store.TryGet(overflow.EntryId, out var overflowDetail));
+        Assert.Equal(1, overflowDetail!.Quantity);
+        Assert.Equal(PlayerItemLocation.Overflow, overflowDetail.Location);
+        Assert.Equal(PlayerItemMutationRejection.QuantityOverflow,
+            store.Insert("overflow-insert", prototype, 1, revision).Rejection);
+    }
+
+    [Fact]
+    public void UnknownCategoryFallbackCannotCoalesceDistinctAuthoredIdentitiesEvenWithHashCollision()
+    {
+        var store = new InMemoryPlayerItemStore(createStateHash: _ => "collision");
+        var first = store.Insert("first", Material() with { Category = "missing:first" }, 1, 0);
+        var second = store.Insert("second", Material() with { Category = "missing:second" }, 1, store.Revision);
+        Assert.NotEqual(first.EntryId, second.EntryId);
+        Assert.Equal(2, store.Query(new(PlayerItemCategories.Miscellaneous, "", 0, 100)).Total);
+    }
+
+    [Fact]
+    public void UnsafeEvolvingStateIsFrozenInRecoveryWithoutByteChangesOrMerging()
+    {
+        var store = new InMemoryPlayerItemStore();
+        var prototype = Material("addon:perishing") with { StatePolicy = PlayerItemStatePolicy.FrozenInRecovery };
+        var first = store.Insert("first", prototype, 2, 0);
+        var second = store.Insert("second", prototype, 3, store.Revision);
+        Assert.True(first.Success);
+        Assert.True(second.Success);
+        Assert.NotEqual(first.EntryId, second.EntryId);
+        Assert.Empty(store.Query(Query()).Entries);
+        Assert.True(store.TryGet(first.EntryId, out var detail));
+        Assert.Equal(PlayerItemLocation.Unresolved, detail!.Location);
+        Assert.Equal(prototype.ExactState, detail.Prototype.ExactState);
+        Assert.Equal(PlayerItemRecoveryReason.UnsupportedContent, store.Recovery().Entries[0].Reason);
+        Assert.Equal(PlayerItemOperationRejection.EntryUnavailable,
+            store.Recover("recover", first.EntryId, store.Revision).Rejection);
+        Assert.Equal(PlayerItemMutationRejection.EntryUnavailable,
+            store.Extract("extract", first.EntryId, 1, store.Revision).Rejection);
+        Assert.Equal(0, store.CapacitySummary().AggregateEntriesUsed);
+    }
+
+    [Theory]
+    [InlineData(PlayerItemStorageKind.Ledger)]
+    [InlineData(PlayerItemStorageKind.Protected)]
+    public void ExemptRecoveryUsesTheSamePolicyAsInsertion(PlayerItemStorageKind kind)
+    {
+        var store = new InMemoryPlayerItemStore(capacity: new PlayerItemCapacity(1, 1, 10));
+        Assert.True(store.Insert("material", Material(), 10, 0).Success);
+        var reward = store.ImportRecovery("reward", Material("vrpg:reward") with { Kind = kind }, 100,
+            PlayerItemLocation.Overflow, PlayerItemRecoveryReason.CapacityExceeded, "reward", store.Revision);
+        Assert.True(reward.Success);
+        Assert.True(store.Recover("recover", reward.EntryId, store.Revision).Success);
+        Assert.Equal(1, store.CapacitySummary().AggregateEntriesUsed);
+    }
+
+    [Fact]
+    public void RecoveryDoesNotMergeAwayUserProtection()
+    {
+        var store = new InMemoryPlayerItemStore();
+        var ordinary = store.Insert("ordinary", Material(), 1, 0);
+        var protectedEntry = store.ImportRecovery("recovery", Material(), 1, PlayerItemLocation.Overflow,
+            PlayerItemRecoveryReason.CapacityExceeded, "test", store.Revision);
+        Assert.True(store.SetFlags("protect", protectedEntry.EntryId, PlayerItemFlags.Protected, store.Revision).Success);
+        Assert.True(store.Recover("recover", protectedEntry.EntryId, store.Revision).Success);
+        Assert.True(store.TryGet(protectedEntry.EntryId, out var detail));
+        Assert.Equal(PlayerItemProtectionSource.User, detail!.ProtectionSource);
+        Assert.Equal(PlayerItemFlags.Protected, detail.Flags);
+        Assert.True(store.TryGet(ordinary.EntryId, out var untouched));
+        Assert.Equal(1, untouched!.Quantity);
+    }
+
+    [Fact]
+    public void QuestRecordsDoNotConsumeOrdinaryAggregateCapacity()
+    {
+        var store = new InMemoryPlayerItemStore(
+            capacity: new PlayerItemCapacity(1, 1, long.MaxValue));
+        var material = new PlayerItemPrototype(PlayerItemStorageKind.Aggregate,
+            "game:stone", PlayerItemCategories.Materials, "Stone", new byte[] { 1 });
+        Assert.True(store.Insert("material", material, 10000, store.Revision).Success);
+        var quest = new PlayerItemPrototype(PlayerItemStorageKind.Protected,
+            "vrpg:testkey", PlayerItemCategories.KeysAndQuest, "Test key", new byte[] { 2 });
+        Assert.True(store.Insert("quest", quest, 1, store.Revision).Success);
+    }
+
+    [Fact]
+    public void FullOrdinaryInventoryAdmitsCurrencyButProtectingMaterialDoesNotExpandIt()
+    {
+        var store = new InMemoryPlayerItemStore(capacity: new PlayerItemCapacity(1, 1, 100));
+        var material = store.Insert("material", Material(), 100, store.Revision);
+        Assert.True(store.SetFlags("protect", material.EntryId, PlayerItemFlags.Protected, store.Revision).Success);
+        Assert.Equal(PlayerItemMutationRejection.CapacityExceeded,
+            store.Insert("second", Material("game:iron"), 1, store.Revision).Rejection);
+        Assert.Equal(PlayerItemMutationRejection.CapacityExceeded,
+            store.Insert("consumable", Material("game:food") with { Kind = PlayerItemStorageKind.Consumable },
+                1, store.Revision).Rejection);
+        Assert.True(store.Insert("currency", Material("vrpg:coin") with { Kind = PlayerItemStorageKind.Ledger },
+            1000, store.Revision).Success);
+    }
+
+    [Theory]
+    [InlineData(PlayerItemFlags.None)]
+    [InlineData(PlayerItemFlags.Junk | PlayerItemFlags.Protected)]
+    public void QuestProtectionCannotBeClearedOrJunkMarked(PlayerItemFlags flags)
+    {
+        var store = new InMemoryPlayerItemStore();
+        var quest = store.Insert("quest", Material("vrpg:key") with
+        {
+            Kind = PlayerItemStorageKind.Protected,
+            Category = PlayerItemCategories.KeysAndQuest
+        }, 1, 0);
+        Assert.Equal(PlayerItemOperationRejection.EntryProtected,
+            store.SetFlags("flags", quest.EntryId, flags, store.Revision).Rejection);
+        Assert.Equal(PlayerItemMutationRejection.EntryProtected,
+            store.Extract("extract", quest.EntryId, 1, store.Revision).Rejection);
+        Assert.Equal(PlayerItemOperationRejection.EntryProtected,
+            store.Destroy("destroy", quest.EntryId, 1, true, store.Revision).Rejection);
+    }
+
+    [Fact]
+    public void OrdinaryUserProtectionCanBeRemoved()
+    {
+        var store = new InMemoryPlayerItemStore();
+        var material = store.Insert("material", Material(), 1, 0);
+        Assert.True(store.SetFlags("protect", material.EntryId, PlayerItemFlags.Protected, store.Revision).Success);
+        Assert.True(store.SetFlags("unprotect", material.EntryId, PlayerItemFlags.None, store.Revision).Success);
+        Assert.True(store.Extract("extract", material.EntryId, 1, store.Revision).Success);
+    }
+
+    [Fact]
+    public void EquippedUniqueEntriesStillConsumeCapacity()
+    {
+        var store = new InMemoryPlayerItemStore(capacity: new PlayerItemCapacity(1, 1, 100));
+        var gear = store.Insert("gear", Gear(), 1, 0);
+        Assert.True(store.Equip("equip", gear.EntryId, PlayerEquipmentRoles.MainWeapon, store.Revision).Success);
+        Assert.Equal(PlayerItemMutationRejection.CapacityExceeded,
+            store.Insert("second", Gear("game:second"), 1, store.Revision).Rejection);
+    }
+
     [Fact]
     public void ReplayingInsertRequestReturnsOriginalResultWithoutDuplicatingQuantity()
     {

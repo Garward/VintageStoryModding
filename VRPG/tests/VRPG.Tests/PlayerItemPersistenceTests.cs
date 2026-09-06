@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json.Linq;
 using VRPG.Inventory;
 using VRPG.Inventory.Gear;
@@ -11,6 +14,167 @@ namespace VRPG.Tests;
 
 public sealed class PlayerItemPersistenceTests
 {
+    [Fact]
+    public void FrozenStateSurvivesRestoreAndCannotBeActivatedByArchiveLocation()
+    {
+        var store = new InMemoryPlayerItemStore();
+        var prototype = Material() with { StatePolicy = PlayerItemStatePolicy.FrozenInRecovery };
+        var inserted = store.Insert("unsafe", prototype, 3, 0);
+        var state = store.Capture().State;
+        Assert.True(InMemoryPlayerItemStore.TryRestore(state, out var restored, out var error), error);
+        Assert.True(restored!.TryGet(inserted.EntryId, out var detail));
+        Assert.Equal(prototype.ExactState, detail!.Prototype.ExactState);
+        Assert.Equal(PlayerItemStatePolicy.FrozenInRecovery, detail.Prototype.StatePolicy);
+        Assert.False(restored.Recover("recover", inserted.EntryId, restored.Revision).Success);
+        state.Entries[0].Location = PlayerItemLocation.Stored;
+        Assert.False(InMemoryPlayerItemStore.TryRestore(state, out _, out error));
+        Assert.Contains("frozen", error);
+    }
+
+    [Fact]
+    public void DurableSystemProtectionSurvivesChangedClassificationWithoutGrantingCapacity()
+    {
+        var state = new PlayerItemStoreState
+        {
+            Capacity = new PlayerItemCapacity(1, 1, 100),
+            Entries = new[] { new PlayerItemEntryState
+            {
+                EntryId = "old-quest", Prototype = Material() with { Category = "missing:quest" },
+                Quantity = 1, Flags = PlayerItemFlags.Protected, ProtectionSource = PlayerItemProtectionSource.System
+            } }
+        };
+        Assert.True(InMemoryPlayerItemStore.TryRestore(state, out var store, out var error), error);
+        Assert.Equal(PlayerItemOperationRejection.EntryProtected,
+            store!.SetFlags("unprotect", "old-quest", PlayerItemFlags.None, 0).Rejection);
+        Assert.Equal(PlayerItemMutationRejection.CapacityExceeded,
+            store.Insert("more", Material("game:other"), 1, 0).Rejection);
+        Assert.Equal(PlayerItemProtectionSource.System, store.Capture().State.Entries[0].ProtectionSource);
+    }
+
+    [Theory]
+    [InlineData(PlayerItemStorageKind.Aggregate)]
+    [InlineData(PlayerItemStorageKind.Consumable)]
+    [InlineData(PlayerItemStorageKind.Unique)]
+    public void RestoreRejectsExcessOrdinaryCapacityEvenWithUserProtection(PlayerItemStorageKind kind)
+    {
+        var store = new InMemoryPlayerItemStore(capacity: new PlayerItemCapacity(1, 1, 100));
+        var inserted = store.Insert("first", Material() with { Kind = kind }, 1, 0);
+        Assert.True(store.SetFlags("protect", inserted.EntryId, PlayerItemFlags.Protected, store.Revision).Success);
+        var state = store.Capture().State;
+        state.Entries = state.Entries.Append(new PlayerItemEntryState
+        {
+            EntryId = "second", Prototype = Material("game:other") with { Kind = kind }, Quantity = 1
+        }).ToArray();
+        Assert.False(InMemoryPlayerItemStore.TryRestore(state, out _, out var error));
+        Assert.Contains("capacity", error);
+    }
+
+    [Fact]
+    public void ReadingCustomCapacityDoesNotMutateSharedDefaults()
+    {
+        var archive = new PlayerItemArchive { Players = new()
+        {
+            ["player"] = new() { Capacity = new PlayerItemCapacity(1, 1, 10) }
+        } };
+        var serializer = new PlayerItemArchiveSerializer();
+        Assert.True(serializer.TryDeserialize(serializer.Serialize(archive), out var decoded, out var error), error);
+        Assert.Equal(1, decoded.Players["player"].Capacity.AggregateEntryLimit);
+        Assert.Equal(120, PlayerItemCapacity.Default.UniqueEntryLimit);
+        Assert.Equal(512, PlayerItemCapacity.Default.AggregateEntryLimit);
+        Assert.Equal(long.MaxValue, PlayerItemCapacity.Default.AggregateQuantityPerEntry);
+    }
+
+    [Fact]
+    public void FullCapacityAndProtectionSourcesSurviveArchiveRestore()
+    {
+        var store = new InMemoryPlayerItemStore(capacity: new PlayerItemCapacity(1, 1, 100));
+        var material = store.Insert("material", Material(), 100, 0);
+        Assert.True(store.SetFlags("protect", material.EntryId, PlayerItemFlags.Protected, store.Revision).Success);
+        var ledger = store.Insert("ledger", Material("vrpg:coin") with { Kind = PlayerItemStorageKind.Ledger }, 1000, store.Revision);
+        var quest = store.Insert("quest", Material("vrpg:key") with { Kind = PlayerItemStorageKind.Protected }, 1, store.Revision);
+        Assert.True(ledger.Success);
+        Assert.True(quest.Success);
+        var serializer = new PlayerItemArchiveSerializer();
+        var archive = new PlayerItemArchive { Players = new() { ["player"] = store.Capture().State } };
+        Assert.True(serializer.TryDeserialize(serializer.Serialize(archive), out var decoded, out var error), error);
+        Assert.True(InMemoryPlayerItemStore.TryRestore(decoded.Players["player"], out var restored, out error), error);
+        Assert.Equal(3, restored!.Query(new("", "", 0, 100)).Total);
+        Assert.Equal(1, restored.CapacitySummary().AggregateEntriesUsed);
+        Assert.True(restored.TryGet(material.EntryId, out var user));
+        Assert.Equal(PlayerItemProtectionSource.User, user!.ProtectionSource);
+        Assert.True(restored.TryGet(quest.EntryId, out var system));
+        Assert.Equal(PlayerItemProtectionSource.System, system!.ProtectionSource);
+        Assert.Equal(PlayerItemOperationRejection.EntryProtected,
+            restored.SetFlags("unprotect-quest", quest.EntryId, PlayerItemFlags.None, restored.Revision).Rejection);
+        Assert.True(restored.SetFlags("unprotect-material", material.EntryId, PlayerItemFlags.None, restored.Revision).Success);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void MissingOrRenamedAddonCategoryFallsBackWithoutChangingCustody(bool renamed)
+    {
+        var registry = new PlayerItemCategoryRegistry(new[] { new PlayerItemCategoryDefinition("addon:gems", "Gems") });
+        var store = new InMemoryPlayerItemStore(categories: registry);
+        var prototype = Material("addon:gem") with { Category = "addon:gems" };
+        var inserted = store.Insert("gem", prototype, 4, 0);
+        Assert.Single(store.Query(new("addon:gems", "", 0, 100)).Entries);
+        var nextRegistry = new PlayerItemCategoryRegistry(renamed
+            ? new[] { new PlayerItemCategoryDefinition("addon:newgems", "Gems") } : null);
+        Assert.True(InMemoryPlayerItemStore.TryRestore(store.Capture().State, out var restored, out var error,
+            categories: nextRegistry), error);
+        var summary = Assert.Single(restored!.Query(new(PlayerItemCategories.Miscellaneous, "", 0, 100)).Entries);
+        Assert.Equal(PlayerItemCategories.Miscellaneous, summary.Category);
+        Assert.Equal("addon:gems", summary.AuthoredCategory);
+        Assert.True(restored.TryGet(inserted.EntryId, out var detail));
+        Assert.Equal("addon:gems", detail!.Prototype.Category);
+        Assert.Equal(prototype.ExactState, detail.Prototype.ExactState);
+        Assert.True(InMemoryPlayerItemStore.TryRestore(restored.Capture().State, out var availableAgain, out error,
+            categories: registry), error);
+        Assert.Single(availableAgain!.Query(new("addon:gems", "", 0, 100)).Entries);
+    }
+
+    [Fact]
+    public void SchemaOneMigrationPreservesUnknownFieldsAndInfersProtectionInPlayersAndJournals()
+    {
+        var quest = new PlayerItemEntryState
+        {
+            EntryId = "quest", Prototype = Material("addon:key") with { Kind = PlayerItemStorageKind.Protected },
+            Quantity = 1, Flags = PlayerItemFlags.None,
+            ExtensionData = new Dictionary<string, JToken> { ["futureQuest"] = JObject.Parse("{\"value\":42}") }
+        };
+        var ordinary = new PlayerItemEntryState
+        {
+            EntryId = "ordinary", Prototype = Material(), Quantity = 3, Flags = PlayerItemFlags.Protected
+        };
+        var prior = new PlayerItemStoreState { Entries = new[] { quest, ordinary } };
+        var archive = new PlayerItemArchive
+        {
+            SchemaVersion = 1,
+            Players = new() { ["player"] = prior },
+            Migrations = new() { ["player"] = new() { PriorStore = prior } },
+            ExtensionData = new Dictionary<string, JToken> { ["futureRoot"] = new JValue("kept") }
+        };
+        var serializer = new PlayerItemArchiveSerializer();
+        JObject oldDocument = JObject.FromObject(archive);
+        foreach (JProperty property in oldDocument.Descendants().OfType<JProperty>()
+            .Where(property => property.Name is "ProtectionSource" or "StatePolicy").ToArray())
+            property.Remove();
+        using var bytes = new MemoryStream();
+        using (var gzip = new GZipStream(bytes, CompressionLevel.Optimal, leaveOpen: true))
+            gzip.Write(Encoding.UTF8.GetBytes(oldDocument.ToString()));
+        Assert.True(serializer.TryDeserialize(bytes.ToArray(), out var migrated, out var error), error);
+        Assert.Equal(2, migrated.SchemaVersion);
+        Assert.Equal(PlayerItemProtectionSource.System, migrated.Players["player"].Entries[0].ProtectionSource);
+        Assert.Equal(PlayerItemProtectionSource.User, migrated.Players["player"].Entries[1].ProtectionSource);
+        Assert.Equal(PlayerItemProtectionSource.System, migrated.Migrations["player"].PriorStore.Entries[0].ProtectionSource);
+        Assert.True(InMemoryPlayerItemStore.TryRestore(migrated.Players["player"], out var restored, out error), error);
+        var captured = restored!.Capture().State;
+        Assert.Equal(new byte[] { 1, 2, 3 }, captured.Entries.Single(e => e.EntryId == "quest").Prototype.ExactState);
+        Assert.Equal(42, (int)captured.Entries.Single(e => e.EntryId == "quest").ExtensionData!["futureQuest"]["value"]!);
+        Assert.Equal("kept", (string?)migrated.ExtensionData!["futureRoot"]);
+    }
+
     [Fact]
     public void FailedReloadRevokesEarlierArchiveReadiness()
     {

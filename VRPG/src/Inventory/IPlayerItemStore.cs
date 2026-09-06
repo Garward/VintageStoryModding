@@ -3,6 +3,7 @@ namespace VRPG.Inventory;
 public interface IPlayerItemStore
 {
     long Revision { get; }
+    PlayerItemCapacitySummary CapacitySummary();
     PlayerItemPage Query(PlayerItemQuery query);
     bool TryGet(string entryId, out PlayerItemDetail? detail);
     PlayerItemMutationResult Insert(

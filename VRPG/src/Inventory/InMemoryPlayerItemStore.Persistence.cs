@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using VRPG.Inventory.Persistence;
 
 namespace VRPG.Inventory;
 
 public sealed partial class InMemoryPlayerItemStore
 {
+    private IDictionary<string, JToken>? extensionData;
     public bool IsDirty
     {
         get
@@ -28,6 +30,8 @@ public sealed partial class InMemoryPlayerItemStore
                     Quantity = entry.Quantity,
                     Location = entry.Location,
                     Flags = entry.Flags,
+                    ProtectionSource = entry.ProtectionSource,
+                    ExtensionData = CloneExtensions(entry.ExtensionData),
                     RecoveryReason = entry.RecoveryReason,
                     RecoverySource = entry.RecoverySource
                 })
@@ -56,7 +60,8 @@ public sealed partial class InMemoryPlayerItemStore
                 Entries = entryStates,
                 Equipment = equipment,
                 Reservations = reservationStates,
-                CompletedRequests = requestStates
+                CompletedRequests = requestStates,
+                ExtensionData = CloneExtensions(extensionData)
             };
             return new PlayerItemStoreCapture(state, persistenceStamp);
         }
@@ -77,7 +82,8 @@ public sealed partial class InMemoryPlayerItemStore
         out string error,
         Func<string>? createEntryId = null,
         Func<string>? createReservationId = null,
-        Func<byte[], string>? createStateHash = null)
+        Func<byte[], string>? createStateHash = null,
+        PlayerItemCategoryRegistry? categories = null)
     {
         store = null;
         error = "";
@@ -98,8 +104,10 @@ public sealed partial class InMemoryPlayerItemStore
             createEntryId,
             createReservationId,
             state.Capacity,
-            createStateHash);
+            createStateHash,
+            categories);
         restored.revision = state.Revision;
+        restored.extensionData = CloneExtensions(state.ExtensionData);
 
         foreach (PlayerItemEntryState entryState in state.Entries)
         {
@@ -110,8 +118,7 @@ public sealed partial class InMemoryPlayerItemStore
                 || !Enum.IsDefined(entryState.Location)
                 || !FlagsAreValid(entryState.Flags)
                 || !Enum.IsDefined(entryState.RecoveryReason)
-                || entryState.Prototype.Kind != PlayerItemStorageKind.Unique
-                    && entryState.Quantity > state.Capacity.AggregateQuantityPerEntry)
+                || !PlayerItemPolicy.QuantityFits(entryState.Prototype, entryState.Quantity, state.Capacity))
             {
                 return Fail("A persisted inventory entry is invalid or duplicated.", out error);
             }
@@ -119,6 +126,22 @@ public sealed partial class InMemoryPlayerItemStore
                 && entryState.Prototype.Kind != PlayerItemStorageKind.Unique)
             {
                 return Fail("An aggregate entry cannot be equipped.", out error);
+            }
+            PlayerItemProtectionSource protection = entryState.ProtectionSource
+                ?? PlayerItemPolicy.LegacyProtection(entryState.Prototype, entryState.Flags);
+            const PlayerItemProtectionSource validProtection = PlayerItemProtectionSource.User | PlayerItemProtectionSource.System;
+            if ((protection & ~validProtection) != 0
+                || PlayerItemPolicy.RequiresSystemProtection(entryState.Prototype)
+                    && !protection.HasFlag(PlayerItemProtectionSource.System)
+                || entryState.ProtectionSource.HasValue
+                    && PlayerItemPolicy.EffectiveFlags(entryState.Flags, protection) != entryState.Flags)
+            {
+                return Fail("Persisted protection metadata is inconsistent.", out error);
+            }
+            if (PlayerItemPolicy.RequiresRecovery(entryState.Prototype)
+                && entryState.Location is PlayerItemLocation.Stored or PlayerItemLocation.Equipped)
+            {
+                return Fail("Unsafe evolving content must remain frozen in recovery.", out error);
             }
             if (entryState.Location is PlayerItemLocation.Overflow or PlayerItemLocation.Unresolved
                 && string.IsNullOrWhiteSpace(entryState.RecoverySource))
@@ -131,7 +154,9 @@ public sealed partial class InMemoryPlayerItemStore
             var entry = new StoredEntry(entryState.EntryId, prototype, entryState.Quantity, key)
             {
                 Location = entryState.Location,
-                Flags = entryState.Flags,
+                Flags = PlayerItemPolicy.EffectiveFlags(entryState.Flags, protection),
+                ProtectionSource = protection,
+                ExtensionData = CloneExtensions(entryState.ExtensionData),
                 RecoveryReason = entryState.RecoveryReason,
                 RecoverySource = entryState.RecoverySource?.Trim() ?? ""
             };
@@ -218,6 +243,9 @@ public sealed partial class InMemoryPlayerItemStore
             ExactState = (byte[])prototype.ExactState.Clone(),
             EmbeddedReferences = CloneReferences(prototype.EmbeddedReferences)
         };
+
+    private static IDictionary<string, JToken>? CloneExtensions(IDictionary<string, JToken>? source) =>
+        source?.ToDictionary(pair => pair.Key, pair => pair.Value.DeepClone(), StringComparer.Ordinal);
 
     private static bool FlagsAreValid(PlayerItemFlags flags)
     {

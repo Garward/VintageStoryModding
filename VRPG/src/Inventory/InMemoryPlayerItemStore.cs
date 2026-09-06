@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
 
 namespace VRPG.Inventory;
 
@@ -14,6 +15,7 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
     private readonly Func<string> createReservationId;
     private readonly Func<byte[], string> createStateHash;
     private readonly PlayerItemCapacity capacity;
+    private readonly PlayerItemCategoryRegistry categories;
     private readonly Dictionary<string, StoredEntry> byId = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<CandidateKey, List<StoredEntry>> collisionBuckets = new();
     private readonly Dictionary<QueryIndexKey, HashSet<string>> queryIndex = new();
@@ -29,12 +31,14 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         Func<string>? createEntryId = null,
         Func<string>? createReservationId = null,
         PlayerItemCapacity? capacity = null,
-        Func<byte[], string>? createStateHash = null)
+        Func<byte[], string>? createStateHash = null,
+        PlayerItemCategoryRegistry? categories = null)
     {
         this.createEntryId = createEntryId ?? (() => Guid.NewGuid().ToString("N"));
         this.createReservationId = createReservationId ?? (() => Guid.NewGuid().ToString("N"));
         this.createStateHash = createStateHash ?? (state => Convert.ToHexString(SHA256.HashData(state)));
         this.capacity = capacity ?? PlayerItemCapacity.Default;
+        this.categories = categories ?? new PlayerItemCategoryRegistry();
         if (!this.capacity.IsValid) throw new ArgumentException("Inventory capacity must be positive.", nameof(capacity));
     }
 
@@ -44,6 +48,11 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         {
             lock (sync) return revision;
         }
+    }
+
+    public PlayerItemCapacitySummary CapacitySummary()
+    {
+        lock (sync) return new(revision, ActiveCount(PlayerItemStorageKind.Unique), ActiveAggregateCount(), capacity);
     }
 
     public PlayerItemPage Query(PlayerItemQuery query)
@@ -123,9 +132,21 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
                 return PlayerItemMutationResult.Rejected(revision, PlayerItemMutationRejection.StaleRevision);
             }
 
+            if (PlayerItemPolicy.RequiresRecovery(prototype))
+            {
+                if (!PlayerItemPolicy.QuantityFits(prototype, quantity, capacity))
+                    return PlayerItemMutationResult.Rejected(revision, PlayerItemMutationRejection.QuantityOverflow);
+                StoredEntry frozen = AddNew(prototype, quantity);
+                MoveLocation(frozen, PlayerItemLocation.Unresolved);
+                frozen.RecoveryReason = PlayerItemRecoveryReason.UnsupportedContent;
+                frozen.RecoverySource = "policy:frozen-state";
+                AdvanceRevision();
+                return Accepted(frozen);
+            }
+
             if (prototype.Kind == PlayerItemStorageKind.Unique)
             {
-                if (ActiveCount(PlayerItemStorageKind.Unique) >= capacity.UniqueEntryLimit)
+                if (!HasRoom(prototype))
                     return PlayerItemMutationResult.Rejected(revision, PlayerItemMutationRejection.CapacityExceeded);
                 StoredEntry unique = AddNew(prototype, 1);
                 AdvanceRevision();
@@ -136,9 +157,9 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
             StoredEntry? existing = ExactMatch(key, prototype);
             if (existing == null)
             {
-                if (ActiveAggregateCount() >= capacity.AggregateEntryLimit)
+                if (!HasRoom(prototype))
                     return PlayerItemMutationResult.Rejected(revision, PlayerItemMutationRejection.CapacityExceeded);
-                if (quantity > capacity.AggregateQuantityPerEntry)
+                if (!PlayerItemPolicy.QuantityFits(prototype, quantity, capacity))
                     return PlayerItemMutationResult.Rejected(revision, PlayerItemMutationRejection.QuantityOverflow);
                 existing = AddNew(prototype, quantity, key);
             }
@@ -147,7 +168,7 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
                 try
                 {
                     long newQuantity = checked(existing.Quantity + quantity);
-                    if (newQuantity > capacity.AggregateQuantityPerEntry)
+                    if (!PlayerItemPolicy.QuantityFits(prototype, newQuantity, capacity))
                         return PlayerItemMutationResult.Rejected(revision, PlayerItemMutationRejection.QuantityOverflow);
                     existing.Quantity = newQuantity;
                 }
@@ -279,7 +300,7 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         return entry;
     }
 
-    private StoredEntry? ExactMatch(CandidateKey key, PlayerItemPrototype prototype)
+    private StoredEntry? ExactMatch(CandidateKey key, PlayerItemPrototype prototype, StoredEntry? recovering = null)
     {
         if (!collisionBuckets.TryGetValue(key, out List<StoredEntry>? bucket)) return null;
         foreach (StoredEntry entry in bucket)
@@ -287,6 +308,10 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
             if (entry.Location == PlayerItemLocation.Stored
                 && entry.Prototype.Kind == prototype.Kind
                 && entry.Prototype.AssetKind == prototype.AssetKind
+                && entry.Prototype.StatePolicy == prototype.StatePolicy
+                && (recovering == null || entry.Flags == recovering.Flags
+                    && entry.ProtectionSource == recovering.ProtectionSource
+                    && entry.ExtensionData == null && recovering.ExtensionData == null)
                 && string.Equals(entry.Prototype.AssetCode, prototype.AssetCode, StringComparison.OrdinalIgnoreCase)
                 && string.Equals(entry.Prototype.Category, prototype.Category, StringComparison.OrdinalIgnoreCase)
                 && entry.Prototype.ExactState.AsSpan().SequenceEqual(prototype.ExactState)
@@ -326,13 +351,15 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         entry.EntryId,
         entry.Prototype.Kind,
         entry.Prototype.AssetCode,
-        entry.Prototype.Category,
+        categories.Resolve(entry.Prototype.Category).Code,
         entry.Prototype.DisplayName,
         entry.Quantity,
         entry.Prototype.AssetKind,
         entry.Location,
         entry.Flags,
-        ReservedQuantity(entry.EntryId));
+        ReservedQuantity(entry.EntryId),
+        entry.ProtectionSource,
+        entry.Prototype.Category);
 
     private static PlayerItemDetail DetailClone(StoredEntry entry) => new(
         entry.EntryId,
@@ -343,15 +370,19 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         },
         entry.Quantity,
         entry.Location,
-        entry.Flags);
+        entry.Flags,
+        entry.ProtectionSource);
 
     private int ActiveCount(PlayerItemStorageKind kind) => byId.Values.Count(entry =>
         entry.Prototype.Kind == kind
         && entry.Location is PlayerItemLocation.Stored or PlayerItemLocation.Equipped);
 
     private int ActiveAggregateCount() => byId.Values.Count(entry =>
-        entry.Prototype.Kind != PlayerItemStorageKind.Unique
+        PlayerItemPolicy.UsesAggregateCapacity(entry.Prototype)
         && entry.Location is PlayerItemLocation.Stored or PlayerItemLocation.Equipped);
+
+    private bool HasRoom(PlayerItemPrototype prototype) => PlayerItemPolicy.HasRoom(
+        prototype, ActiveCount(PlayerItemStorageKind.Unique), ActiveAggregateCount(), capacity);
 
     private long ReservedQuantity(string entryId) =>
         reservedByEntry.TryGetValue(entryId, out long quantity) ? quantity : 0;
@@ -379,7 +410,7 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
     {
         AddToQueryIndex(new QueryIndexKey(entry.Location, ""), entry.EntryId);
         AddToQueryIndex(
-            new QueryIndexKey(entry.Location, entry.Prototype.Category.Trim().ToLowerInvariant()),
+            new QueryIndexKey(entry.Location, categories.Resolve(entry.Prototype.Category).Code),
             entry.EntryId);
     }
 
@@ -397,7 +428,7 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
     {
         RemoveFromQueryIndex(new QueryIndexKey(entry.Location, ""), entry.EntryId);
         RemoveFromQueryIndex(
-            new QueryIndexKey(entry.Location, entry.Prototype.Category.Trim().ToLowerInvariant()),
+            new QueryIndexKey(entry.Location, categories.Resolve(entry.Prototype.Category).Code),
             entry.EntryId);
     }
 
@@ -418,7 +449,9 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
             && !string.IsNullOrWhiteSpace(prototype.DisplayName)
             && prototype.ExactState != null
             && ReferencesAreValid(prototype.EmbeddedReferences)
-            && Enum.IsDefined(prototype.AssetKind);
+            && Enum.IsDefined(prototype.AssetKind)
+            && Enum.IsDefined(prototype.Kind)
+            && Enum.IsDefined(prototype.StatePolicy);
     }
 
     private CandidateKey KeyFor(PlayerItemPrototype prototype)
@@ -443,6 +476,8 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
             Prototype = prototype;
             Quantity = quantity;
             Key = key;
+            ProtectionSource = PlayerItemPolicy.LegacyProtection(prototype, PlayerItemFlags.None);
+            Flags = PlayerItemPolicy.EffectiveFlags(PlayerItemFlags.None, ProtectionSource);
         }
 
         public string EntryId { get; }
@@ -451,6 +486,8 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         public CandidateKey Key { get; }
         public PlayerItemLocation Location { get; set; } = PlayerItemLocation.Stored;
         public PlayerItemFlags Flags { get; set; }
+        public PlayerItemProtectionSource ProtectionSource { get; set; }
+        public IDictionary<string, JToken>? ExtensionData { get; set; }
         public PlayerItemRecoveryReason RecoveryReason { get; set; }
         public string RecoverySource { get; set; } = "";
     }

@@ -402,6 +402,8 @@ public sealed class GearEquipmentServiceTests
 
         public long Revision { get; private set; }
 
+        public PlayerItemCapacitySummary CapacitySummary() => throw new NotSupportedException();
+
         public bool TryGet(string entryId, out PlayerItemDetail? detail)
         {
             if (mutateRevisionOnGet) Revision++;
