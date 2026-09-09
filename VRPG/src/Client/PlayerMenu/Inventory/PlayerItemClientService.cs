@@ -127,6 +127,9 @@ public sealed class PlayerItemClientService
             || result.QueryId != latestPage || result.RejectionCode.Length > 0
             || result.Entries == null || result.Entries.Length > PlayerItemQueryService.MaximumEntries
             || result.Entries.Any(entry => !PlayerItemQueryService.ValidEntry(entry))
+            || result.EquipmentEntries is not { Length: <= 128 } || result.EquipmentTotal < result.EquipmentEntries.Length
+            || result.EquipmentEntries.Any(entry => !PlayerItemQueryService.ValidEntry(entry) || entry.Location != VRPG.Inventory.PlayerItemLocation.Equipped)
+            || result.EquipmentEntries.Select(entry => entry.EntryId).Distinct(StringComparer.Ordinal).Count() != result.EquipmentEntries.Length
             || result.Total < result.Entries.Length || result.RecoveryCount < 0 || result.CategoryTotal < 0
             || result.Categories is not { Length: <= 128 } || result.Categories.Any(x => x == null || x.Count <= 0
                 || !PlayerItemQueryService.Text(x.Code, 128, true) || !PlayerItemQueryService.Text(x.DisplayName, 256))

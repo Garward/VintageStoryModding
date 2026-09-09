@@ -19,6 +19,9 @@ public sealed class PlayerMenuController
         if (textInputFocused) return;
         Session.Enter(entry);
         if (!Session.IsOpen) Items.CloseMenu();
+        else if (Inventory != null && entry == PlayerMenuEntryPoint.CharacterMenu)
+            ChangeInventoryQuery(Inventory.Query with { Category = VRPG.Inventory.PlayerItemCategories.Gear,
+                Location = VRPG.Inventory.PlayerItemLocation.Stored, Offset = 0, EquipmentOffset = 0 }, Environment.TickCount64);
         Changed?.Invoke();
     }
     public void Close() { Session.Close(); Items.CloseMenu(); Changed?.Invoke(); }
@@ -31,6 +34,15 @@ public sealed class PlayerMenuController
     public void ResetConnection(string identity) { Items.ResetConnection(); SetWorld(identity); }
     public void QueueInventoryQuery(double nowMilliseconds) => Items.QueueQuery(new PlayerItemQueryRequest
     { Category = Session.Current.Category, Search = Session.Current.Search, Offset = Session.Current.ScrollAnchor, Limit = 64 }, nowMilliseconds);
+    public void ChangeInventoryQuery(InventoryQueryState query, double nowMilliseconds)
+    {
+        if (Inventory == null) return;
+        bool sameItems = Inventory.Query.HasSameItems(query);
+        Inventory.ChangeQuery(query, nowMilliseconds);
+        if (!sameItems) Session.Update(Session.Current with { Category = query.Category, Search = query.Search,
+            ScrollAnchor = 0, SelectedEntry = "", InspectorScroll = 0 });
+        Changed?.Invoke();
+    }
     public void Select(string entryId)
     {
         Session.Update(Session.Current with { SelectedEntry = entryId });

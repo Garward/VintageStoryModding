@@ -1,4 +1,7 @@
 {
+  "menu-equipment-count": "Equipped: {0}",
+  "menu-equipment-empty": "Nothing equipped.",
+  "menu-equipment-loading": "Loading equipment…",
   "menu-effect-total": "{0}: {1} {2}",
   "menu-browse-error-short": "Load failed. Refresh.",
   "menu-browse-options": "Browse options",

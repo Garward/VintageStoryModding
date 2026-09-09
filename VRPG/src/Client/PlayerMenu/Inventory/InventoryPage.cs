@@ -39,8 +39,9 @@ public sealed class InventoryPage : IDisposable
     public void Close() { open = false; Items.CloseMenu(); View.Loading = View.DetailLoading = false; }
     public void ChangeQuery(InventoryQueryState query, double milliseconds)
     {
-        bool same = Query == query; Query = query; open = true; now = milliseconds;
-        View.Begin(same); Items.QueueQuery(Query.ToRequest(), milliseconds); pageDeadline = milliseconds + 10200; Changed?.Invoke();
+        bool sameItems = Query.HasSameItems(query), auxiliaryOnly = sameItems && Query != query;
+        Query = query; open = true; now = milliseconds;
+        View.Begin(sameItems, auxiliaryOnly); Items.QueueQuery(Query.ToRequest(), milliseconds); pageDeadline = milliseconds + 10200; Changed?.Invoke();
     }
     public void Refresh(double milliseconds) => ChangeQuery(Query, milliseconds);
     public void NextPage(double milliseconds)
@@ -60,7 +61,8 @@ public sealed class InventoryPage : IDisposable
     private void OnPage(PlayerItemQueryResult page)
     {
         if (!open) return; View.Apply(page);
-        if (View.Selected != null) Select(View.SelectedId);
+        if (View.Selected != null && (View.Detail == null || View.Detail.StoreRevision != page.StoreRevision
+            || View.Detail.BuildRevision != page.BuildRevision)) Select(View.SelectedId);
         Changed?.Invoke();
     }
     private void OnDetail(PlayerItemDetailResult detail)

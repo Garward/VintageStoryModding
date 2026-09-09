@@ -28,13 +28,16 @@ public sealed class InventoryViewModel
     public string DetailError { get; internal set; } = "";
     public bool Grid { get; set; }
     public InventorySelectionState Selection { get; } = new();
-    public void Begin(bool sameQuery)
+    public EquipmentDisclosure Equipment { get; } = new();
+    public void Begin(bool sameQuery, bool preserveDetail = false)
     {
-        Loading = true; Stale = Capacity != null; Error = ""; Detail = null; DetailLoading = false;
+        Loading = true; Stale = Capacity != null; Error = "";
+        if (!preserveDetail) { Detail = null; DetailLoading = false; }
         if (!sameQuery) { Entries = System.Array.Empty<PlayerItemEntryPacket>(); Total = null; SelectedId = ""; Scroll = 0; }
     }
     public void Apply(PlayerItemQueryResult result)
     {
+        Equipment.Apply(result);
         StoreRevision = result.StoreRevision; BuildRevision = result.BuildRevision;
         Entries = result.Entries; Capacity = result.CapacitySummary; Total = result.Total;
         RecoveryCount = result.RecoveryCount; CategoryTotal = result.CategoryTotal;
@@ -52,6 +55,7 @@ public sealed class InventoryViewModel
     public void Reset()
     {
         Entries = System.Array.Empty<PlayerItemEntryPacket>(); Capacity = null; Total = null;
+        Equipment.Reset();
         SelectedId = ""; Detail = null; Selection.Clear(); Loading = DetailLoading = Stale = false;
         Categories = PlayerItemCategories.Required.Select(code => new PlayerItemCategoryPacket { Code = code }).ToArray();
         Scroll = RecoveryCount = CategoryTotal = 0; StoreRevision = BuildRevision = 0; Error = DetailError = "";

@@ -307,6 +307,30 @@ public sealed class PlayerMenuShell : GuiElement
         double x = b.X + 18, y = b.Y + 12 - session.Current.InspectorScroll, width = b.Width - 36;
         void Line(string text, double size = 15, string color = PlayerMenuTheme.Text)
         { double height = MeasureTextHeight(ctx, text, width, size); Text(ctx, text, new(x, y, width, height), size, color); y += height + 8; }
+        if (Layout.CondensedBrowserChrome)
+            Line(view.Capacity == null ? T("loading") : T("capacity", view.Capacity.UniqueEntriesUsed, view.Capacity.UniqueEntryLimit,
+                view.Capacity.AggregateEntriesUsed, view.Capacity.AggregateEntryLimit, view.RecoveryCount), 13, PlayerMenuTheme.Muted);
+        if (page.Query.Category == PlayerItemCategories.Gear)
+        {
+            Button(ctx, "equipment", session.Current.EquipmentExpanded ? "equipment-open" : "equipment", new(x, y, width, 34)); y += 44;
+            if (session.Current.EquipmentExpanded)
+            {
+                if (view.Equipment.Total == null) Line(T("equipment-loading"));
+                else
+                {
+                    Line(T("equipment-count", view.Equipment.Total), 14);
+                    if (view.Equipment.Total > 64)
+                    {
+                        Button(ctx, "equipment-previous", "previous", new(x, y, (width - 4) / 2, 34),
+                            !view.Loading && page.Query.EquipmentOffset > 0 ? MenuControlState.Default : MenuControlState.Disabled);
+                        Button(ctx, "equipment-next", "next", new(x + (width + 4) / 2, y, (width - 4) / 2, 34),
+                            !view.Loading && page.Query.EquipmentOffset + 64 < view.Equipment.Total ? MenuControlState.Default : MenuControlState.Disabled); y += 44;
+                    }
+                    if (view.Equipment.Entries.Count == 0) Line(T("equipment-empty"), 14, PlayerMenuTheme.Muted);
+                    foreach (var worn in view.Equipment.Entries) Line(worn.DisplayName, 15);
+                }
+            }
+        }
         Line(T("selection-count", view.Selection.Amounts.Count, view.Selection.HiddenCount(view.Entries)), 14, PlayerMenuTheme.Muted);
         Button(ctx, "select-page", "select-page", new(x, y, (width - 4) / 2, 34), view.Loading || view.Stale || view.Entries.Count == 0 ? MenuControlState.Disabled : MenuControlState.Default);
         Button(ctx, "clear-selection", "clear-selection", new(x + (width + 4) / 2, y, (width - 4) / 2, 34), view.Selection.Amounts.Count > 0 ? MenuControlState.Default : MenuControlState.Disabled); y += 44;
@@ -347,6 +371,7 @@ public sealed class PlayerMenuShell : GuiElement
                     var display = InventoryItemRow.DisplayValue(effect.Value, effect.UnitCode);
                     Line(T(effect.Operation == "resolved" ? "effect-total" : "effect-value", StatName(effect.StatCode), display.Value.ToString("0.####", CultureInfo.CurrentCulture),
                         T("unit-" + display.Unit), T("operation-" + effect.Operation)));
+                    if (effect.ConditionCode.Length > 0) Line(T("condition-" + effect.ConditionCode, detail.ReferenceLevel), 13, PlayerMenuTheme.Muted);
                 }
                 if (detail.Comparison.Length > 0) Line(T("comparison"), 18);
                 foreach (var comparison in detail.Comparison)

@@ -125,6 +125,10 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         else if (intent == "next-page") { page.NextPage(now); session.Update(session.Current with { ScrollAnchor = 0 }); }
         else if (intent == "previous-page") { page.PreviousPage(now); session.Update(session.Current with { ScrollAnchor = 0 }); }
         else if (intent == "view") { page.View.Grid = !page.View.Grid; session.Update(session.Current with { ScrollAnchor = 0 }); }
+        else if (intent == "equipment-next")
+            controller.ChangeInventoryQuery(page.Query with { EquipmentOffset = checked(page.Query.EquipmentOffset + 64) }, now);
+        else if (intent == "equipment-previous")
+            controller.ChangeInventoryQuery(page.Query with { EquipmentOffset = Math.Max(0, page.Query.EquipmentOffset - 64) }, now);
         else
         {
             if (intent.StartsWith("category:", StringComparison.Ordinal)) query = query with { Category = intent[9..], Offset = 0 };
@@ -147,8 +151,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
             }
             else if (intent == "sort") query = query with { Sort = (PlayerItemSortOrder)(((int)query.Sort + 1) % 3), Offset = 0 };
             else return false;
-            page.ChangeQuery(query, now);
-            session.Update(session.Current with { Category = query.Category, ScrollAnchor = 0, SelectedEntry = "", InspectorScroll = 0 });
+            controller.ChangeInventoryQuery(query, now);
         }
         return true;
     }

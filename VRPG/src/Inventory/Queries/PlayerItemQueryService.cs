@@ -31,6 +31,12 @@ public sealed class PlayerItemQueryService
             result.StoreRevision = page.Revision;
             result.Total = page.Total;
             result.Entries = page.Entries.Select(ToPacket).ToArray();
+            var equipment = store.Query(new("", "", request.EquipmentOffset, request.EquipmentLimit, PlayerItemLocation.Equipped));
+            result.EquipmentEntries = equipment.Entries.Select(ToPacket).ToArray();
+            result.EquipmentTotal = equipment.Total;
+            if (equipment.Revision != page.Revision) result.RejectionCode = "stale-store";
+            if (result.EquipmentEntries.Any(entry => !ValidEntry(entry)))
+            { result.EquipmentEntries = Array.Empty<PlayerItemEntryPacket>(); result.RejectionCode = "metadata-limit"; }
             var catalog = store.QueryCategories(request.Location, request.CategoryOffset, request.CategoryLimit);
             result.CategoryTotal = catalog.Total;
             result.CoreCategories = (catalog.CoreCategories ?? Array.Empty<PlayerItemCategorySummary>()).Select(category =>
@@ -71,7 +77,8 @@ public sealed class PlayerItemQueryService
         if (!Enum.IsDefined(request.Location) || !Enum.IsDefined(request.Sort)
             || ((int)request.Filters & ~127) != 0) return "invalid-filter";
         if (request.Offset < 0 || request.Limit is < 1 or > MaximumEntries
-            || request.CategoryOffset < 0 || request.CategoryLimit is < 1 or > MaximumEntries) return "request-limit";
+            || request.CategoryOffset < 0 || request.CategoryLimit is < 1 or > MaximumEntries
+            || request.EquipmentOffset < 0 || request.EquipmentLimit is < 1 or > MaximumEntries) return "request-limit";
         if (!Text(request.Search, MaximumSearchLength) || !Text(request.Category, MaximumIdentityLength)) return "invalid-search";
         return "";
     }

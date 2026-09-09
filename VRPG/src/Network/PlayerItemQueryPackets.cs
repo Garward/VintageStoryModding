@@ -20,6 +20,8 @@ public sealed class PlayerItemQueryRequest
     [ProtoMember(10)] public int Limit { get; set; } = 64;
     [ProtoMember(11)] public int CategoryOffset { get; set; }
     [ProtoMember(12)] public int CategoryLimit { get; set; } = 64;
+    [ProtoMember(13)] public int EquipmentOffset { get; set; }
+    [ProtoMember(14)] public int EquipmentLimit { get; set; } = 64;
 }
 
 [ProtoContract]
@@ -37,6 +39,8 @@ public sealed class PlayerItemQueryResult
     [ProtoMember(10)] public PlayerItemCategoryPacket[] Categories { get; set; } = Array.Empty<PlayerItemCategoryPacket>();
     [ProtoMember(11)] public int CategoryTotal { get; set; }
     [ProtoMember(12)] public PlayerItemCategoryPacket[] CoreCategories { get; set; } = Array.Empty<PlayerItemCategoryPacket>();
+    [ProtoMember(13)] public PlayerItemEntryPacket[] EquipmentEntries { get; set; } = Array.Empty<PlayerItemEntryPacket>();
+    [ProtoMember(14)] public int EquipmentTotal { get; set; }
 }
 
 [ProtoContract]

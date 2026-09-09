@@ -11,6 +11,27 @@ namespace VRPG.Tests;
 public sealed class InventoryViewModelTests
 {
     [Fact]
+    public void CatalogOnlyPagingPreservesActualControllerInspectionAndExplicitSelection()
+    {
+        var store = new InMemoryPlayerItemStore();
+        string id = store.Insert(Item("Copper", "materials"), 20, 0).EntryId;
+        using var page = Page(store); var controller = new PlayerMenuController(page);
+        controller.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        controller.ChangeInventoryQuery(new(Category: "materials"), 0); page.Pump(200); page.Select(id);
+        page.View.Scroll = 3;
+        Assert.True(page.View.Selection.Set(page.View.Selected!, 7));
+        controller.Session.Update(controller.Session.Current with { SelectedEntry = id, ScrollAnchor = 3, InspectorScroll = 72 });
+        var detail = page.View.Detail;
+        controller.ChangeInventoryQuery(page.Query with { CategoryOffset = 64 }, 300);
+        Assert.Equal(id, page.View.SelectedId); Assert.Same(detail, page.View.Detail);
+        Assert.Equal(3, page.View.Scroll); Assert.Equal(3, controller.Session.Current.ScrollAnchor);
+        Assert.Equal(72, controller.Session.Current.InspectorScroll); Assert.Equal(id, controller.Session.Current.SelectedEntry);
+        page.Pump(500);
+        Assert.Same(detail, page.View.Detail); Assert.Equal(7, page.View.Selection.Amounts[id]);
+        controller.ChangeInventoryQuery(page.Query with { Search = "nothing" }, 600);
+        Assert.Equal("", controller.Session.Current.SelectedEntry); Assert.Null(page.View.Detail);
+    }
+    [Fact]
     public void NewerDetailRevisionRefreshesOldSummaryBeforePresentingItAsCurrent()
     {
         var store = new InMemoryPlayerItemStore();
