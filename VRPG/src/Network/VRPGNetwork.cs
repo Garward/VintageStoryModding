@@ -50,7 +50,12 @@ public static class VRPGNetwork
             .RegisterMessageType<PlayerItemActionRequest>()
             .RegisterMessageType<PlayerItemActionResult>()
             .RegisterMessageType<PlayerItemSessionPacket>()
-            .RegisterMessageType<PlayerItemInvalidationPacket>();
+            .RegisterMessageType<PlayerItemInvalidationPacket>()
+            .RegisterMessageType<PartySessionPacket>()
+            .RegisterMessageType<PartyQueryPacket>()
+            .RegisterMessageType<PartyMutationPacket>()
+            .RegisterMessageType<PartyResultPacket>()
+            .RegisterMessageType<PartySnapshotPacket>();
     }
 
     public static IClientNetworkChannel RegisterClient(ICoreClientAPI api)
@@ -96,6 +101,11 @@ public static class VRPGNetwork
             .RegisterMessageType<PlayerItemActionRequest>()
             .RegisterMessageType<PlayerItemActionResult>()
             .RegisterMessageType<PlayerItemSessionPacket>()
-            .RegisterMessageType<PlayerItemInvalidationPacket>();
+            .RegisterMessageType<PlayerItemInvalidationPacket>()
+            .RegisterMessageType<PartySessionPacket>()
+            .RegisterMessageType<PartyQueryPacket>()
+            .RegisterMessageType<PartyMutationPacket>()
+            .RegisterMessageType<PartyResultPacket>()
+            .RegisterMessageType<PartySnapshotPacket>();
     }
 }

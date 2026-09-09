@@ -7,6 +7,7 @@ using VRPG.Client;
 using VRPG.Client.UI;
 using VRPG.Client.Patches;
 using VRPG.Client.PlayerMenu;
+using VRPG.Client.PlayerMenu.Party;
 using VRPG.Client.Interactions;
 using VRPG.Client.Movement;
 using VRPG.Client.Visuals;
@@ -21,6 +22,7 @@ using VRPG.Patches;
 using VRPG.Interactions;
 using VRPG.Inventory;
 using VRPG.Inventory.Persistence;
+using VRPG.Parties;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -41,6 +43,7 @@ public sealed class VRPGModSystem : ModSystem
     private readonly UnavailableSkillNotificationService unavailableSkillNotifications = new();
     private IServerEventAPI? skillNotificationEvents;
     private PlayerItemPersistenceModule? playerItemPersistence;
+    private PartyModule? partyModule;
     private GuiDialogVRPGHub? clientHubDialog;
     private GuiDialogVRPGLibrary? clientLibraryDialog;
     private GuiDialogVRPGTalentEditor? clientTalentEditorDialog;
@@ -79,6 +82,8 @@ public sealed class VRPGModSystem : ModSystem
     public VRPGDataRegistry DataRegistry => dataRegistry ?? throw new InvalidOperationException("VRPG data is not loaded yet.");
     public LibraryIndex LibraryIndex => libraryIndex;
     public VRPGConfig Config => config;
+    public PartyModule? Parties => partyModule;
+    public PartyClientService? PartyClient { get; private set; }
 
     public override double ExecuteOrder() => 0.55;
 
@@ -141,6 +146,9 @@ public sealed class VRPGModSystem : ModSystem
         rpgModule = null;
         playerItemPersistence = null;
 
+        partyModule = new PartyModule(serverChannel);
+        AddAndStart(api, partyModule);
+
         playerItemPersistence = PlayerItemCustodyBootstrap.CreateModule(api, config.Modules.Rpg.InventoryReplacement.Enabled);
         if (playerItemPersistence != null)
         {
@@ -187,6 +195,8 @@ public sealed class VRPGModSystem : ModSystem
         clientMovementEffects = new ClientMovementEffectController(api);
 
         clientChannel = VRPGNetwork.RegisterClient(api);
+        PartyClient?.Dispose();
+        PartyClient = new PartyClientService(clientChannel, api.Event);
         clientChannel
             .SetMessageHandler<OpenHubPacket>(packet => OpenHubDialog(api, packet))
             .SetMessageHandler<TalentTreeSnapshotPacket>(packet => ReceiveTalentTreeSnapshot(api, packet))
@@ -354,6 +364,9 @@ public sealed class VRPGModSystem : ModSystem
         }
 
         modules.Clear();
+        partyModule = null;
+        PartyClient?.Dispose();
+        PartyClient = null;
         clientHubDialog?.TryClose();
         clientHubDialog?.Dispose();
         clientHubDialog = null;

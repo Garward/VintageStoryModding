@@ -278,6 +278,16 @@ public sealed class SkillPacketAuthorityTests
             var logger = PlayerDefenseServiceTests.Proxy.Create<ILogger>((_, _) => null);
             var events = PlayerDefenseServiceTests.Proxy.Create<IServerEventAPI>((name, args) =>
             {
+                if (name == "RegisterGameTickListener")
+                {
+                    EventHandlers["Tick"] = (Delegate)args![0]!;
+                    return 1L;
+                }
+                if (name == "UnregisterGameTickListener")
+                {
+                    EventHandlers["Tick"] = null;
+                    return null;
+                }
                 string key = name[(name.IndexOf('_') + 1)..];
                 EventHandlers.TryGetValue(key, out var current);
                 if (name.StartsWith("add_", StringComparison.Ordinal)) EventHandlers[key] = Delegate.Combine(current, (Delegate)args![0]!);
