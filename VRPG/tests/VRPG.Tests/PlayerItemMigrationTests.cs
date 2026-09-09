@@ -62,7 +62,7 @@ public sealed class PlayerItemMigrationTests
     }
 
     [Fact]
-    public void FailedPreparationSaveLeavesLegacyInventoryUntouched()
+    public void FailedPreparationWriteLeavesLegacyInventoryUntouchedButNeedsConfirmation()
     {
         TestContext context = Context(Slot("hotbar", 0, 5));
         context.Storage.FailOnWriteNumber = 1;
@@ -70,7 +70,7 @@ public sealed class PlayerItemMigrationTests
         PlayerItemMigrationResult result = context.Coordinator.Commit(context.Source);
 
         Assert.False(result.Success);
-        Assert.False(result.RecoveryRequired);
+        Assert.True(result.RecoveryRequired);
         Assert.Equal(LegacyInventoryState.MatchesSnapshot, context.Source.CompareTo(context.Original));
         Assert.Empty(context.Service.Directory.ForPlayer(PlayerUid).Query(Query()).Entries);
     }

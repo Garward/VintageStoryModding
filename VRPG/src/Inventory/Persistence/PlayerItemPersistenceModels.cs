@@ -183,6 +183,10 @@ public sealed record PlayerItemArchiveSaveResult(
     long Generation,
     string Error)
 {
-    public static PlayerItemArchiveSaveResult Failed(long generation, string error) =>
-        new(false, generation, error);
+    /// <summary>A failed call into storage may have reached disk; callers cannot infer rollback.</summary>
+    public bool StorageWriteAttempted { get; init; }
+    public static PlayerItemArchiveSaveResult Failed(long generation, string error, bool storageWriteAttempted = false) =>
+        new(false, generation, error) { StorageWriteAttempted = storageWriteAttempted };
 }
+
+public sealed record PlayerItemMigrationConfirmation(bool IsConfirmed, PlayerItemMigrationStatus? Phase);

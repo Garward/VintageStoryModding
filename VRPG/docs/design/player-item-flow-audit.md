@@ -181,6 +181,21 @@ world/module start/disposal resets them. Snapshots are current observations, not
 durable or reusable activation credentials.
 
 The persistence module supplies this same policy to pickup and native guards.
+After review correction, `IsLoaded` plus a mutable journal phase is explicitly
+insufficient. `PlayerItemArchiveService.MigrationConfirmation` supplies detached
+phase evidence established only by successful load/save. Stage/status changes
+remain pending, and any failed call into storage keeps affected ownership
+uncertain even when `AbortStagedMigration` restores live metadata to no journal.
+Only a known failure before storage was invoked can restore that prior Vanilla
+permission without another authoritative save/load. A storage call throwing
+before its actual write is still ambiguous to the caller, just like write-then-
+throw; both require confirmation. Mutable phase drift also forces a real save
+attempt instead of permitting a no-op save to masquerade as confirmation. Saved
+journal candidates are detached from mutable references and preserve unknown
+fields. Terminal-phase `Resume` retries only confirmation; after reloading a
+confirmed RestorePending phase whose source already exactly matches the snapshot,
+recovery confirms without replaying `Restore`. Aborted initial preparation can
+likewise confirm its untouched fallback without clearing the source.
 Custody lookup reads existing bridge receipts without replaying reconciliation or
 writing receipts. Existing explicit startup/disconnect/death/selection lifecycle
 reconciliation remains. Pending/nonterminal receipts and recorded stray cursors

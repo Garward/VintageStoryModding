@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VRPG.Inventory.Migration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VRPG.Inventory.Bridges;
 
@@ -15,6 +16,9 @@ public sealed class PlayerItemArchiveService
     private PlayerItemArchive archive = new();
     private readonly HashSet<string> forcedPlayers = new(StringComparer.OrdinalIgnoreCase);
     private bool metadataDirty;
+    private Dictionary<string, PlayerItemMigrationStatus> confirmedMigrationPhases = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> pendingMigrationChanges = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> uncertainMigrationWrites = new(StringComparer.OrdinalIgnoreCase);
 
     public PlayerItemArchiveService(
         PlayerItemArchiveRepository repository,
@@ -70,6 +74,7 @@ public sealed class PlayerItemArchiveService
             Generation = loaded.Generation;
             forcedPlayers.Clear();
             metadataDirty = false;
+            ConfirmMigrationPhases(archive);
             IsLoaded = true;
             return loaded;
         }
@@ -83,6 +88,19 @@ public sealed class PlayerItemArchiveService
             return archive.Migrations.TryGetValue(playerUid.Trim(), out PlayerItemMigrationJournalState? state)
                 ? state
                 : null;
+        }
+    }
+
+    /// <summary>Detached phase evidence, confirmed only by a validated load or successful save.</summary>
+    public PlayerItemMigrationConfirmation MigrationConfirmation(string playerUid)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(playerUid);
+        lock (sync)
+        {
+            string uid = playerUid.Trim();
+            PlayerItemMigrationStatus? phase = confirmedMigrationPhases.TryGetValue(uid, out var confirmed) ? confirmed : null;
+            bool matches = (archive.Migrations.TryGetValue(uid, out var live) ? live.Status : (PlayerItemMigrationStatus?)null) == phase;
+            return new(IsLoaded && matches && !pendingMigrationChanges.Contains(uid) && !uncertainMigrationWrites.Contains(uid), phase);
         }
     }
 
@@ -101,6 +119,7 @@ public sealed class PlayerItemArchiveService
             Directory.Set(normalized, stagedStore);
             archive.Migrations[normalized] = journal;
             forcedPlayers.Add(normalized);
+            pendingMigrationChanges.Add(normalized);
             metadataDirty = true;
         }
     }
@@ -112,6 +131,7 @@ public sealed class PlayerItemArchiveService
             if (!archive.Migrations.TryGetValue(playerUid.Trim(), out PlayerItemMigrationJournalState? journal))
                 throw new InvalidOperationException("No migration journal exists for this player.");
             journal.Status = status;
+            pendingMigrationChanges.Add(playerUid.Trim());
             metadataDirty = true;
         }
     }
@@ -129,6 +149,11 @@ public sealed class PlayerItemArchiveService
             else archive.Migrations[normalized] = priorJournal;
             forcedPlayers.Add(normalized);
             metadataDirty = priorJournal != null;
+            // Only a known pre-storage failure can restore prior permission without another
+            // authoritative save/load. A failed Write may already contain the staged owner.
+            PlayerItemMigrationStatus? confirmed = confirmedMigrationPhases.TryGetValue(normalized, out var phase) ? phase : null;
+            if (!uncertainMigrationWrites.Contains(normalized) && priorJournal?.Status == confirmed)
+                pendingMigrationChanges.Remove(normalized);
         }
     }
 
@@ -160,21 +185,32 @@ public sealed class PlayerItemArchiveService
                 captures.Add((store, capture));
             }
 
-            if (captures.Count == 0 && !metadataDirty && Generation > 0)
+            string[] changedMigrations = pendingMigrationChanges.Concat(uncertainMigrationWrites)
+                .Concat(archive.Migrations.Keys.Concat(confirmedMigrationPhases.Keys).Where(uid =>
+                    (archive.Migrations.TryGetValue(uid, out var live) ? live.Status : (PlayerItemMigrationStatus?)null)
+                    != (confirmedMigrationPhases.TryGetValue(uid, out var confirmed) ? confirmed : (PlayerItemMigrationStatus?)null)))
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            if (captures.Count == 0 && !metadataDirty && changedMigrations.Length == 0 && Generation > 0)
                 return new PlayerItemArchiveSaveResult(true, Generation, "");
 
             var nextArchive = new PlayerItemArchive
             {
                 SchemaVersion = PlayerItemPersistenceSchema.CurrentVersion,
                 Players = nextPlayers,
-                Migrations = new Dictionary<string, PlayerItemMigrationJournalState>(
-                    archive.Migrations,
+                // Journal objects are mutable and externally observable. The serialized candidate
+                // and its later confirmation must not alias those live objects.
+                Migrations = archive.Migrations.ToDictionary(pair => pair.Key,
+                    pair => JsonConvert.DeserializeObject<PlayerItemMigrationJournalState>(JsonConvert.SerializeObject(pair.Value))!,
                     StringComparer.OrdinalIgnoreCase),
                 Bridges = new Dictionary<string, PlayerItemBridgeReceipt>(archive.Bridges, StringComparer.Ordinal),
                 ExtensionData = CloneExtensions(archive.ExtensionData)
             };
             PlayerItemArchiveSaveResult saved = repository.Save(nextArchive);
-            if (!saved.Success) return saved;
+            if (!saved.Success)
+            {
+                if (saved.StorageWriteAttempted) uncertainMigrationWrites.UnionWith(changedMigrations);
+                return saved;
+            }
 
             archive = nextArchive;
             Generation = saved.Generation;
@@ -182,8 +218,17 @@ public sealed class PlayerItemArchiveService
                 store.MarkPersisted(capture.PersistenceStamp);
             forcedPlayers.Clear();
             metadataDirty = false;
+            ConfirmMigrationPhases(nextArchive);
             return saved;
         }
+    }
+
+    private void ConfirmMigrationPhases(PlayerItemArchive confirmed)
+    {
+        confirmedMigrationPhases = confirmed.Migrations.ToDictionary(pair => pair.Key, pair => pair.Value.Status,
+            StringComparer.OrdinalIgnoreCase);
+        pendingMigrationChanges.Clear();
+        uncertainMigrationWrites.Clear();
     }
 
     internal PlayerItemBridgeReceipt[] BridgeSnapshot()

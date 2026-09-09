@@ -87,7 +87,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         if (string.IsNullOrWhiteSpace(playerUid)) return PlayerItemCustodySnapshot.Unresolved;
         if (unresolvedCursors.Contains(playerUid.Trim())) return PlayerItemCustodySnapshot.Unresolved;
         bool loaded = Service?.IsLoaded == true;
-        var phase = loaded ? Service!.Migration(playerUid)?.Status : null;
+        var confirmation = Service?.MigrationConfirmation(playerUid);
+        var phase = confirmation?.Phase;
         bool reconciled = false;
         if (loaded && phase == PlayerItemMigrationStatus.Committed && IsReady && Service!.IsCrashDurable && Bridges != null)
         {
@@ -102,7 +103,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
             }
             catch { /* Health loss cannot reopen competing Vanilla custody. */ }
         }
-        return custody.Observe(playerUid, loaded, phase, IsReady,
+        return custody.Observe(playerUid, loaded && confirmation?.IsConfirmed == true, phase, IsReady,
             reconciled && NativeInventoryPacketGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
     }
 

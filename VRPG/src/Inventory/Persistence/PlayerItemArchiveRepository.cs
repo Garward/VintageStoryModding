@@ -68,6 +68,7 @@ public sealed class PlayerItemArchiveRepository
     public PlayerItemArchiveSaveResult Save(PlayerItemArchive archive)
     {
         ArgumentNullException.ThrowIfNull(archive);
+        bool storageWriteAttempted = false;
         try
         {
             SlotCandidate[] candidates = ReadCandidates();
@@ -87,12 +88,13 @@ public sealed class PlayerItemArchiveRepository
             {
                 return PlayerItemArchiveSaveResult.Failed(generation, error);
             }
+            storageWriteAttempted = true;
             storage.Write(target, encoded);
-            return new PlayerItemArchiveSaveResult(true, generation, "");
+            return new PlayerItemArchiveSaveResult(true, generation, "") { StorageWriteAttempted = true };
         }
         catch (Exception exception)
         {
-            return PlayerItemArchiveSaveResult.Failed(0, exception.Message);
+            return PlayerItemArchiveSaveResult.Failed(0, exception.Message, storageWriteAttempted);
         }
     }
 

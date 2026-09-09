@@ -135,7 +135,8 @@ public sealed class PlayerItemMigrationCoordinator
     {
         PlayerItemMigrationPlan plan = DryRun(source);
         if (plan.Report.AlreadyCompleted)
-            return new PlayerItemMigrationResult(true, false, plan.Report.Summary());
+            return persistence.MigrationConfirmation(source.PlayerUid).IsConfirmed
+                ? new PlayerItemMigrationResult(true, false, plan.Report.Summary()) : FinishPrepared(source.PlayerUid);
         if (!plan.Report.Ready || plan.StagedStore == null || plan.Journal == null)
             return new PlayerItemMigrationResult(false, false, plan.Report.Summary());
 
@@ -146,7 +147,10 @@ public sealed class PlayerItemMigrationCoordinator
         if (!prepared.Success)
         {
             persistence.AbortStagedMigration(source.PlayerUid, priorStore, priorJournal);
-            return new PlayerItemMigrationResult(false, false, "Migration stopped before any items were moved.");
+            bool recovery = !persistence.MigrationConfirmation(source.PlayerUid).IsConfirmed;
+            return new PlayerItemMigrationResult(false, recovery, recovery
+                ? "Migration stopped before any items were moved. Run the resume command."
+                : "Migration stopped before any items were moved.");
         }
 
         LegacyInventoryMutationResult cleared = source.Clear(plan.Journal.SourceSlots);
@@ -169,11 +173,22 @@ public sealed class PlayerItemMigrationCoordinator
     {
         PlayerItemMigrationJournalState? journal = persistence.Migration(source.PlayerUid);
         if (journal == null)
+        {
+            var confirmation = persistence.MigrationConfirmation(source.PlayerUid);
+            // Abort restored the prior no-journal state without touching the source, but a
+            // failed prepare Write may still be on disk. Confirm that rollback, not a new clear.
+            if (persistence.IsLoaded && !confirmation.IsConfirmed && confirmation.Phase == null)
+                return persistence.SaveDirty().Success
+                    ? new PlayerItemMigrationResult(true, false, "Recovery complete. No items were moved.")
+                    : new PlayerItemMigrationResult(false, true, "Recovery confirmation could not be saved. Try again.");
             return new PlayerItemMigrationResult(false, false, "No migration recovery is pending.");
+        }
         if (journal.Status == PlayerItemMigrationStatus.Committed)
-            return new PlayerItemMigrationResult(true, false, "This player's inventory is already migrated.");
+            return persistence.MigrationConfirmation(source.PlayerUid).IsConfirmed
+                ? new PlayerItemMigrationResult(true, false, "This player's inventory is already migrated.") : FinishPrepared(source.PlayerUid);
         if (journal.Status == PlayerItemMigrationStatus.Restored)
-            return new PlayerItemMigrationResult(true, false, "The original inventory has already been restored.");
+            return persistence.MigrationConfirmation(source.PlayerUid).IsConfirmed
+                ? new PlayerItemMigrationResult(true, false, "The original inventory has already been restored.") : ConfirmRestored(source.PlayerUid);
         if (journal.Status == PlayerItemMigrationStatus.RestorePending)
             return RestorePrior(source, journal);
 
@@ -202,6 +217,12 @@ public sealed class PlayerItemMigrationCoordinator
         var current = persistence.Directory.ForPlayer(source.PlayerUid) as InMemoryPlayerItemStore;
         if (current == null)
             return new PlayerItemMigrationResult(false, true, "The current inventory could not be read. Check the server log.");
+        var confirmation = persistence.MigrationConfirmation(source.PlayerUid);
+        if ((journal.Status == PlayerItemMigrationStatus.Restored && !confirmation.IsConfirmed)
+            || (journal.Status == PlayerItemMigrationStatus.RestorePending && confirmation.IsConfirmed
+                && confirmation.Phase == PlayerItemMigrationStatus.RestorePending
+                && source.CompareTo(journal.SourceSlots) == LegacyInventoryState.MatchesSnapshot))
+            return ConfirmRestored(source.PlayerUid);
         PlayerItemMigrationStatus previousStatus = journal.Status;
         journal.Status = PlayerItemMigrationStatus.RestorePending;
         persistence.StageMigration(source.PlayerUid, prior!, journal);
@@ -214,7 +235,12 @@ public sealed class PlayerItemMigrationCoordinator
         LegacyInventoryMutationResult restored = source.Restore(journal.SourceSlots);
         if (!restored.Success)
             return new PlayerItemMigrationResult(false, true, "Recovery is incomplete. Free the affected inventory slots and try again.");
-        persistence.SetMigrationStatus(source.PlayerUid, PlayerItemMigrationStatus.Restored);
+        return ConfirmRestored(source.PlayerUid);
+    }
+
+    private PlayerItemMigrationResult ConfirmRestored(string playerUid)
+    {
+        persistence.SetMigrationStatus(playerUid, PlayerItemMigrationStatus.Restored);
         return persistence.SaveDirty().Success
             ? new PlayerItemMigrationResult(true, false, "The original inventory has been restored.")
             : new PlayerItemMigrationResult(false, true, "Items were restored, but recovery confirmation was not saved. Try again.");
