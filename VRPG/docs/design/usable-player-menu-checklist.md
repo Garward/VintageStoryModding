@@ -59,6 +59,10 @@ continue independent implementation work without presenting it as readiness.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Add Options: dropped-item pickup by Everyone / Party only, with matching
   server-enforced access saved per deliberate Adventure drop (user choice 2026-09-09).
+- [ ] Add the approved basic permissions-only party service and compact menu panel.
+  Shared loot access follows current membership; leave/kick revokes immediately.
+  Party health bars and combat features remain deferred. Lifecycle and owner
+  reclaim details are proposed in the basic-party design, awaiting review.
 - [ ] Group nearby compatible drops into bounded loot piles to reduce entities,
   retaining exact items, quantities, permissions and restart-safe partial pickup.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.

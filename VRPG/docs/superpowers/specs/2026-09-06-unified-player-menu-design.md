@@ -157,10 +157,13 @@ alone is not implementation of pickup permissions.
 
 Implementation defaults proposed to the user: Party only initially, owner-only
 when solo, and changing the preference affects future drops rather than existing
-ones. Exact party membership/revocation semantics must be recorded with the drop
-adapter before implementation; never infer a party grant from a client-supplied
-list of players. The two-choice setting is accepted; these defaults and remaining
-party details are not evidence of a completed runtime contract.
+ones. User-confirmed membership rule: party access follows current membership;
+leaving or being kicked immediately revokes shared access to existing party loot.
+Never infer a party grant from a client-supplied list of players. The user also
+approved a basic permissions-only party system, with party health bars and combat
+features deferred. See the proposed [party design](2026-09-09-basic-party-permissions-design.md)
+for lifecycle and UI details still awaiting review. These decisions are not
+evidence of a completed runtime contract.
 
 **Loot piles (user decision, 2026-09-09):** consolidate nearby compatible world
 drops into bounded loot piles where possible, avoiding an entity per contained
