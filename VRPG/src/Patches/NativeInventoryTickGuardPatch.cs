@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Security.Cryptography;
 using HarmonyLib;
 using VRPG.Inventory;
 using Vintagestory.API.Common;
@@ -57,14 +56,7 @@ public static class NativeInventoryTickGuardPatch
     }
 
     private static void Validate(MethodBase? method, Type type, string name, Type[] parameters, string hash)
-    {
-        if (method?.DeclaringType != type || method.Name != name || method.IsStatic
-            || !method.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters)
-            || method.Module.ModuleVersionId.ToString() != "8a3ad3aa-2940-4c39-ae1b-881de9e65346"
-            || Convert.ToHexString(SHA256.HashData(method.GetMethodBody()?.GetILAsByteArray() ?? Array.Empty<byte>())) != hash
-            || Harmony.GetPatchInfo(method)?.Owners.Count > 0)
-            throw new InvalidOperationException("Unsupported native tick boundary or registration: " + name);
-    }
+        => PinnedNativeBoundary.Validate(method, type, name, parameters, hash);
 
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
     {

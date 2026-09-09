@@ -19,6 +19,46 @@ namespace VRPG.Tests;
 [Collection("EngineItemBirth")]
 public sealed class PlayerItemCustodyBootstrapTests
 {
+    [Theory]
+    [MemberData(nameof(NativeInventoryMutationInstallationTests.Targets), MemberType = typeof(NativeInventoryMutationInstallationTests))]
+    public void DisabledHistoricalBootRefusesEachLostManagerOrDeathHook(string boundary)
+    {
+        using var scope = new LifecycleScope();
+        var seed = new PlayerItemArchiveService(new(scope.Storage));
+        Assert.True(seed.Load().Success);
+        seed.StageMigration("player", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Committed });
+        Assert.True(seed.SaveDirty().Success);
+        byte[] original = File.ReadAllBytes(scope.Storage.ArchivePath);
+        scope.Start(false);
+        Assert.True(NativeInventoryMutationGuardPatch.IsReady);
+        scope.Harmony.Unpatch(NativeInventoryMutationInstallationTests.Target(boundary), HarmonyPatchType.Prefix, scope.Harmony.Id);
+        scope.Raise("SaveGameLoaded");
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module!.IsReady);
+        scope.Raise("GameWorldSave");
+        Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void HistoricalBootRefusesBeforeAdmissionWithoutManagerAndDeathProtection(bool requested)
+    {
+        using var scope = new LifecycleScope();
+        var seed = new PlayerItemArchiveService(new(scope.Storage));
+        Assert.True(seed.Load().Success);
+        seed.StageMigration("player", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Committed });
+        Assert.True(seed.SaveDirty().Success);
+        byte[] original = File.ReadAllBytes(scope.Storage.ArchivePath);
+        scope.Start(requested);
+        NativeInventoryMutationGuardPatch.Reset();
+        scope.Raise("SaveGameLoaded");
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module!.IsReady);
+        scope.Raise("GameWorldSave");
+        Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
+    }
+
     [Fact]
     public void MissingWorldIdentityRefusesAdmissionInsteadOfEscapingAsAnUnprotectedModError()
     {
@@ -62,6 +102,8 @@ public sealed class PlayerItemCustodyBootstrapTests
             Assert.Null(NativeInventoryPacketGuardPatch.CustodyResolver);
             Assert.False(NativeInventoryTickGuardPatch.IsInstalled);
             Assert.Null(NativeInventoryTickGuardPatch.CustodyResolver);
+            Assert.False(NativeInventoryMutationGuardPatch.IsInstalled);
+            Assert.Null(NativeInventoryMutationGuardPatch.CustodyResolver);
             return;
         }
         Assert.NotNull(scope.Module);
@@ -93,6 +135,7 @@ public sealed class PlayerItemCustodyBootstrapTests
             scope.Raise("SaveGameLoaded");
             Assert.True(NativeInventoryPacketGuardPatch.IsReady);
             Assert.True(NativeInventoryTickGuardPatch.IsReady);
+            Assert.True(NativeInventoryMutationGuardPatch.IsReady);
             Assert.Equal(vanilla, scope.Module.Custody("player").AllowsVanilla);
             Assert.False(scope.Module.Custody("player").AllowsCanonical);
             Assert.False(scope.Module.CanActivateNativeProfile);
@@ -103,6 +146,8 @@ public sealed class PlayerItemCustodyBootstrapTests
             Assert.Null(NativeInventoryPacketGuardPatch.CustodyResolver);
             Assert.False(NativeInventoryTickGuardPatch.IsInstalled);
             Assert.Null(NativeInventoryTickGuardPatch.CustodyResolver);
+            Assert.False(NativeInventoryMutationGuardPatch.IsInstalled);
+            Assert.Null(NativeInventoryMutationGuardPatch.CustodyResolver);
             Assert.Equal(PlayerItemCustodySnapshot.Unresolved, old.Custody("player"));
             scope.Raise("SaveGameLoaded"); // Disposed listeners cannot reopen the old world.
             Assert.Null(old.Service);
@@ -181,11 +226,16 @@ public sealed class PlayerItemCustodyBootstrapTests
         Assert.True(scope.Module!.Coverage.CanActivate(new[] { "native:packet3-block-place-break" }));
         Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:packet22-block-entity" }));
         Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:packet31-entity" }));
+        Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:TryGiveItemstack", "native:TryTransferAway", "native:DropItem",
+            "native:OnDeath", "native:player-DropAll", "native:deferred-player-death" }));
+        Assert.False(scope.Module.Coverage.CanActivate(new[] { "death", "drop", "grant:admin" }));
 
         scope.Module.Dispose();
 
         Assert.False(NativeInventoryPacketGuardPatch.IsInstalled);
         Assert.Null(NativeInventoryPacketGuardPatch.CustodyResolver);
+        Assert.False(NativeInventoryMutationGuardPatch.IsInstalled);
+        Assert.Null(NativeInventoryMutationGuardPatch.CustodyResolver);
     }
 
     private static void ConflictPostfix() { }

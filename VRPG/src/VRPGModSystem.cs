@@ -438,6 +438,7 @@ public sealed class VRPGModSystem : ModSystem
         EngineItemFlowPatch.Reset();
         NativeInventoryPacketGuardPatch.Reset();
         NativeInventoryTickGuardPatch.Reset();
+        NativeInventoryMutationGuardPatch.Reset();
         rpgModule = null;
         playerItemPersistence = null;
         base.Dispose();

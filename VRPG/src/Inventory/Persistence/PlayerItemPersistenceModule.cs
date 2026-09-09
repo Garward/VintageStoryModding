@@ -42,6 +42,9 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         Coverage.Register("native:packet31-entity", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
         Coverage.Register("native:OnUsingTick", () => IsReady && NativeInventoryTickGuardPatch.IsReady);
         Coverage.Register("native:UpdateTransitionStates", () => IsReady && NativeInventoryTickGuardPatch.IsReady);
+        foreach (string boundary in new[] { "TryGiveItemstack", "TryTransferAway", "DropItem", "OnDeath",
+            "player-DropAll", "deferred-player-death" })
+            Coverage.Register("native:" + boundary, () => IsReady && NativeInventoryMutationGuardPatch.IsReady);
         Coverage.Register("native:cursor-securing", () => IsReady && NativeInventoryPacketGuardPatch.IsReady && unresolvedCursors.Count == 0);
     }
     internal PlayerItemPersistenceModule(bool operationsRequested, string bootstrapError) : this(operationsRequested)
@@ -50,6 +53,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     }
     public bool CanActivateNativeProfile => OperationsRequested && IsReady && NativeInventoryPacketGuardPatch.IsReady
         && NativeInventoryTickGuardPatch.IsReady
+        && NativeInventoryMutationGuardPatch.IsReady
         && unresolvedCursors.Count == 0 && EngineItemFlowPatch.IsInstalled && Coverage.CanActivate(new[]
     {
         "pickup:persisted", "pickup:fresh", "grant:rewards", "grant:admin", "slots:hotbar", "slots:offhand",
@@ -91,6 +95,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
             NativeInventoryPacketGuardPatch.Patch(harmony, api.Logger);
             NativeInventoryTickGuardPatch.CustodyResolver = playerUid => ResolveCustody(playerUid, checkCanonicalReadiness: false);
             NativeInventoryTickGuardPatch.Patch(harmony, api.Logger);
+            NativeInventoryMutationGuardPatch.CustodyResolver = playerUid => ResolveCustody(playerUid, checkCanonicalReadiness: false);
+            NativeInventoryMutationGuardPatch.Patch(harmony, api.Logger);
             EngineItemFlowPatch.CustodyResolver = Custody;
             EngineItemFlowPatch.CoordinatorResolver = () => Bridges;
             EngineItemFlowPatch.Patch(harmony, api.Logger);
@@ -108,6 +114,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     {
         NativeInventoryPacketGuardPatch.Reset();
         NativeInventoryTickGuardPatch.Reset();
+        NativeInventoryMutationGuardPatch.Reset();
         EngineItemFlowPatch.BeforePublicationObserver = null;
         if (api != null)
         {
@@ -140,7 +147,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         var confirmation = Service?.MigrationConfirmation(playerUid);
         var phase = confirmation?.Phase;
         bool reconciled = false;
-        // Tick refusal needs only the owner. Use the same confirmed phase/uncertainty
+        // Native effect refusal needs only the owner. Use the same confirmed phase/uncertainty
         // authority without copying receipts or evaluating canonical operation readiness.
         if (checkCanonicalReadiness && loaded && phase == PlayerItemMigrationStatus.Committed && IsReady && Service!.IsCrashDurable && Bridges != null)
         {
@@ -157,7 +164,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         }
         return custody.Observe(playerUid, loaded && confirmation?.IsConfirmed == true, phase, IsReady,
             OperationsRequested && reconciled && NativeInventoryPacketGuardPatch.IsReady
-                && NativeInventoryTickGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
+                && NativeInventoryTickGuardPatch.IsReady && NativeInventoryMutationGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
     }
 
     public void RequireCursorRecovery(string playerUid)
@@ -179,7 +186,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
             RefuseBoot("Custody persistence did not finish initialization.");
             return;
         }
-        if (protectionInstallFailed || !NativeInventoryPacketGuardPatch.IsReady || !NativeInventoryTickGuardPatch.IsReady || !EngineItemFlowPatch.IsInstalled)
+        if (protectionInstallFailed || !NativeInventoryPacketGuardPatch.IsReady || !NativeInventoryTickGuardPatch.IsReady
+            || !NativeInventoryMutationGuardPatch.IsReady || !EngineItemFlowPatch.IsInstalled)
         {
             RefuseBoot("Required native item protection is unavailable.");
             return;

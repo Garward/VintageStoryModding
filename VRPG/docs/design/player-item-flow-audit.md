@@ -470,3 +470,96 @@ not intercepted by these prefixes.
 This slice is refusal, not an adapter. No packet-ID-only Home/appearance/trader
 exception, default UI, economy authority, outbound receipt, live migration,
 deployment, joined-menu acceptance or full handshake is added.
+
+## Task 3b6: direct native manager and deferred death refusal
+
+`NativeInventoryMutationGuardPatch` installs eight entry prefixes for the pinned
+1.22.7 engine. They refuse canonical, recovery, missing identity, and unavailable
+or throwing custody authority before the direct native effect:
+
+- `PlayerInventoryManager.TryGiveItemstack(ItemStack, bool)` returns false before
+  wrapping or changing the supplied stack.
+- The five-argument `TryTransferAway(ItemSlot, ref ItemStackMoveOperation, bool,
+  StringBuilder, bool)` returns null before source access, operation changes,
+  transfer callbacks or notification work. The shorter overload is a pinned
+  delegation witness. Refusal preserves the source identity, quantity, operation,
+  debug text and destination; it never fabricates an accepted packet.
+- `ServerPlayerInventoryManager.DropItem(ItemSlot, bool)` returns false before
+  `OnHeldDropped`, ongoing hand-use cancellation, ground transfer or dirty flags.
+- `PlayerInventoryManager.OnDeath()` refuses before iterating inventories and
+  dispatching arbitrary `OnOwningEntityDeath` callbacks.
+- `InventoryBasePlayer.DropAll`, `InventoryPlayerHotbar.DropAll`, and
+  `InventoryPlayerBackpacks.DropAll` refuse independently. Hotbar clears its
+  special slot 10 before calling the base; backpacks run a separate spawn/clear
+  loop. Neither effect is protected by the base prefix alone.
+- The actual deferred `Action` created by
+  `EntityBehaviorPlayerInventory.OnEntityDeath(DamageSource)` refuses at callback
+  execution, before manager death or its independent armor spawn/clear loop.
+
+Native `OnEntityDeath` is a nine-instruction producer: load its API/event, load
+`this`, `ldftn` its callback, construct `Action`, load the task code, enqueue, return.
+Installation derives the method from that actual `ldftn` operand, validates the
+complete producer shape and IL hash, then validates and prefixes the callback
+itself. No generated callback name is guessed, no engine callback body is copied,
+and the native queue/delegate is unchanged. A queued action carries no custody
+lease: changing from Vanilla to canonical/recovery, losing the owner, or losing
+authority before execution refuses both inventory and armor effects. Refused
+callbacks are not replayed by this protection. Vanilla retains native
+`keepContents` and `dropArmorOnDeath` behavior.
+
+The native player-inventory source audit found seven concrete classes in the
+pinned Lib module. Mouse cursor, crafting grid, character and ground inherit the
+base `DropAll`; installation checks those inheritance witnesses. Hotbar and
+backpacks are guarded overrides. Creative has an empty override whose exact body
+is witnessed without claiming it delegates to the base. The non-player stone
+coffin override is not included. Foreign inventory overrides remain unsupported.
+
+Manager permission uses its server player's UID. The concrete native client
+manager keeps local behavior without consulting server custody. A server manager
+with an absent or client player cannot acquire that client permission. Shared
+inventory and behavior methods distinguish the explicit API side; ambiguous APIs
+refuse. Server inventory permission reads the stored `playerUID` and requires a
+matching resolved server owner, so an offline lookup failure never proves Vanilla.
+The death callback requires the behavior's `EntityPlayer` and matching server
+player identity at execution. Supplied source/target items and packet identity
+never supply ownership.
+
+Method signatures, return types, module IDs and IL SHA-256 values are pinned in
+the patch. API module is `83c0addd-72c9-42ba-a23e-5e05fe098ba0`, Lib module is
+`8a3ad3aa-2940-4c39-ae1b-881de9e65346`, and Essentials module is
+`0d8db7e9-fd74-4129-bbe8-1ff82baf23fc`. The common validator is minimally extracted
+from the existing tick guard. Short transfer, owning-death delegation, creative,
+death enqueue, `EntityPlayer.TryGiveItemStack`, and native `CmdGive.give` are
+unpatched routing/body witnesses. Every required prefix and witness is checked
+for conflicts; no-op/partial installation cannot establish readiness, and cleanup
+removes only this guard's prefixes.
+
+The native `CmdGive.give` test executes through `EntityPlayer` and the real
+manager: refusal returns the command's existing error result; verified Vanilla
+inserts the requested quantity. Direct refusal can only preserve material still
+owned by its supplied source. It cannot restore material a caller removed before
+invoking the manager or force a foreign caller to honor the failure result.
+
+Manager/death ownership reuses the same confirmed persisted custody resolver as
+tick refusal, without querying canonical operation readiness or copying receipts.
+Protection is mandatory for historical or uncertain custody even when replacement
+is disabled. Losing it before `SaveGameLoaded` invokes the existing actual
+pre-game shutdown refusal and preserves the archive. Verified empty disabled
+worlds remain nonmutating. Disposal resets the authority and removes these hooks;
+reinstallation cannot inherit an earlier world's resolver.
+
+Only `native:TryGiveItemstack`, `native:TryTransferAway`, `native:DropItem`,
+`native:OnDeath`, `native:player-DropAll`, and `native:deferred-player-death` are
+registered. No `death`, `drop`, full admin, held/use/slot/trade readiness, loss
+policy, producer adapter, economy or UI activation is added. Direct admin
+`Clear`/`DiscardAll`, offline `ClearPlayerInvs`, arbitrary slot setters, other
+producers, durable outbound destinations and cursor recovery remain separate
+work. Runtime unpatch/disposal withdraws readiness but is not a continuing
+admission guard or automatic shutdown after the hook disappears. The joined
+Inventory/Character menu acceptance gate remains unchecked by this slice.
+
+Headless tests use actual native manager/slot/DropAll/command methods and the real
+queued death `Action`, with controlled world spawn/event endpoints. They assert
+source identity/quantity, destination quantities, operation and control fields,
+callbacks, spawns and dirty effects. These fixtures do not establish live-world
+parity, death-retention policy, or performance guarantees.
