@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using VRPG.Core;
 using VRPG.Inventory.Migration;
 using VRPG.Inventory.Bridges;
@@ -17,22 +18,32 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     private ICoreServerAPI? api;
     private WorldScopedPlayerItemArchiveStorage? storage;
     private bool checkpointHealthy = true;
+    private bool bootRefused;
+    private bool protectionInstallFailed;
+    private readonly string? bootstrapError;
     private readonly PlayerItemCustodyPolicy custody = new();
     private readonly HashSet<string> unresolvedCursors = new(StringComparer.OrdinalIgnoreCase);
 
     public string Code => "player-items";
     public PlayerItemArchiveService? Service { get; private set; }
-    public bool IsReady => Service?.IsLoaded == true && checkpointHealthy;
+    public bool IsReady => !bootRefused && Service?.IsLoaded == true && checkpointHealthy;
     public PlayerItemBridgeCoordinator? Bridges { get; private set; }
+    public bool OperationsRequested { get; }
     public PlayerItemBridgeCoverage Coverage { get; } = new();
-    public PlayerItemPersistenceModule()
+    public PlayerItemPersistenceModule(bool operationsRequested = true, WorldScopedPlayerItemArchiveStorage? storage = null)
     {
+        OperationsRequested = operationsRequested;
+        this.storage = storage;
         Coverage.Register("pickup:persisted", () => IsReady && EngineItemFlowPatch.IsInstalled);
         Coverage.Register("pickup:fresh", () => IsReady && EngineItemFlowPatch.IsFreshIdentityInstalled);
         Coverage.Register("native:packets", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
         Coverage.Register("native:cursor-securing", () => IsReady && NativeInventoryPacketGuardPatch.IsReady && unresolvedCursors.Count == 0);
     }
-    public bool CanActivateNativeProfile => IsReady && NativeInventoryPacketGuardPatch.IsReady
+    internal PlayerItemPersistenceModule(bool operationsRequested, string bootstrapError) : this(operationsRequested)
+    {
+        this.bootstrapError = bootstrapError;
+    }
+    public bool CanActivateNativeProfile => OperationsRequested && IsReady && NativeInventoryPacketGuardPatch.IsReady
         && unresolvedCursors.Count == 0 && EngineItemFlowPatch.IsInstalled && Coverage.CanActivate(new[]
     {
         "pickup:persisted", "pickup:fresh", "grant:rewards", "grant:admin", "slots:hotbar", "slots:offhand",
@@ -45,12 +56,15 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         custody.Reset();
         unresolvedCursors.Clear();
         checkpointHealthy = true;
+        bootRefused = false;
+        protectionInstallFailed = false;
         this.api = api;
+        api.Event.SaveGameLoaded += OnSaveGameLoaded;
+        if (bootstrapError != null) return;
         EngineItemFlowPatch.BeforePublicationObserver = EngineItemPickupSource.EstablishBeforePublication;
-        storage = new WorldScopedPlayerItemArchiveStorage(api.GetOrCreateDataPath("VRPG/player-items"),
+        storage ??= new WorldScopedPlayerItemArchiveStorage(api.GetOrCreateDataPath("VRPG/player-items"),
             api.WorldManager.SaveGame.SavegameIdentifier, new VintageStoryPlayerItemArchiveStorage(api.WorldManager.SaveGame));
         Service = new PlayerItemArchiveService(new PlayerItemArchiveRepository(storage));
-        api.Event.SaveGameLoaded += OnSaveGameLoaded;
         api.Event.GameWorldSave += OnGameWorldSave;
         api.Event.OnEntitySpawn += OnEntitySpawn;
         api.Event.OnEntityLoaded += OnEntityLoaded;
@@ -58,6 +72,28 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         api.Event.PlayerDeath += OnPlayerDeath;
         api.Event.BeforeActiveSlotChanged += OnBeforeActiveSlotChanged;
         RegisterCommands(api);
+    }
+
+    public void InstallProtection(Harmony harmony)
+    {
+        if (api == null) throw new InvalidOperationException("Start custody persistence before installing protection.");
+        if (bootstrapError != null) return;
+        try
+        {
+            NativeInventoryPacketGuardPatch.CustodyResolver = Custody;
+            NativeInventoryPacketGuardPatch.CursorRecoveryObserver = RequireCursorRecovery;
+            NativeInventoryPacketGuardPatch.Patch(harmony, api.Logger);
+            EngineItemFlowPatch.CustodyResolver = Custody;
+            EngineItemFlowPatch.CoordinatorResolver = () => Bridges;
+            EngineItemFlowPatch.Patch(harmony, api.Logger);
+        }
+        catch (Exception error)
+        {
+            // Modloader exceptions alone do not stop the server. Keep the loaded-world
+            // refusal handler registered even when only part of the patch set installed.
+            protectionInstallFailed = true;
+            api.Logger.Error("[VRPG/Inventory] Custody protection installation failed: {0}", error.Message);
+        }
     }
 
     public void Dispose()
@@ -80,6 +116,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         custody.Reset();
         unresolvedCursors.Clear();
         checkpointHealthy = true;
+        bootRefused = false;
+        protectionInstallFailed = false;
     }
 
     public PlayerItemCustodySnapshot Custody(string playerUid)
@@ -104,7 +142,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
             catch { /* Health loss cannot reopen competing Vanilla custody. */ }
         }
         return custody.Observe(playerUid, loaded && confirmation?.IsConfirmed == true, phase, IsReady,
-            reconciled && NativeInventoryPacketGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
+            OperationsRequested && reconciled && NativeInventoryPacketGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
     }
 
     public void RequireCursorRecovery(string playerUid)
@@ -115,13 +153,29 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
 
     private void OnSaveGameLoaded()
     {
-        if (api == null || Service == null) return;
+        if (api == null || bootRefused) return;
+        if (bootstrapError != null)
+        {
+            RefuseBoot(bootstrapError);
+            return;
+        }
+        if (Service == null)
+        {
+            RefuseBoot("Custody persistence did not finish initialization.");
+            return;
+        }
+        if (protectionInstallFailed || !NativeInventoryPacketGuardPatch.IsReady || !EngineItemFlowPatch.IsInstalled)
+        {
+            RefuseBoot("Required native item protection is unavailable.");
+            return;
+        }
         PlayerItemArchiveLoadResult result = Service.Load();
         if (!result.Success)
         {
             api.Logger.Error(
                 "[VRPG/Inventory] Player-item persistence is unavailable: {0}",
                 result.Error);
+            RefuseBoot("The custody archive could not be validated.");
             return;
         }
         Bridges = new PlayerItemBridgeCoordinator(Service, new WorldCollectibleResolver(api.World));
@@ -141,7 +195,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
 
     private void OnGameWorldSave()
     {
-        if (api == null || Service?.IsLoaded != true) return;
+        if (api == null || Service?.IsLoaded != true || bootRefused) return;
         PlayerItemArchiveSaveResult result = Service.SaveDirty();
         if (!result.Success)
         {
@@ -157,6 +211,17 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
             checkpointHealthy = false;
             api.Logger.Error("[VRPG/Inventory] World checkpoint is unavailable; custody activation is blocked: {0}", error.Message);
         }
+    }
+
+    private void RefuseBoot(string reason)
+    {
+        bootRefused = true;
+        checkpointHealthy = false;
+        api!.Logger.Fatal("[VRPG/Inventory] Server startup refused: {0} Preserve the custody archive for explicit recovery.", reason);
+        // SaveGameLoaded runs after the database is open, before the native post-
+        // LoadGamePre exit gate and gameplay admission. A readiness flag is insufficient.
+        // The engine's soft shutdown invokes GameWorldSave; bootRefused keeps it read-only here.
+        api.Server.ShutDown();
     }
 
     private void OnEntitySpawn(Entity entity)

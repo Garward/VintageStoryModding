@@ -16,6 +16,61 @@ namespace VRPG.Tests;
 public sealed class PlayerItemCustodyPolicyTests
 {
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void RequiredProtectionLossStopsBootstrapBeforeArchiveLoadOrCheckpointWrite(bool pickup)
+    {
+        using var scope = new ModuleScope(false);
+        scope.Load(PlayerItemMigrationStatus.Committed);
+        if (pickup)
+            scope.Harmony.Unpatch(AccessTools.Method(typeof(Vintagestory.GameContent.EntityBehaviorCollectEntities), "OnFoundCollectible"),
+                HarmonyPatchType.Prefix, scope.Harmony.Id);
+        else NativeInventoryPacketGuardPatch.Reset();
+        int writes = scope.Storage.Writes;
+        scope.Storage.FailReads = true;
+        scope.LoadWorld();
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module.IsReady);
+        scope.SaveWorld();
+        scope.LoadWorld();
+        Assert.Equal(writes, scope.Storage.Writes);
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module.Custody("player").AllowsVanilla);
+    }
+
+    [Fact]
+    public void UnreadableBootstrapArchiveStopsAdmissionInsteadOfLeavingUnknownTombstonesLive()
+    {
+        using var scope = new ModuleScope(false);
+        scope.Storage.FailReads = true;
+        scope.LoadWorld();
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module.IsReady);
+        Assert.Equal(0, scope.Storage.Writes);
+    }
+
+    [Theory]
+    [InlineData(PlayerItemMigrationStatus.Committed, PlayerItemCustodyOwner.Canonical, false)]
+    [InlineData(PlayerItemMigrationStatus.Prepared, PlayerItemCustodyOwner.Recovery, false)]
+    [InlineData(PlayerItemMigrationStatus.RestorePending, PlayerItemCustodyOwner.Recovery, false)]
+    [InlineData(PlayerItemMigrationStatus.Restored, PlayerItemCustodyOwner.Vanilla, true)]
+    public void DisabledOperationsPreserveConfirmedCustodyAndNativePacketDecision(
+        PlayerItemMigrationStatus phase, PlayerItemCustodyOwner owner, bool vanilla)
+    {
+        using var scope = new ModuleScope(false);
+        scope.Load(phase);
+        Assert.Equal(owner, scope.Module.Custody("player").Owner);
+        Assert.Equal(vanilla, scope.Module.Custody("player").AllowsVanilla);
+        Assert.False(scope.Module.Custody("player").AllowsCanonical);
+        Assert.False(scope.Module.CanActivateNativeProfile);
+        var nativeType = AccessTools.TypeByName("Vintagestory.Server.ServerSystemInventory");
+        var native = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(nativeType);
+        var fixture = new NativeInventoryGuardFixture(native);
+        AccessTools.Method(nativeType, "HandleToolMode").Invoke(native, new object[] { fixture.Packet("HandleToolMode"), fixture.Client });
+        Assert.Equal(vanilla ? 1 : 0, fixture.Item.ToolCalls);
+    }
+
+    [Theory]
     [InlineData(false, false, false)]
     [InlineData(false, true, false)]
     [InlineData(true, false, false)]
@@ -24,9 +79,17 @@ public sealed class PlayerItemCustodyPolicyTests
     [InlineData(false, true, true)]
     [InlineData(true, false, true)]
     [InlineData(true, true, true)]
-    public void ActualMigrationFinalConfirmationFailureRefusesUntilSavedWithoutReplayingSource(bool restore, bool writeThenThrow, bool reload)
+    [InlineData(false, false, false, false)]
+    [InlineData(false, true, false, false)]
+    [InlineData(true, false, false, false)]
+    [InlineData(true, true, false, false)]
+    [InlineData(false, false, true, false)]
+    [InlineData(false, true, true, false)]
+    [InlineData(true, false, true, false)]
+    [InlineData(true, true, true, false)]
+    public void ActualMigrationFinalConfirmationFailureRefusesUntilSavedWithoutReplayingSource(bool restore, bool writeThenThrow, bool reload, bool requested = true)
     {
-        using var scope = new ModuleScope();
+        using var scope = new ModuleScope(requested);
         scope.Load();
         var source = new LegacySource();
         var migration = new PlayerItemMigrationCoordinator(scope.Service);
@@ -58,7 +121,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.Equal(cleared, source.ClearCalls);
         Assert.Equal(restored, source.RestoreCalls);
         Assert.Equal(restore, scope.Module.Custody("player").AllowsVanilla);
-        Assert.Equal(!restore, scope.Module.Custody("player").AllowsCanonical);
+        Assert.Equal(!restore && requested, scope.Module.Custody("player").AllowsCanonical);
     }
 
     [Theory]
@@ -224,18 +287,22 @@ public sealed class PlayerItemCustodyPolicyTests
     private sealed class ModuleScope : IDisposable
     {
         public Harmony Harmony { get; } = new("vrpg.tests.custody." + Guid.NewGuid());
-        public PlayerItemPersistenceModule Module { get; } = new();
+        public PlayerItemPersistenceModule Module { get; }
         public MemoryStorage Storage { get; } = new();
         public PlayerItemArchiveService Service { get; }
         public Item Item { get; } = new() { Code = new AssetLocation("game:stone"), MaxStackSize = 64 };
-        public ModuleScope()
+        public int ShutdownCalls;
+        public ModuleScope(bool requested = true)
         {
+            Module = new(requested);
             Service = new(new PlayerItemArchiveRepository(Storage));
             AccessTools.Field(typeof(PlayerItemPersistenceModule), "<Service>k__BackingField").SetValue(Module, Service);
             var logger = PlayerDefenseServiceTests.Proxy.Create<ILogger>((_, _) => null);
             var events = PlayerDefenseServiceTests.Proxy.Create<IServerEventAPI>((_, _) => null);
+            var server = PlayerDefenseServiceTests.Proxy.Create<IServerAPI>((method, _) =>
+            { if (method == "ShutDown") ShutdownCalls++; return null; });
             var api = PlayerDefenseServiceTests.Proxy.Create<ICoreServerAPI>((method, _) => method switch
-            { "get_Logger" => logger, "get_Event" => events, _ => null });
+            { "get_Logger" => logger, "get_Event" => events, "get_Server" => server, _ => null });
             AccessTools.Field(typeof(PlayerItemPersistenceModule), "api").SetValue(Module, api);
             NativeInventoryPacketGuardPatch.CustodyResolver = Module.Custody;
             NativeInventoryPacketGuardPatch.CursorRecoveryObserver = Module.RequireCursorRecovery;
@@ -254,6 +321,7 @@ public sealed class PlayerItemCustodyPolicyTests
             AccessTools.Field(typeof(PlayerItemPersistenceModule), "<Bridges>k__BackingField").SetValue(Module, new PlayerItemBridgeCoordinator(Service, resolver));
         }
         public void SaveWorld() => AccessTools.Method(typeof(PlayerItemPersistenceModule), "OnGameWorldSave").Invoke(Module, null);
+        public void LoadWorld() => AccessTools.Method(typeof(PlayerItemPersistenceModule), "OnSaveGameLoaded").Invoke(Module, null);
         public void Dispose()
         {
             AccessTools.Field(typeof(PlayerItemPersistenceModule), "api").SetValue(Module, null);

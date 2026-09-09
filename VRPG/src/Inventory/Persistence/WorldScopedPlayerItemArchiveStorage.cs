@@ -34,6 +34,43 @@ public sealed class WorldScopedPlayerItemArchiveStorage : IDurablePlayerItemArch
     public string ArchivePath { get; }
     public bool IsCrashDurable => OperatingSystem.IsLinux();
 
+    /// <summary>Only affirmative absence is Vanilla evidence; this never reads/imports an envelope.</summary>
+    public PlayerItemCustodyPresence ProbePresence()
+    {
+        lock (gate)
+        {
+            try
+            {
+                // Exists hides permission and I/O failures. Walk accessible parent listings so
+                // a missing entry is affirmative evidence, not an exception treated as absence.
+                string directory = Path.GetDirectoryName(ArchivePath)!;
+                string current = Path.GetPathRoot(directory)!;
+                bool present = true;
+                foreach (string part in directory[current.Length..].Split(Path.DirectorySeparatorChar,
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    string next = Path.Combine(current, part);
+                    if (!Directory.EnumerateFileSystemEntries(current).Any(entry =>
+                        string.Equals(entry, next, StringComparison.Ordinal)))
+                    {
+                        present = false;
+                        break;
+                    }
+                    FileAttributes attributes = File.GetAttributes(next);
+                    if ((attributes & FileAttributes.ReparsePoint) != 0 || (attributes & FileAttributes.Directory) == 0)
+                        return PlayerItemCustodyPresence.Uncertain;
+                    current = next;
+                }
+                if (present) return PlayerItemCustodyPresence.History;
+                foreach (string key in new[] { PlayerItemArchiveRepository.SlotAKey,
+                    PlayerItemArchiveRepository.SlotBKey, CheckpointKey })
+                    if (legacy.Read(key) != null) return PlayerItemCustodyPresence.History;
+                return PlayerItemCustodyPresence.Absent;
+            }
+            catch { return PlayerItemCustodyPresence.Uncertain; }
+        }
+    }
+
     public byte[]? Read(string key)
     {
         lock (gate)

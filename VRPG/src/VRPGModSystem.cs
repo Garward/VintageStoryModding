@@ -141,9 +141,9 @@ public sealed class VRPGModSystem : ModSystem
         rpgModule = null;
         playerItemPersistence = null;
 
-        if (config.Modules.Rpg.InventoryReplacement.Enabled)
+        playerItemPersistence = PlayerItemCustodyBootstrap.CreateModule(api, config.Modules.Rpg.InventoryReplacement.Enabled);
+        if (playerItemPersistence != null)
         {
-            playerItemPersistence = new PlayerItemPersistenceModule();
             AddAndStart(api, playerItemPersistence);
         }
 
@@ -152,12 +152,7 @@ public sealed class VRPGModSystem : ModSystem
 
         if (playerItemPersistence != null)
         {
-            NativeInventoryPacketGuardPatch.CustodyResolver = playerItemPersistence.Custody;
-            NativeInventoryPacketGuardPatch.CursorRecoveryObserver = playerItemPersistence.RequireCursorRecovery;
-            NativeInventoryPacketGuardPatch.Patch(serverHarmony!, api.Logger);
-            EngineItemFlowPatch.CustodyResolver = playerItemPersistence.Custody;
-            EngineItemFlowPatch.CoordinatorResolver = () => playerItemPersistence?.Bridges;
-            EngineItemFlowPatch.Patch(serverHarmony!, api.Logger);
+            playerItemPersistence.InstallProtection(serverHarmony!);
         }
 
         if (config.Modules.Rpg.Enabled)

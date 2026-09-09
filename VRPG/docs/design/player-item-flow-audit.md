@@ -264,14 +264,52 @@ storage, death and direct use/drop/placement remain open. The two new coverage
 names do not certify any of these routes or all native slots as frozen. Outbound
 destination durability remains a separate parent Task3 requirement.
 
-Task8 startup dependency: current boot creates persistence only when
-`InventoryReplacement.Enabled` is true. This slice installs both guards and pickup
-whenever that module exists, independently of RPG being enabled. Feature-disabled
-startup still cannot inspect a prior persisted Committed/Prepared journal; it has
-no custody authority or installed guard. Task8 must provide ownership inspection
-and a fail-closed handshake on that path before claiming configuration disablement
-preserves canonical custody. Config or GUI teardown never establishes or reverses
-ownership in this policy.
+Task3b3 brings the minimum ownership bootstrap forward from Task8. Replacement
+configuration now controls requested operations; RPG configuration does not gate
+custody inspection. A nonmutating filesystem/legacy-key probe omits persistence
+only for disabled replacement with affirmative absence of all world-specific
+custody-directory, sidecar, legacy-slot and checkpoint evidence. The probe uses
+accessible parent listings, not `File.Exists` error suppression, and treats I/O,
+permission, obstructed paths and symlinks as uncertainty. It never imports an
+archive, creates a directory or changes a checkpoint. The path uses the same
+`GamePaths.DataPath` root as the native `GetOrCreateDataPath` implementation, without
+its directory-creation side effect; the storage class still owns world-ID hashing.
+
+Requested replacement or any history/uncertainty constructs the same persistence
+module and native packet/pickup guards. Actual archive inspection still uses the
+existing `ReadOrImport` and format/checkpoint validation, including deleted-sidecar
+refusal; it is not called a nonmutating probe. Disabled Committed remains canonical
+but read-only, Prepared/RestorePending remain recovery, confirmed Restored and
+confirmed no-journal retain Vanilla. Existing completed pickup claims suppress
+restored duplicates for all collectors. No new canonical pickup/action or full
+native-profile readiness is authorized when replacement is disabled. Existing
+explicit admin resume/restore and lifecycle receipt reconciliation remain available.
+
+If mandatory packet/pickup hooks fail to install or are unavailable at
+`SaveGameLoaded`, or archive validation fails, the module calls the actual server
+shutdown API before gameplay admission. It marks bootstrap refused before doing
+so and skips archive/checkpoint writes during the engine's soft-shutdown world-save
+callback. Invalid world/path setup also creates an owned refusal module, rather
+than escaping into the modloader's exception handling with no protection. Disposal
+removes its event callback. No readiness flag is used as a substitute for this
+startup refusal.
+
+Native source boundary: `ServerSystemLoadAndSaveGame.OnBeginConfiguration` opens
+the database before normal mod startup. Its `OnBeginModsAndConfigReady` invokes
+`SaveGameLoaded` during LoadGamePre. `ServerAPI.ShutDown` calls
+`ServerMain.AttemptShutdown`, which synchronously calls `Stop` on the main thread;
+`Stop` sets `exitState.Mode` before shutdown work. `GameExitState.Exit` is true for
+any non-None mode, `ServerMain.Launch` checks it after LoadGamePre before opening
+the subsequent gameplay path, and `ProcessNetMessage` refuses it. The native
+phase/event callers do continue their remaining initialization after the callback;
+the root-owned isolated smoke must verify exit behavior. A late `PlayerJoin`
+listener was not used: native systems receive that join first.
+
+This is a bounded startup safety boundary, not the full Task8 handshake. No new
+runtime guard-revocation shutdown policy, complete tick/direct-producer freeze,
+durable cursor contract, outbound adapter, migration, default activation or joined
+menu acceptance is established. Config or GUI teardown never establishes or
+reverses item ownership.
 
 Verification executes the actual nine patched handlers, real native disconnect
 and shutdown methods, real slots/managers, and controlled downstream callbacks.
