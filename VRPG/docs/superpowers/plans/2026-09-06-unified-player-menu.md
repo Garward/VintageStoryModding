@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `15e9360`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Native acceptance remains unperformed. Parent3 outbound adapters/producer guards/lifecycle are next before dependent actions and activation. No native replacement or runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `871fa35`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Native acceptance remains unperformed. Parent3 disabled-feature bootstrap, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -158,6 +158,17 @@ without exposing live Vanilla-owned items. The audit
 in `docs/design/player-item-flow-audit.md` records coverage and paired-backup rules.
 
 **Files:** Extend `src/Inventory/EngineItemIngressService.cs`, `src/Patches/EngineItemFlowPatch.cs`, `src/Inventory/ItemStackCodec.cs`; create `src/Inventory/Bridges/PlayerItemBridgeCoordinator.cs`, `PlayerItemBridgeJournal.cs`, `PlayerItemBridgeModels.cs`, `EngineItemBridgeAdapter.cs`; extend persistence models/serializer and startup wiring in `src/VRPGModSystem.cs`. Tests: extend `EngineItemIngressServiceTests.cs`, `ItemStackCodecTests.cs`, `PlayerItemPersistenceTests.cs`; create `PlayerItemBridgeTests.cs`.
+
+Packet/cursor slice 3b2 is reviewed through `871fa35`: shared confirmed-phase
+custody, eight native packet guards and cursor securing; failed or ambiguous
+migration confirmation never grants either owner new permission. Retry/reload
+does not repeat source Clear/Restore. Archive-depth compatibility is preserved.
+Full 1,016 tests before fixes; covering 204 then 72 after fixes. Startup and clean
+empty-store reload verified on 1.22.7 before final serializer correction.
+Cursor source retention is RAM-only, not crash recovery. Direct/native tick
+producers and outbound adapters remain open. Next prerequisite 3b3 brings the
+disabled-feature custody bootstrap forward from Task8; that task must reuse the
+phase authority rather than treating configuration as historical ownership.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.
 

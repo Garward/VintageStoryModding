@@ -58,6 +58,14 @@ an explicitly identified immediate coding target.
 
 #### B. One safe item and equipment owner
 
+Guard prerequisite progress (2026-09-09): eight native packet handlers plus
+cursor securing now use confirmed persisted custody, reviewed through `871fa35`.
+Full 1,016 tests passed before review fixes; covering 204 then 72 passed afterward.
+Isolated 1.22.7 startup and clean empty-store reload passed before the final
+serializer correction. This is not joined acceptance. Cursor retention is RAM-only;
+disabled-feature custody bootstrap, native tick/direct producers and outbound
+durability remain blockers. No menu/default activation or installed deployment.
+
 Pickup prerequisite progress (2026-09-09): fresh-source identity and loaded-source
 reconciliation reviewed through `15e9360`, with focused 100/full 899 passing tests.
 An isolated 1.22.7 dedicated server accepted the early identity hook, loaded the
