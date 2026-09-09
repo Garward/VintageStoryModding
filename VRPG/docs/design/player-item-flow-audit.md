@@ -301,9 +301,14 @@ the database before normal mod startup. Its `OnBeginModsAndConfigReady` invokes
 `Stop` sets `exitState.Mode` before shutdown work. `GameExitState.Exit` is true for
 any non-None mode, `ServerMain.Launch` checks it after LoadGamePre before opening
 the subsequent gameplay path, and `ProcessNetMessage` refuses it. The native
-phase/event callers do continue their remaining initialization after the callback;
-the root-owned isolated smoke must verify exit behavior. A late `PlayerJoin`
-listener was not used: native systems receive that join first.
+phase/event callers do continue their remaining initialization after the callback.
+Root's isolated 1.22.7 damaged-sidecar smoke confirmed automatic clean exit before
+RunGame, no extra exception despite post-callback initialization logs, and identical
+sidecar SHA256 before/after. Fresh disabled startup reached RunGame without creating
+the custody path; historical disabled startup installed the hooks and loaded its
+archive. Both clean cases stopped normally. The existing unavailable-gear log with
+disabled operations remains, and these smokes establish no joined-menu acceptance.
+A late `PlayerJoin` listener was not used: native systems receive that join first.
 
 This is a bounded startup safety boundary, not the full Task8 handshake. No new
 runtime guard-revocation shutdown policy, complete tick/direct-producer freeze,
