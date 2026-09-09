@@ -19,6 +19,13 @@ public sealed class PlayerItemArchiveSerializer
         TypeNameHandling = TypeNameHandling.None
     };
 
+    internal PlayerItemMigrationJournalState CloneMigrationJournal(PlayerItemMigrationJournalState journal)
+    {
+        string json = JsonConvert.SerializeObject(journal, settings);
+        return JsonConvert.DeserializeObject<PlayerItemMigrationJournalState>(json, settings)
+            ?? throw new JsonSerializationException("The migration journal contains no document.");
+    }
+
     public byte[] Serialize(PlayerItemArchive archive)
     {
         ArgumentNullException.ThrowIfNull(archive);

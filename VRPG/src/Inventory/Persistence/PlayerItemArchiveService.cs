@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VRPG.Inventory.Migration;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VRPG.Inventory.Bridges;
 
@@ -193,18 +192,29 @@ public sealed class PlayerItemArchiveService
             if (captures.Count == 0 && !metadataDirty && changedMigrations.Length == 0 && Generation > 0)
                 return new PlayerItemArchiveSaveResult(true, Generation, "");
 
-            var nextArchive = new PlayerItemArchive
+            PlayerItemArchive nextArchive;
+            try
             {
-                SchemaVersion = PlayerItemPersistenceSchema.CurrentVersion,
-                Players = nextPlayers,
-                // Journal objects are mutable and externally observable. The serialized candidate
-                // and its later confirmation must not alias those live objects.
-                Migrations = archive.Migrations.ToDictionary(pair => pair.Key,
-                    pair => JsonConvert.DeserializeObject<PlayerItemMigrationJournalState>(JsonConvert.SerializeObject(pair.Value))!,
-                    StringComparer.OrdinalIgnoreCase),
-                Bridges = new Dictionary<string, PlayerItemBridgeReceipt>(archive.Bridges, StringComparer.Ordinal),
-                ExtensionData = CloneExtensions(archive.ExtensionData)
-            };
+                nextArchive = new PlayerItemArchive
+                {
+                    SchemaVersion = PlayerItemPersistenceSchema.CurrentVersion,
+                    Players = nextPlayers,
+                    // Journal objects are mutable and externally observable. Use the archive's
+                    // serialization contract to detach the candidate without narrowing its data.
+                    Migrations = archive.Migrations.ToDictionary(pair => pair.Key,
+                        pair => repository.CloneMigrationJournal(pair.Value),
+                        StringComparer.OrdinalIgnoreCase),
+                    Bridges = new Dictionary<string, PlayerItemBridgeReceipt>(archive.Bridges, StringComparer.Ordinal),
+                    ExtensionData = CloneExtensions(archive.ExtensionData)
+                };
+            }
+            catch (Exception exception)
+            {
+                // Preparation has not reached storage. Keep all pending/uncertain evidence
+                // and dirty stores intact so this failure cannot confirm a live phase.
+                return PlayerItemArchiveSaveResult.Failed(Generation,
+                    $"The inventory archive snapshot could not be prepared: {exception.Message}");
+            }
             PlayerItemArchiveSaveResult saved = repository.Save(nextArchive);
             if (!saved.Success)
             {

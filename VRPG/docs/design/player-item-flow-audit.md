@@ -192,7 +192,10 @@ before its actual write is still ambiguous to the caller, just like write-then-
 throw; both require confirmation. Mutable phase drift also forces a real save
 attempt instead of permitting a no-op save to masquerade as confirmation. Saved
 journal candidates are detached from mutable references and preserve unknown
-fields. Terminal-phase `Resume` retries only confirmation; after reloading a
+fields using the archive serializer's same settings, including its depth-128
+contract. Snapshot preparation exceptions return an explicit no-write failure;
+they leave dirty state and pending/uncertain phase evidence intact.
+Terminal-phase `Resume` retries only confirmation; after reloading a
 confirmed RestorePending phase whose source already exactly matches the snapshot,
 recovery confirms without replaying `Restore`. Aborted initial preparation can
 likewise confirm its untouched fallback without clearing the source.

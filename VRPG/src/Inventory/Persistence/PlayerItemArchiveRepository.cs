@@ -15,6 +15,9 @@ public sealed class PlayerItemArchiveRepository
 
     public bool IsCrashDurable => storage is IDurablePlayerItemArchiveStorage { IsCrashDurable: true };
 
+    internal PlayerItemMigrationJournalState CloneMigrationJournal(PlayerItemMigrationJournalState journal)
+        => serializer.CloneMigrationJournal(journal);
+
     public PlayerItemArchiveRepository(
         IPlayerItemArchiveStorage storage,
         PlayerItemArchiveSerializer? serializer = null)

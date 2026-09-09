@@ -14,6 +14,72 @@ namespace VRPG.Tests;
 
 public sealed class PlayerItemPersistenceTests
 {
+    [Theory]
+    [InlineData(80)]
+    [InlineData(120)]
+    public void LoadedDeepMigrationExtensionsSurviveRealDirtySave(int depth)
+    {
+        var storage = new MemoryArchiveStorage();
+        var repository = new PlayerItemArchiveRepository(storage);
+        JToken extension = DeepMigrationExtension(depth);
+        Assert.True(repository.Save(new PlayerItemArchive
+        {
+            Migrations = new Dictionary<string, PlayerItemMigrationJournalState>
+            {
+                ["player"] = new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Prepared,
+                    ExtensionData = new Dictionary<string, JToken> { ["futureDeep"] = extension } }
+            }
+        }).Success);
+        var service = new PlayerItemArchiveService(repository);
+        Assert.True(service.Load().Success);
+        Assert.True(JToken.DeepEquals(extension, service.Migration("player")!.ExtensionData!["futureDeep"]));
+        int writes = storage.WriteCount;
+        service.SetMigrationStatus("player", PlayerItemMigrationStatus.Committed);
+        Assert.True(service.SaveDirty().Success);
+        Assert.Equal(writes + 1, storage.WriteCount);
+        var restarted = new PlayerItemArchiveService(repository);
+        Assert.True(restarted.Load().Success);
+        Assert.True(restarted.MigrationConfirmation("player").IsConfirmed);
+        Assert.Equal(PlayerItemMigrationStatus.Committed, restarted.MigrationConfirmation("player").Phase);
+        Assert.True(JToken.DeepEquals(extension, restarted.Migration("player")!.ExtensionData!["futureDeep"]));
+    }
+
+    [Fact]
+    public void JournalClonePreparationFailureReturnsNoWriteFailureWithoutConfirmingPhase()
+    {
+        var storage = new MemoryArchiveStorage();
+        var service = Service(storage);
+        Assert.True(service.Load().Success);
+        service.StageMigration("player", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Prepared });
+        Assert.True(service.SaveDirty().Success);
+        long generation = service.Generation;
+        int writes = storage.WriteCount;
+        JToken unsupported = DeepMigrationExtension(150);
+        service.Migration("player")!.ExtensionData = new Dictionary<string, JToken> { ["futureDeep"] = unsupported };
+        service.SetMigrationStatus("player", PlayerItemMigrationStatus.Committed);
+        PlayerItemArchiveSaveResult? saved = null;
+        Assert.Null(Record.Exception(() => { saved = service.SaveDirty(); }));
+        Assert.NotNull(saved);
+        Assert.False(saved.Success);
+        Assert.False(saved.StorageWriteAttempted);
+        Assert.NotEmpty(saved.Error);
+        Assert.Equal(generation, service.Generation);
+        Assert.Equal(writes, storage.WriteCount);
+        Assert.False(service.MigrationConfirmation("player").IsConfirmed);
+        Assert.Equal(PlayerItemMigrationStatus.Prepared, service.MigrationConfirmation("player").Phase);
+        Assert.True(JToken.DeepEquals(unsupported, service.Migration("player")!.ExtensionData!["futureDeep"]));
+        var persisted = new PlayerItemArchiveRepository(storage).Load();
+        Assert.True(persisted.Success);
+        Assert.Equal(PlayerItemMigrationStatus.Prepared, persisted.Archive.Migrations["player"].Status);
+    }
+
+    private static JToken DeepMigrationExtension(int depth)
+    {
+        JToken value = new JObject { ["leaf"] = new JArray(3, "kept", true), ["$type"] = "future:untrusted" };
+        for (int level = 0; level < depth; level++) value = new JObject { ["next"] = value };
+        return value;
+    }
+
     [Fact]
     public void LegacyQuestReservationsMigrateLosslesslyInPlayersAndPriorStoreJournals()
     {
