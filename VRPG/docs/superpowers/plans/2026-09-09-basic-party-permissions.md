@@ -126,6 +126,10 @@ no claim of live UI or implemented loot piles.
 
 ## Task 2: Authenticated transport and world lifecycle
 
+Completed and reviewed at `4bf1b6a`. Final full suite: 1,529 passed; focused
+transport/client/module coverage: 31 passed. Intermediate native startup/cleanup
+observed; no connected-player behavior or default menu ownership is claimed.
+
 **Files:** Create `VRPG/src/Parties/PartyModule.cs`, `Networking/PartyNetworkService.cs`, `VRPG/src/Network/PartyPackets.cs`, `VRPG/src/Client/PlayerMenu/Party/PartyClientService.cs`; modify `VRPG/src/Network/VRPGNetwork.cs`, `VRPG/src/VRPGModSystem.cs` only at lifecycle/registration seams. Tests: `PartyNetworkTests.cs`, `PartyModuleTests.cs`, `PartyClientServiceTests.cs`.
 
 **Interfaces:** Consume Task1 service/command/view. Produce PartyModule's loaded
@@ -135,33 +139,33 @@ Packet types: `PartySessionPacket`, `PartyQueryPacket`, `PartyMutationPacket`,
 `PartyResultPacket`, `PartySnapshotPacket`; both client/server register identical
 types/order. Transport maps DTOs rather than serializing authority instances.
 
-- [ ] RED tests use captured actual registered handlers with two distinct
+- [x] RED tests use captured actual registered handlers with two distinct
   authenticated player fixtures; never let a packet actor UID select authority.
 ```csharp
 // Actual handler fixture: connection A cannot remove someone from B's party.
 handler(connectionA, new PartyMutationPacket { SessionId = sessionB, RequestId = "wrong-session" });
 Assert.Equal(before, repository.ReadBytes());
 ```
-- [ ] Add explicit server-generated per-connection session IDs, bounded DTO
+- [x] Add explicit server-generated per-connection session IDs, bounded DTO
   validation, action enums, party/revision/request correlation. Max identifier128
   characters, request/session64, search64; page of online invite targets at most16,
   roster8 and invitations8. Refuse oversize/malformed arrays before service work.
   Queries/mutations at most5 per second per connection with burst5; invitations
   also at most1 per2seconds per inviter. Reset connection buckets on disconnect.
-- [ ] Query only own roster/invites plus requested online target page; names are
+- [x] Query only own roster/invites plus requested online target page; names are
   display only, selected targets are validated actual online identities. Bound
   roster/invite invalidations to affected players. Responses for old sessions,
   old requests or lower revisions cannot revive stale UI or pending mutations.
   Closing the menu retains tracking; disconnect/world change resets it.
-- [ ] Wire load/dispose/reconnect using existing module lifecycle and authenticated
+- [x] Wire load/dispose/reconnect using existing module lifecycle and authenticated
   API callbacks; repository root comes from game data path/world identity, not
   hard-coded machine paths. No default menu activation or item archive schema
   changes. Register transport even when party unavailable so it can report truthful
   unavailability. Never replace corrupt data at startup.
-- [ ] Test startup absence vs corruption, health loss, two worlds, rejoin/session
+- [x] Test startup absence vs corruption, health loss, two worlds, rejoin/session
   replacement, delayed results, invite invalidation, reconnect membership and
   handler cleanup. Exercise actual registration seams and stored bytes.
-- [ ] Focused RED/GREEN, self-review/full suite/diff check/scoped commit:
+- [x] Focused RED/GREEN, self-review/full suite/diff check/scoped commit:
   `feat: connect party authority to authenticated clients`.
 
 **Gate:** Real server/client requests use the persisted authority. No command-only

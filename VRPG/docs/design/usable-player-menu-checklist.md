@@ -66,7 +66,9 @@ continue independent implementation work without presenting it as readiness.
   - [x] Durable membership, leader controls, invitations and current-membership
     permission boundary reviewed through `6fbfd13`. Full suite before the review
     fix: 1,495 passed; final party coverage: 48 passed. No live pile adapter yet.
-  - [ ] Authenticated server/client party transport and world lifecycle.
+  - [x] Authenticated server/client party transport and world lifecycle reviewed
+    at `4bf1b6a`; full suite: 1,529 passed. Intermediate native startup/cleanup
+    observed on a disposable server; final joined-client actions remain unverified.
   - [ ] Real inline Party controls and connected-game verification.
 - [ ] Group nearby compatible drops into bounded loot piles to reduce entities,
   retaining exact items, quantities, permissions and restart-safe partial pickup.
