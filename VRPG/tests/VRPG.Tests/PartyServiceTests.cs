@@ -186,6 +186,53 @@ public sealed class PartyServiceTests
     }
 
     [Fact]
+    public void InvalidCommandReturnsCurrentViewAfterRawCommittedRemoval()
+    {
+        var f = new PartyTestFixture(); f.Create("leader"); f.Join("leader", "member");
+        var archive = f.Repository.Load().Archive!;
+        archive.Parties[0].Members.Remove("member");
+        long expected = archive.Generation++;
+        Assert.Equal(PartyRepositorySaveStatus.Committed, f.Repository.Save(archive, expected));
+        int writes = f.Repository.Writes;
+
+        var rejected = f.Service.Execute("member", new("invalid", -1, PartyAction.Leave), f.Now);
+
+        Assert.False(rejected.Success);
+        Assert.Equal("invalid-command", rejected.Code);
+        Assert.Equal(PartyHealth.Healthy, rejected.View.Health);
+        Assert.Equal(archive.Generation, rejected.View.Revision);
+        Assert.Null(rejected.View.PartyId);
+        Assert.Null(rejected.View.LeaderUid);
+        Assert.Empty(rejected.View.Members);
+        Assert.Empty(rejected.View.IncomingInvitations);
+        Assert.Equal(writes, f.Repository.Writes);
+    }
+
+    [Theory]
+    [InlineData("member")]
+    [InlineData("")]
+    public void InvalidResponsesHideRosterWhenChangedGenerationCannotReload(string actorUid)
+    {
+        var f = new PartyTestFixture(); f.Create("leader"); f.Join("leader", "member");
+        var archive = f.Repository.Load().Archive!;
+        archive.Parties[0].Members.Remove("member");
+        long expected = archive.Generation++;
+        Assert.Equal(PartyRepositorySaveStatus.Committed, f.Repository.Save(archive, expected));
+        f.Repository.FailLoad = true;
+
+        var rejected = f.Service.Execute(actorUid, new("invalid", -1, PartyAction.Leave), f.Now);
+
+        Assert.Equal("invalid-command", rejected.Code);
+        Assert.Equal(PartyHealth.Unavailable, rejected.View.Health);
+        Assert.Null(rejected.View.PartyId);
+        Assert.Empty(rejected.View.Members);
+        Assert.Empty(rejected.View.IncomingInvitations);
+        f.Repository.FailLoad = false;
+        Assert.Equal(PartyHealth.Unavailable, f.Service.Read("leader", f.Now).Health);
+        Assert.Equal(PartyHealth.Healthy, f.Service.Load());
+    }
+
+    [Fact]
     public void FailedReadLatchesUnavailableUntilExplicitReload()
     {
         var f = new PartyTestFixture(); f.Create("leader");

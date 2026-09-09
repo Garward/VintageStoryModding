@@ -139,7 +139,9 @@ public sealed partial class PartyService
 
     private PartyView View(string actorUid, DateTimeOffset now)
     {
-        if (!HasCommittedAuthority() || !PartyArchiveRules.ValidUid(actorUid))
+        if (!HasCommittedAuthority()
+            || (repository.CommittedGeneration != authority.State.Generation && !Refresh())
+            || !PartyArchiveRules.ValidUid(actorUid))
             return new(PartyHealth.Unavailable, authority.State.Generation, null, null,
                 Array.Empty<PartyMemberView>(), Array.Empty<PartyInvitationView>());
         var party = authority.State.Parties.FirstOrDefault(p => p.Members.Contains(actorUid));
