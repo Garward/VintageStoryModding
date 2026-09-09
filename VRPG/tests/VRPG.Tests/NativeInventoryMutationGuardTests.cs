@@ -203,10 +203,36 @@ public sealed class NativeInventoryMutationGuardTests(ITestOutputHelper output)
         var owners = new[] { typeof(PlayerInventoryManager), typeof(ServerPlayerInventoryManager), typeof(InventoryBasePlayer),
             typeof(InventoryPlayerHotbar), typeof(InventoryPlayerBackpacks), typeof(InventoryPlayerCreative),
             typeof(EntityBehaviorPlayerInventory), typeof(EntityPlayer), typeof(InventoryBase), AccessTools.TypeByName("Vintagestory.Server.CmdGive") };
-        foreach (var owner in owners)
-        foreach (var method in owner.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+        var methods = owners.SelectMany(owner => owner.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
             .Where(m => m.Name is "TryGiveItemstack" or "TryTransferAway" or "DropItem" or "OnDeath" or "DropAll" or "OnEntityDeath" or "TryGiveItemStack" or "OnOwningEntityDeath" or "give"
-                || m.Name.Contains("OnEntityDeath>")).Where(m => !m.IsAbstract))
+                || m.Name.Contains("OnEntityDeath>")).Where(m => !m.IsAbstract)).ToArray();
+        Assert.Equal(15, methods.Length);
+        foreach (string boundary in new[] { "give", "transfer", "short", "drop", "death", "base", "hotbar", "backpack",
+            "creative", "enqueue", "deferred", "owning-death", "entity-give", "command" })
+            Assert.Contains(NativeInventoryMutationInstallationTests.Target(boundary), methods);
+        Assert.Contains(AccessTools.Method(typeof(InventoryBase), "DropAll"), methods);
+
+        var producer = Assert.Single(methods, method => method.DeclaringType == typeof(EntityBehaviorPlayerInventory)
+            && method.Name == "OnEntityDeath");
+        var code = PatchProcessor.GetOriginalInstructions(producer);
+        int targetIndex = code.FindIndex(instruction => instruction.opcode == OpCodes.Ldftn);
+        var callback = Assert.IsAssignableFrom<MethodInfo>(Assert.Single(code, instruction => instruction.opcode == OpCodes.Ldftn).operand);
+        Assert.Contains(callback, methods);
+        Assert.Equal(typeof(EntityBehaviorPlayerInventory), callback.DeclaringType);
+        Assert.Equal(typeof(void), callback.ReturnType);
+        Assert.False(callback.IsStatic);
+        Assert.Empty(callback.GetParameters());
+        Assert.True(callback.IsDefined(typeof(CompilerGeneratedAttribute), false));
+        Assert.Equal(OpCodes.Ldarg_0, code[targetIndex - 1].opcode);
+        Assert.Equal(OpCodes.Newobj, code[targetIndex + 1].opcode);
+        Assert.Equal(AccessTools.Constructor(typeof(Action), new[] { typeof(object), typeof(IntPtr) }), code[targetIndex + 1].operand);
+        Assert.Equal(OpCodes.Ldstr, code[targetIndex + 2].opcode);
+        Assert.Equal("dropinventoryondeath", code[targetIndex + 2].operand);
+        var enqueue = AccessTools.Method(typeof(IEventAPI), nameof(IEventAPI.EnqueueMainThreadTask), new[] { typeof(Action), typeof(string) });
+        Assert.Single(code, instruction => instruction.Calls(enqueue));
+        Assert.True(code[targetIndex + 3].Calls(enqueue));
+
+        foreach (var method in methods)
         {
             output.WriteLine($"{method.DeclaringType!.FullName}.{method} MVID={method.Module.ModuleVersionId} SHA={Convert.ToHexString(SHA256.HashData(method.GetMethodBody()!.GetILAsByteArray()!))}");
             if (method.Name == "OnEntityDeath")
