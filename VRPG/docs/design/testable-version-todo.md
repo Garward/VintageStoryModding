@@ -139,6 +139,16 @@ equipment-effect claims below remain unchecked until those live checks pass.
 
 #### E. Complete themed UI foundation
 
+Read-only Inventory progress (2026-09-09): real isolated-store browsing, Recovery,
+conditional comparisons and Equipment disclosure are source-reviewed through
+`c916f99`. Covering tests: 104 passed after review fixes; actual Cairo composition
+captures inspected, including the shortest layout. The full suite passed 932
+before the final metadata change; that changed path passed 2 focused tests.
+Live GL/widgets/input/scales and joined-server acceptance remain unperformed.
+This adds no writable live transport or Vanilla-dialog replacement.
+
+- [x] Build and review the real isolated-store browse/recovery and read-only
+  Equipment slice; preserve item context across auxiliary catalog paging.
 - [ ] Implement one `GuiDialogVrpgPlayerMenu` shell with stable navigation, close
   behavior, focus restoration, session state, and named layout/theme tokens.
 - [ ] Finish the reusable visual language: fitted buttons, typed tabs, search,

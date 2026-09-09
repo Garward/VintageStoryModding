@@ -41,6 +41,7 @@ continue independent implementation work without presenting it as readiness.
 - [x] Storage policy and bounded query/cache foundations implemented and reviewed.
 - [x] Isolated shell and UI clarity fixes implemented and source-reviewed.
 - [x] Supported fresh-item pickup identity implemented and reviewed; isolated server startup verified.
+- [x] Real isolated-store Inventory/Recovery browsing and read-only Equipment disclosure implemented and reviewed.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.
@@ -64,7 +65,7 @@ the detailed steps below remain the implementation checklist.
 | 7. Combat and Home/Build loadouts | Not started | — |
 | 8. Inventory network service | In progress | Bounded protocol/cache reviewed through `b1ca60f`; production lifecycle/mutation attachment and transport admission remain |
 | 9. Native menu shell | In progress | Isolated shell and clarity fixes reviewed through `1a7d7ca`; focused menu regressions 45/45, final Back/resize coverage 23/23. Native checks require sign-in and remain unperformed |
-| 10. Inventory and Equipment pages | Not started | — |
+| 10. Inventory and Equipment pages | In progress | Read-only real-store browse reviewed through `c916f99`; full 932 before final metadata change, covering 104 after review fixes; actual Cairo captures inspected. Actions/live native acceptance remain |
 | 10A. Character creation and onboarding | In progress | Durable state/transition rules, appearance-only Vanilla bridge, validated starter definitions, experimental starter preview, and deterministic tavern preparation verified; grant, Welcome, live arrival, and protection remain |
 | 11. Transactional semantic-dialog ownership | Not started | Pure replacement planning only |
 | 12. Usable-replacement validation | Not started | — |
@@ -376,15 +377,26 @@ scales without owning the Inventory or Character semantic actions yet.
 
 ## 10. Build the usable Inventory and Equipment pages
 
-- [ ] Render real Gear, Materials, Consumables, Keys & Quest, and Miscellaneous
-  pages with bounded paging or virtualization.
+Read-only source evidence: `3278256`, `c916f99`, review clean. Five core views,
+bounded addon discovery, exact quantities, server totals, recovery, comparison
+conditions and independent Equipment disclosure use the actual store/query
+services through an isolated permanently read-only test transport. Tests cover
+10,000 recovery records and equipment pagination; 104 covering tests pass after
+review fixes. Inspected Cairo captures establish composition only, not native
+GL, text widgets, input, bindings, GUI-scale integration or joined acceptance.
+The test route neither imports live Vanilla items nor changes menu ownership.
+
+- [x] Render real Gear, Materials, Consumables, Keys & Quest, and Miscellaneous
+  pages with bounded paging or virtualization against the isolated test store.
+- [x] Preserve stable selected identity, exact quantity selections and scroll
+  through refresh and independent category/equipment catalog paging.
 - [ ] Preserve useful selection, search, scroll, and focus across refreshes.
 - [ ] Show item identity, quantity, relevant comparison, protection/favorite state,
   and why an action is unavailable.
 - [ ] Keep decision-changing affixes visible in comparison; put roll ranges, lore
   and technical details behind deliberate disclosure.
-- [ ] Implement Equipment as a disclosure within Inventory, using the same store
-  revision as the item list.
+- [x] Implement read-only Equipment as a disclosure within Inventory, using the
+  same store revision as the item list. Live actions remain below.
 - [ ] Implement equip and unequip first, then use/bind, split, favorite/protect,
   discard/drop, and overflow recovery.
 - [ ] Show pending, success, rejected, stale, offline, unresolved, empty, no-results,

@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1 and 2 are implemented and reviewed through `b1ca60f`. The isolated Task 4 shell and clarity fixes are source-reviewed through `1a7d7ca`, with focused menu regressions 45/45, final Back/resize coverage 23/23, and corrected compact/narrow browser captures. Native verification requires user sign-in and remains unperformed, so Task 4's native acceptance gate is still open. Task 4 precedes Task 3 as allowed by the dependency graph; engine bridges remain pending. No native replacement or runtime readiness is claimed. Existing code must be rechecked before each task; extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `15e9360`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Native acceptance remains unperformed. Parent3 outbound adapters/producer guards/lifecycle are next before dependent actions and activation. No native replacement or runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -200,12 +200,21 @@ Implementation evidence: `66480d1`, `241017c`, `1a7d7ca`; full suite 810 before 
 
 **Consumes:** Task 2 bounded pages/details and Task 4 shell/components. **Produces:** stable selection and explicit entry/quantity selections across typed tabs; all-types query mode; read-only recovery location view.
 
-- [ ] Write red tests for five stable empty core categories, hidden unused addon categories, all-types results with category labels, unknown fallback and no-results clearing.
-- [ ] Render Gear grid/list and material/consumable rows. Quantity overlay formatting must not alter the exact detail/quantity-editor value. Currency balances and protected records use their own meaningful presentation.
-- [ ] Preserve selected ID and scroll on refresh; removed selection cannot transfer a queued action to another row. “Select this page” enumerates only that returned page; filter changes preserve explicit selections visibly or allow Clear selection.
-- [ ] Show capacity from the server, reserved quantity, favorites/protection and recovery count. Test disabled unresolved records and stale cached content; loading never shows a fabricated zero inventory.
-- [ ] Stress 10,000 recovery entries and 10,000,000 identical units; assert bounded pages and visible rows plus two overscan rows. Clip every live item model using the shared renderer.
-- [ ] Run focused suites and capture normal/empty/maximum/long-name/recovery layouts; commit `feat: browse typed inventory and recovery`.
+- [x] Write red tests for five stable empty core categories, hidden unused addon categories, all-types results with category labels, unknown fallback and no-results clearing.
+- [x] Render Gear grid/list and material/consumable rows. Quantity overlay formatting must not alter the exact detail/quantity-editor value. Currency balances and protected records use their own meaningful presentation.
+- [x] Preserve selected ID and scroll on refresh; removed selection cannot transfer a queued action to another row. “Select this page” enumerates only that returned page; filter changes preserve explicit selections visibly or allow Clear selection.
+- [x] Show capacity from the server, reserved quantity, favorites/protection and recovery count. Test disabled unresolved records and stale cached content; loading never shows a fabricated zero inventory.
+- [x] Stress 10,000 recovery entries and 10,000,000 identical units; assert bounded pages and visible rows plus two overscan rows. Clip every live item model using the shared renderer.
+- [x] Run focused suites and capture normal/empty/maximum/long-name/recovery layouts; commit `feat: browse typed inventory and recovery`.
+
+Evidence: `3278256`, `c916f99`, scoped review clean. Full 932 tests before the
+final metadata change, its focused check 2/2, then covering 104 after review fixes.
+Actual Cairo captures inspected; native GL/widgets/input/bindings/scales and join
+remain unperformed. Early detail-rejection correlation from Task2 is fixed here.
+Read-only EquipmentDisclosure moved forward from Task6: reuse and extend it for
+actions, do not recreate it. Equipment/catalog paging preserves item context.
+Future gained/lost transformation presentation awaits a real producer. Redundant
+condensed controls remain a recorded minor for Task6/final review.
 
 **Gate:** All five categories and Recovery are inspectable from real test-store data at scale; no placeholder equips or decorative actions.
 
