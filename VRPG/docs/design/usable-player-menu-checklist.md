@@ -61,8 +61,13 @@ continue independent implementation work without presenting it as readiness.
   server-enforced access saved per deliberate Adventure drop (user choice 2026-09-09).
 - [ ] Add the approved basic permissions-only party service and compact menu panel.
   Shared loot access follows current membership; leave/kick revokes immediately.
-  Party health bars and combat features remain deferred. Lifecycle and owner
-  reclaim details are proposed in the basic-party design, awaiting review.
+  Party health bars and combat features remain deferred. The user approved the
+  lifecycle and owner-reclaim exception; implementation uses the basic-party plan.
+  - [x] Durable membership, leader controls, invitations and current-membership
+    permission boundary reviewed through `6fbfd13`. Full suite before the review
+    fix: 1,495 passed; final party coverage: 48 passed. No live pile adapter yet.
+  - [ ] Authenticated server/client party transport and world lifecycle.
+  - [ ] Real inline Party controls and connected-game verification.
 - [ ] Group nearby compatible drops into bounded loot piles to reduce entities,
   retaining exact items, quantities, permissions and restart-safe partial pickup.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.

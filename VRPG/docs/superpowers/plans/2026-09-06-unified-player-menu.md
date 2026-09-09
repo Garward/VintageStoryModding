@@ -217,8 +217,9 @@ not capabilities of native stack merging or the current safety guards.
 Party-only adapter dependency: the user approved a basic server-owned permissions
 party system, with health bars and combat features deferred. Shared access follows
 current membership; leaving or being kicked revokes it immediately. The
-[proposed party design](../specs/2026-09-09-basic-party-permissions-design.md)
-awaits review of its lifecycle, owner-reclaim exception and compact menu panel.
+[approved party design](../specs/2026-09-09-basic-party-permissions-design.md)
+includes lifecycle, owner-reclaim exception and compact menu panel; execution uses
+the [party implementation plan](2026-09-09-basic-party-permissions.md).
 No party runtime or working permissions toggle is claimed yet.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.

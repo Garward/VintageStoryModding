@@ -39,6 +39,10 @@ the next brief if names differ, without silently changing the approved behavior.
 
 ## Task 1: Durable membership and permission authority
 
+Completed and reviewed through `6fbfd13` (foundation `6b893ee`). Full suite:
+1,495 passed before the response-freshness fix; final party coverage: 48 passed.
+Native lifecycle, transport, panel and actual loot piles are separate work below.
+
 **Files:** Create `VRPG/src/Parties/PartyModels.cs`, `PartyService.cs`, focused service partials if needed, `PartyLootAccess.cs`, `Persistence/PartyArchive.cs`, `IPartyRepository.cs`, `WorldScopedPartyRepository.cs`. Create `VRPG/tests/VRPG.Tests/PartyServiceTests.cs`, `PartyPersistenceTests.cs`, `PartyLootAccessTests.cs` and focused fixtures. Do not wire network/UI yet.
 
 **Interfaces:** Produce public types in VRPG.Parties:
@@ -62,7 +66,7 @@ Define return models in PartyModels; stable codes are localized by consumers.
 an arbitrary client callback or a reusable permission lease. Its bool reports
 both authorization and callback success; no callback runs on refusal.
 
-- [ ] Add RED tests for create/leader/member roles, all eight actions, max8,
+- [x] Add RED tests for create/leader/member roles, all eight actions, max8,
   target-online, max8 invites each side, duplicate/expired invite, seat race,
   accepting two different parties, disband/newID, transfer and last-member leave.
   Use a test repository that captures independent serialized snapshots and can
@@ -75,15 +79,15 @@ var created = service.Execute("leader", new("create-1", view.Revision, PartyActi
 Assert.True(created.Success);
 Assert.Equal("leader", created.View.LeaderUid);
 ```
-- [ ] Run the three Party filters and inspect expected failures before production.
-- [ ] Implement copy/validate/persist/publish mutation ordering. Use stable random
+- [x] Run the three Party filters and inspect expected failures before production.
+- [x] Implement copy/validate/persist/publish mutation ordering. Use stable random
   party IDs, immutable outward views, checked revisions, bounded actor/request
   replay records and stale revision rejection. No-op rejection must not write.
   A previous request with different payload is rejected; old requests cannot
   recreate a party after disband merely because response-cache entries expired.
   Distinguish known no-party from unavailable. Leadership is explicit; disconnect
   only changes presence. Startup clears invites without clearing membership.
-- [ ] Implement a world-identity-bound party file in its own namespace. Reuse the
+- [x] Implement a world-identity-bound party file in its own namespace. Reuse the
   proven atomic-temp/flush/rename/directory-fsync pattern; if extracting a shared
   byte writer, keep existing item-storage behavior unchanged and run its covering
   tests. Do not copy the whole inventory serializer/repository or fake item UIDs.
@@ -93,11 +97,11 @@ Assert.Equal("leader", created.View.LeaderUid);
   fresh world. Repository recovery must never silently choose an older roster
   that grants a removed member access. Explicitly model failed/uncertain saves and
   validated reload before grants resume. State platform limits honestly.
-- [ ] Add real temporary-file persistence tests: reload membership/leader, expired
+- [x] Add real temporary-file persistence tests: reload membership/leader, expired
   restart invites, isolation of two worlds, corrupt/missing historical data,
   unsupported format/unknown fields, truncated/failed commit, before/after write
   failure and stale instance writes. Assert bytes preserved on refusal.
-- [ ] Implement loot policy and commit gate: public, own-item, current members of
+- [x] Implement loot policy and commit gate: public, own-item, current members of
   originating party; new members gain, departed/kicked lose, solo remains owner
   only, changing parties never moves old drops. Shared grants refuse unhealthy
   state. Membership and commit serialize on the party gate; lock ordering is
@@ -111,10 +115,10 @@ bool allowed = service.TryWithLootAccess("stranger",
 Assert.False(allowed);
 Assert.False(called);
 ```
-- [ ] Cover concurrent leave/kick versus commit, callback exceptions/reentry,
+- [x] Cover concurrent leave/kick versus commit, callback exceptions/reentry,
   stale cached views, persistence uncertainty, spoofed identifiers and malformed
   audience. No production pile adapter or changes to enemy loot allocation.
-- [ ] Run focused tests, self-review, one full suite and diff check. Commit only
+- [x] Run focused tests, self-review, one full suite and diff check. Commit only
   Task1 files: `feat: add durable party membership and loot permissions`.
 
 **Gate:** Direct server authority is durable/tested and permissions are reusable;
