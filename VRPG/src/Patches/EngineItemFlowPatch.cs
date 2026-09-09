@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using VRPG.Inventory;
 using VRPG.Inventory.Bridges;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -10,13 +11,25 @@ namespace VRPG.Patches;
 /// <summary>Intercepts identifiable pickup before Vanilla selects any player slot.</summary>
 public static partial class EngineItemFlowPatch
 {
-    public static System.Func<string, bool>? OwnershipResolver { get; set; }
+    public static System.Func<string, PlayerItemCustodySnapshot>? CustodyResolver { get; set; }
     public static System.Func<PlayerItemBridgeCoordinator?>? CoordinatorResolver { get; set; }
-    public static bool IsInstalled { get; private set; }
+    private static Harmony? pickupHarmony;
+    private static MethodInfo? pickupTarget;
+    public static bool IsInstalled
+    {
+        get
+        {
+            var info = pickupTarget == null ? null : Harmony.GetPatchInfo(pickupTarget);
+            return info != null && info.Prefixes.Count == 1 && info.Prefixes[0].owner == pickupHarmony?.Id
+                && info.Prefixes[0].PatchMethod == AccessTools.Method(typeof(EngineItemFlowPatch), nameof(OnFoundCollectiblePrefix))
+                && info.Postfixes.Count == 0 && info.Transpilers.Count == 0 && info.Finalizers.Count == 0;
+        }
+    }
 
     public static void Patch(Harmony harmony, ILogger logger,
         System.Func<Type, string, Type[], MethodInfo?>? resolveBirthMethod = null)
     {
+        ResetPickup();
         Type? behavior = AccessTools.TypeByName("Vintagestory.GameContent.EntityBehaviorCollectEntities");
         MethodInfo? target = behavior == null ? null : AccessTools.Method(behavior, "OnFoundCollectible", new[] { typeof(Entity) });
         if (target == null)
@@ -25,7 +38,8 @@ public static partial class EngineItemFlowPatch
             return;
         }
         harmony.Patch(target, prefix: new HarmonyMethod(typeof(EngineItemFlowPatch), nameof(OnFoundCollectiblePrefix)));
-        IsInstalled = true;
+        pickupHarmony = harmony;
+        pickupTarget = target;
         PatchBirth(harmony, logger, resolveBirthMethod ?? ((type, name, parameters) => AccessTools.Method(type, name, parameters)));
     }
 
@@ -40,9 +54,12 @@ public static partial class EngineItemFlowPatch
             return false;
         }
         string uid = (__instance.entity as EntityPlayer)?.PlayerUID ?? "";
-        if (OwnershipResolver?.Invoke(uid) != true) return true;
+        PlayerItemCustodySnapshot custody;
+        try { custody = CustodyResolver?.Invoke(uid) ?? PlayerItemCustodySnapshot.Unresolved; }
+        catch { custody = PlayerItemCustodySnapshot.Unresolved; }
+        if (custody.AllowsVanilla) return true;
         __result = false;
-        if (coordinator == null || source?.Stack?.Collectible is not { } collectible
+        if (!custody.AllowsCanonical || coordinator == null || source?.Stack?.Collectible is not { } collectible
             || collectible.GetType().GetMethod(nameof(CollectibleObject.OnCollected))?.DeclaringType != typeof(CollectibleObject))
             return false;
         try
@@ -57,8 +74,16 @@ public static partial class EngineItemFlowPatch
     public static void Reset()
     {
         ResetBirth();
-        OwnershipResolver = null;
+        CustodyResolver = null;
         CoordinatorResolver = null;
-        IsInstalled = false;
+        ResetPickup();
+    }
+
+    private static void ResetPickup()
+    {
+        if (pickupTarget != null)
+            pickupHarmony?.Unpatch(pickupTarget, AccessTools.Method(typeof(EngineItemFlowPatch), nameof(OnFoundCollectiblePrefix)));
+        pickupTarget = null;
+        pickupHarmony = null;
     }
 }

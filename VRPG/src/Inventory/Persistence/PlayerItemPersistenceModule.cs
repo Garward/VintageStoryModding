@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using VRPG.Core;
 using VRPG.Inventory.Migration;
@@ -16,6 +17,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     private ICoreServerAPI? api;
     private WorldScopedPlayerItemArchiveStorage? storage;
     private bool checkpointHealthy = true;
+    private readonly PlayerItemCustodyPolicy custody = new();
+    private readonly HashSet<string> unresolvedCursors = new(StringComparer.OrdinalIgnoreCase);
 
     public string Code => "player-items";
     public PlayerItemArchiveService? Service { get; private set; }
@@ -26,8 +29,11 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     {
         Coverage.Register("pickup:persisted", () => IsReady && EngineItemFlowPatch.IsInstalled);
         Coverage.Register("pickup:fresh", () => IsReady && EngineItemFlowPatch.IsFreshIdentityInstalled);
+        Coverage.Register("native:packets", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
+        Coverage.Register("native:cursor-securing", () => IsReady && NativeInventoryPacketGuardPatch.IsReady && unresolvedCursors.Count == 0);
     }
-    public bool CanActivateNativeProfile => IsReady && EngineItemFlowPatch.IsInstalled && Coverage.CanActivate(new[]
+    public bool CanActivateNativeProfile => IsReady && NativeInventoryPacketGuardPatch.IsReady
+        && unresolvedCursors.Count == 0 && EngineItemFlowPatch.IsInstalled && Coverage.CanActivate(new[]
     {
         "pickup:persisted", "pickup:fresh", "grant:rewards", "grant:admin", "slots:hotbar", "slots:offhand",
         "slots:cursor", "slots:crafting", "slots:equipment", "slots:backpack", "trade", "containers",
@@ -36,6 +42,9 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
 
     public void StartServerSide(ICoreServerAPI api)
     {
+        custody.Reset();
+        unresolvedCursors.Clear();
+        checkpointHealthy = true;
         this.api = api;
         EngineItemFlowPatch.BeforePublicationObserver = EngineItemPickupSource.EstablishBeforePublication;
         storage = new WorldScopedPlayerItemArchiveStorage(api.GetOrCreateDataPath("VRPG/player-items"),
@@ -68,6 +77,39 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         Service = null;
         Bridges = null;
         storage = null;
+        custody.Reset();
+        unresolvedCursors.Clear();
+        checkpointHealthy = true;
+    }
+
+    public PlayerItemCustodySnapshot Custody(string playerUid)
+    {
+        if (string.IsNullOrWhiteSpace(playerUid)) return PlayerItemCustodySnapshot.Unresolved;
+        if (unresolvedCursors.Contains(playerUid.Trim())) return PlayerItemCustodySnapshot.Unresolved;
+        bool loaded = Service?.IsLoaded == true;
+        var phase = loaded ? Service!.Migration(playerUid)?.Status : null;
+        bool reconciled = false;
+        if (loaded && phase == PlayerItemMigrationStatus.Committed && IsReady && Service!.IsCrashDurable && Bridges != null)
+        {
+            try
+            {
+                // A custody query is read-only. Reconciliation remains at explicit lifecycle
+                // boundaries; refusing an arbitrary packet must not replay an external adapter.
+                reconciled = Service.BridgeSnapshot()
+                    .Where(r => string.Equals(r.Request.PlayerUid, playerUid.Trim(), StringComparison.OrdinalIgnoreCase))
+                    .All(r => r.Stage is
+                    PlayerItemBridgeStage.Completed or PlayerItemBridgeStage.RolledBack or PlayerItemBridgeStage.Refused);
+            }
+            catch { /* Health loss cannot reopen competing Vanilla custody. */ }
+        }
+        return custody.Observe(playerUid, loaded, phase, IsReady,
+            reconciled && NativeInventoryPacketGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
+    }
+
+    public void RequireCursorRecovery(string playerUid)
+    {
+        if (!string.IsNullOrWhiteSpace(playerUid)) unresolvedCursors.Add(playerUid.Trim());
+        api?.Logger.Error("[VRPG/Inventory] Native cursor retained for {0}; activation requires explicit recovery. Retained memory does not establish disk durability.", playerUid);
     }
 
     private void OnSaveGameLoaded()
@@ -102,6 +144,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         PlayerItemArchiveSaveResult result = Service.SaveDirty();
         if (!result.Success)
         {
+            checkpointHealthy = false;
             api.Logger.Error(
                 "[VRPG/Inventory] Player-item snapshot failed; the prior generation remains recoverable: {0}",
                 result.Error);
@@ -128,7 +171,11 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         Bridges?.SuppressClaimedPickup(new EngineItemPickupSource(item));
     }
 
-    private void OnPlayerDisconnect(IServerPlayer player) => Bridges?.Reconcile(player.PlayerUID);
+    private void OnPlayerDisconnect(IServerPlayer player)
+    {
+        try { Bridges?.Reconcile(player.PlayerUID); }
+        finally { custody.Forget(player.PlayerUID); }
+    }
     private void OnPlayerDeath(IServerPlayer player, DamageSource damage) => Bridges?.Reconcile(player.PlayerUID);
     private EnumHandling OnBeforeActiveSlotChanged(IServerPlayer player, ActiveSlotChangeEventArgs args) =>
         Bridges?.Reconcile(player.PlayerUID).Any(r => r.Stage == PlayerItemBridgeStage.ReconcileRequired) == true

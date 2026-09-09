@@ -91,8 +91,10 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
   legacy migration scans all managed inventories and restores exact snapshots.
   Their ordinary runtime clicks, swaps, hotkeys and inventory packets still use
   Vanilla `ItemSlot.TryPutInto`, `TakeOut`, and direct `Itemstack` assignment.
-  These routes are **not guarded for canonical activation**. Task 8 must prevent
-  exposure or install producer-level guards before enabling the profile.
+  Task 3b2 now refuses the audited server packet routes before mutation for
+  canonical/recovery custody (details below). Direct producer and tick routes
+  remain unguarded; Task 8 must prevent their exposure or install producer-level
+  guards before enabling the profile.
 - Direct engine grants: `PlayerInventoryManager.TryGiveItemstack` 184 onward
   wraps a dummy slot and calls `TryTransferAway`. It does not identify a source
   and is not a custody adapter. Vanilla behavior remains before activation.
@@ -116,7 +118,8 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
   adapter. None of these native effect adapters is registered by default.
   Unknown/partial results retain the complete reservation; no network retry
   replays an effect. Unsupported coordinator requests refuse before reservation
-  or materialization. Producer entry guards for Vanilla actions remain pending.
+  or materialization. Task 3b2 refuses native hand/tool packets, but ongoing held
+  ticks and direct producer entry guards remain pending.
 - Death: engine `ServerPlayerInventoryManager.DropItem` and inventory death
   behavior still own Vanilla slot drops. The persistence module reconciles known
   canonical receipts on player death; a complete native death policy/guard is
@@ -127,8 +130,9 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
 `PlayerItemPersistenceModule.CanActivateNativeProfile` requires every named
 exposed route in its allowlist to have a live readiness/producer guard, as well
 as loaded durable storage and the installed pickup hook. No blanket readiness is
-registered in this slice. Only persisted/fresh pickup guard entries are registered
-by Task 3b1; every other named route still blocks activation. Task 8 must use this gate in the custody activation
+registered in this slice. Task 3b1 registers persisted/fresh pickup entries; Task
+3b2 adds only `native:packets` and `native:cursor-securing`, without registering
+whole slot/held/use coverage. Other named routes still block activation. Task 8 must use this gate in the custody activation
 protocol; the current task does not remove either Vanilla menu.
 
 ## Outbound receipt contract and remaining integration
@@ -161,3 +165,103 @@ loopback server startup at `/tmp/vrpg-pickup-startup.SUUv9l` accepted the pinned
 and loaded zero player stores; this is startup evidence only. Tests use real
 canonical stores/archives, fake external destinations at the effect boundary,
 and real temporary filesystem sidecars. The full suite passed 899/899 on 2026-09-09.
+
+## Task 3b2: phase-aware native packet and cursor refusal
+
+`PlayerItemCustodyPolicy` distinguishes verified Vanilla, canonical, and recovery
+ownership. A successfully validated archive with no migration, or a successful
+Restored journal, permits Vanilla. Prepared/RestorePending, invalid phases,
+unknown archive load, and lost player identity refuse competing native operations.
+Committed refuses Vanilla even when persistence, bridge reconciliation, or hooks
+are unhealthy; canonical operations then become read-only. A pre-migration
+validation/checkpoint failure cannot invent Committed ownership. Lost archive
+validation retains an observed Committed owner read-only; other unknown ownership
+freezes to Recovery. Connection observations are forgotten at disconnect, and
+world/module start/disposal resets them. Snapshots are current observations, not
+durable or reusable activation credentials.
+
+The persistence module supplies this same policy to pickup and native guards.
+Custody lookup reads existing bridge receipts without replaying reconciliation or
+writing receipts. Existing explicit startup/disconnect/death/selection lifecycle
+reconciliation remains. Pending/nonterminal receipts and recorded stray cursors
+block canonical operations. Pickup tombstones are checked before collector custody,
+including for Vanilla/recovery collectors. Pickup readiness now checks its live
+Harmony prefix. Deferred fresh-birth leases carry a monotonic observer lifetime,
+so detach/reattach of the same cached delegate cannot revive old evidence.
+
+Audited `ServerSystemInventory` entry points in native 1.22.7 (module
+`8a3ad3aa-2940-4c39-ae1b-881de9e65346`) are pinned by exact signature and SHA-256 IL
+body hashes in `NativeInventoryPacketGuardPatch`:
+
+- `HandleSelectedHotbarSlot(Packet_Client, ConnectedClient)`: before selection
+  events, active-slot assignment, `DropSlotIfHot`, animation callbacks/broadcasts.
+- `HandleActivateInventorySlot(Packet_Client, ConnectedClient)`: before inventory
+  lookup, `itemFilter`, and `InventoryNetworkUtil.HandleClientPacket`.
+- `HandleCreateItemstack(Packet_Client, ConnectedClient)`: before conversion,
+  direct target assignment, dirty callbacks, and native rejection packets.
+- `HandleMoveItemstack(Packet_Client, ConnectedClient)` and
+  `HandleFlipItemStacks(Packet_Client, ConnectedClient)`: before filtering,
+  transfer/network callbacks and hotbar broadcasts.
+- `HandleHandInteraction(Packet_Client, ConnectedClient)`: before block-interaction
+  dispatch, slot lookup, event handlers and collectible use callbacks.
+- `HandleToolMode(Packet_Client, ConnectedClient)`: before slot/selection lookup
+  and `SetToolMode`.
+- `HandleInvOpenClose(Packet_Client, ConnectedClient)`: before inventory lookup
+  and open/close callbacks.
+- `secureMouseSlotContents(ServerPlayer)`: before cursor access, `TryTransferAway`
+  and `DropAll`, for both native disconnect and shutdown callers.
+
+Constructor registration (packet IDs 13, 7, 10, 8, 9, 25, 27, 30) and native
+`OnPlayerDisconnect(ServerPlayer)`/`OnBeginShutdown()` are also pinned witnesses.
+Missing/signature/body mismatch or existing conflicting patches reject installation.
+Removed prefixes, changed authority, and later handler/caller patch conflicts
+withdraw readiness. A missing/throwing cursor recovery observer makes readiness
+unavailable for that installation; the observer is never blindly replayed. Reset
+unpatches only owned prefixes and clears authority. Foreign code cannot be made
+safe by these readiness checks: conflicts block activation, they are not certified
+as preserving custody.
+
+Identity comes only from `ConnectedClient.Player.PlayerUID`, or the server player
+passed by the cursor lifecycle caller. Packet inventory IDs and `SentPlayerUid`
+never establish custody. Exceptions/lost identity refuse. Verified Vanilla passes
+through unchanged. Private `itemFilter` is untouched; no post-mutation refund,
+generic insertion rejection, outbound adapter, quantity narrowing, or new economy
+was introduced.
+
+Cursor limitation: `InventoryPlayerMouseCursor.ToTreeAttributes` and
+`FromTreeAttributes` are empty in this engine. A refused stray cursor stays in its
+source slot in RAM; an in-memory recovery marker blocks activation and native
+reopening for that player, even if the journal changes to Restored. This is not a
+crash-durable cursor recovery store, and the marker does not survive process exit.
+Full activation needs an audited empty-slot/materialized-lease precondition and a
+durable recovery contract before relying on this boundary. Retaining RAM cannot
+make shutdown or a crash preserve the cursor. This slice does not erase it or
+claim that problem solved.
+
+Remaining producers: `OnUsingTick` invokes `OnBlockBreaking`, `OnHeldIdle` on both
+hands and `callOnUsing` without a new packet. `UpdateTransitionStates` walks native
+slots and invokes evolving-item callbacks. Direct grants, hotbar/offhand/crafting/
+equipment/backpack insertion, containers, trade, signs/labeled chests/ground
+storage, death and direct use/drop/placement remain open. The two new coverage
+names do not certify any of these routes or all native slots as frozen. Outbound
+destination durability remains a separate parent Task3 requirement.
+
+Task8 startup dependency: current boot creates persistence only when
+`InventoryReplacement.Enabled` is true. This slice installs both guards and pickup
+whenever that module exists, independently of RPG being enabled. Feature-disabled
+startup still cannot inspect a prior persisted Committed/Prepared journal; it has
+no custody authority or installed guard. Task8 must provide ownership inspection
+and a fail-closed handshake on that path before claiming configuration disablement
+preserves canonical custody. Config or GUI teardown never establishes or reverses
+ownership in this policy.
+
+Verification executes the actual nine patched handlers, real native disconnect
+and shutdown methods, real slots/managers, and controlled downstream callbacks.
+Move/flip/activate use a controlled `InventoryNetworkUtil` callback, not a claim
+of full native transfer protocol acceptance. Selected-hotbar Vanilla verification
+ends at its first event callback, and creative verification establishes assignment
+and dirty callback before the headless fixture's absent static logger. Cursor
+tests execute native transfer attempts with no eligible target, then a controlled
+drop callback; they also prove native mouse serialization contains no slot.
+No deployment, live migration, native joined-menu acceptance, or full native
+profile activation was performed for Task 3b2.

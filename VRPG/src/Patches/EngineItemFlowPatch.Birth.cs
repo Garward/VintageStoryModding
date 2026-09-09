@@ -12,7 +12,18 @@ namespace VRPG.Patches;
 
 public static partial class EngineItemFlowPatch
 {
-    public static Action<EntityItem, System.Func<bool>>? BeforePublicationObserver { get; set; }
+    private static Action<EntityItem, System.Func<bool>>? beforePublicationObserver;
+    private static long observerLifetime;
+    public static Action<EntityItem, System.Func<bool>>? BeforePublicationObserver
+    {
+        get => beforePublicationObserver;
+        set
+        {
+            // Assignments start a new lifetime even when a cached delegate is reattached.
+            observerLifetime = checked(observerLifetime + 1);
+            beforePublicationObserver = value;
+        }
+    }
     private static BirthInstallation? birthInstallation;
     public static bool IsFreshIdentityInstalled => birthInstallation?.IsReady() == true;
 
@@ -69,13 +80,14 @@ public static partial class EngineItemFlowPatch
     {
         var installation = birthInstallation;
         var observer = BeforePublicationObserver;
+        long lifetime = observerLifetime;
         if (entity.GetType() != typeof(EntityItem) || installation?.IsReady() != true || observer == null) return;
         // The evidence carries this installation's lease. Reset, unpatch, or a conflicting patch
         // cannot leave an old in-memory source eligible under a new hook installation.
         try
         {
             observer((EntityItem)entity, () => ReferenceEquals(installation, birthInstallation)
-                && ReferenceEquals(observer, BeforePublicationObserver) && installation.IsReady());
+                && lifetime == observerLifetime && ReferenceEquals(observer, BeforePublicationObserver) && installation.IsReady());
         }
         catch (Exception error)
         {

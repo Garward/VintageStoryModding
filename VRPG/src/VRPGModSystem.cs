@@ -147,17 +147,23 @@ public sealed class VRPGModSystem : ModSystem
             AddAndStart(api, playerItemPersistence);
         }
 
+        if (config.Modules.Rpg.Enabled || playerItemPersistence != null)
+            serverHarmony = new Harmony("vrpg.server");
+
+        if (playerItemPersistence != null)
+        {
+            NativeInventoryPacketGuardPatch.CustodyResolver = playerItemPersistence.Custody;
+            NativeInventoryPacketGuardPatch.CursorRecoveryObserver = playerItemPersistence.RequireCursorRecovery;
+            NativeInventoryPacketGuardPatch.Patch(serverHarmony!, api.Logger);
+            EngineItemFlowPatch.CustodyResolver = playerItemPersistence.Custody;
+            EngineItemFlowPatch.CoordinatorResolver = () => playerItemPersistence?.Bridges;
+            EngineItemFlowPatch.Patch(serverHarmony!, api.Logger);
+        }
+
         if (config.Modules.Rpg.Enabled)
         {
             EnsureCharacterRuntimeAuthority(api);
-            serverHarmony = new Harmony("vrpg.server");
-            EntityDamageScalingPatch.Patch(serverHarmony);
-            EngineItemFlowPatch.OwnershipResolver = playerUid =>
-                config.Modules.Rpg.InventoryReplacement.Enabled
-                && (playerItemPersistence?.Service?.IsLoaded != true
-                    || playerItemPersistence.Service.Migration(playerUid)?.Status == PlayerItemMigrationStatus.Committed);
-            EngineItemFlowPatch.CoordinatorResolver = () => playerItemPersistence?.Bridges;
-            EngineItemFlowPatch.Patch(serverHarmony, api.Logger);
+            EntityDamageScalingPatch.Patch(serverHarmony!);
             rpgModule = new RpgModule(
                 config.Modules.Rpg,
                 DataRegistry,
@@ -435,6 +441,7 @@ public sealed class VRPGModSystem : ModSystem
         VanillaClassRuntimePatch.OwnershipResolver = null;
         VanillaClassRuntimePatch.ClientAppearanceOnlyResolver = null;
         EngineItemFlowPatch.Reset();
+        NativeInventoryPacketGuardPatch.Reset();
         rpgModule = null;
         playerItemPersistence = null;
         base.Dispose();

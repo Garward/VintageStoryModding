@@ -20,6 +20,43 @@ namespace VRPG.Tests;
 [Collection("EngineItemBirth")]
 public sealed class EngineItemBirthTests
 {
+    [Theory]
+    [InlineData(PlayerItemCustodyOwner.Recovery)]
+    [InlineData(PlayerItemCustodyOwner.Canonical)]
+    public void ReadOnlyCustodyRefusesPickupWithoutCreditOrSourceRemoval(PlayerItemCustodyOwner owner)
+    {
+        using var scope = new BirthScope();
+        var entity = ItemEntity();
+        scope.BeforePublication(entity);
+        EngineItemFlowPatch.CoordinatorResolver = () => scope.Bridge;
+        EngineItemFlowPatch.CustodyResolver = _ => new(owner, false);
+        var player = new EntityPlayer();
+        player.WatchedAttributes.SetString("playerUID", "player");
+        bool result = true;
+        Assert.False(EngineItemFlowPatch.OnFoundCollectiblePrefix(
+            new Vintagestory.GameContent.EntityBehaviorCollectEntities(player), entity, ref result));
+        Assert.False(result);
+        Assert.NotNull(entity.Itemstack);
+        Assert.Equal(0, scope.Total());
+    }
+
+    [Fact]
+    public void ReattachingCachedObserverDoesNotReviveOldFreshLease()
+    {
+        using var scope = new BirthScope();
+        var entity = ItemEntity();
+        scope.BeforePublication(entity);
+        var observer = EngineItemFlowPatch.BeforePublicationObserver;
+        EngineItemFlowPatch.BeforePublicationObserver = null;
+        EngineItemFlowPatch.BeforePublicationObserver = observer;
+        Assert.False(new EngineItemPickupSource(entity).HasPrepublicationIdentity);
+        Assert.Equal(PlayerItemBridgeStage.Refused, scope.Bridge.Pickup("player", new EngineItemPickupSource(entity)).Stage);
+        Assert.NotNull(entity.Itemstack);
+        var next = ItemEntity();
+        scope.BeforePublication(next);
+        Assert.True(new EngineItemPickupSource(next).HasPrepublicationIdentity);
+    }
+
     [Fact]
     public void InstalledNativeSpawnHookEstablishesFreshIdentityBeforeInitialization()
     {
@@ -328,7 +365,7 @@ public sealed class EngineItemBirthTests
         if (kind == "transition") entity.Itemstack.Attributes["transitionstate"] = new TreeAttribute();
         scope.BeforePublication(entity);
         EngineItemFlowPatch.CoordinatorResolver = () => scope.Bridge;
-        EngineItemFlowPatch.OwnershipResolver = _ => true;
+        EngineItemFlowPatch.CustodyResolver = _ => new(PlayerItemCustodyOwner.Canonical, true);
         var player = new EntityPlayer();
         player.WatchedAttributes.SetString("playerUID", "player");
         bool collected = true;
@@ -351,7 +388,7 @@ public sealed class EngineItemBirthTests
         var restored = Restore(saved);
         EngineItemPickupSource.Observe(restored, loaded: true);
         EngineItemFlowPatch.CoordinatorResolver = () => scope.Bridge;
-        EngineItemFlowPatch.OwnershipResolver = _ => false;
+        EngineItemFlowPatch.CustodyResolver = _ => new(PlayerItemCustodyOwner.Vanilla, false);
         bool result = false;
         Assert.False(EngineItemFlowPatch.OnFoundCollectiblePrefix(new Vintagestory.GameContent.EntityBehaviorCollectEntities(new EntityPlayer()), restored, ref result));
         Assert.True(result);
