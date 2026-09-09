@@ -84,10 +84,13 @@ unverified. Native clear/discard and queued offline wipes are reviewed through
 assertion fixes. Native commands preserve sources on refusal, report late partial
 failure truthfully, and retain healthy reconstruction/migration behavior. Isolated
 1.22.7 startup and clean shutdown passed before the test-only fix; only optional
-Manifold warning. Joined command/migration gameplay remains unverified. Next check:
-unavailable native inventory must not count as positive empty/matching migration
-evidence. Cursor retention is RAM-only; other producers and outbound durability
-remain blockers.
+Manifold warning. Joined command/migration gameplay remains unverified. Migration
+inspection evidence is reviewed at `5009294`: actual native-source regressions,
+focused 166/full 1,450 passing tests. Missing/paused/open-container/throwing sources
+cannot count as empty/matching evidence, mutate recovery, or falsely confirm a
+restore. Healthy and final-write-only retry behavior remains intact. No new startup
+or live migration check was performed. Cursor retention is RAM-only; other
+producers and outbound durability remain blockers.
 No menu/default activation or installed deployment.
 
 Pickup prerequisite progress (2026-09-09): fresh-source identity and loaded-source

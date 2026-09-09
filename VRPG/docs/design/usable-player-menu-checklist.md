@@ -54,6 +54,7 @@ continue independent implementation work without presenting it as readiness.
 - [x] Native block-place/break, block-entity and entity packets refuse protected players before item/world callbacks.
 - [x] Direct native grants/transfers/drop and delayed death effects refuse protected item owners.
 - [x] Native clear/discard commands and queued offline wipes protect RPG-owned items.
+- [x] Unavailable native inventory cannot falsely confirm migration or recovery.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Add Options: dropped-item pickup by Everyone / Party only, with matching
@@ -360,9 +361,14 @@ first-run state.
   Healthy migration Clear/Restore remains available. Isolated 1.22.7 startup and
   clean shutdown passed before the test-only fix; only optional Manifold warning.
   No joined command/migration gameplay or full producer coverage is claimed.
-- [ ] Verify unavailable native inventories cannot count as empty/matching
-  migration evidence or prematurely confirm ownership; diagnose with the actual
-  native source adapter before changing recovery behavior.
+- [x] Verify unavailable native inventories cannot count as empty/matching
+  migration evidence or prematurely confirm ownership.
+  Reviewed `5009294`: actual-source failures reproduced before the fix; focused
+  166 and full 1,450 tests passed. Missing, paused, external-open and throwing
+  inspections retain pending recovery without new mutations. Availability lost
+  during restore cannot falsely confirm completion; a later valid check finishes
+  without restoring twice. Healthy and final-write-only retries remain compatible.
+  No new native startup or live player migration was performed for this slice.
 - [ ] Establish durable recovery or proven empty-cursor preconditions before
   activation. Current cursor refusal retains RAM only; native cursor serialization
   is empty. Packet and background inventory-tick guards do not cover all direct producers.

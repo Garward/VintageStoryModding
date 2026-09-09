@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `a37ad5e`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 migration-inspection evidence, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `51024f5`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -200,9 +200,12 @@ then covering 107 after test-only witness assertions. Real commands preserve
 protected sources, truthful late-refusal results and healthy native reconstruction;
 the actual migration adapter Clear/Restore remains compatible. Isolated 1.22.7
 startup/shutdown passed before the test-only fix with only optional Manifold
-warning. Neither slice defines canonical death losses. Next bounded slice3b8
-diagnoses whether unavailable native inventory can be mistaken for empty/matching
-migration evidence; reproduce with the actual adapter before any production fix.
+warning. Neither slice defines canonical death losses. Slice3b8 migration evidence
+is reviewed at `5009294` (report `51024f5`): actual native-source bugs reproduced,
+focused 166 and full 1,450 passing tests. Unavailable inspection cannot be treated
+as empty/matching evidence or initiate recovery mutations; final restore inspection
+also refuses false confirmation. Healthy, genuine partial recovery and final-write
+retries remain compatible. No new native startup or live migration was performed.
 
 User additions (2026-09-09) bind the later durable drop/pickup adapter: deliberately
 dropped Adventure items use the player's Everyone / Party only choice, validated
@@ -210,6 +213,12 @@ and saved by the server, and nearby compatible drops share bounded loot piles
 where possible to reduce entity count. Preserve distinct items, exact quantities,
 access rules and restart-safe partial pickup. These are unimplemented requirements,
 not capabilities of native stack merging or the current safety guards.
+
+Party-only adapter dependency: party state exists in the design but has no current
+VRPG runtime authority. Pending user direction: add basic server-owned
+invite/accept/leave parties now, or leave Party only unavailable until that support
+exists. Exact drop-time versus current-membership access is also pending. Do not
+silently add a social subsystem or expose a falsely working permissions toggle.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.
 
