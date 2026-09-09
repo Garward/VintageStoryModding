@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `c086f2d`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 background tick guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `3cd96a6`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 world-item packet guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -176,8 +176,15 @@ runs reached gameplay ticking and stopped cleanly; a damaged separate archive
 refused startup before gameplay and stayed unchanged. No joined clients; disabled
 item operations log unavailable gear while RPG remains enabled. This closes the
 minimum bootstrap prerequisite brought forward from Task8, not its full handshake.
-Next bounded slice3b4 covers background held and transition ticks per custody owner;
-it must not register blanket slot/use readiness or claim remaining producer coverage.
+Background tick slice3b4 is reviewed at `3cd96a6`: native OnUsingTick and
+UpdateTransitionStates skip protected players before effects, retaining the original
+loop and later Vanilla players. Full 1,112 tests and final tick scope 38 passed;
+actual native constructor-captured delegates and isolated1.22.7 startup were verified.
+The owner-only path avoids receipt cloning and disk access. It registers only its
+two named tick boundaries, not blanket slot/use coverage. External hook removal
+invalidates readiness but does not itself implement runtime shutdown/admission.
+Next bounded slice3b5 covers separate block-place/break, block-entity and entity
+packet routes before unsupported item/world callbacks.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.
 
