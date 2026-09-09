@@ -437,6 +437,7 @@ public sealed class VRPGModSystem : ModSystem
         VanillaClassRuntimePatch.ClientAppearanceOnlyResolver = null;
         EngineItemFlowPatch.Reset();
         NativeInventoryPacketGuardPatch.Reset();
+        NativeInventoryTickGuardPatch.Reset();
         rpgModule = null;
         playerItemPersistence = null;
         base.Dispose();

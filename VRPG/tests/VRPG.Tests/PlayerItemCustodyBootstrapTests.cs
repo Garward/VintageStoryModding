@@ -54,7 +54,13 @@ public sealed class PlayerItemCustodyBootstrapTests
         using var scope = new LifecycleScope();
         scope.Start(requested);
         Assert.False(Directory.Exists(scope.DataRoot));
-        if (!requested) { Assert.Null(scope.Module); return; }
+        if (!requested)
+        {
+            Assert.Null(scope.Module);
+            Assert.False(NativeInventoryTickGuardPatch.IsInstalled);
+            Assert.Null(NativeInventoryTickGuardPatch.CustodyResolver);
+            return;
+        }
         Assert.NotNull(scope.Module);
         Assert.False(scope.Module.IsReady);
         scope.Raise("SaveGameLoaded");
@@ -82,12 +88,15 @@ public sealed class PlayerItemCustodyBootstrapTests
             scope.Start(false);
             Assert.NotNull(scope.Module);
             scope.Raise("SaveGameLoaded");
+            Assert.True(NativeInventoryTickGuardPatch.IsReady);
             Assert.Equal(vanilla, scope.Module.Custody("player").AllowsVanilla);
             Assert.False(scope.Module.Custody("player").AllowsCanonical);
             Assert.False(scope.Module.CanActivateNativeProfile);
             Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
             var old = scope.Module;
             scope.Stop();
+            Assert.False(NativeInventoryTickGuardPatch.IsInstalled);
+            Assert.Null(NativeInventoryTickGuardPatch.CustodyResolver);
             Assert.Equal(PlayerItemCustodySnapshot.Unresolved, old.Custody("player"));
             scope.Raise("SaveGameLoaded"); // Disposed listeners cannot reopen the old world.
             Assert.Null(old.Service);
@@ -97,6 +106,33 @@ public sealed class PlayerItemCustodyBootstrapTests
         scope.Start(false);
         Assert.Null(scope.Module);
     }
+
+    [Theory]
+    [InlineData("OnUsingTick", "remove")]
+    [InlineData("UpdateTransitionStates", "remove")]
+    [InlineData("OnUsingTick", "conflict")]
+    [InlineData("UpdateTransitionStates", "conflict")]
+    public void DisabledHistoricalBootRefusesAdmissionWhenMandatoryTickBoundaryIsUnavailable(string method, string failure)
+    {
+        using var scope = new LifecycleScope();
+        var seed = new PlayerItemArchiveService(new(scope.Storage));
+        Assert.True(seed.Load().Success);
+        seed.StageMigration("player", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Committed });
+        Assert.True(seed.SaveDirty().Success);
+        byte[] original = File.ReadAllBytes(scope.Storage.ArchivePath);
+        scope.Start(false);
+        Assert.True(NativeInventoryTickGuardPatch.IsReady);
+        var target = AccessTools.Method(AccessTools.TypeByName("Vintagestory.Server.ServerSystemInventory"), method);
+        if (failure == "remove") scope.Harmony.Unpatch(target, HarmonyPatchType.Transpiler, scope.Harmony.Id);
+        else scope.Harmony.Patch(target, postfix: new HarmonyMethod(typeof(PlayerItemCustodyBootstrapTests), nameof(ConflictPostfix)));
+        scope.Raise("SaveGameLoaded");
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module!.IsReady);
+        scope.Raise("GameWorldSave");
+        Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
+    }
+
+    private static void ConflictPostfix() { }
 
     [Fact]
     public void DisabledBootRetainsCompletedPickupTombstoneButRefusesFreshPickup()
@@ -249,7 +285,7 @@ public sealed class PlayerItemCustodyBootstrapTests
         private readonly string previousDataPath = GamePaths.DataPath;
         private readonly Dictionary<string, Delegate?> events = new();
         private readonly LegacyStorage legacy = new();
-        private readonly Harmony harmony = new("vrpg.tests.bootstrap." + Guid.NewGuid());
+        public readonly Harmony Harmony = new("vrpg.tests.bootstrap." + Guid.NewGuid());
         public string DataRoot { get; } = Path.Combine(Path.GetTempPath(), "vrpg-boot-runtime-" + Guid.NewGuid().ToString("N"));
         public string WorldIdentity = "world";
         public WorldScopedPlayerItemArchiveStorage Storage => new(Path.Combine(DataRoot, "VRPG/player-items"), WorldIdentity, legacy);
@@ -296,14 +332,14 @@ public sealed class PlayerItemCustodyBootstrapTests
         {
             Module = PlayerItemCustodyBootstrap.CreateModule(Api, requested);
             Module?.StartServerSide(Api);
-            Module?.InstallProtection(harmony);
+            Module?.InstallProtection(Harmony);
         }
         public void Raise(string name, params object[] args) => events.GetValueOrDefault(name)?.DynamicInvoke(args);
         public void Stop()
         {
             Module?.Dispose();
             Module = null;
-            harmony.UnpatchAll(harmony.Id);
+            Harmony.UnpatchAll(Harmony.Id);
             NativeInventoryPacketGuardPatch.Reset();
             EngineItemFlowPatch.Reset();
         }

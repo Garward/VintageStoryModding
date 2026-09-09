@@ -63,6 +63,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.Equal(vanilla, scope.Module.Custody("player").AllowsVanilla);
         Assert.False(scope.Module.Custody("player").AllowsCanonical);
         Assert.False(scope.Module.CanActivateNativeProfile);
+        AssertTickCustodyParity(scope.Module);
         var nativeType = AccessTools.TypeByName("Vintagestory.Server.ServerSystemInventory");
         var native = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(nativeType);
         var fixture = new NativeInventoryGuardFixture(native);
@@ -101,6 +102,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.True(result.RecoveryRequired);
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
         Assert.False(scope.Module.Custody("player").AllowsCanonical);
+        AssertTickCustodyParity(scope.Module);
         var nativeType = AccessTools.TypeByName("Vintagestory.Server.ServerSystemInventory");
         var native = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(nativeType);
         var fixture = new NativeInventoryGuardFixture(native);
@@ -113,6 +115,7 @@ public sealed class PlayerItemCustodyPolicyTests
             Assert.False(migration.Resume(source).Success);
             Assert.False(scope.Module.Custody("player").AllowsCanonical);
             Assert.False(scope.Module.Custody("player").AllowsVanilla);
+            AssertTickCustodyParity(scope.Module);
             scope.Storage.FailWrites = false;
         }
         scope.Storage.FailOnWriteNumber = -1;
@@ -122,6 +125,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.Equal(restored, source.RestoreCalls);
         Assert.Equal(restore, scope.Module.Custody("player").AllowsVanilla);
         Assert.Equal(!restore && requested, scope.Module.Custody("player").AllowsCanonical);
+        AssertTickCustodyParity(scope.Module);
     }
 
     [Theory]
@@ -139,6 +143,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.False(failed.Success);
         Assert.True(failed.RecoveryRequired);
         Assert.Null(scope.Service.Migration("player"));
+        AssertTickCustodyParity(scope.Module);
         Assert.Equal(0, source.ClearCalls);
         Assert.Equal(5, source.Quantity);
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
@@ -147,6 +152,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.True(migration.Resume(source).Success);
         Assert.True(scope.Module.Custody("player").AllowsVanilla);
         Assert.Equal(0, source.ClearCalls);
+        AssertTickCustodyParity(scope.Module);
     }
 
     [Theory]
@@ -162,6 +168,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.True(scope.Module.Custody("player").AllowsVanilla);
         Assert.Equal(0, scope.Storage.Attempts);
         Assert.Equal(0, source.ClearCalls);
+        AssertTickCustodyParity(scope.Module);
     }
 
     [Fact]
@@ -172,6 +179,7 @@ public sealed class PlayerItemCustodyPolicyTests
         scope.Service.Migration("player")!.Status = PlayerItemMigrationStatus.Restored;
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
         Assert.False(scope.Module.Custody("player").AllowsCanonical);
+        AssertTickCustodyParity(scope.Module);
     }
 
     [Fact]
@@ -186,6 +194,7 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.Equal(attempts + 1, scope.Storage.Attempts);
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
         Assert.False(scope.Module.Custody("player").AllowsCanonical);
+        AssertTickCustodyParity(scope.Module);
     }
 
     [Fact]
@@ -209,6 +218,7 @@ public sealed class PlayerItemCustodyPolicyTests
     {
         using var module = new ModuleScope();
         Assert.Equal(PlayerItemCustodySnapshot.Unresolved, module.Module.Custody("player"));
+        AssertTickCustodyParity(module.Module);
     }
 
     [Fact]
@@ -223,6 +233,8 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
         Assert.True(scope.Module.Custody("other").AllowsVanilla);
         Assert.False(scope.Module.CanActivateNativeProfile);
+        AssertTickCustodyParity(scope.Module);
+        AssertTickCustodyParity(scope.Module, "other");
     }
 
     [Fact]
@@ -237,6 +249,9 @@ public sealed class PlayerItemCustodyPolicyTests
         int writes = scope.Storage.Writes;
         Assert.True(scope.Module.Custody("player").AllowsCanonical);
         Assert.Equal(writes, scope.Storage.Writes);
+        scope.Storage.FailReads = true;
+        AssertTickCustodyParity(scope.Module);
+        Assert.Equal(writes, scope.Storage.Writes);
     }
 
     [Fact]
@@ -249,13 +264,16 @@ public sealed class PlayerItemCustodyPolicyTests
         scope.SaveWorld();
         Assert.False(scope.Module.IsReady);
         Assert.True(scope.Module.Custody("player").AllowsVanilla);
+        AssertTickCustodyParity(scope.Module);
         scope.Service.StageMigration("player", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Committed });
         Assert.Equal(PlayerItemCustodyOwner.Recovery, scope.Module.Custody("player").Owner);
         Assert.False(scope.Module.Custody("player").AllowsCanonical);
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
         scope.Storage.FailReads = true;
+        AssertTickCustodyParity(scope.Module);
         Assert.False(scope.Service.Load().Success);
         Assert.Equal(PlayerItemCustodyOwner.Recovery, scope.Module.Custody("player").Owner);
+        AssertTickCustodyParity(scope.Module);
         scope.Module.Dispose();
         Assert.Equal(PlayerItemCustodySnapshot.Unresolved, scope.Module.Custody("player"));
     }
@@ -284,6 +302,40 @@ public sealed class PlayerItemCustodyPolicyTests
         Assert.False(scope.Module.Custody("player").AllowsVanilla);
     }
 
+    private static void AssertTickCustodyParity(PlayerItemPersistenceModule module, string uid = "player")
+    {
+        Assert.NotNull(NativeInventoryTickGuardPatch.CustodyResolver);
+        var tick = NativeInventoryTickGuardPatch.CustodyResolver(uid);
+        var regular = module.Custody(uid);
+        Assert.Equal(regular.Owner, tick.Owner);
+        Assert.Equal(regular.AllowsVanilla, tick.AllowsVanilla);
+        Assert.False(tick.AllowsCanonical);
+    }
+
+    [Fact]
+    public void TickOwnerResolutionDoesNotRequestBridgeCopiesOrRememberPriorPhasePermission()
+    {
+        using var scope = new ModuleScope();
+        scope.Load(PlayerItemMigrationStatus.Committed);
+        bridgeSnapshotCalls = 0;
+        scope.Harmony.Patch(AccessTools.Method(typeof(PlayerItemArchiveService), "BridgeSnapshot"),
+            prefix: new HarmonyMethod(typeof(PlayerItemCustodyPolicyTests), nameof(ObserveBridgeSnapshot)));
+        scope.Storage.FailReads = true;
+        int writes = scope.Storage.Writes;
+        var tick = NativeInventoryTickGuardPatch.CustodyResolver!;
+        Assert.Equal(PlayerItemCustodyOwner.Canonical, tick("player").Owner);
+        Assert.Equal(0, bridgeSnapshotCalls);
+        Assert.True(scope.Module.Custody("player").AllowsCanonical);
+        Assert.Equal(1, bridgeSnapshotCalls); // Positive control: the ordinary readiness query copies receipts.
+        scope.Service.Migration("player")!.Status = PlayerItemMigrationStatus.Restored;
+        Assert.False(tick("player").AllowsVanilla); // No cached permission from a live unconfirmed phase.
+        Assert.Equal(1, bridgeSnapshotCalls);
+        Assert.Equal(writes, scope.Storage.Writes);
+    }
+
+    private static int bridgeSnapshotCalls;
+    private static void ObserveBridgeSnapshot() => bridgeSnapshotCalls++;
+
     private sealed class ModuleScope : IDisposable
     {
         public Harmony Harmony { get; } = new("vrpg.tests.custody." + Guid.NewGuid());
@@ -304,10 +356,7 @@ public sealed class PlayerItemCustodyPolicyTests
             var api = PlayerDefenseServiceTests.Proxy.Create<ICoreServerAPI>((method, _) => method switch
             { "get_Logger" => logger, "get_Event" => events, "get_Server" => server, _ => null });
             AccessTools.Field(typeof(PlayerItemPersistenceModule), "api").SetValue(Module, api);
-            NativeInventoryPacketGuardPatch.CustodyResolver = Module.Custody;
-            NativeInventoryPacketGuardPatch.CursorRecoveryObserver = Module.RequireCursorRecovery;
-            NativeInventoryPacketGuardPatch.Patch(Harmony, logger);
-            EngineItemFlowPatch.Patch(Harmony, logger);
+            Module.InstallProtection(Harmony);
         }
         public void Load(PlayerItemMigrationStatus? phase = null)
         {

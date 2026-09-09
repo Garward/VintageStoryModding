@@ -20,15 +20,16 @@ internal sealed class NativeInventoryGuardFixture
     public ServerPlayer Player { get; } = (ServerPlayer)RuntimeHelpers.GetUninitializedObject(typeof(ServerPlayer));
     public ConnectedClient Client { get; } = new(1);
     public ProbeInventory Inventory { get; } = new("test-player");
-    public ProbeInventory Hotbar { get; } = new("hotbar-player");
+    public ProbeInventory Hotbar { get; }
     public ProbeCursor Cursor { get; } = new();
     public ProbeItem Item { get; } = new() { ItemId = 0, Code = new AssetLocation("game:guard-test"), MaxStackSize = 64 };
     public ProbeEvents Events { get; }
 
-    public NativeInventoryGuardFixture(object native)
+    public NativeInventoryGuardFixture(object native, string uid = "player")
     {
+        Hotbar = new("hotbar-" + uid);
         var data = new ServerWorldPlayerData { GameMode = EnumGameMode.Creative, EntityPlayer = new EntityPlayer() };
-        AccessTools.Field(typeof(ServerWorldPlayerData), "PlayerUID").SetValue(data, "player");
+        AccessTools.Field(typeof(ServerWorldPlayerData), "PlayerUID").SetValue(data, uid);
         AccessTools.Field(typeof(ServerWorldPlayerData), "connected").SetValue(data, true);
         AccessTools.Field(typeof(ServerPlayer), "worlddata").SetValue(Player, data);
         var inventories = new Vintagestory.API.Datastructures.OrderedDictionary<string, InventoryBase>
@@ -114,6 +115,26 @@ internal sealed class NativeInventoryGuardFixture
     {
         public int ToolCalls;
         public int UseCalls;
+        public int BreakingCalls;
+        public int StepCalls;
+        public int StopCalls;
+        public int TransitionCalls;
+        public bool ObserveTicks;
+        public readonly List<ItemSlot> IdleSlots = new();
+        public override float OnBlockBreaking(IPlayer player, BlockSelection selection, ItemSlot slot, float resistance, float dt, int counter)
+        { BreakingCalls++; return resistance; }
+        public override void OnHeldIdle(ItemSlot slot, EntityAgent entity) => IdleSlots.Add(slot);
+        public override bool OnHeldInteractStep(float seconds, ItemSlot slot, EntityAgent entity, BlockSelection block, EntitySelection target)
+        { StepCalls++; slot.Itemstack!.StackSize = 0; return false; }
+        public override void OnHeldInteractStop(float seconds, ItemSlot slot, EntityAgent entity, BlockSelection block, EntitySelection target)
+            => StopCalls++;
+        public override TransitionState[] UpdateAndGetTransitionStates(IWorldAccessor world, ItemSlot slot)
+        {
+            if (!ObserveTicks) return base.UpdateAndGetTransitionStates(world, slot);
+            TransitionCalls++;
+            slot.Itemstack!.StackSize--;
+            return Array.Empty<TransitionState>();
+        }
         public override void SetToolMode(ItemSlot slot, IPlayer player, BlockSelection selection, int mode) => ToolCalls++;
         public override void OnHeldUseStart(ItemSlot slot, EntityAgent entity, BlockSelection block, EntitySelection target,
             EnumHandInteract useType, bool first, ref EnumHandHandling handling) => UseCalls++;

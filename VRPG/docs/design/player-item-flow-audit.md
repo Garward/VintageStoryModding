@@ -92,8 +92,9 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
   Their ordinary runtime clicks, swaps, hotkeys and inventory packets still use
   Vanilla `ItemSlot.TryPutInto`, `TakeOut`, and direct `Itemstack` assignment.
   Task 3b2 now refuses the audited server packet routes before mutation for
-  canonical/recovery custody (details below). Direct producer and tick routes
-  remain unguarded; Task 8 must prevent their exposure or install producer-level
+  canonical/recovery custody (details below). Task 3b4 also guards the two native
+  inventory background ticks. Direct producers and other native routes remain
+  unguarded; Task 8 must prevent their exposure or install producer-level
   guards before enabling the profile.
 - Direct engine grants: `PlayerInventoryManager.TryGiveItemstack` 184 onward
   wraps a dummy slot and calls `TryTransferAway`. It does not identify a source
@@ -118,8 +119,9 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
   adapter. None of these native effect adapters is registered by default.
   Unknown/partial results retain the complete reservation; no network retry
   replays an effect. Unsupported coordinator requests refuse before reservation
-  or materialization. Task 3b2 refuses native hand/tool packets, but ongoing held
-  ticks and direct producer entry guards remain pending.
+  or materialization. Task 3b2 refuses native hand/tool packets and Task 3b4
+  refuses the native inventory ongoing-use tick. Other effect routes and direct
+  producer entry guards remain pending; this is not complete held/use coverage.
 - Death: engine `ServerPlayerInventoryManager.DropItem` and inventory death
   behavior still own Vanilla slot drops. The persistence module reconciles known
   canonical receipts on player death; a complete native death policy/guard is
@@ -131,8 +133,9 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
 exposed route in its allowlist to have a live readiness/producer guard, as well
 as loaded durable storage and the installed pickup hook. No blanket readiness is
 registered in this slice. Task 3b1 registers persisted/fresh pickup entries; Task
-3b2 adds only `native:packets` and `native:cursor-securing`, without registering
-whole slot/held/use coverage. Other named routes still block activation. Task 8 must use this gate in the custody activation
+3b2 adds only `native:packets` and `native:cursor-securing`; Task 3b4 adds the exact
+`native:OnUsingTick` and `native:UpdateTransitionStates` boundaries. Neither
+registers whole slot/held/use coverage. Other named routes still block activation. Task 8 must use this gate in the custody activation
 protocol; the current task does not remove either Vanilla menu.
 
 ## Outbound receipt contract and remaining integration
@@ -276,7 +279,7 @@ archive, creates a directory or changes a checkpoint. The path uses the same
 its directory-creation side effect; the storage class still owns world-ID hashing.
 
 Requested replacement or any history/uncertainty constructs the same persistence
-module and native packet/pickup guards. Actual archive inspection still uses the
+module and native packet/pickup/background-tick guards. Actual archive inspection still uses the
 existing `ReadOrImport` and format/checkpoint validation, including deleted-sidecar
 refusal; it is not called a nonmutating probe. Disabled Committed remains canonical
 but read-only, Prepared/RestorePending remain recovery, confirmed Restored and
@@ -285,7 +288,7 @@ restored duplicates for all collectors. No new canonical pickup/action or full
 native-profile readiness is authorized when replacement is disabled. Existing
 explicit admin resume/restore and lifecycle receipt reconciliation remain available.
 
-If mandatory packet/pickup hooks fail to install or are unavailable at
+If mandatory packet/pickup/background-tick hooks fail to install or are unavailable at
 `SaveGameLoaded`, or archive validation fails, the module calls the actual server
 shutdown API before gameplay admission. It marks bootstrap refused before doing
 so and skips archive/checkpoint writes during the engine's soft-shutdown world-save
@@ -326,3 +329,78 @@ tests execute native transfer attempts with no eligible target, then a controlle
 drop callback; they also prove native mouse serialization contains no slot.
 No deployment, live migration, native joined-menu acceptance, or full native
 profile activation was performed for Task 3b2.
+
+## Task 3b4: per-player native background inventory refusal
+
+`NativeInventoryTickGuardPatch` adds only these mandatory boundaries in the same
+installed 1.22.7 module (`8a3ad3aa-2940-4c39-ae1b-881de9e65346`):
+
+- `ServerSystemInventory.OnUsingTick(float)`, registered every 20 ms. Original IL
+  SHA-256 `0F8E037B6D7E54F81093350434B6A15D02B065411411C56FBBE65DE3FE8D4B87`.
+  An inserted custody decision precedes original `IL_0023` (the player state
+  check) and branches to the existing outer enumerator continuation `IL_01d6`
+  for refused players. Thus refusal precedes active-slot lookup, primary block
+  breaking/counter writes, either hand's idle callback, ongoing held-use callbacks,
+  empty-stack clearing, dirty notifications, and hand-control changes.
+- `ServerSystemInventory.UpdateTransitionStates(float)`, registered every 4000 ms.
+  Original IL SHA-256
+  `FA705EAFA20131F82011DA6F4D83547F8C17D81F08ECF7005CFB8EA2E2A476D9`.
+  A custody decision precedes original `IL_0048` and branches to the existing
+  client-enumerator continuation `IL_00eb`. It runs before inventory enumeration
+  or `UpdateAndGetTransitionStates`. The native global item-filter config refresh
+  still runs; it is not a per-player slot or custody mutation.
+
+Each insertion is `ldloc.1; call permission; brfalse original-next-player`.
+The original playing checks, loop bodies, allowed-player behavior and enumerator
+finally blocks remain native. The audited insertion sites have no incoming label
+or exception boundary; insertion and destination share the same outer try, before
+any nested inventory enumerator begins. Signature, module, method body, unique
+playing check, branch shape and continuation are checked before installation.
+Constructor registration is pinned to the same exact constructor hash used by
+the packet guard. Actual transpiler execution must acknowledge both insertions;
+missing/ambiguous insertion fails rather than reporting a no-op as installed.
+Partial installation is removed, retaining foreign patches. Existing conflicts,
+late conflicts, constructor patches and hook removal make readiness unavailable.
+
+Only the server player UID establishes custody. Missing players/identity and
+absent or throwing resolution refuse without slot or control access. Verified
+Vanilla and non-playing behavior are retained. No roster removal, connection-state
+spoofing, inventory swapping, copied native loop, compensating refund, archive
+mutation or canonical adapter is used.
+
+Tick owner resolution shares the persistence module's `ResolveCustody` and
+`MigrationConfirmation` path: confirmed phase, pending changes, failed-write
+uncertainty, sticky canonical observations and unresolved cursors are identical to
+ordinary custody queries. Tick queries skip canonical-operation readiness and
+bridge receipt snapshots. The path performs keyed in-memory lookups under the
+existing confirmation lock, with no filesystem reads/writes, store/receipt clones,
+or roster/inventory copies per player tick. Permission is re-evaluated each time;
+no cached permission survives phase changes. Native collection enumeration is
+unchanged. This is call-path evidence, not a performance benchmark.
+
+The guards install alongside packet/pickup protection for historical custody even
+with replacement disabled. Missing or conflicting ticks at `SaveGameLoaded` use
+the existing actual startup shutdown path before archive load/gameplay admission.
+Verified empty disabled worlds still create neither sidecar nor custody hooks.
+Module disposal and mod-system teardown clear tick authority and remove the owned
+transpilers. Exact readiness entries are `native:OnUsingTick` and
+`native:UpdateTransitionStates`; no `held`, `use`, `slots:*` or full-profile entry
+is registered by this protection.
+
+Tests execute both actual native methods and actual `GameTickListener` delegates
+registered by the native constructor **before** patch installation. Mixed rosters
+verify both allowed players (including one after canonical/recovery players),
+both hands' idle callbacks, breaking, use step/stop, slot depletion/dirty state,
+hand controls, transition source changes and offline skipping. Additional tests
+cover missing identity/authority, malformed insertion input, atomic cleanup,
+registration/patch conflicts, removal, reset/reinstall, historical disabled boot,
+distinct world identity, and custody parity through failed and confirmed phases.
+
+This closes two background callbacks only. World/block/entity packets, direct
+grants, sign/chest/ground-storage producers, other slot/held/use routes, death,
+trade, containers, durable outbound destinations and durable native cursor remain
+separate blockers. Runtime removal by external code is detected by readiness but
+is **not** an ongoing admission guard or automatic runtime shutdown: the removed
+native hook cannot still protect callbacks. Full handshake, default activation,
+live migration and the joined Inventory/Character menu acceptance gate remain
+unimplemented by this slice.
