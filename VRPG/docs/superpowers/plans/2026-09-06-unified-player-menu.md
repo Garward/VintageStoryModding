@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `3cd96a6`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 world-item packet guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `19f7286`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 direct manager/death guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -183,8 +183,13 @@ actual native constructor-captured delegates and isolated1.22.7 startup were ver
 The owner-only path avoids receipt cloning and disk access. It registers only its
 two named tick boundaries, not blanket slot/use coverage. External hook removal
 invalidates readiness but does not itself implement runtime shutdown/admission.
-Next bounded slice3b5 covers separate block-place/break, block-entity and entity
-packet routes before unsupported item/world callbacks.
+World-item packet slice3b5 is reviewed at `19f7286`: separate block-place/break,
+block-entity and entity packet routes refuse before unsupported item/world callbacks.
+Full 1,143 tests followed by final focused 34; real pre-patch registrations and
+isolated 1.22.7 startup/shutdown verified. Headless block tests stop at native
+permission/branch boundaries; complete installed-world mutation and joined-menu
+acceptance remain unverified. Next slice3b6 protects direct manager grant/transfer/
+drop and deferred death effects; it does not define canonical death losses.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.
 

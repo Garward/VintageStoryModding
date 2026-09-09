@@ -51,6 +51,7 @@ continue independent implementation work without presenting it as readiness.
 - [x] Supported native inventory packet/cursor refusal and confirmed-phase custody policy implemented and reviewed.
 - [x] Existing item custody stays protected when replacement is disabled; unsafe archive startup refuses gameplay.
 - [x] Background held-item and transition ticks refuse protected players while preserving Vanilla players in the same tick.
+- [x] Native block-place/break, block-entity and entity packets refuse protected players before item/world callbacks.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.
@@ -331,8 +332,15 @@ first-run state.
   methods and constructor-captured delegates cover mixed rosters and callbacks.
   Isolated server accepted packet/tick/pickup hooks, loaded its archive, reached
   ticking and stopped cleanly. No joined clients or full slot/use coverage claimed.
-- [ ] Guard separate native block-place/break, block-entity and entity messages
+- [x] Guard separate native block-place/break, block-entity and entity messages
   before unsupported item/world effects; these bypass inventory packet handlers.
+  Reviewed `19f7286`; full 1,143 tests followed by final focused 34. Actual native
+  registrations captured before patching exercise connected-player authority,
+  entity/block-entity callbacks and place/break/decor dispatch. Isolated 1.22.7
+  server accepted the combined guards, reached ticking and stopped cleanly.
+  Complete installed-world block mutation and joined-menu acceptance are unverified.
+- [ ] Guard direct native manager grants/transfers/drop and death effects, including
+  delayed armor drops; packet refusal is not complete producer coverage.
 - [ ] Establish durable recovery or proven empty-cursor preconditions before
   activation. Current cursor refusal retains RAM only; native cursor serialization
   is empty. Packet and background inventory-tick guards do not cover all direct producers.

@@ -70,8 +70,12 @@ joined. Disabled item operations still log unavailable gear when RPG is enabled.
 Background inventory ticks are reviewed at `3cd96a6`: full 1,112 tests, then final
 tick coverage 38. Mixed native rosters and pre-patch constructor delegates preserve
 Vanilla callbacks while refusing protected sources. Actual server startup verified
-packet/tick/pickup coexistence and clean stop. Cursor retention is RAM-only; separate
-world-item packets, direct producers and outbound durability remain blockers.
+packet/tick/pickup coexistence and clean stop. Separate world-item packet guards
+are reviewed at `19f7286`: full 1,143 tests and final focused 34. Real captured
+registrations cover block-entity/entity callbacks and place/break/decor dispatch;
+isolated 1.22.7 startup accepted all guards and stopped cleanly. Complete native
+block mutation with joined players remains unverified. Cursor retention is RAM-only;
+direct native manager/death producers and outbound durability remain blockers.
 No menu/default activation or installed deployment.
 
 Pickup prerequisite progress (2026-09-09): fresh-source identity and loaded-source
