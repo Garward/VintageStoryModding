@@ -41,7 +41,6 @@ public sealed class VRPGModSystem : ModSystem
     private readonly UnavailableSkillNotificationService unavailableSkillNotifications = new();
     private IServerEventAPI? skillNotificationEvents;
     private PlayerItemPersistenceModule? playerItemPersistence;
-    private EngineItemIngressService? engineItemIngress;
     private GuiDialogVRPGHub? clientHubDialog;
     private GuiDialogVRPGLibrary? clientLibraryDialog;
     private GuiDialogVRPGTalentEditor? clientTalentEditorDialog;
@@ -141,17 +140,11 @@ public sealed class VRPGModSystem : ModSystem
         modules.Clear();
         rpgModule = null;
         playerItemPersistence = null;
-        engineItemIngress = null;
 
         if (config.Modules.Rpg.InventoryReplacement.Enabled)
         {
             playerItemPersistence = new PlayerItemPersistenceModule();
             AddAndStart(api, playerItemPersistence);
-            if (playerItemPersistence.Service != null)
-            {
-                engineItemIngress = new EngineItemIngressService(
-                    playerItemPersistence.Service.Directory);
-            }
         }
 
         if (config.Modules.Rpg.Enabled)
@@ -159,18 +152,11 @@ public sealed class VRPGModSystem : ModSystem
             EnsureCharacterRuntimeAuthority(api);
             serverHarmony = new Harmony("vrpg.server");
             EntityDamageScalingPatch.Patch(serverHarmony);
-            EngineItemFlowPatch.OwnershipResolver = _ =>
+            EngineItemFlowPatch.OwnershipResolver = playerUid =>
                 config.Modules.Rpg.InventoryReplacement.Enabled
-                && config.Modules.Rpg.InventoryReplacement.ExperimentalDialogReplacement
-                && playerItemPersistence?.IsReady == true
-                && rpgModule?.GearReady == true
-                && engineItemIngress != null;
-            EngineItemFlowPatch.Route = (playerUid, stack) =>
-                engineItemIngress?.Route(
-                    playerUid,
-                    stack,
-                    "engine-grant-" + Guid.NewGuid().ToString("N"))
-                ?? EngineItemIngressResult.PassThrough();
+                && (playerItemPersistence?.Service?.IsLoaded != true
+                    || playerItemPersistence.Service.Migration(playerUid)?.Status == PlayerItemMigrationStatus.Committed);
+            EngineItemFlowPatch.CoordinatorResolver = () => playerItemPersistence?.Bridges;
             EngineItemFlowPatch.Patch(serverHarmony, api.Logger);
             rpgModule = new RpgModule(
                 config.Modules.Rpg,
@@ -451,7 +437,6 @@ public sealed class VRPGModSystem : ModSystem
         EngineItemFlowPatch.Reset();
         rpgModule = null;
         playerItemPersistence = null;
-        engineItemIngress = null;
         base.Dispose();
     }
 

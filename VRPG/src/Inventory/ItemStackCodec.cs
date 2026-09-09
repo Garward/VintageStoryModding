@@ -130,7 +130,30 @@ public static class ItemStackCodec
             stack.Collectible.Code.ToString(),
             stack.Collectible.MaxStackSize,
             stack.Collectible.Tool.HasValue,
-            stack.Collectible.NutritionProps != null);
+            stack.Collectible.NutritionProps != null,
+            HasEvolvingState(stack)
+                ? PlayerItemStatePolicy.FrozenInRecovery : PlayerItemStatePolicy.ExactSnapshot);
+    }
+
+    private static bool HasEvolvingState(ItemStack stack) =>
+        stack.Collectible == null
+        || stack.Collectible.TransitionableProps?.Length > 0
+        || stack.Collectible.GetType().GetMethod(nameof(CollectibleObject.GetTransitionableProperties))
+            ?.DeclaringType != typeof(CollectibleObject)
+        || HasEvolvingAttributes(stack.Attributes);
+
+    private static bool HasEvolvingAttributes(ITreeAttribute attributes)
+    {
+        if (attributes.HasAttribute("temperature") || attributes.HasAttribute("transitionstate")) return true;
+        foreach (var pair in attributes)
+        {
+            if (pair.Value is ItemstackAttribute { value: not null } nested && HasEvolvingState(nested.value)) return true;
+            if (pair.Value is ITreeAttribute child && HasEvolvingAttributes(child)) return true;
+            if (pair.Value is TreeArrayAttribute trees)
+                foreach (var tree in trees.value)
+                    if (HasEvolvingAttributes(tree)) return true;
+        }
+        return false;
     }
 
     public static byte[] EncodeCanonicalState(ITreeAttribute attributes)

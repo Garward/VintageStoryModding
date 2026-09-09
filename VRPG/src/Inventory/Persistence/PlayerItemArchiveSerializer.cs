@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
+using VRPG.Inventory.Bridges;
 
 namespace VRPG.Inventory.Persistence;
 
@@ -83,6 +84,15 @@ public sealed class PlayerItemArchiveSerializer
         }
 
         bool migrateProtection = archive.SchemaVersion < 2;
+        archive.Bridges ??= new Dictionary<string, PlayerItemBridgeReceipt>(StringComparer.Ordinal);
+        foreach (var pair in archive.Bridges)
+        {
+            if (!PlayerItemBridgeJournal.Validate(pair.Key, pair.Value))
+            {
+                error = "Unsupported player-item archive schema or invalid bridge receipt; preserve the archive for reconciliation.";
+                return false;
+            }
+        }
         archive.Players ??= new Dictionary<string, PlayerItemStoreState>(
             StringComparer.OrdinalIgnoreCase);
         archive.Migrations ??= new Dictionary<string, PlayerItemMigrationJournalState>(

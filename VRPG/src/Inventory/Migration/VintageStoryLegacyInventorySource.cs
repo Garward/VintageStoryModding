@@ -251,7 +251,8 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
         try
         {
             EncodedItemStack encoded = ItemStackCodec.Encode(stack.Clone());
-            PlayerItemClassification classification = classifier.Classify(ItemStackCodec.Describe(stack));
+            PlayerItemClassificationContext description = ItemStackCodec.Describe(stack);
+            PlayerItemClassification classification = classifier.Classify(description);
             output.Add(new LegacyItemSlotState
             {
                 Area = area,
@@ -265,7 +266,8 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
                     stack.Collectible.Code.Path,
                     encoded.Payload.ExactState,
                     encoded.Payload.AssetKind,
-                    encoded.Payload.EmbeddedReferences),
+                    encoded.Payload.EmbeddedReferences,
+                    description.StatePolicy),
                 Quantity = encoded.Quantity,
                 EquipmentRole = equipmentRole
             });

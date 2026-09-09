@@ -13,6 +13,8 @@ public sealed class PlayerItemArchiveRepository
     private readonly IPlayerItemArchiveStorage storage;
     private readonly PlayerItemArchiveSerializer serializer;
 
+    public bool IsCrashDurable => storage is IDurablePlayerItemArchiveStorage { IsCrashDurable: true };
+
     public PlayerItemArchiveRepository(
         IPlayerItemArchiveStorage storage,
         PlayerItemArchiveSerializer? serializer = null)

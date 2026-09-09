@@ -1,77 +1,61 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
-using VRPG.Inventory;
+using VRPG.Inventory.Bridges;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 
 namespace VRPG.Patches;
 
-/// <summary>
-/// Redirects engine grants before Vanilla selects or mutates a player slot. Ownership remains
-/// disabled until the experimental inventory transaction explicitly enables it.
-/// </summary>
+/// <summary>Intercepts identifiable pickup before Vanilla selects any player slot.</summary>
 public static class EngineItemFlowPatch
 {
-    private static FieldInfo? playerField;
-
     public static System.Func<string, bool>? OwnershipResolver { get; set; }
-    public static System.Func<string, ItemStack, EngineItemIngressResult>? Route { get; set; }
+    public static System.Func<PlayerItemBridgeCoordinator?>? CoordinatorResolver { get; set; }
+    public static bool IsInstalled { get; private set; }
 
     public static void Patch(Harmony harmony, ILogger logger)
     {
-        Type? managerType = AccessTools.TypeByName("Vintagestory.Common.PlayerInventoryManager");
-        MethodInfo? target = managerType == null
-            ? null
-            : AccessTools.Method(managerType, "TryGiveItemstack", new[] { typeof(ItemStack), typeof(bool) });
-        playerField = managerType == null ? null : AccessTools.Field(managerType, "player");
-        MethodInfo? prefix = AccessTools.Method(typeof(EngineItemFlowPatch), nameof(TryGiveItemstackPrefix));
-        if (target == null || playerField == null || prefix == null)
+        Type? behavior = AccessTools.TypeByName("Vintagestory.GameContent.EntityBehaviorCollectEntities");
+        MethodInfo? target = behavior == null ? null : AccessTools.Method(behavior, "OnFoundCollectible", new[] { typeof(Entity) });
+        if (target == null)
         {
-            logger.Error("[VRPG/Inventory] Engine item-flow bridge could not find the supported inventory grant boundary.");
+            logger.Error("[VRPG/Inventory] The supported pickup boundary is unavailable; canonical activation must remain blocked.");
             return;
         }
-
-        harmony.Patch(target, prefix: new HarmonyMethod(prefix));
+        harmony.Patch(target, prefix: new HarmonyMethod(typeof(EngineItemFlowPatch), nameof(OnFoundCollectiblePrefix)));
+        IsInstalled = true;
     }
 
-    public static bool TryGiveItemstackPrefix(object __instance, ItemStack itemstack, ref bool __result)
+    public static bool OnFoundCollectiblePrefix(EntityBehavior __instance, Entity foundEntity, ref bool __result)
     {
-        if (itemstack == null || itemstack.StackSize <= 0)
+        var coordinator = CoordinatorResolver?.Invoke();
+        var source = foundEntity.GetType() == typeof(EntityItem) ? new EngineItemPickupSource((EntityItem)foundEntity) : null;
+        if (source != null && coordinator?.HasPickupClaim(source.Token) == true)
         {
-            return true;
+            // Tombstones apply even when the next collector is outside canonical custody.
+            __result = coordinator.SuppressClaimedPickup(source);
+            return false;
         }
-
-        object? owner = playerField?.GetValue(__instance);
-        string playerUid = owner switch
+        string uid = (__instance.entity as EntityPlayer)?.PlayerUID ?? "";
+        if (OwnershipResolver?.Invoke(uid) != true) return true;
+        __result = false;
+        if (coordinator == null || source?.Stack?.Collectible is not { } collectible
+            || collectible.GetType().GetMethod(nameof(CollectibleObject.OnCollected))?.DeclaringType != typeof(CollectibleObject))
+            return false;
+        try
         {
-            IPlayer player => player.PlayerUID,
-            _ => ""
-        };
-        if (string.IsNullOrWhiteSpace(playerUid)
-            || OwnershipResolver?.Invoke(playerUid) != true
-            || Route == null)
-        {
-            return true;
+            var receipt = coordinator.Pickup(uid, source);
+            __result = receipt.Stage is PlayerItemBridgeStage.Completed or PlayerItemBridgeStage.Prepared;
         }
-
-        EngineItemIngressResult result = Route(playerUid, itemstack);
-        if (result.Disposition == EngineItemIngressDisposition.PassThrough)
-        {
-            return true;
-        }
-
-        __result = result.Disposition == EngineItemIngressDisposition.Accepted;
-        if (__result)
-        {
-            itemstack.StackSize = 0;
-        }
+        catch { /* Encoding/refusal leaves the source or its durable tombstone in custody. */ }
         return false;
     }
 
     public static void Reset()
     {
         OwnershipResolver = null;
-        Route = null;
-        playerField = null;
+        CoordinatorResolver = null;
+        IsInstalled = false;
     }
 }

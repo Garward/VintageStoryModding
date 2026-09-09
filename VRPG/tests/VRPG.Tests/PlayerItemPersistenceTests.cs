@@ -236,7 +236,7 @@ public sealed class PlayerItemPersistenceTests
         using (var gzip = new GZipStream(bytes, CompressionLevel.Optimal, leaveOpen: true))
             gzip.Write(Encoding.UTF8.GetBytes(oldDocument.ToString()));
         Assert.True(serializer.TryDeserialize(bytes.ToArray(), out var migrated, out var error), error);
-        Assert.Equal(2, migrated.SchemaVersion);
+        Assert.Equal(PlayerItemPersistenceSchema.CurrentVersion, migrated.SchemaVersion);
         Assert.Equal(PlayerItemProtectionSource.System, migrated.Players["player"].Entries[0].ProtectionSource);
         Assert.Equal(PlayerItemProtectionSource.User, migrated.Players["player"].Entries[1].ProtectionSource);
         Assert.Equal(PlayerItemProtectionSource.System, migrated.Migrations["player"].PriorStore.Entries[0].ProtectionSource);

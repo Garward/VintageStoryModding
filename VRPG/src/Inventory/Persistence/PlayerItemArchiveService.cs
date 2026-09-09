@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VRPG.Inventory.Migration;
 using Newtonsoft.Json.Linq;
+using VRPG.Inventory.Bridges;
 
 namespace VRPG.Inventory.Persistence;
 
@@ -25,6 +26,8 @@ public sealed class PlayerItemArchiveService
 
     public PlayerItemStoreDirectory Directory { get; }
     public bool IsLoaded { get; private set; }
+    public bool IsCrashDurable => repository.IsCrashDurable;
+    internal object TransactionSync => sync;
     public long Generation { get; private set; }
 
     public PlayerItemArchiveLoadResult Load()
@@ -34,6 +37,8 @@ public sealed class PlayerItemArchiveService
             IsLoaded = false;
             PlayerItemArchiveLoadResult loaded = repository.Load();
             if (!loaded.Success) return loaded;
+            if (repository.IsCrashDurable && loaded.RecoveredFromOlderGeneration)
+                return PlayerItemArchiveLoadResult.Failed("A newer durable archive is corrupt. External effects require explicit reconciliation; older custody cannot be activated.");
 
             var stores = new List<KeyValuePair<string, IPlayerItemStore>>(loaded.Archive.Players.Count);
             foreach ((string playerUid, PlayerItemStoreState state) in loaded.Archive.Players)
@@ -52,6 +57,12 @@ public sealed class PlayerItemArchiveService
                     return PlayerItemArchiveLoadResult.Failed(
                         $"Player '{playerUid}' has an invalid migration journal: {error}");
                 }
+            }
+            foreach (var receipt in loaded.Archive.Bridges.Values)
+            {
+                loaded.Archive.Players.TryGetValue(receipt.Request.PlayerUid, out var store);
+                if (!PlayerItemBridgeJournal.MatchesCustody(receipt, store))
+                    return PlayerItemArchiveLoadResult.Failed("A bridge receipt does not match its canonical reservation or committed result.");
             }
 
             Directory.ReplaceAll(stores);
@@ -159,6 +170,7 @@ public sealed class PlayerItemArchiveService
                 Migrations = new Dictionary<string, PlayerItemMigrationJournalState>(
                     archive.Migrations,
                     StringComparer.OrdinalIgnoreCase),
+                Bridges = new Dictionary<string, PlayerItemBridgeReceipt>(archive.Bridges, StringComparer.Ordinal),
                 ExtensionData = CloneExtensions(archive.ExtensionData)
             };
             PlayerItemArchiveSaveResult saved = repository.Save(nextArchive);
@@ -171,6 +183,21 @@ public sealed class PlayerItemArchiveService
             forcedPlayers.Clear();
             metadataDirty = false;
             return saved;
+        }
+    }
+
+    internal PlayerItemBridgeReceipt[] BridgeSnapshot()
+    {
+        lock (sync) return archive.Bridges.Values.Select(receipt => receipt.Clone()).ToArray();
+    }
+
+    internal void StageBridge(PlayerItemBridgeReceipt receipt)
+    {
+        lock (sync)
+        {
+            if (!IsLoaded) throw new InvalidOperationException("Player item persistence has not loaded.");
+            archive.Bridges[receipt.Request.OperationId] = receipt.Clone();
+            metadataDirty = true;
         }
     }
 

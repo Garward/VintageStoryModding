@@ -46,7 +46,8 @@ public sealed class EngineItemIngressService
         try
         {
             EncodedItemStack encoded = ItemStackCodec.Encode(stack.Clone());
-            PlayerItemClassification classification = classifier.Classify(ItemStackCodec.Describe(stack));
+            PlayerItemClassificationContext description = ItemStackCodec.Describe(stack);
+            PlayerItemClassification classification = classifier.Classify(description);
             var prototype = new PlayerItemPrototype(
                 classification.StorageKind,
                 encoded.Payload.AssetCode,
@@ -54,7 +55,8 @@ public sealed class EngineItemIngressService
                 stack.Collectible.Code.Path,
                 encoded.Payload.ExactState,
                 encoded.Payload.AssetKind,
-                encoded.Payload.EmbeddedReferences);
+                encoded.Payload.EmbeddedReferences,
+                description.StatePolicy);
             IPlayerItemStore store = directory.ForPlayer(playerUid);
             PlayerItemMutationResult result = store.Insert(
                 requestId.Trim(),

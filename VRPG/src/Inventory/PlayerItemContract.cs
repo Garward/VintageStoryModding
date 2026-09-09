@@ -223,7 +223,8 @@ public sealed record PlayerItemClassificationContext(
     string AssetCode,
     int EngineMaxStackSize,
     bool IsTool,
-    bool IsConsumable);
+    bool IsConsumable,
+    PlayerItemStatePolicy StatePolicy = PlayerItemStatePolicy.ExactSnapshot);
 
 /// <summary>Deterministic baseline with exact-code addon overrides and a safe fallback.</summary>
 public sealed class PlayerItemClassifier

@@ -9,6 +9,43 @@ namespace VRPG.Tests;
 public sealed class ItemStackCodecTests
 {
     [Fact]
+    public void DescribeFreezesNestedEvolvingStateWithoutUpdatingItsClock()
+    {
+        var source = new ItemStack(TestItem(1, "game:container", 1), 1);
+        var nested = new ItemStack(TestItem(2, "game:food", 64), 4);
+        var temperature = new TreeAttribute();
+        temperature.SetDouble("temperatureLastUpdate", 123.5);
+        nested.Attributes["temperature"] = temperature;
+        var contents = new TreeAttribute();
+        contents["food"] = new ItemstackAttribute(nested);
+        source.Attributes["contents"] = new TreeArrayAttribute(new[] { contents });
+
+        var description = ItemStackCodec.Describe(source);
+
+        Assert.Equal(PlayerItemStatePolicy.FrozenInRecovery, description.StatePolicy);
+        Assert.Equal(123.5, temperature.GetDouble("temperatureLastUpdate"));
+        Assert.Equal(4, nested.StackSize);
+    }
+
+    [Fact]
+    public void DescribeRefusesToAssumeDynamicTransitionOverridesAreStatic()
+    {
+        var stack = new ItemStack(new DynamicTransitionItem
+        {
+            Code = new AssetLocation("addon:evolving"), MaxStackSize = 64
+        }, 1);
+
+        Assert.Equal(PlayerItemStatePolicy.FrozenInRecovery, ItemStackCodec.Describe(stack).StatePolicy);
+    }
+
+    private sealed class DynamicTransitionItem : Item
+    {
+        public override TransitionableProperties[] GetTransitionableProperties(
+            IWorldAccessor world, ItemStack itemstack, Vintagestory.API.Common.Entities.Entity forEntity) =>
+            throw new InvalidOperationException("Inspection must not invoke a stateful engine callback.");
+    }
+
+    [Fact]
     public void ItemRoundTripUsesStableCodeAndPreservesSynchronizedAttributes()
     {
         Item item = TestItem(73, "addon:charged-blade", maxStack: 1);

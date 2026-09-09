@@ -6,6 +6,35 @@ namespace VRPG.Tests;
 
 public sealed class EngineItemIngressServiceTests
 {
+    [Theory]
+    [InlineData("temperature")]
+    [InlineData("transitionstate")]
+    [InlineData("perishable")]
+    public void EvolvingEngineStateIsFrozenWithoutLosingExactSource(string evolvingState)
+    {
+        var directory = new PlayerItemStoreDirectory();
+        var service = new EngineItemIngressService(directory);
+        var item = new Item { Code = new AssetLocation("game:evolving"), MaxStackSize = 64 };
+        var stack = new ItemStack(item, 3);
+        if (evolvingState == "perishable")
+            item.TransitionableProps = new[] { new TransitionableProperties { Type = EnumTransitionType.Perish } };
+        else
+            stack.Attributes[evolvingState] = new Vintagestory.API.Datastructures.TreeAttribute();
+        byte[] exactState = ItemStackCodec.Encode(stack).Payload.ExactState;
+
+        Assert.Equal(EngineItemIngressDisposition.Accepted, service.Route("player", stack, "grant").Disposition);
+
+        IPlayerItemStore store = directory.ForPlayer("player");
+        Assert.Empty(store.Query(Query()).Entries);
+        var entry = Assert.Single(store.Query(Query() with { Location = PlayerItemLocation.Unresolved }).Entries);
+        Assert.True(store.TryGet(entry.EntryId, out var detail));
+        Assert.Equal(PlayerItemStatePolicy.FrozenInRecovery, detail!.Prototype.StatePolicy);
+        Assert.Equal(exactState, detail.Prototype.ExactState);
+        Assert.Equal(3, entry.Quantity);
+        Assert.Equal(3, stack.StackSize);
+        Assert.False(store.Reserve("consume", new[] { new PlayerItemAmount(entry.EntryId, 1) }, store.Revision).Success);
+    }
+
     [Fact]
     public void RoutesWholeEngineStackWithoutMutatingSource()
     {

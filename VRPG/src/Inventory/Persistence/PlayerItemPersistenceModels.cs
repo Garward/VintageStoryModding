@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VRPG.Inventory.Bridges;
 
 namespace VRPG.Inventory.Persistence;
 
 public static class PlayerItemPersistenceSchema
 {
-    public const int CurrentVersion = 2;
+    public const int CurrentVersion = 3;
     public const int SlotFormatVersion = 1;
 }
 
@@ -18,6 +19,7 @@ public sealed class PlayerItemArchive
         new(StringComparer.OrdinalIgnoreCase);
     public Dictionary<string, PlayerItemMigrationJournalState> Migrations { get; set; } =
         new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, PlayerItemBridgeReceipt> Bridges { get; set; } = new(StringComparer.Ordinal);
 
     [JsonExtensionData]
     public IDictionary<string, JToken>? ExtensionData { get; set; }
