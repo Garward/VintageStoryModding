@@ -17,7 +17,7 @@ namespace VRPG.Tests;
 internal sealed class NativeInventoryGuardFixture
 {
     public ServerMain Server { get; } = (ServerMain)RuntimeHelpers.GetUninitializedObject(typeof(ServerMain));
-    public ServerPlayer Player { get; } = (ServerPlayer)RuntimeHelpers.GetUninitializedObject(typeof(ServerPlayer));
+    public ServerPlayer Player { get; }
     public ConnectedClient Client { get; } = new(1);
     public ProbeInventory Inventory { get; } = new("test-player");
     public ProbeInventory Hotbar { get; }
@@ -25,8 +25,10 @@ internal sealed class NativeInventoryGuardFixture
     public ProbeItem Item { get; } = new() { ItemId = 0, Code = new AssetLocation("game:guard-test"), MaxStackSize = 64 };
     public ProbeEvents Events { get; }
 
-    public NativeInventoryGuardFixture(object native, string uid = "player")
+    public NativeInventoryGuardFixture(object native, string uid = "player", bool worldAccess = false)
     {
+        Player = (ServerPlayer)RuntimeHelpers.GetUninitializedObject(
+            worldAccess ? typeof(PrivilegeServerPlayer) : typeof(ServerPlayer));
         Hotbar = new("hotbar-" + uid);
         var data = new ServerWorldPlayerData { GameMode = EnumGameMode.Creative, EntityPlayer = new EntityPlayer() };
         AccessTools.Field(typeof(ServerWorldPlayerData), "PlayerUID").SetValue(data, uid);
@@ -57,6 +59,13 @@ internal sealed class NativeInventoryGuardFixture
         Inventory[0].Itemstack = new ItemStack(Item, 7);
         Hotbar[0].Itemstack = new ItemStack(Item, 7);
         Cursor[0].Itemstack = new ItemStack(Item, 5);
+    }
+
+    public void FixturePlayerForWorldAccess()
+    {
+        Player.Entity.World = Server;
+        Player.Entity.WatchedAttributes.SetString("playerUID", Player.PlayerUID);
+        AccessTools.Field(typeof(ServerPlayer), "client").SetValue(Player, Client);
     }
 
     public Packet_Client Packet(string method) => method switch
@@ -103,13 +112,35 @@ internal sealed class NativeInventoryGuardFixture
     internal sealed class ProbeEvents(ServerMain server) : CoreServerEventManager(server, new ServerEventManager(server))
     {
         public int SelectionCalls;
+        public int WorldAccessCalls;
+        public bool ObserveWorldAccess;
+        public Action? BreakBranch;
         public override bool TriggerBeforeActiveSlotChanged(IServerPlayer player, int from, int to)
         {
             SelectionCalls++;
             throw new SelectionCallbackReached(); // Native event reached; stop before unrelated network broadcast.
         }
+        public override bool TriggerCanPlaceOrBreak(IServerPlayer player, BlockSelection blockSel, out string claimant)
+        {
+            if (!ObserveWorldAccess) return base.TriggerCanPlaceOrBreak(player, blockSel, out claimant);
+            WorldAccessCalls++;
+            claimant = null!;
+            return true;
+        }
+        public override void TriggerBreakBlock(IServerPlayer player, BlockSelection blockSel,
+            ref float dropQuantityMultiplier, ref EnumHandling handling)
+        {
+            if (BreakBranch != null) BreakBranch();
+            else base.TriggerBreakBlock(player, blockSel, ref dropQuantityMultiplier, ref handling);
+        }
     }
     internal sealed class SelectionCallbackReached : Exception;
+
+    private sealed class PrivilegeServerPlayer : ServerPlayer
+    {
+        public PrivilegeServerPlayer() : base(null!, null!) { }
+        public override bool HasPrivilege(string privilegeCode) => true;
+    }
 
     internal sealed class ProbeItem : Item
     {

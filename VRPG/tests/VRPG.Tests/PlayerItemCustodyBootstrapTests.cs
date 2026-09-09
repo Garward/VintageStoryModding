@@ -11,6 +11,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.Server;
 using Xunit;
 
 namespace VRPG.Tests;
@@ -57,6 +58,8 @@ public sealed class PlayerItemCustodyBootstrapTests
         if (!requested)
         {
             Assert.Null(scope.Module);
+            Assert.False(NativeInventoryPacketGuardPatch.IsInstalled);
+            Assert.Null(NativeInventoryPacketGuardPatch.CustodyResolver);
             Assert.False(NativeInventoryTickGuardPatch.IsInstalled);
             Assert.Null(NativeInventoryTickGuardPatch.CustodyResolver);
             return;
@@ -88,6 +91,7 @@ public sealed class PlayerItemCustodyBootstrapTests
             scope.Start(false);
             Assert.NotNull(scope.Module);
             scope.Raise("SaveGameLoaded");
+            Assert.True(NativeInventoryPacketGuardPatch.IsReady);
             Assert.True(NativeInventoryTickGuardPatch.IsReady);
             Assert.Equal(vanilla, scope.Module.Custody("player").AllowsVanilla);
             Assert.False(scope.Module.Custody("player").AllowsCanonical);
@@ -95,6 +99,8 @@ public sealed class PlayerItemCustodyBootstrapTests
             Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
             var old = scope.Module;
             scope.Stop();
+            Assert.False(NativeInventoryPacketGuardPatch.IsInstalled);
+            Assert.Null(NativeInventoryPacketGuardPatch.CustodyResolver);
             Assert.False(NativeInventoryTickGuardPatch.IsInstalled);
             Assert.Null(NativeInventoryTickGuardPatch.CustodyResolver);
             Assert.Equal(PlayerItemCustodySnapshot.Unresolved, old.Custody("player"));
@@ -130,6 +136,56 @@ public sealed class PlayerItemCustodyBootstrapTests
         Assert.False(scope.Module!.IsReady);
         scope.Raise("GameWorldSave");
         Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
+    }
+
+    [Theory]
+    [InlineData("HandleBlockPlaceOrBreak", "remove")]
+    [InlineData("HandleBlockPlaceOrBreak", "conflict")]
+    [InlineData("HandleBlockEntityPacket", "remove")]
+    [InlineData("HandleBlockEntityPacket", "conflict")]
+    [InlineData("HandleEntityPacket", "remove")]
+    [InlineData("HandleEntityPacket", "conflict")]
+    public void DisabledHistoricalBootRefusesAdmissionWhenMandatoryWorldPacketBoundaryIsUnavailable(
+        string method, string failure)
+    {
+        using var scope = new LifecycleScope();
+        var seed = new PlayerItemArchiveService(new(scope.Storage));
+        Assert.True(seed.Load().Success);
+        seed.StageMigration("player", new InMemoryPlayerItemStore(),
+            new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Committed });
+        Assert.True(seed.SaveDirty().Success);
+        byte[] original = File.ReadAllBytes(scope.Storage.ArchivePath);
+        scope.Start(false);
+        Assert.True(NativeInventoryPacketGuardPatch.IsReady);
+        Type owner = method == "HandleEntityPacket" ? typeof(Vintagestory.Server.ServerMain)
+            : AccessTools.TypeByName("Vintagestory.Server.ServerSystemBlockSimulation");
+        var target = AccessTools.Method(owner, method,
+            new[] { typeof(Packet_Client), typeof(ConnectedClient) });
+        if (failure == "remove") scope.Harmony.Unpatch(target, HarmonyPatchType.Prefix, scope.Harmony.Id);
+        else scope.Harmony.Patch(target,
+            postfix: new HarmonyMethod(typeof(PlayerItemCustodyBootstrapTests), nameof(ConflictPostfix)));
+        scope.Raise("SaveGameLoaded");
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module!.IsReady);
+        scope.Raise("GameWorldSave");
+        Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
+    }
+
+    [Fact]
+    public void ModuleDisposalResetsWorldPacketAuthorityWithoutModSystemCleanup()
+    {
+        using var scope = new LifecycleScope();
+        scope.Start(true);
+        scope.Raise("SaveGameLoaded");
+        Assert.True(NativeInventoryPacketGuardPatch.IsReady);
+        Assert.True(scope.Module!.Coverage.CanActivate(new[] { "native:packet3-block-place-break" }));
+        Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:packet22-block-entity" }));
+        Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:packet31-entity" }));
+
+        scope.Module.Dispose();
+
+        Assert.False(NativeInventoryPacketGuardPatch.IsInstalled);
+        Assert.Null(NativeInventoryPacketGuardPatch.CustodyResolver);
     }
 
     private static void ConflictPostfix() { }

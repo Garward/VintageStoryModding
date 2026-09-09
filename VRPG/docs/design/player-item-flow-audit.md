@@ -93,17 +93,20 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
   Vanilla `ItemSlot.TryPutInto`, `TakeOut`, and direct `Itemstack` assignment.
   Task 3b2 now refuses the audited server packet routes before mutation for
   canonical/recovery custody (details below). Task 3b4 also guards the two native
-  inventory background ticks. Direct producers and other native routes remain
+  inventory background ticks, and Task 3b5 guards packets 3, 22 and 31 at their
+  native world-effect entrypoints. Direct producers and other native routes remain
   unguarded; Task 8 must prevent their exposure or install producer-level
   guards before enabling the profile.
 - Direct engine grants: `PlayerInventoryManager.TryGiveItemstack` 184 onward
   wraps a dummy slot and calls `TryTransferAway`. It does not identify a source
   and is not a custody adapter. Vanilla behavior remains before activation.
 - Signs: `BlockEntitySign` 149/158/170 ignores grant rejection. Labeled chests:
-  `BlockEntityLabeledChest` 174/187/197 does likewise. Ground storage:
-  `BlockEntityGroundStorage` 1073 ignores rejection. A manager `false` return is
-  **not safe refusal** for these producers. Their guards are absent; the exposed
-  native profile must stay unavailable.
+  `BlockEntityLabeledChest` 174/187/197 does likewise. Ground storage
+  `TryTakeItem` ignores the `TryGiveItemstack` result, but spawns any remaining
+  `stack.StackSize > 0` back into the world; it is not an unconditional source
+  deletion. A manager `false` return is **not a canonical receipt or adapter**
+  for these producers. Their named adapters remain absent, so the exposed native
+  profile must stay unavailable.
 - Containers and shift-click: manager `TryTransferAway` calls the source slot's
   `TryPutInto`; external slot sources can bypass `TryGiveItemstack`. No external
   container/trader adapter is registered. Producer guards/allowlists are pending.
@@ -119,9 +122,10 @@ after reload. Arbitrary mod-specific callbacks/evolution remain outside this aud
   adapter. None of these native effect adapters is registered by default.
   Unknown/partial results retain the complete reservation; no network retry
   replays an effect. Unsupported coordinator requests refuse before reservation
-  or materialization. Task 3b2 refuses native hand/tool packets and Task 3b4
-  refuses the native inventory ongoing-use tick. Other effect routes and direct
-  producer entry guards remain pending; this is not complete held/use coverage.
+  or materialization. Task 3b2 refuses native hand/tool packets, Task 3b4 refuses
+  native inventory background ticks, and Task 3b5 refuses generic native packet
+  3/22/31 world-item effects. Other effect routes and named adapters remain
+  pending; this is not complete held/use or producer coverage.
 - Death: engine `ServerPlayerInventoryManager.DropItem` and inventory death
   behavior still own Vanilla slot drops. The persistence module reconciles known
   canonical receipts on player death; a complete native death policy/guard is
@@ -134,8 +138,10 @@ exposed route in its allowlist to have a live readiness/producer guard, as well
 as loaded durable storage and the installed pickup hook. No blanket readiness is
 registered in this slice. Task 3b1 registers persisted/fresh pickup entries; Task
 3b2 adds only `native:packets` and `native:cursor-securing`; Task 3b4 adds the exact
-`native:OnUsingTick` and `native:UpdateTransitionStates` boundaries. Neither
-registers whole slot/held/use coverage. Other named routes still block activation. Task 8 must use this gate in the custody activation
+`native:OnUsingTick` and `native:UpdateTransitionStates` boundaries. Task 3b5 adds
+only `native:packet3-block-place-break`, `native:packet22-block-entity`, and
+`native:packet31-entity`. None registers whole slot/held/use, producer, Home,
+trade, container or death coverage. Other named routes still block activation. Task 8 must use this gate in the custody activation
 protocol; the current task does not remove either Vanilla menu.
 
 ## Outbound receipt contract and remaining integration
@@ -396,11 +402,71 @@ cover missing identity/authority, malformed insertion input, atomic cleanup,
 registration/patch conflicts, removal, reset/reinstall, historical disabled boot,
 distinct world identity, and custody parity through failed and confirmed phases.
 
-This closes two background callbacks only. World/block/entity packets, direct
-grants, sign/chest/ground-storage producers, other slot/held/use routes, death,
-trade, containers, durable outbound destinations and durable native cursor remain
+This closes two background callbacks only. Direct grants, sign/chest/ground-storage
+producers, other slot/held/use routes, death, trade, containers, durable outbound
+destinations and durable native cursor remain
 separate blockers. Runtime removal by external code is detected by readiness but
 is **not** an ongoing admission guard or automatic runtime shutdown: the removed
 native hook cannot still protect callbacks. Full handshake, default activation,
 live migration and the joined Inventory/Character menu acceptance gate remain
 unimplemented by this slice.
+
+## Task 3b5: native world-item packet refusal
+
+`NativeInventoryPacketGuardPatch` now treats three additional generic native
+entrypoints as mandatory, atomically installed refusal boundaries:
+
+- packet 3: `ServerSystemBlockSimulation.HandleBlockPlaceOrBreak(Packet_Client,
+  ConnectedClient)`, IL SHA-256
+  `8BF099DE44F80AC84D3019FFD0779355FF593D4AC2C5F3A21297180DB22FF355`;
+- packet 22: `ServerSystemBlockSimulation.HandleBlockEntityPacket(Packet_Client,
+  ConnectedClient)`, IL SHA-256
+  `814B4A3FF08C6A204333FF805D15A2FB25C3B52518DD818E748110564573E7E8`;
+- packet 31: `ServerMain.HandleEntityPacket(Packet_Client, ConnectedClient)`, IL
+  SHA-256
+  `92C421A4DEFAB2D9EC83BE894068A3DA49420454984780A02F5B6B0EC3FD3966`.
+
+All are instance `void` methods in installed module
+`8a3ad3aa-2940-4c39-ae1b-881de9e65346`. They reuse the packet guard's connected
+`client.Player.PlayerUID` custody decision. Canonical, recovery, missing/blank
+identity, absent resolution and throwing resolution return before reading any
+packet field, world position, active slot or target. Neither
+`ConnectedClient.SentPlayerUid` nor the target entity/block entity supplies actor
+authority. Verified Vanilla proceeds through the unmodified original handler.
+
+Routing is pinned separately from the targets. The actual
+`ServerSystemBlockSimulation(ServerMain)` constructor registers packets 3 and 22;
+its IL hash is
+`D68C1AA9DCEE80AE52DB22FAE55A67FBFCEA8105AD2DE1337CE5F146E5E94CBF`.
+`ServerMain.InitBasicPacketHandlers()` registers packet 31; its IL hash is
+`DE1CF0E6B35FE1DEA644B4EFB85D5B23343CDC374F96FE8F9141BB06F033063B`.
+Existing/late foreign patches, missing or wrong-owner methods, removed prefixes,
+conflicting routes and partial installation withdraw readiness. Runtime removal is
+detected by readiness but remains neither automatic shutdown nor an ongoing
+admission mechanism after the prefix is gone.
+
+Tests capture the real packet delegates before Harmony installation and then
+invoke those same delegates. Vanilla packet 22 resolves a real `ServerWorldMap`
+loaded chunk and calls a real `BlockEntity.OnReceivedClientPacket`; packet 31
+resolves `ServerMain.LoadedEntities` and calls a real
+`Entity.OnReceivedClientPacket`. Both receive the connected player and mutate a
+controlled external target witness. Canonical/recovery and unknown authority keep
+the source hotbar and external target state unchanged, including malformed payloads.
+Packet 3 Vanilla controls observe real permission dispatch and distinguish native
+break, place and decor branches. The headless fixture deliberately stops at
+controlled branch callbacks; it does not claim a complete installed-world block
+mutation or gameplay-parity test.
+
+Historical disabled custody still installs this protection. Removing or conflicting
+any of the three boundaries before `SaveGameLoaded` uses the reviewed pre-game
+shutdown refusal and leaves the archive unchanged. Module disposal now resets both
+packet/world-packet and tick authority; mod-system teardown retains its independent
+reset. The three new readiness names do not confer sign/chest/ground-storage, Home,
+trade, container, death or arbitrary producer readiness. Current VRPG source has no
+`SendEntityPacket`, `SendBlockEntityPacket`, or `OnReceivedClientPacket` usage, so
+separate server-authoritative VRPG channels and server-to-client entity updates are
+not intercepted by these prefixes.
+
+This slice is refusal, not an adapter. No packet-ID-only Home/appearance/trader
+exception, default UI, economy authority, outbound receipt, live migration,
+deployment, joined-menu acceptance or full handshake is added.

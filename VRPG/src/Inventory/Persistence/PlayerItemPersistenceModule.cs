@@ -37,6 +37,9 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         Coverage.Register("pickup:persisted", () => IsReady && EngineItemFlowPatch.IsInstalled);
         Coverage.Register("pickup:fresh", () => IsReady && EngineItemFlowPatch.IsFreshIdentityInstalled);
         Coverage.Register("native:packets", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
+        Coverage.Register("native:packet3-block-place-break", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
+        Coverage.Register("native:packet22-block-entity", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
+        Coverage.Register("native:packet31-entity", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
         Coverage.Register("native:OnUsingTick", () => IsReady && NativeInventoryTickGuardPatch.IsReady);
         Coverage.Register("native:UpdateTransitionStates", () => IsReady && NativeInventoryTickGuardPatch.IsReady);
         Coverage.Register("native:cursor-securing", () => IsReady && NativeInventoryPacketGuardPatch.IsReady && unresolvedCursors.Count == 0);
@@ -103,6 +106,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
 
     public void Dispose()
     {
+        NativeInventoryPacketGuardPatch.Reset();
         NativeInventoryTickGuardPatch.Reset();
         EngineItemFlowPatch.BeforePublicationObserver = null;
         if (api != null)
