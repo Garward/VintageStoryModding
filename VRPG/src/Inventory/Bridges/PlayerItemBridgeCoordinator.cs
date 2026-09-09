@@ -32,7 +32,7 @@ public sealed class PlayerItemBridgeCoordinator
     {
         lock (Archive.TransactionSync)
         {
-            if (!Archive.IsLoaded || !Archive.IsCrashDurable || !source.HasPersistedIdentity
+            if (!Archive.IsLoaded || !Archive.IsCrashDurable || !(source.HasPersistedIdentity || source.HasPrepublicationIdentity)
                 || journal.Find("pickup:" + source.Token) is not { Claim: not null } receipt) return false;
             if (source.Stack == null || source.Stack.StackSize != receipt.Request.Quantity
                 || JsonConvert.SerializeObject(DescribeClaim(source.Stack)) != JsonConvert.SerializeObject(receipt.Claim))
@@ -47,11 +47,13 @@ public sealed class PlayerItemBridgeCoordinator
     {
         lock (Archive.TransactionSync)
         {
+            // Keep the existing receipt adapter key; source evidence distinguishes disk load from prepublication.
             var request = new PlayerItemBridgeRequest("pickup:" + source.Token, playerUid, PlayerItemBridgeOperation.Pickup,
                 "engine:persisted-item", "", source.Stack?.StackSize ?? 0, source.Token, "canonical", 0);
             var receipt = new PlayerItemBridgeReceipt { Request = request };
-            if (!ValidRequest(request, ingress: true) || !Archive.IsLoaded || !Archive.IsCrashDurable || !source.HasPersistedIdentity)
-                return Refused(receipt, "Pickup requires a persisted source birth identity and durable custody.");
+            if (!ValidRequest(request, ingress: true) || !Archive.IsLoaded || !Archive.IsCrashDurable
+                || !(source.HasPersistedIdentity || source.HasPrepublicationIdentity))
+                return Refused(receipt, "Pickup requires loaded or validated prepublication source identity and durable custody.");
             if (journal.Find(request.OperationId) is { } prior)
             {
                 if (!SuppressClaimedPickup(source)) return Pending(prior, "Pickup source is awaiting durable suppression.");

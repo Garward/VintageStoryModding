@@ -32,9 +32,9 @@ Never delete a sidecar to force a legacy reimport. No live import was run here.
 `EntityPlayer.TryGiveItemStack` and before any inventory slot selection. The old
 fresh-UUID `TryGiveItemstack` canonical insertion has been removed.
 
-Enabled adapter subset: exact `EntityItem` sources with an existing birth token
-observed during engine load, unchanged quantity/exact payload since load, and
-the base no-op `CollectibleObject.OnCollected` implementation. Capacity preflight
+Enabled adapter subset: exact `EntityItem` sources with a loaded birth token or
+validated prepublication identity, unchanged quantity/exact payload, and the
+base no-op `CollectibleObject.OnCollected` implementation. Capacity preflight
 refuses without touching the source. The durable claim precedes source removal;
 the same receipt acts as a tombstone when the engine restores that source.
 Suppression requires the token, quantity and exact payload to match. Tombstones
@@ -46,12 +46,44 @@ callbacks; those event consumers require a separate reviewed integration.
 Custom collectible collection callbacks and non-EntityItem collectables are
 refused before `OnCollected` runs. Their source remains in the world.
 
-**Pending:** fresh/unmarked drops. `ServerMain.SpawnEntity_internal` publishes the
-entity into the chunk before `TriggerEntitySpawned`; the ordinary spawn event is
-too late to prove the birth token preceded all serialization. New sources get a
-token but cannot transfer until it is confirmed by a later engine load. A narrow
-pre-publication hook or validated persistence barrier is needed for ordinary
-fresh pickup. No fresh-source or full-profile readiness is claimed.
+Task 3b1 adds a prefix at the entry to `ServerMain.SpawnEntity_internal`, before
+`EntityItem.Initialize`, `AfterInitialized(true)`, chunk publication, loaded-entity
+registration/collision repair, and the ordinary spawn callbacks. The observed
+1.22.7 engine method bodies and module IDs are pinned in `EngineItemFlowPatch.Birth`;
+changed or missing methods, unexpected overrides, and conflicting Harmony patches
+refuse fresh readiness. There is no fallback to minting identity at a spawn event.
+Initialization can serialize from callbacks; the token and proof are already present.
+
+Only previously unobserved, uninitialized ordinary `EntityItem` instances with
+ID zero, no existing identity attributes, and `ExactSnapshot` content receive
+`v1:<random GUID>` tokens. ID reassignment later does not affect identity. A watched
+format marker and SHA-256 digest bind that token to the complete canonical encoded
+stack, including quantity. Native `Entity.ToBytes` writes these watched attributes;
+`EntityItem.FromBytes` restores them. New tokens require their proof even after
+reload, so erasing both proof attributes cannot downgrade them into legacy evidence.
+Other mods' entity attributes are preserved. This prefix is **not a disk flush**:
+it establishes that subsequent native source snapshots contain the same identity.
+The existing crash-durable Prepared claim still precedes removal and credit.
+
+Fresh evidence also holds a live hook/observer lease. Unpatch/reset, module disposal,
+conflicting patches, and observer failures refuse fresh pickup. On a real disk load,
+valid versioned proof becomes loaded evidence; it no longer depends on that prior
+process's lease. An older bare GUID without proof attributes retains the Task 3a
+loaded-only snapshot contract (including existing frozen-recovery classification).
+Contradictory versioned proof refuses. Spawn/load observers never replace a known
+token, upgrade an in-memory event to loaded evidence, or refresh a changed snapshot.
+The pickup slot must reference the watched stack which serialization will save.
+
+Native mutation audit: `ServerMain.SpawnItemEntity` constructs and spawns a new
+entity; `EntityItem.OnGameTick`/base `CollectibleObject.OnGroundIdle` do not implement
+automatic world-item merging in the inspected engine. `EntityItemSlot` inherits
+ordinary slot mutation; native `ItemSlot.TryPutInto`/`CollectibleObject.TryMergeStacks`
+can change both donor and recipient quantities. A real partial merge test confirms
+both versioned sources refuse pickup before and after save/load. Proof is never
+renewed for the merged quantity. A changed source stays in world custody; merge
+support needs a separate durable source-lineage adapter. Temperature, transitions,
+and other codec-detected evolving contents cannot obtain/use fresh proof, including
+after reload. Arbitrary mod-specific callbacks/evolution remain outside this audit.
 
 ## Producers and native slot writes
 
@@ -95,7 +127,8 @@ fresh pickup. No fresh-source or full-profile readiness is claimed.
 `PlayerItemPersistenceModule.CanActivateNativeProfile` requires every named
 exposed route in its allowlist to have a live readiness/producer guard, as well
 as loaded durable storage and the installed pickup hook. No blanket readiness is
-registered in this slice. Task 8 must use this gate in the custody activation
+registered in this slice. Only persisted/fresh pickup guard entries are registered
+by Task 3b1; every other named route still blocks activation. Task 8 must use this gate in the custody activation
 protocol; the current task does not remove either Vanilla menu.
 
 ## Outbound receipt contract and remaining integration
@@ -112,7 +145,7 @@ The coordinator supplies idempotent retry and `Reconcile(playerUid)` entry point
 Startup, disconnect, death and active-slot swap are wired. Task 6/8 must call
 reconcile before cancel/realm transitions and block transitions while unknown
 effects remain. Concrete held/use/drop/external/Home adapters, producer guards,
-fresh pickup, and automatic recovery of ambiguous world checkpoints remain open.
+mutated world-source support, and automatic recovery of ambiguous world checkpoints remain open.
 
 Codec inspection freezes declared transitions, persisted temperature and
 transition state, dynamic transition-property overrides, and nested evolving
@@ -120,6 +153,11 @@ contents without advancing their clocks. Generic ingress, explicit claims and
 legacy capture propagate that policy into recovery. Arbitrary mod-specific
 evolution needs an explicit audit; merely assigning a policy flag is not detection.
 
-No live engine transfer, server join, deployment, or menu-removal acceptance was
-performed. Tests use real canonical stores/archives, fake external destinations
-at the effect boundary, and real temporary filesystem sidecars.
+No live engine transfer, server join, installation deployment, or menu-removal
+acceptance was performed. Task 3b1 adds real native initialization, serialization,
+and partial slot-merge execution under deterministic API fixtures, plus Harmony
+installation checks against the installed assemblies. The controller's isolated
+loopback server startup at `/tmp/vrpg-pickup-startup.SUUv9l` accepted the pinned hook
+and loaded zero player stores; this is startup evidence only. Tests use real
+canonical stores/archives, fake external destinations at the effect boundary,
+and real temporary filesystem sidecars. The full suite passed 899/899 on 2026-09-09.

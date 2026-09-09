@@ -8,13 +8,14 @@ using Vintagestory.API.Common.Entities;
 namespace VRPG.Patches;
 
 /// <summary>Intercepts identifiable pickup before Vanilla selects any player slot.</summary>
-public static class EngineItemFlowPatch
+public static partial class EngineItemFlowPatch
 {
     public static System.Func<string, bool>? OwnershipResolver { get; set; }
     public static System.Func<PlayerItemBridgeCoordinator?>? CoordinatorResolver { get; set; }
     public static bool IsInstalled { get; private set; }
 
-    public static void Patch(Harmony harmony, ILogger logger)
+    public static void Patch(Harmony harmony, ILogger logger,
+        System.Func<Type, string, Type[], MethodInfo?>? resolveBirthMethod = null)
     {
         Type? behavior = AccessTools.TypeByName("Vintagestory.GameContent.EntityBehaviorCollectEntities");
         MethodInfo? target = behavior == null ? null : AccessTools.Method(behavior, "OnFoundCollectible", new[] { typeof(Entity) });
@@ -25,6 +26,7 @@ public static class EngineItemFlowPatch
         }
         harmony.Patch(target, prefix: new HarmonyMethod(typeof(EngineItemFlowPatch), nameof(OnFoundCollectiblePrefix)));
         IsInstalled = true;
+        PatchBirth(harmony, logger, resolveBirthMethod ?? ((type, name, parameters) => AccessTools.Method(type, name, parameters)));
     }
 
     public static bool OnFoundCollectiblePrefix(EntityBehavior __instance, Entity foundEntity, ref bool __result)
@@ -54,6 +56,7 @@ public static class EngineItemFlowPatch
 
     public static void Reset()
     {
+        ResetBirth();
         OwnershipResolver = null;
         CoordinatorResolver = null;
         IsInstalled = false;

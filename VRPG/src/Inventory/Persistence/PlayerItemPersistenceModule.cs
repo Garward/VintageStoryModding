@@ -22,6 +22,11 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     public bool IsReady => Service?.IsLoaded == true && checkpointHealthy;
     public PlayerItemBridgeCoordinator? Bridges { get; private set; }
     public PlayerItemBridgeCoverage Coverage { get; } = new();
+    public PlayerItemPersistenceModule()
+    {
+        Coverage.Register("pickup:persisted", () => IsReady && EngineItemFlowPatch.IsInstalled);
+        Coverage.Register("pickup:fresh", () => IsReady && EngineItemFlowPatch.IsFreshIdentityInstalled);
+    }
     public bool CanActivateNativeProfile => IsReady && EngineItemFlowPatch.IsInstalled && Coverage.CanActivate(new[]
     {
         "pickup:persisted", "pickup:fresh", "grant:rewards", "grant:admin", "slots:hotbar", "slots:offhand",
@@ -32,6 +37,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     public void StartServerSide(ICoreServerAPI api)
     {
         this.api = api;
+        EngineItemFlowPatch.BeforePublicationObserver = EngineItemPickupSource.EstablishBeforePublication;
         storage = new WorldScopedPlayerItemArchiveStorage(api.GetOrCreateDataPath("VRPG/player-items"),
             api.WorldManager.SaveGame.SavegameIdentifier, new VintageStoryPlayerItemArchiveStorage(api.WorldManager.SaveGame));
         Service = new PlayerItemArchiveService(new PlayerItemArchiveRepository(storage));
@@ -47,6 +53,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
 
     public void Dispose()
     {
+        EngineItemFlowPatch.BeforePublicationObserver = null;
         if (api != null)
         {
             api.Event.SaveGameLoaded -= OnSaveGameLoaded;
