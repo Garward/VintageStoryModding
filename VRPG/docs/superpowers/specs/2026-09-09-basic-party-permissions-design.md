@@ -1,8 +1,7 @@
 # Basic party permissions
 
-Status: design proposed for review. The user approved a basic permissions-only
-party system and immediate revocation of shared loot access on leave/kick.
-The implementation details below are proposed, not implemented or test evidence.
+Status: approved by the user on 2026-09-09, including the owner-reclaim exception.
+Implementation is in progress; this document is not test or runtime evidence.
 
 ## Scope and approach
 
@@ -42,17 +41,17 @@ User-approved rule: shared access follows current membership, not a frozen list
 of whoever was present when an item dropped. Removal takes effect at the next
 pickup authorization, including requests already queued but not committed.
 
-Proposed precise interpretation: every deliberate drop stores its dropper UID,
+Every deliberate drop stores its dropper UID,
 audience and originating party ID. Everyone allows any eligible player. Party
 only allows current members of that exact party; newly accepted members gain
 shared access, and former members lose it. Drops do not follow the dropper into
 a different party. Changing the preference affects future drops only.
 
-Proposed owner exception: the dropper can still reclaim their own items, including
+Owner exception: the dropper can still reclaim their own items, including
 after leaving or disbanding. Revocation removes access to other members' drops,
 not this independent ownership right. A solo Party-only drop is owner-only and
 does not gain a party audience when its owner later joins. Disband never makes
-loot public. This owner exception needs approval with this design.
+loot public.
 
 Unknown party authority is not a known empty party: shared pickup refuses until
 authority is healthy. Pile grouping never combines away per-item audience,
