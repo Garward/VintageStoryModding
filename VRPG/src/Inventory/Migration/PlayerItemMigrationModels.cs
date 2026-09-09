@@ -12,7 +12,8 @@ public enum LegacyInventoryState
 {
     MatchesSnapshot,
     Empty,
-    Changed
+    Changed,
+    Unavailable
 }
 
 public sealed record LegacyInventoryInspection(

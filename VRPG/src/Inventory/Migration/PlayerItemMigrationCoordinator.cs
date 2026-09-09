@@ -194,6 +194,7 @@ public sealed class PlayerItemMigrationCoordinator
 
         return source.CompareTo(journal.SourceSlots) switch
         {
+            LegacyInventoryState.Unavailable => SourceUnavailable(),
             LegacyInventoryState.Empty => FinishPrepared(source.PlayerUid),
             LegacyInventoryState.MatchesSnapshot => FinishClear(source, journal),
             _ => RollBack(source, journal, "A partial migration was detected.")
@@ -218,10 +219,13 @@ public sealed class PlayerItemMigrationCoordinator
         if (current == null)
             return new PlayerItemMigrationResult(false, true, "The current inventory could not be read. Check the server log.");
         var confirmation = persistence.MigrationConfirmation(source.PlayerUid);
-        if ((journal.Status == PlayerItemMigrationStatus.Restored && !confirmation.IsConfirmed)
-            || (journal.Status == PlayerItemMigrationStatus.RestorePending && confirmation.IsConfirmed
+        if (journal.Status == PlayerItemMigrationStatus.Restored && !confirmation.IsConfirmed)
+            return ConfirmRestored(source.PlayerUid);
+        LegacyInventoryState sourceState = source.CompareTo(journal.SourceSlots);
+        if (sourceState == LegacyInventoryState.Unavailable) return SourceUnavailable();
+        if (journal.Status == PlayerItemMigrationStatus.RestorePending && confirmation.IsConfirmed
                 && confirmation.Phase == PlayerItemMigrationStatus.RestorePending
-                && source.CompareTo(journal.SourceSlots) == LegacyInventoryState.MatchesSnapshot))
+                && sourceState == LegacyInventoryState.MatchesSnapshot)
             return ConfirmRestored(source.PlayerUid);
         PlayerItemMigrationStatus previousStatus = journal.Status;
         journal.Status = PlayerItemMigrationStatus.RestorePending;
@@ -245,6 +249,9 @@ public sealed class PlayerItemMigrationCoordinator
             ? new PlayerItemMigrationResult(true, false, "The original inventory has been restored.")
             : new PlayerItemMigrationResult(false, true, "Items were restored, but recovery confirmation was not saved. Try again.");
     }
+
+    private static PlayerItemMigrationResult SourceUnavailable() => new(false, true,
+        "Recovery is waiting for the original inventory. Close any open container, finish moving items, and try again.");
 
     private PlayerItemMigrationResult FinishPrepared(string playerUid)
     {

@@ -37,6 +37,20 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
 
     public LegacyInventoryInspection Inspect()
     {
+        try
+        {
+            return InspectAvailableInventories();
+        }
+        catch (Exception exception)
+        {
+            player.Entity?.World?.Logger?.Error("[VRPG] Legacy inventory inspection failed: {0}", exception);
+            return new LegacyInventoryInspection(PlayerUid, Array.Empty<LegacyItemSlotState>(),
+                new[] { "The original inventory could not be checked. Try again. If this continues, check the server log." });
+        }
+    }
+
+    private LegacyInventoryInspection InspectAvailableInventories()
+    {
         var slots = new List<LegacyItemSlotState>();
         var blocking = new List<string>();
         HashSet<string> managedIds = ManagedClasses
@@ -75,6 +89,7 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
     public LegacyInventoryState CompareTo(LegacyItemSlotState[] snapshot)
     {
         LegacyInventoryInspection current = Inspect();
+        if (current.BlockingReasons.Length != 0) return LegacyInventoryState.Unavailable;
         if (current.Slots.Length == 0) return LegacyInventoryState.Empty;
         return SlotsEqual(current.Slots, snapshot)
             ? LegacyInventoryState.MatchesSnapshot
@@ -158,7 +173,10 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
             }
             player.InventoryManager.BroadcastHotbarSlot();
             player.BroadcastPlayerData();
-            return SlotsEqual(Inspect().Slots, snapshot)
+            LegacyInventoryInspection restored = Inspect();
+            if (restored.BlockingReasons.Length != 0)
+                return LegacyInventoryMutationResult.Rejected(restored.BlockingReasons[0]);
+            return SlotsEqual(restored.Slots, snapshot)
                 ? LegacyInventoryMutationResult.Accepted()
                 : LegacyInventoryMutationResult.Rejected("The restored inventory did not pass verification.");
         }
