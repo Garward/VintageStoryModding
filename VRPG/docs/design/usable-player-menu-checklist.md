@@ -33,6 +33,12 @@ VRPG replacement using saved server state, including remapped bindings. A galler
 mockup, passing unit tests, or merely hiding the old dialogs does not meet this gate.
 The user's joined-server confirmation remains unchecked until actually observed.
 
+User screenshot (2026-09-09) shows loaded gameplay with Vanilla Inventory and
+Crafting, Character/Traits, Stats and Environment dialogs still open, alongside
+the VRPG bottom HUD. Replacement acceptance therefore fails for that running
+build. Exact build/server identity was not established by the screenshot; this
+does not verify the current development-source UI or its isolated test route.
+
 Report checklist progress in the conversation as each verified slice finishes:
 what changed, its evidence, and what remains. Separate source completion from
 connected-server acceptance. Authentication blocks native verification only;
