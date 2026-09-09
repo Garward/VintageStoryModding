@@ -563,3 +563,69 @@ queued death `Action`, with controlled world spawn/event endpoints. They assert
 source identity/quantity, destination quantities, operation and control fields,
 callbacks, spawns and dirty effects. These fixtures do not establish live-world
 parity, death-retention policy, or performance guarantees.
+
+## Task 3b7: native clear refusal and deferred clear consumption
+
+The manager/death patch now additionally guards native manager `DiscardAll`,
+player-owned `InventoryBase.Clear`/`DiscardAll`, and independent backpack
+`DiscardAll`. Character and creative empty overrides are pinned witnesses;
+hotbar, mouse, crafting grid and ground inheritance are checked. Ordinary
+non-player containers and explicitly client-side inventory methods retain native
+behavior. Existing manager/death owner checks are reused unchanged.
+
+Both actual `CmdPlayer` clear command callbacks are discovered from the pinned
+constructor's registration IL, including the native privilege and delegate
+route. `WipePlayerInventory` checks the selected UID, not the administrator's
+UID, before connected source effects/broadcast or offline enqueue. The native
+`Each` aggregator is an unpatched static witness: it otherwise wraps per-target
+errors into `Success`. The registered selected-player callback therefore refuses
+an invocation containing any protected/unknown target before the first clear.
+All-Vanilla and empty selections retain native behavior. Mixed selections must
+be retried using a permitted subset.
+
+Preflight carries no mutation permission. Per-target and actual inventory effects
+recheck custody; narrowly scoped result tracking preserves late refusal as an
+error through both native aggregation branches. The self `clearinv` callback
+likewise reports a manager/inventory refusal that occurs after its first check.
+Initial refusal says no items were removed. Late refusal reports an incomplete
+clear, because earlier permitted sources may already have cleared; no rollback
+is claimed. Result scopes carry exact argument/selected-data references, do not
+authorize effects, isolate nested invocations, and clean up on exceptions.
+
+The pinned `ServerWorldPlayerData.Init` transpiler changes only the single queue
+`HashSet<string>.Remove` call and the single following `InventoryBase.Clear`
+call. Removal preserves the actual set's presence/comparer semantics, retires
+only the requested UID, and rechecks confirmed custody before setting the native
+clear decision. Refused requests are not retained for future replay. The entire
+native inventory and entity reconstruction, exception handling and normal Init
+continuation remain in place.
+
+At the native Clear site, a one-use, thread-local identity record identifies the
+exact reconstructed inventory, loaded player data and server. The Clear prefix
+consumes that record before callbacks or authority resolution, verifies the
+stored owner UID, selected dictionary membership, server API/world identity and
+confirmed custody again, and then permits the native clear. It is not a cached
+permission or general ownerless-inventory bypass. It is unavailable to other
+inventories, repeated/reentrant clears, manager/death methods and later calls;
+the helper clears it in `finally`. Tests run actual Init deserialization of
+native hotbar bytes with no live player lookup, including archive-confirmed
+Committed/Prepared refusal and Restored permission.
+
+All entry/result/cleanup hooks, the exact constructor/aggregation witnesses,
+module/body identities and both queue transformation acknowledgements participate
+in readiness. A missing/conflicting/no-op installation cleans up owned hooks and
+cannot advertise protection. Startup protection remains mandatory for enabled,
+historical and uncertain custody, including disabled replacement mode. Verified
+empty disabled worlds remain nonmutating. Coverage adds only
+`native:manager-DiscardAll`, `native:player-Clear`, `native:player-DiscardAll`,
+`native:WipePlayerInventory`, `native:clearinv-command`, and
+`native:queued-player-clear`.
+
+The migration adapter's independently journaled direct slot Clear/Restore is
+unchanged and remains operable under recovery custody. No canonical destruction
+service, arbitrary third-party slot-setter coverage, whole-player-data wipe
+policy, drop/pile adapter, runtime-unpatch admission guarantee, durable cursor,
+full slot/use/producer readiness or default UI activation follows from this
+slice. Fixtures execute native bodies/registration/serialization and substitute
+only unavailable world, registry, transport and UI/localization surroundings;
+they do not establish live-world migration or gameplay parity.

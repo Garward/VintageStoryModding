@@ -20,6 +20,49 @@ namespace VRPG.Tests;
 public sealed class PlayerItemCustodyBootstrapTests
 {
     [Theory]
+    [InlineData(PlayerItemMigrationStatus.Committed, 7)]
+    [InlineData(PlayerItemMigrationStatus.Prepared, 7)]
+    [InlineData(PlayerItemMigrationStatus.Restored, 0)]
+    public void NativeQueuedReconstructionUsesConfirmedArchivePhaseWithoutLiveLookup(PlayerItemMigrationStatus phase, int remaining)
+    {
+        using var scope = new LifecycleScope();
+        scope.Start(true);
+        scope.Raise("SaveGameLoaded");
+        using var native = new NativeClearCommandFixture();
+        native.Serialize();
+        Assert.True(scope.Module!.Custody("target").AllowsVanilla);
+        Assert.Equal(EnumCommandStatus.Success, native.RegisteredWipe(new[] { "target" }).Status);
+        scope.Module.Service!.StageMigration("target", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = phase });
+        Assert.True(scope.Module.Service.SaveDirty().Success);
+        Assert.Null(native.Server.PlayerByUid("target"));
+        native.Data.Init(native.Server);
+        Assert.Equal(remaining, native.Inventories["hotbar-target"][0].StackSize);
+        Assert.Empty(native.Server.ClearPlayerInvs);
+        Assert.True(native.Data.PickingRange > 0);
+    }
+
+    [Theory]
+    [MemberData(nameof(NativeClearInstallationTests.Targets), MemberType = typeof(NativeClearInstallationTests))]
+    public void DisabledHistoricalBootRefusesEachLostClearHook(string boundary)
+    {
+        using var scope = new LifecycleScope();
+        var seed = new PlayerItemArchiveService(new(scope.Storage));
+        Assert.True(seed.Load().Success);
+        seed.StageMigration("player", new InMemoryPlayerItemStore(), new() { MigrationVersion = 1, Status = PlayerItemMigrationStatus.Prepared });
+        Assert.True(seed.SaveDirty().Success);
+        byte[] original = File.ReadAllBytes(scope.Storage.ArchivePath);
+        scope.Start(false);
+        Assert.True(NativeInventoryMutationGuardPatch.IsReady);
+        scope.Harmony.Unpatch(NativeClearInstallationTests.Target(boundary),
+            boundary == "init" ? HarmonyPatchType.Transpiler : HarmonyPatchType.Prefix, scope.Harmony.Id);
+        scope.Raise("SaveGameLoaded");
+        Assert.Equal(1, scope.ShutdownCalls);
+        Assert.False(scope.Module!.IsReady);
+        scope.Raise("GameWorldSave");
+        Assert.Equal(original, File.ReadAllBytes(scope.Storage.ArchivePath));
+    }
+
+    [Theory]
     [MemberData(nameof(NativeInventoryMutationInstallationTests.Targets), MemberType = typeof(NativeInventoryMutationInstallationTests))]
     public void DisabledHistoricalBootRefusesEachLostManagerOrDeathHook(string boundary)
     {
@@ -228,6 +271,8 @@ public sealed class PlayerItemCustodyBootstrapTests
         Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:packet31-entity" }));
         Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:TryGiveItemstack", "native:TryTransferAway", "native:DropItem",
             "native:OnDeath", "native:player-DropAll", "native:deferred-player-death" }));
+        Assert.True(scope.Module.Coverage.CanActivate(new[] { "native:manager-DiscardAll", "native:player-Clear",
+            "native:player-DiscardAll", "native:WipePlayerInventory", "native:clearinv-command", "native:queued-player-clear" }));
         Assert.False(scope.Module.Coverage.CanActivate(new[] { "death", "drop", "grant:admin" }));
 
         scope.Module.Dispose();

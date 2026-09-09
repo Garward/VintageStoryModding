@@ -43,7 +43,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         Coverage.Register("native:OnUsingTick", () => IsReady && NativeInventoryTickGuardPatch.IsReady);
         Coverage.Register("native:UpdateTransitionStates", () => IsReady && NativeInventoryTickGuardPatch.IsReady);
         foreach (string boundary in new[] { "TryGiveItemstack", "TryTransferAway", "DropItem", "OnDeath",
-            "player-DropAll", "deferred-player-death" })
+            "player-DropAll", "deferred-player-death", "manager-DiscardAll", "player-Clear", "player-DiscardAll",
+            "WipePlayerInventory", "clearinv-command", "queued-player-clear" })
             Coverage.Register("native:" + boundary, () => IsReady && NativeInventoryMutationGuardPatch.IsReady);
         Coverage.Register("native:cursor-securing", () => IsReady && NativeInventoryPacketGuardPatch.IsReady && unresolvedCursors.Count == 0);
     }

@@ -1,4 +1,6 @@
 {
+  "inventory-clear-refused": "Inventory clear is unavailable for this player. No items were removed.",
+  "inventory-clear-interrupted": "Inventory clear could not finish for every player. Check the selected players before trying again.",
   "menu-equipment-count": "Equipped: {0}",
   "menu-equipment-empty": "Nothing equipped.",
   "menu-equipment-loading": "Loading equipment…",
