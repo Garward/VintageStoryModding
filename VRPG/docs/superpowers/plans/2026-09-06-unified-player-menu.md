@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `19f7286`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 direct manager/death guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `6702454`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 admin clear/queued-wipe guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -188,8 +188,21 @@ block-entity and entity packet routes refuse before unsupported item/world callb
 Full 1,143 tests followed by final focused 34; real pre-patch registrations and
 isolated 1.22.7 startup/shutdown verified. Headless block tests stop at native
 permission/branch boundaries; complete installed-world mutation and joined-menu
-acceptance remain unverified. Next slice3b6 protects direct manager grant/transfer/
-drop and deferred death effects; it does not define canonical death losses.
+acceptance remain unverified. Direct manager/death slice3b6 is reviewed through
+`6702454` (source `22f5d4e`): full 1,279 tests and covering 87 after a test-only
+witness correction. It preserves native source/operation state and checks actual
+queued death effects at execution, with explicit client/server distinction.
+Isolated native startup/shutdown passed before the test-only fix; one 582 ms tick
+warning and optional Manifold absence were recorded. No joined gameplay or
+performance benchmark was performed. Next slice3b7 protects native admin clear/
+discard and queued offline wipes; neither slice defines canonical death losses.
+
+User additions (2026-09-09) bind the later durable drop/pickup adapter: deliberately
+dropped Adventure items use the player's Everyone / Party only choice, validated
+and saved by the server, and nearby compatible drops share bounded loot piles
+where possible to reduce entity count. Preserve distinct items, exact quantities,
+access rules and restart-safe partial pickup. These are unimplemented requirements,
+not capabilities of native stack merging or the current safety guards.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.
 
@@ -259,6 +272,9 @@ condensed controls remain a recorded minor for Task6/final review.
 - [ ] Write red tests for role choice, level/role/two-hand restrictions, replaced-item identity, duplicate equip, unrelated stale build state, reserved/protected items and a full unique inventory unequip.
 - [ ] Route gear through `GearEquipmentService.TryEquip`; resolve worn groups from supported role definitions. Keep mechanical affixes visible and optional appearance/lore/roll ranges disclosed.
 - [ ] Add exact quantity actions and durable confirmations for permanent discard. A split transfers a requested amount to a concrete destination; it never manufactures identical canonical rows.
+- [ ] Show the current Everyone / Party only pickup audience for deliberate drops;
+  submit through the durable access-aware pile adapter. Test public/restricted
+  grouping, partial pickup/retry/restart and bounded entity count under repeated drops.
 - [ ] Bind usable entries without filling Vanilla storage slots; wheel selection follows eligible equipped weapon references. Depletion shows empty/unavailable rather than choosing new loot automatically.
 - [ ] Enforce one in-flight conflicting mutation per resource/role and authoritative reconciliation on rejection. Closing a page retains request tracking. Confirmed server result, not optimistic client math, updates build projections.
 - [ ] Test recovery Claim at full capacity, unsupported content, consume/realm swap/disconnect and local multi-selection undo. Do not expose service salvage/deposit controls until Task 13.
@@ -347,6 +363,9 @@ Post-commit failure: CanonicalOwned + recovery lock until repair,
 
 - [ ] Inventory every old Options action and add parity cases for HUD layout/lock, hotbar, notifications and combat visuals. Add local/server authorization, pending rejection and restart-required cases.
 - [ ] Implement grouped settings with ownership labels; reduced motion/input help use actual client preferences. Inventory ownership remains a validated restart/migration workflow.
+- [ ] Add the dropped-item pickup preference Everyone / Party only under loot
+  options. Persist it through the real preference authority and confirm that the
+  drop adapter enforces the server-validated choice; no cosmetic-only toggle.
 - [ ] Remove obsolete close-and-open dialog calls. Preserve feature-disabled fallback and authorized authoring routes. Legacy Hub action still opens Stats until its separately announced retirement.
 - [ ] Run route/option tests, complete six-page state/scale checks, and commit `feat: finish the unified Hub menu migration`.
 

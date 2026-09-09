@@ -147,6 +147,37 @@ Appearance editing reuses the cosmetic service and returns to Equipment. It cann
 
 **Drop/Discard:** distinct actions where game rules allow them. Drop names the world destination and ownership policy; Discard states the exact permanent loss. Neither may bypass protection or reservations. Multi-entry output and external transfers require durable transaction coordination, not sequential Extract calls with hoped-for rollback.
 
+**Dropped-item access (user decision, 2026-09-09):** Options provides a two-choice
+setting for intentionally dropped Adventure items: **Everyone** or **Party only**.
+This governs who may pick up the drop, not who owns the player's inventory. It does
+not change enemy-generated loot allocation or authorize bypassing item protection.
+The drop action shows the chosen audience before submission; the server validates
+and saves that access rule with the durable drop transaction. A visual setting
+alone is not implementation of pickup permissions.
+
+Implementation defaults proposed to the user: Party only initially, owner-only
+when solo, and changing the preference affects future drops rather than existing
+ones. Exact party membership/revocation semantics must be recorded with the drop
+adapter before implementation; never infer a party grant from a client-supplied
+list of players. The two-choice setting is accepted; these defaults and remaining
+party details are not evidence of a completed runtime contract.
+
+**Loot piles (user decision, 2026-09-09):** consolidate nearby compatible world
+drops into bounded loot piles where possible, avoiding an entity per contained
+item. A pile is a presentation and pickup grouping, not permission to collapse
+distinct gear, affixes, conditions, unknown payloads or item identities. Exact
+quantities and per-item access remain authoritative. Party-only and public access
+must never broaden through grouping; incompatible access may use separate piles
+or separately enforced records within one pile.
+
+Pile creation, adding items, partial pickup and empty-pile removal must reconcile
+with durable item ownership across restart and retries, without loss or duplicate
+pickup. Bound pile contents and updates, use nearby/chunk-local lookup rather than
+scanning every world drop, and verify entity-count reduction under repeated drops.
+Grouping changes neither loot rewards nor expiry/ownership policy. Implement this
+with the drop/pickup adapter; native stack merging alone does not prove the VRPG
+identity, access or durability contract.
+
 ## 10. Recovery and storage access
 
 Proposed default: excess unique gear routes to a durable personal Recovery cache where the activity permits it. Show one grouped “2 items sent to Recovery” notice with Review. Recovery is a location filter within Inventory, not a sixth core item category. It exposes reason, item, exact quantity, access rule and Claim action; claims obey normal capacity and reservation checks.
@@ -168,6 +199,9 @@ Every page uses the same shell, context history, local feedback, focus rules and
 - **Talents:** current graph component, points, pan/zoom/fit, selected-node effect/cost, and Apply/Reset plan. Preserve graph viewport across page switches. Distinguish allocated, planned, reachable, refund-planned and disconnected through shape/text as well as color. Rejection leaves an editable revalidated plan. Authoring tools require a separate authorized mode.
 - **Library:** browse/search plus reading pane; live links from items, mechanics, skills and Welcome. Back returns to the originating selection. Hide undiscovered content according to server rules and omit empty future categories. Read-only cache may remain readable offline with a stale indication where discovery matters.
 - **Options:** group interface/accessibility, HUD/controls, loot preferences, and authorized server options using the existing real settings. Show local/server ownership and restart effects. Item ownership changes are restart/migration operations, not live casual switches. Default/locked/pending/rejected/success states must be truthful.
+  Include the accepted dropped-item pickup setting, Everyone / Party only, under
+  loot preferences. Its effect is the access rule on a new deliberate world drop;
+  it is not a switch between canonical and Vanilla inventory ownership.
 
 New-character handoff is Welcome → normal world play, with a clear Inventory/Equipment route and Library > Getting Started link. Menu reads the actual granted starter gear and allocated skill. Closing the ordinary menu cannot release unfinished onboarding protection; appearance revisits cannot restart onboarding.
 

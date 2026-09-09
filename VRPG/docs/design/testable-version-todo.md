@@ -74,8 +74,13 @@ packet/tick/pickup coexistence and clean stop. Separate world-item packet guards
 are reviewed at `19f7286`: full 1,143 tests and final focused 34. Real captured
 registrations cover block-entity/entity callbacks and place/break/decor dispatch;
 isolated 1.22.7 startup accepted all guards and stopped cleanly. Complete native
-block mutation with joined players remains unverified. Cursor retention is RAM-only;
-direct native manager/death producers and outbound durability remain blockers.
+block mutation with joined players remains unverified. Direct native manager and
+deferred death guards are reviewed through `6702454` (source `22f5d4e`): full
+1,279 tests followed by covering 87 after a test-only review fix. Native startup
+accepted all guard groups and stopped cleanly before that fix; it logged one
+582 ms slow tick and the optional Manifold warning. Joined grant/death gameplay is
+unverified. Cursor retention is RAM-only; admin clear/queued wipes, other producers
+and outbound durability remain blockers.
 No menu/default activation or installed deployment.
 
 Pickup prerequisite progress (2026-09-09): fresh-source identity and loaded-source

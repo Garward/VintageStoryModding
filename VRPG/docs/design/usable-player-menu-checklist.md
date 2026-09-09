@@ -52,8 +52,13 @@ continue independent implementation work without presenting it as readiness.
 - [x] Existing item custody stays protected when replacement is disabled; unsafe archive startup refuses gameplay.
 - [x] Background held-item and transition ticks refuse protected players while preserving Vanilla players in the same tick.
 - [x] Native block-place/break, block-entity and entity packets refuse protected players before item/world callbacks.
+- [x] Direct native grants/transfers/drop and delayed death effects refuse protected item owners.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
+- [ ] Add Options: dropped-item pickup by Everyone / Party only, with matching
+  server-enforced access saved per deliberate Adventure drop (user choice 2026-09-09).
+- [ ] Group nearby compatible drops into bounded loot piles to reduce entities,
+  retaining exact items, quantities, permissions and restart-safe partial pickup.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.
 - [ ] Activate sole VRPG ownership of Inventory and Character on server join.
 - [ ] Verify no ordinary route opens either Vanilla menu, including remapped actions and reconnect.
@@ -339,8 +344,15 @@ first-run state.
   entity/block-entity callbacks and place/break/decor dispatch. Isolated 1.22.7
   server accepted the combined guards, reached ticking and stopped cleanly.
   Complete installed-world block mutation and joined-menu acceptance are unverified.
-- [ ] Guard direct native manager grants/transfers/drop and death effects, including
+- [x] Guard direct native manager grants/transfers/drop and death effects, including
   delayed armor drops; packet refusal is not complete producer coverage.
+  Reviewed `22f5d4e` and test fix `6702454`: full 1,279 tests, then covering 87.
+  Actual native methods and queued actions verify source preservation, ownership
+  changes before execution, client/server distinction and mandatory startup refusal.
+  Isolated 1.22.7 startup/shutdown passed before the test-only review fix; it logged
+  an optional Manifold warning and one 582 ms slow tick, not a performance benchmark.
+- [ ] Protect native admin Clear/DiscardAll and deferred offline inventory wipes,
+  preserving valid Vanilla reconstruction and truthful command results.
 - [ ] Establish durable recovery or proven empty-cursor preconditions before
   activation. Current cursor refusal retains RAM only; native cursor serialization
   is empty. Packet and background inventory-tick guards do not cover all direct producers.
