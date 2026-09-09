@@ -14,6 +14,8 @@
 
 ## Global constraints
 
+- User handoff rule (2026-09-08): do not say "ready to test" until the user can join a VRPG server with no ordinary access to the Vanilla Inventory or Character menu; both configured actions must use the real server-backed replacement. Keep joined-server user confirmation pending until observed. Report verified checklist progress in the conversation as work proceeds. Isolated previews and source tests are not this acceptance gate; native authentication does not block independent code tasks.
+
 - One shell with Inventory, Stats, Skills, Talents, Library, Options.
 - Full fixed inventory capacity from character creation; no backpack slot or bag progression requirement.
 - Gear, Materials, Consumables, Keys & Quest, Miscellaneous are views over one authority, not five independent bags.

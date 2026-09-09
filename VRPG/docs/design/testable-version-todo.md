@@ -1,7 +1,7 @@
 # Testable Version TODO
 
 Status: Active implementation checklist
-Updated: 2026-09-05
+Updated: 2026-09-08
 Parents: [Combat HUD replacement](combat-hud-total-replacement.md) · [Native player-menu implementation](native-player-menu-implementation-plan.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md) · [Gear foundation](../superpowers/specs/2026-09-05-vrpg-gear-foundation-design.md)
 Index: [VRPG design index](README.md)
 
@@ -14,6 +14,13 @@ This checklist turns the adopted interaction and player-menu contracts into smal
 - A gate must pass before the dependent ownership switch defaults on.
 
 ## 0. Boot-to-overhaul handoff milestone
+
+User acceptance rule (2026-09-08): **do not call this ready to test** until the
+user can join a VRPG server and the real server-backed UI replaces both Vanilla
+Inventory and Character menus, with no ordinary gameplay route reopening either.
+Record actual joined-server confirmation, not an inference from source tests or
+the developer gallery. Track and report verified progress using the
+[usable replacement checklist](usable-player-menu-checklist.md#current-progress).
 
 This is the next project boundary. It is intentionally narrower than a playable
 combat release and stricter than a UI mockup.

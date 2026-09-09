@@ -1,7 +1,7 @@
 # Usable Player-Menu Replacement Checklist
 
 Status: Active critical path  
-Updated: 2026-09-06
+Updated: 2026-09-08
 Parents: [Native player-menu implementation](native-player-menu-implementation-plan.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md)  
 Index: [VRPG design index](README.md)
 
@@ -23,6 +23,32 @@ and [delivery plan](../superpowers/plans/2026-09-06-unified-player-menu.md).
 The approved delivery plan is now being implemented and preserves this file's activation gates.
 
 ## Current progress
+
+### User-facing acceptance rule (2026-09-08)
+
+Do not describe this milestone as **ready to test** until the user can join a
+VRPG server and neither the Vanilla Inventory nor Vanilla Character menu remains
+accessible through ordinary gameplay. Both configured actions must open the real
+VRPG replacement using saved server state, including remapped bindings. A gallery,
+mockup, passing unit tests, or merely hiding the old dialogs does not meet this gate.
+The user's joined-server confirmation remains unchecked until actually observed.
+
+Report checklist progress in the conversation as each verified slice finishes:
+what changed, its evidence, and what remains. Separate source completion from
+connected-server acceptance. Authentication blocks native verification only;
+continue independent implementation work without presenting it as readiness.
+
+- [x] Storage policy and bounded query/cache foundations implemented and reviewed.
+- [x] Isolated shell and UI clarity fixes implemented and source-reviewed.
+- [ ] Complete safe engine item transfers and lifecycle reconciliation.
+- [ ] Connect real inventory, equipment, item actions, and loadouts.
+- [ ] Complete the first-join starter/appearance/Welcome handoff.
+- [ ] Activate sole VRPG ownership of Inventory and Character on server join.
+- [ ] Verify no ordinary route opens either Vanilla menu, including remapped actions and reconnect.
+- [ ] User joins the server and confirms both Vanilla menus are replaced.
+
+Current handoff status: **not ready to test**. These are milestone summaries;
+the detailed steps below remain the implementation checklist.
 
 | Step | Status | Evidence |
 |---|---|---|
