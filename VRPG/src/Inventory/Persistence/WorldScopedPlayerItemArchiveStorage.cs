@@ -3,11 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VRPG.Persistence;
 
 namespace VRPG.Inventory.Persistence;
 
@@ -185,45 +185,9 @@ public sealed class WorldScopedPlayerItemArchiveStorage : IDurablePlayerItemArch
 
     private void Flush(Envelope state)
     {
-        string directory = Path.GetDirectoryName(ArchivePath)!;
-        EnsureDirectory(directory);
-        string temporary = Path.Combine(directory, ".player-items-" + Guid.NewGuid().ToString("N"));
-        try
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(state));
-            using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-            {
-                stream.Write(bytes);
-                stream.Flush(flushToDisk: true);
-            }
-            File.Move(temporary, ArchivePath, overwrite: true);
-            SyncDirectory(directory);
-        }
-        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+        byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(state));
+        DurableFileWriter.Write(ArchivePath, bytes, ".player-items-");
     }
-
-    private static void EnsureDirectory(string directory)
-    {
-        if (Directory.Exists(directory)) return;
-        string? parent = Path.GetDirectoryName(directory);
-        if (parent == null) throw new IOException("A durable archive parent directory is required.");
-        EnsureDirectory(parent);
-        Directory.CreateDirectory(directory);
-        SyncDirectory(directory);
-        SyncDirectory(parent);
-    }
-
-    private static void SyncDirectory(string directory)
-    {
-        int descriptor = open(directory, 0x10000 /* O_DIRECTORY */);
-        if (descriptor < 0) throw new IOException("Cannot open the archive directory for fsync.");
-        try { if (fsync(descriptor) != 0) throw new IOException("Cannot durably flush the archive directory."); }
-        finally { close(descriptor); }
-    }
-
-    [DllImport("libc", SetLastError = true)] private static extern int open(string path, int flags);
-    [DllImport("libc", SetLastError = true)] private static extern int fsync(int fd);
-    [DllImport("libc", SetLastError = true)] private static extern int close(int fd);
 
     private sealed class Envelope
     {
