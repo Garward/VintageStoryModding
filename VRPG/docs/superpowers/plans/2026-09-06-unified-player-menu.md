@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `6702454`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 admin clear/queued-wipe guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `a37ad5e`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 migration-inspection evidence, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -194,8 +194,15 @@ witness correction. It preserves native source/operation state and checks actual
 queued death effects at execution, with explicit client/server distinction.
 Isolated native startup/shutdown passed before the test-only fix; one 582 ms tick
 warning and optional Manifold absence were recorded. No joined gameplay or
-performance benchmark was performed. Next slice3b7 protects native admin clear/
-discard and queued offline wipes; neither slice defines canonical death losses.
+performance benchmark was performed. Slice3b7 native clear/discard and queued
+offline wipes is reviewed through `a37ad5e` (source `8cf203b`): full 1,396 tests,
+then covering 107 after test-only witness assertions. Real commands preserve
+protected sources, truthful late-refusal results and healthy native reconstruction;
+the actual migration adapter Clear/Restore remains compatible. Isolated 1.22.7
+startup/shutdown passed before the test-only fix with only optional Manifold
+warning. Neither slice defines canonical death losses. Next bounded slice3b8
+diagnoses whether unavailable native inventory can be mistaken for empty/matching
+migration evidence; reproduce with the actual adapter before any production fix.
 
 User additions (2026-09-09) bind the later durable drop/pickup adapter: deliberately
 dropped Adventure items use the player's Everyone / Party only choice, validated

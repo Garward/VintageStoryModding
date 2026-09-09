@@ -79,8 +79,15 @@ deferred death guards are reviewed through `6702454` (source `22f5d4e`): full
 1,279 tests followed by covering 87 after a test-only review fix. Native startup
 accepted all guard groups and stopped cleanly before that fix; it logged one
 582 ms slow tick and the optional Manifold warning. Joined grant/death gameplay is
-unverified. Cursor retention is RAM-only; admin clear/queued wipes, other producers
-and outbound durability remain blockers.
+unverified. Native clear/discard and queued offline wipes are reviewed through
+`a37ad5e` (source `8cf203b`): full 1,396 tests, then covering 107 after test-only
+assertion fixes. Native commands preserve sources on refusal, report late partial
+failure truthfully, and retain healthy reconstruction/migration behavior. Isolated
+1.22.7 startup and clean shutdown passed before the test-only fix; only optional
+Manifold warning. Joined command/migration gameplay remains unverified. Next check:
+unavailable native inventory must not count as positive empty/matching migration
+evidence. Cursor retention is RAM-only; other producers and outbound durability
+remain blockers.
 No menu/default activation or installed deployment.
 
 Pickup prerequisite progress (2026-09-09): fresh-source identity and loaded-source

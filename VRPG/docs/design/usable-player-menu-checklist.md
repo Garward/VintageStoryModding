@@ -53,6 +53,7 @@ continue independent implementation work without presenting it as readiness.
 - [x] Background held-item and transition ticks refuse protected players while preserving Vanilla players in the same tick.
 - [x] Native block-place/break, block-entity and entity packets refuse protected players before item/world callbacks.
 - [x] Direct native grants/transfers/drop and delayed death effects refuse protected item owners.
+- [x] Native clear/discard commands and queued offline wipes protect RPG-owned items.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Add Options: dropped-item pickup by Everyone / Party only, with matching
@@ -351,8 +352,17 @@ first-run state.
   changes before execution, client/server distinction and mandatory startup refusal.
   Isolated 1.22.7 startup/shutdown passed before the test-only review fix; it logged
   an optional Manifold warning and one 582 ms slow tick, not a performance benchmark.
-- [ ] Protect native admin Clear/DiscardAll and deferred offline inventory wipes,
+- [x] Protect native admin Clear/DiscardAll and deferred offline inventory wipes,
   preserving valid Vanilla reconstruction and truthful command results.
+  Reviewed `8cf203b` and test fix `a37ad5e`: full 1,396 tests, then covering 107.
+  Actual native commands, queued deserialization and per-effect authority checks
+  preserve sources and report refusal truthfully, including late partial failure.
+  Healthy migration Clear/Restore remains available. Isolated 1.22.7 startup and
+  clean shutdown passed before the test-only fix; only optional Manifold warning.
+  No joined command/migration gameplay or full producer coverage is claimed.
+- [ ] Verify unavailable native inventories cannot count as empty/matching
+  migration evidence or prematurely confirm ownership; diagnose with the actual
+  native source adapter before changing recovery behavior.
 - [ ] Establish durable recovery or proven empty-cursor preconditions before
   activation. Current cursor refusal retains RAM only; native cursor serialization
   is empty. Packet and background inventory-tick guards do not cover all direct producers.
