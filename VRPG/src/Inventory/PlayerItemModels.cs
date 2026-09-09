@@ -69,7 +69,8 @@ public sealed record PlayerItemSummary(
     PlayerItemFlags Flags = PlayerItemFlags.None,
     long ReservedQuantity = 0,
     PlayerItemProtectionSource ProtectionSource = PlayerItemProtectionSource.None,
-    string AuthoredCategory = "");
+    string AuthoredCategory = "",
+    string CategoryName = "");
 
 /// <summary>Clone-owned canonical entry data for trusted server-side consumers.</summary>
 public sealed record PlayerItemDetail(
@@ -93,6 +94,10 @@ public sealed record PlayerItemPage(
     long Revision,
     int Total,
     PlayerItemSummary[] Entries);
+
+public sealed record PlayerItemCategorySummary(string Code, string DisplayName, int Count);
+public sealed record PlayerItemCategoryPage(long Revision, int Total, PlayerItemCategorySummary[] Categories,
+    PlayerItemCategorySummary[]? CoreCategories = null);
 
 public enum PlayerItemMutationRejection
 {

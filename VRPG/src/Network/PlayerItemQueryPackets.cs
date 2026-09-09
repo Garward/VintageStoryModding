@@ -18,6 +18,8 @@ public sealed class PlayerItemQueryRequest
     [ProtoMember(8)] public PlayerItemSortOrder Sort { get; set; }
     [ProtoMember(9)] public int Offset { get; set; }
     [ProtoMember(10)] public int Limit { get; set; } = 64;
+    [ProtoMember(11)] public int CategoryOffset { get; set; }
+    [ProtoMember(12)] public int CategoryLimit { get; set; } = 64;
 }
 
 [ProtoContract]
@@ -32,6 +34,17 @@ public sealed class PlayerItemQueryResult
     [ProtoMember(7)] public int RecoveryCount { get; set; }
     [ProtoMember(8)] public string RejectionCode { get; set; } = "";
     [ProtoMember(9)] public long BuildRevision { get; set; }
+    [ProtoMember(10)] public PlayerItemCategoryPacket[] Categories { get; set; } = Array.Empty<PlayerItemCategoryPacket>();
+    [ProtoMember(11)] public int CategoryTotal { get; set; }
+    [ProtoMember(12)] public PlayerItemCategoryPacket[] CoreCategories { get; set; } = Array.Empty<PlayerItemCategoryPacket>();
+}
+
+[ProtoContract]
+public sealed class PlayerItemCategoryPacket
+{
+    [ProtoMember(1)] public string Code { get; set; } = "";
+    [ProtoMember(2)] public string DisplayName { get; set; } = "";
+    [ProtoMember(3)] public int Count { get; set; }
 }
 
 [ProtoContract]
@@ -49,6 +62,7 @@ public sealed class PlayerItemEntryPacket
     [ProtoMember(10)] public PlayerItemProtectionSource ProtectionSource { get; set; }
     [ProtoMember(11)] public string AuthoredCategory { get; set; } = "";
     [ProtoMember(12)] public PlayerItemAssetKind AssetKind { get; set; }
+    [ProtoMember(13)] public string CategoryName { get; set; } = "";
 }
 
 [ProtoContract]

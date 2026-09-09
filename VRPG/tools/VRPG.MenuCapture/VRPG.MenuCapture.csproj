@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <PackageOnRelease>false</PackageOnRelease>
+    <DisableSharedDeploy>true</DisableSharedDeploy>
+    <DeployToVS>false</DeployToVS>
+    <UseVintageStoryReferences>true</UseVintageStoryReferences>
+    <CopyVintageStoryReferencesLocal>true</CopyVintageStoryReferencesLocal>
+    <ReferenceVintagestoryAPI>true</ReferenceVintagestoryAPI>
+    <ReferenceVintagestoryLib>true</ReferenceVintagestoryLib>
+    <ReferenceVSEssentials>true</ReferenceVSEssentials>
+    <ReferenceProtobufNet>true</ReferenceProtobufNet>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../../tests/VRPG.Tests/VRPG.Tests.csproj" /></ItemGroup>
+</Project>

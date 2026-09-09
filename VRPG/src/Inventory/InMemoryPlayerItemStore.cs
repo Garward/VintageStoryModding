@@ -100,6 +100,21 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         }
     }
 
+    public PlayerItemCategoryPage QueryCategories(PlayerItemLocation location, int offset, int limit)
+    {
+        lock (sync)
+        {
+            var occupied = queryIndex.Where(pair => pair.Key.Location == location && pair.Key.Category.Length > 0
+                && pair.Value.Count > 0 && !PlayerItemCategories.Required.Contains(pair.Key.Category))
+                .OrderBy(pair => categories.Resolve(pair.Key.Category).Order)
+                .ThenBy(pair => pair.Key.Category, StringComparer.Ordinal).ToArray();
+            return new(revision, occupied.Length, occupied.Skip(Math.Max(0, offset)).Take(Math.Clamp(limit, 1, MaximumPageSize))
+                .Select(pair => new PlayerItemCategorySummary(pair.Key.Category, categories.Resolve(pair.Key.Category).DisplayName, pair.Value.Count)).ToArray(),
+                PlayerItemCategories.Required.Select(code => new PlayerItemCategorySummary(code, code,
+                    queryIndex.TryGetValue(new(location, code), out var ids) ? ids.Count : 0)).ToArray());
+        }
+    }
+
     private bool MatchesFilters(StoredEntry entry, PlayerItemFilters filters)
     {
         if (filters.HasFlag(PlayerItemFilters.Favorite) && !entry.Flags.HasFlag(PlayerItemFlags.Favorite)) return false;
@@ -374,7 +389,8 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         entry.Flags,
         ReservedQuantity(entry.EntryId),
         entry.ProtectionSource,
-        entry.Prototype.Category);
+        entry.Prototype.Category,
+        categories.Resolve(entry.Prototype.Category).DisplayName);
 
     private static PlayerItemDetail DetailClone(StoredEntry entry) => new(
         entry.EntryId,

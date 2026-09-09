@@ -5,6 +5,16 @@ namespace VRPG.Tests;
 
 public sealed class BoundedItemStackRendererTests
 {
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(200, 300)]
+    public void FortyPixelBrowseModelsKeepTheirClipWithinEachLiveCell(double x, double y)
+    {
+        var layout = BoundedItemStackRenderer.BoundedItemIconLayout.Resolve(x, y, 40);
+        Assert.Equal(x + 2, layout.ClipX); Assert.Equal(y + 2, layout.ClipY);
+        Assert.Equal(36, layout.ClipWidth); Assert.Equal(36, layout.ClipHeight);
+        Assert.InRange(layout.CenterX, x, x + 40); Assert.InRange(layout.CenterY, y, y + 40);
+    }
     [Fact]
     public void ItemModelUsesVanillaItemToSlotRatio()
     {

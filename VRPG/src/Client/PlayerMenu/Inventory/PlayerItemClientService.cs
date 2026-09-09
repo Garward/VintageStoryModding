@@ -29,20 +29,33 @@ public sealed class PlayerItemClientService
     private bool refreshed;
     private PlayerItemQueryResult? page;
     private PlayerItemDetailResult? detail;
+    private bool readOnlyTransport;
 
     public long ConnectionGeneration { get; private set; }
     public long StoreRevision { get; private set; }
     public long BuildRevision { get; private set; }
-    public bool CanWrite => ConnectionGeneration > 0 && refreshed;
+    public bool CanWrite => !readOnlyTransport && ConnectionGeneration > 0 && refreshed;
     public int PendingMutations => mutations.Count;
     public int CachedPages => pages.Count;
     public int CachedDetails => details.Count;
     public PlayerItemQueryResult? CurrentPage => page == null ? null : Serializer.DeepClone(page);
     public PlayerItemDetailResult? CurrentDetail => detail == null ? null : Serializer.DeepClone(detail);
     public event Action<PlayerItemActionResult>? ActionCompleted;
+    public event Action<PlayerItemQueryResult>? PageReceived;
+    public event Action<PlayerItemDetailResult>? DetailReceived;
+    public event Action<string>? QueryRejected;
+    public event Action? Invalidated;
+    public event Action? ConnectionChanged;
+
+    public void AttachReadOnly(Action<PlayerItemQueryRequest> query, Action<PlayerItemDetailRequest> detail)
+    {
+        if (ConnectionGeneration != 0 || sendQuery != null) throw new InvalidOperationException("Transport already attached.");
+        readOnlyTransport = true; sendQuery = query; sendDetail = detail; sendAction = null;
+    }
 
     public void Attach(IClientNetworkChannel channel)
     {
+        if (readOnlyTransport) throw new InvalidOperationException("Read-only transport cannot become writable.");
         sendQuery = request => channel.SendPacket(request);
         sendDetail = request => channel.SendPacket(request);
         sendAction = request => channel.SendPacket(request);
@@ -60,6 +73,7 @@ public sealed class PlayerItemClientService
         refreshed = false;
         mutations.Clear();
         ClearQueries();
+        ConnectionChanged?.Invoke();
     }
 
     public void BeginSession(PlayerItemSessionPacket packet)
@@ -67,6 +81,7 @@ public sealed class PlayerItemClientService
         if (packet.ProtocolVersion != 1 || packet.ConnectionGeneration <= ConnectionGeneration) return;
         ResetConnection();
         ConnectionGeneration = packet.ConnectionGeneration;
+        ConnectionChanged?.Invoke();
     }
 
     /// <summary>Caller pumps on the client game thread. Replacing a request cancels its previous query generation.</summary>
@@ -86,7 +101,8 @@ public sealed class PlayerItemClientService
         if (queued == null || nowMilliseconds < due || ConnectionGeneration <= 0) return null;
         var request = queued;
         queued = null;
-        if (PlayerItemQueryService.Validate(request).Length > 0) return null;
+        string rejection = PlayerItemQueryService.Validate(request);
+        if (rejection.Length > 0) { QueryRejected?.Invoke(rejection); return null; }
         sendQuery?.Invoke(Serializer.DeepClone(request));
         return request;
     }
@@ -94,29 +110,50 @@ public sealed class PlayerItemClientService
     /// <summary>An empty role asks the server to discover and compare the entry's actual equipment role.</summary>
     public PlayerItemDetailRequest Select(string entryId, string roleCode = "")
     {
-        selected = new() { ConnectionGeneration = ConnectionGeneration, QueryId = checked(++queryId),
+        var request = new PlayerItemDetailRequest { ConnectionGeneration = ConnectionGeneration, QueryId = checked(++queryId),
             EntryId = entryId, RoleCode = roleCode };
+        selected = request;
         detail = null;
-        if (PlayerItemDetailService.Validate(selected).Length == 0) sendDetail?.Invoke(Serializer.DeepClone(selected));
-        return Serializer.DeepClone(selected);
+        if (PlayerItemDetailService.Validate(request).Length == 0) sendDetail?.Invoke(Serializer.DeepClone(request));
+        return Serializer.DeepClone(request);
     }
 
     public bool Receive(PlayerItemQueryResult result)
     {
+        if (result.ConnectionGeneration == ConnectionGeneration && ConnectionGeneration > 0 && result.QueryId == latestPage
+            && PlayerItemQueryService.Text(result.RejectionCode, 64, true))
+        { QueryRejected?.Invoke(result.RejectionCode); return true; }
         if (result.ConnectionGeneration != ConnectionGeneration || ConnectionGeneration == 0
             || result.QueryId != latestPage || result.RejectionCode.Length > 0
             || result.Entries == null || result.Entries.Length > PlayerItemQueryService.MaximumEntries
             || result.Entries.Any(entry => !PlayerItemQueryService.ValidEntry(entry))
+            || result.Total < result.Entries.Length || result.RecoveryCount < 0 || result.CategoryTotal < 0
+            || result.Categories is not { Length: <= 128 } || result.Categories.Any(x => x == null || x.Count <= 0
+                || !PlayerItemQueryService.Text(x.Code, 128, true) || !PlayerItemQueryService.Text(x.DisplayName, 256))
+            || result.Categories.Select(x => x.Code).Distinct(StringComparer.Ordinal).Count() != result.Categories.Length
+            || result.CoreCategories is not { Length: <= 5 } || result.CoreCategories.Any(x => x == null || x.Count < 0
+                || !VRPG.Inventory.PlayerItemCategories.Required.Contains(x.Code) || !PlayerItemQueryService.Text(x.DisplayName, 256))
+            || result.CoreCategories.Select(x => x.Code).Distinct(StringComparer.Ordinal).Count() != result.CoreCategories.Length
+            || result.CapacitySummary == null || result.CapacitySummary.UniqueEntriesUsed < 0 || result.CapacitySummary.AggregateEntriesUsed < 0
+            || result.CapacitySummary.UniqueEntryLimit < 0 || result.CapacitySummary.AggregateEntryLimit < 0 || result.CapacitySummary.AggregateQuantityPerEntry < 0
             || result.StoreRevision < StoreRevision || result.BuildRevision < BuildRevision) return false;
         Observe(result.StoreRevision, result.BuildRevision);
         page = Serializer.DeepClone(result);
         AddBounded(pages, pageOrder, result.QueryId, page, PageCacheCapacity);
         refreshed = true;
+        PageReceived?.Invoke(Serializer.DeepClone(page));
         return true;
     }
 
     public bool Receive(PlayerItemDetailResult result)
     {
+        // Admission errors have no store snapshot. Identity is still checked before publishing the failure.
+        if (selected != null && result.ConnectionGeneration == ConnectionGeneration && ConnectionGeneration > 0
+            && result.QueryId == selected.QueryId && result.EntryId == selected.EntryId
+            && result.RoleCode == selected.RoleCode && result.StoreRevision == 0 && result.BuildRevision == 0
+            && result.RejectionCode is "rate-limit" or "unauthorized-player" or "connection-generation" or "protocol-version" or "invalid-identity"
+            && ValidDetail(result))
+        { detail = Serializer.DeepClone(result); selected = null; DetailReceived?.Invoke(Serializer.DeepClone(detail)); return true; }
         if (selected == null || result.ConnectionGeneration != ConnectionGeneration || ConnectionGeneration == 0
             || result.QueryId != selected.QueryId || result.EntryId != selected.EntryId
             || !PlayerItemQueryService.Text(result.RoleCode, 128)
@@ -126,7 +163,9 @@ public sealed class PlayerItemClientService
             || result.Actions == null || result.Actions.Length > 16 || !ValidDetail(result)) return false;
         Observe(result.StoreRevision, result.BuildRevision);
         detail = Serializer.DeepClone(result);
+        selected = null;
         AddBounded(details, detailOrder, result.QueryId, detail, DetailCacheCapacity);
+        DetailReceived?.Invoke(Serializer.DeepClone(detail));
         return true;
     }
 
@@ -154,7 +193,7 @@ public sealed class PlayerItemClientService
             || result.InvalidatedScopes.Any(scope => !PlayerItemQueryService.Text(scope, 64))) return false;
         mutations.Remove(result.RequestId);
         Observe(Math.Max(StoreRevision, result.StoreRevision), Math.Max(BuildRevision, result.BuildRevision));
-        if (result.InvalidatedScopes.Length > 0) { refreshed = false; ClearCaches(); }
+        if (result.InvalidatedScopes.Length > 0) { refreshed = false; ClearCaches(); Invalidated?.Invoke(); }
         ActionCompleted?.Invoke(Serializer.DeepClone(result));
         return true;
     }
@@ -168,6 +207,7 @@ public sealed class PlayerItemClientService
         Observe(result.StoreRevision, result.BuildRevision);
         refreshed = false;
         ClearQueries();
+        Invalidated?.Invoke();
         return true;
     }
 
@@ -205,6 +245,7 @@ public sealed class PlayerItemClientService
     }
 
     private static bool ValidDetail(PlayerItemDetailResult result) => PlayerItemQueryService.Text(result.RejectionCode, 64)
+        && result.Effects is { Length: <= 128 } && result.Comparison is { Length: <= 128 } && result.Actions is { Length: <= 16 }
         && result.Effects.All(x => x != null && double.IsFinite(x.Value) && PlayerItemQueryService.Text(x.StatCode, 128)
             && PlayerItemQueryService.Text(x.Operation, 32) && PlayerItemQueryService.Text(x.UnitCode, 32)
             && PlayerItemQueryService.Text(x.ConditionCode, 64))

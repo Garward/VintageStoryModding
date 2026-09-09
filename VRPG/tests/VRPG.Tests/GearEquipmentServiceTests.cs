@@ -438,6 +438,7 @@ public sealed class GearEquipmentServiceTests
 
         public PlayerEquipmentSnapshot Equipment() => new(Revision, (EquippedPlayerItemRecord[])equipment.Clone());
         public PlayerItemPage Query(PlayerItemQuery query) => throw new NotSupportedException();
+        public PlayerItemCategoryPage QueryCategories(PlayerItemLocation location, int offset, int limit) => throw new NotSupportedException();
         public PlayerItemMutationResult Insert(string requestId, PlayerItemPrototype prototype, long quantity, long expectedRevision) => throw new NotSupportedException();
         public PlayerItemMutationResult Extract(string requestId, string entryId, long quantity, long expectedRevision) => throw new NotSupportedException();
         public PlayerItemReservationResult Reserve(string requestId, PlayerItemAmount[] amounts, long expectedRevision) => throw new NotSupportedException();

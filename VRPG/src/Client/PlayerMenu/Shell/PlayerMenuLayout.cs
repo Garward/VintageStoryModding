@@ -21,6 +21,11 @@ public sealed record PlayerMenuLayout(double Width, double Height, bool Alternat
     public MenuRect BrowserRow(int visibleIndex) => new(BrowserContent.X + 4, BrowserContent.Y + visibleIndex * RowHeight, BrowserContent.Width - 8, 48);
     public int VisibleRows => Math.Max(0, (int)((BrowserContent.Height + RowHeight - 48) / RowHeight));
     public int RenderRowLimit => VisibleRows + 2;
+    public MenuRect InventorySearch => BrowserSearch with { Y = Browser.Y + (CondensedBrowserChrome ? 40 : 132) };
+    public MenuRect InventoryContent => new(Browser.X + 8, Browser.Y + (CondensedBrowserChrome ? 78 : 178), Browser.Width - 16,
+        Math.Max(0, Browser.Height - (CondensedBrowserChrome ? 78 : 178) - 4));
+    public int InventoryVisibleRows => Math.Max(0, (int)((InventoryContent.Height + RowHeight - 48) / RowHeight));
+    public MenuRect InventoryRow(int index) => new(InventoryContent.X + 4, InventoryContent.Y + index * RowHeight, InventoryContent.Width - 8, 48);
     public static PlayerMenuLayout ForViewport(double width, double height, double scale) =>
         Resolve(Math.Min(1120, Math.Max(0, width / Math.Max(.25, scale) - 24)),
             Math.Min(680, Math.Max(0, height / Math.Max(.25, scale) - 24)));

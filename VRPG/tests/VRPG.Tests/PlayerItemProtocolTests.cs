@@ -17,6 +17,36 @@ namespace VRPG.Tests;
 public sealed class PlayerItemProtocolTests
 {
     [Theory]
+    [InlineData("rate-limit")]
+    [InlineData("protocol-version")]
+    [InlineData("unauthorized-player")]
+    public void DetailAdmissionFailureRoundTripsBoundedSelectionIdentity(string reason)
+    {
+        var f = new Fixture();
+        if (reason == "rate-limit") for (int i = 0; i < 20; i++) f.Service.Query(f.Player, f.Query());
+        var request = new PlayerItemDetailRequest { ConnectionGeneration = 1, QueryId = 9,
+            EntryId = "selected-entry", RoleCode = PlayerEquipmentRoles.Head, ProtocolVersion = reason == "protocol-version" ? 99 : 1 };
+        var result = Serializer.DeepClone(f.Service.Detail(reason == "unauthorized-player" ? new TestPlayer("other") : f.Player, request));
+        Assert.Equal(reason, result.RejectionCode); Assert.Equal("selected-entry", result.EntryId);
+        Assert.Equal(PlayerEquipmentRoles.Head, result.RoleCode); Assert.Equal(9, result.QueryId);
+        Assert.Equal(0, result.StoreRevision);
+        request.EntryId = new('x', 129); request.RoleCode = "bad\nrole";
+        result = Serializer.DeepClone(f.Service.Detail(f.Player, request));
+        Assert.Equal("", result.EntryId); Assert.Equal("", result.RoleCode);
+    }
+
+    [Fact]
+    public void CategoryPageProtocolPreservesOffsetCountAndRejectsOversizedRequests()
+    {
+        var request = Serializer.DeepClone(new PlayerItemQueryRequest { ConnectionGeneration = 1, QueryId = 1, CategoryOffset = 128, CategoryLimit = 128 });
+        Assert.Equal(128, request.CategoryOffset);
+        var result = Serializer.DeepClone(new PlayerItemQueryResult { CategoryTotal = 200,
+            Categories = new[] { new PlayerItemCategoryPacket { Code = "addon", DisplayName = "Addon", Count = 7 } } });
+        Assert.Equal(200, result.CategoryTotal); Assert.Equal(7, Assert.Single(result.Categories).Count);
+        request.CategoryLimit = 129;
+        Assert.Equal("request-limit", PlayerItemQueryService.Validate(request));
+    }
+    [Theory]
     [InlineData("VRPG.Network.PlayerItemQueryRequest")]
     [InlineData("VRPG.Network.PlayerItemActionRequest")]
     [InlineData("VRPG.Network.PlayerItemDetailResult")]

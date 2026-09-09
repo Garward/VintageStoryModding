@@ -10,8 +10,10 @@ public sealed class PlayerMenuController
     private string worldIdentity = "";
     public PlayerMenuSessionState Session { get; } = new();
     public PlayerItemClientService Items { get; }
+    public InventoryPage? Inventory { get; }
     public event Action? Changed;
     public PlayerMenuController(PlayerItemClientService connectionItems) { Items = connectionItems; }
+    public PlayerMenuController(InventoryPage inventory) { Inventory = inventory; Items = inventory.Items; }
     public void Enter(PlayerMenuEntryPoint entry, bool textInputFocused = false)
     {
         if (textInputFocused) return;

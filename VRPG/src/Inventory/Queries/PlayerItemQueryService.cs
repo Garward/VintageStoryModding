@@ -31,6 +31,15 @@ public sealed class PlayerItemQueryService
             result.StoreRevision = page.Revision;
             result.Total = page.Total;
             result.Entries = page.Entries.Select(ToPacket).ToArray();
+            var catalog = store.QueryCategories(request.Location, request.CategoryOffset, request.CategoryLimit);
+            result.CategoryTotal = catalog.Total;
+            result.CoreCategories = (catalog.CoreCategories ?? Array.Empty<PlayerItemCategorySummary>()).Select(category =>
+                new PlayerItemCategoryPacket { Code = category.Code, DisplayName = category.DisplayName, Count = category.Count }).ToArray();
+            result.Categories = catalog.Categories.Select(category => new PlayerItemCategoryPacket
+                { Code = category.Code, DisplayName = Bounded(category.DisplayName, MaximumDisplayLength), Count = category.Count }).ToArray();
+            if (catalog.Revision != page.Revision) result.RejectionCode = "stale-store";
+            if (result.Categories.Any(category => !Text(category.Code, 128, true) || !Text(category.DisplayName, 256)))
+            { result.Categories = Array.Empty<PlayerItemCategoryPacket>(); result.RejectionCode = "metadata-limit"; }
             if (result.Entries.Any(entry => !ValidEntry(entry)))
             {
                 result.Entries = Array.Empty<PlayerItemEntryPacket>();
@@ -61,7 +70,8 @@ public sealed class PlayerItemQueryService
         if (request.ConnectionGeneration <= 0 || request.QueryId <= 0) return "invalid-identity";
         if (!Enum.IsDefined(request.Location) || !Enum.IsDefined(request.Sort)
             || ((int)request.Filters & ~127) != 0) return "invalid-filter";
-        if (request.Offset < 0 || request.Limit is < 1 or > MaximumEntries) return "request-limit";
+        if (request.Offset < 0 || request.Limit is < 1 or > MaximumEntries
+            || request.CategoryOffset < 0 || request.CategoryLimit is < 1 or > MaximumEntries) return "request-limit";
         if (!Text(request.Search, MaximumSearchLength) || !Text(request.Category, MaximumIdentityLength)) return "invalid-search";
         return "";
     }
@@ -86,13 +96,13 @@ public sealed class PlayerItemQueryService
         Category = entry.Category, DisplayName = Bounded(entry.DisplayName, MaximumDisplayLength),
         Quantity = entry.Quantity, ReservedQuantity = entry.ReservedQuantity, Kind = entry.Kind, Location = entry.Location,
         Flags = entry.Flags, ProtectionSource = entry.ProtectionSource,
-        AuthoredCategory = entry.AuthoredCategory, AssetKind = entry.AssetKind
+        AuthoredCategory = entry.AuthoredCategory, AssetKind = entry.AssetKind, CategoryName = Bounded(entry.CategoryName, MaximumDisplayLength)
     };
 
     public static bool ValidEntry(PlayerItemEntryPacket? entry) => entry != null
         && Text(entry.EntryId, MaximumIdentityLength, true) && Text(entry.AssetCode, MaximumIdentityLength)
         && Text(entry.Category, MaximumIdentityLength) && Text(entry.AuthoredCategory, MaximumIdentityLength)
-        && Text(entry.DisplayName, MaximumDisplayLength) && entry.Quantity > 0 && entry.ReservedQuantity >= 0
+        && Text(entry.DisplayName, MaximumDisplayLength) && Text(entry.CategoryName, MaximumDisplayLength) && entry.Quantity > 0 && entry.ReservedQuantity >= 0
         && entry.ReservedQuantity <= entry.Quantity && Enum.IsDefined(entry.Kind) && Enum.IsDefined(entry.AssetKind)
         && Enum.IsDefined(entry.Location) && ((int)entry.Flags & ~7) == 0 && ((int)entry.ProtectionSource & ~3) == 0;
 

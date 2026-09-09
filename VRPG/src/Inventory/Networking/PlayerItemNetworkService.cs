@@ -76,7 +76,9 @@ public sealed class PlayerItemNetworkService
         string error = PlayerItemDetailService.Validate(request);
         if (error.Length == 0) error = Authorize(player, request.ConnectionGeneration, out _);
         if (error.Length > 0) return new() { ConnectionGeneration = request.ConnectionGeneration,
-            QueryId = request.QueryId, RejectionCode = error };
+            QueryId = request.QueryId, RejectionCode = error,
+            EntryId = PlayerItemQueryService.Text(request.EntryId, 128, true) ? request.EntryId : "",
+            RoleCode = PlayerItemQueryService.Text(request.RoleCode, 128) ? request.RoleCode : "" };
         IPlayerItemStore store = items.ForPlayer(player.PlayerUID);
         long build = players.GetBuildRevision(player.PlayerUID, store.Equipment());
         var result = details.Detail(store, players.GetOrCreate(player.PlayerUID), build, request);

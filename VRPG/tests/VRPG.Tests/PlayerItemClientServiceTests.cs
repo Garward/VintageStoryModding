@@ -8,6 +8,45 @@ namespace VRPG.Tests;
 public sealed class PlayerItemClientServiceTests
 {
     [Fact]
+    public void CoreCatalogMetadataCannotBypassBoundsOrDuplicateIdentities()
+    {
+        var client = Connected(); long query = client.QueueQuery(new(), 0);
+        var packet = Page(query);
+        packet.CoreCategories = new[] { new PlayerItemCategoryPacket { Code = "gear", DisplayName = new('x', 257) } };
+        Assert.False(client.Receive(packet));
+        packet.CoreCategories = new[] { new PlayerItemCategoryPacket { Code = "gear" }, new PlayerItemCategoryPacket { Code = "gear" } };
+        Assert.False(client.Receive(packet));
+        Assert.Null(client.CurrentPage);
+    }
+    [Fact]
+    public void DuplicateFailureCannotOverwriteCompletedDetailAndInvalidCapacityCannotEnterView()
+    {
+        var client = Ready(); var selected = client.Select("a");
+        Assert.True(client.Receive(Detail(selected, 1)));
+        Assert.False(client.Receive(new PlayerItemDetailResult { ConnectionGeneration = 1, QueryId = selected.QueryId,
+            EntryId = "a", RejectionCode = "rate-limit" }));
+        long query = client.QueueQuery(new(), 0); var bad = Page(query);
+        bad.CapacitySummary.UniqueEntriesUsed = -1;
+        Assert.False(client.Receive(bad));
+    }
+    [Fact]
+    public void CorrelatedAdmissionRejectionEndsDetailWithoutChangingRevisionsOrReadiness()
+    {
+        var client = Ready();
+        var old = client.Select("old");
+        var selection = client.Select("current");
+        int notices = 0; client.DetailReceived += _ => notices++;
+        var rejection = new PlayerItemDetailResult { ConnectionGeneration = 1, QueryId = old.QueryId,
+            EntryId = "old", RejectionCode = "rate-limit" };
+        Assert.False(client.Receive(rejection));
+        rejection.QueryId = selection.QueryId; rejection.EntryId = "current";
+        Assert.True(client.Receive(rejection)); Assert.Equal(1, notices);
+        Assert.Equal(1, client.StoreRevision); Assert.True(client.CanWrite);
+        client.ResetConnection(); client.BeginSession(new() { ConnectionGeneration = 2 });
+        selection = client.Select("current"); rejection.ConnectionGeneration = 2; rejection.QueryId = selection.QueryId;
+        Assert.True(client.Receive(rejection)); Assert.False(client.CanWrite);
+    }
+    [Fact]
     public void ConnectionServiceExistsWithoutGuiDependency()
     {
         Assert.NotNull(typeof(IPlayerItemStore).Assembly.GetType("VRPG.Client.PlayerMenu.Inventory.PlayerItemClientService"));
