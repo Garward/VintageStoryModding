@@ -58,6 +58,13 @@ an explicitly identified immediate coding target.
 
 #### B. One safe item and equipment owner
 
+Pickup prerequisite progress (2026-09-09): fresh-source identity and loaded-source
+reconciliation reviewed through `15e9360`, with focused 100/full 899 passing tests.
+An isolated 1.22.7 dedicated server accepted the early identity hook, loaded the
+archive, reached ticking and saved/stopped cleanly. This is not joined-transfer
+or menu acceptance. Native use/drop/held/Home adapters, producer guards and full
+lifecycle coverage remain hard blockers; no full-profile activation is enabled.
+
 Gear foundation integration evidence (2026-09-05): 668 Release tests pass,
 including archive readiness/recovery, exact fallback preservation, shared
 equipment stats, damage ordering, and delegate cleanup. A disposable dedicated

@@ -148,8 +148,13 @@ Evidence: `c67ee1e` passed 773 full-suite tests; `9c62db0` corrected the approve
 generations, durable claims, conservative loaded-token pickup and exact retry
 identity. Full suite 843 before review fixes; final covering 62. The engine audit
 showed StoreData is buffered and ordinary spawn events occur after publication.
-Task 3 remains open: next is fresh-source identity before publication, then native
-outbound adapters, producer guards and remaining lifecycle integration. The audit
+Fresh-source slice 3b1 is reviewed at `15e9360`: identity precedes initialization
+and publication, survives native serialization, and refuses changed sources.
+Focused 100/full 899 tests pass; isolated 1.22.7 startup accepted the hook and
+reached ticking, then saved/stopped cleanly. Joined transfer checks remain open.
+Task 3 remains open for native outbound adapters, producer guards and remaining
+lifecycle integration. Read-only browse Task 5 may proceed from Tasks 2 and 4
+without exposing live Vanilla-owned items. The audit
 in `docs/design/player-item-flow-audit.md` records coverage and paired-backup rules.
 
 **Files:** Extend `src/Inventory/EngineItemIngressService.cs`, `src/Patches/EngineItemFlowPatch.cs`, `src/Inventory/ItemStackCodec.cs`; create `src/Inventory/Bridges/PlayerItemBridgeCoordinator.cs`, `PlayerItemBridgeJournal.cs`, `PlayerItemBridgeModels.cs`, `EngineItemBridgeAdapter.cs`; extend persistence models/serializer and startup wiring in `src/VRPGModSystem.cs`. Tests: extend `EngineItemIngressServiceTests.cs`, `ItemStackCodecTests.cs`, `PlayerItemPersistenceTests.cs`; create `PlayerItemBridgeTests.cs`.

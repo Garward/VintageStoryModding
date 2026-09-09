@@ -40,6 +40,7 @@ continue independent implementation work without presenting it as readiness.
 
 - [x] Storage policy and bounded query/cache foundations implemented and reviewed.
 - [x] Isolated shell and UI clarity fixes implemented and source-reviewed.
+- [x] Supported fresh-item pickup identity implemented and reviewed; isolated server startup verified.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.
@@ -59,7 +60,7 @@ the detailed steps below remain the implementation checklist.
 | 4. `ItemStack` codec | Complete | Stable top-level/nested remapping, recovery, bounds, and audited content fixtures |
 | 5. Migration and recovery | Complete | Staged source snapshot, restart-safe journal, dry run, rollback, and admin recovery |
 | 5A. Character runtime authority | In progress | Hunger/nutrition/temperature verified; class step removed in a fresh-world run; movement-stat ownership and generic movement-effect runtime implemented; live movement/Evasive Step verification remains |
-| 6. Engine item flows | In progress | Receipt coordinator, durable claims and loaded-token pickup reviewed through `8cc953c`. Fresh pre-publication identity, native outbound adapters, producer guards and full lifecycle remain |
+| 6. Engine item flows | In progress | Durable claims plus fresh/loaded pickup identity reviewed through `15e9360`; focused 100/full 899 tests and isolated 1.22.7 startup. Native outbound adapters, producer guards, full lifecycle and joined transfers remain |
 | 7. Combat and Home/Build loadouts | Not started | — |
 | 8. Inventory network service | In progress | Bounded protocol/cache reviewed through `b1ca60f`; production lifecycle/mutation attachment and transport admission remain |
 | 9. Native menu shell | In progress | Isolated shell and clarity fixes reviewed through `1a7d7ca`; focused menu regressions 45/45, final Back/resize coverage 23/23. Native checks require sign-in and remain unperformed |
@@ -301,6 +302,12 @@ first-run state.
 
 ## 6. Redirect engine item flows
 
+- [x] Establish supported fresh-item identity before native initialization and
+  publication, preserving it through save/load and rejecting changed sources.
+  Reviewed `15e9360`: focused 100/full 899 tests. Isolated 1.22.7 server accepted
+  the hook, loaded persistence, reached ticking, and saved/stopped cleanly.
+  No joined player pickup or menu acceptance was performed. The hook is pinned
+  to the audited engine build; unsupported sources remain in world custody.
 - [ ] Intercept pickups on the server before Vanilla chooses a hotbar slot.
 - [ ] Insert accepted pickups atomically and leave/recreate the world item when the
   store rejects them.
