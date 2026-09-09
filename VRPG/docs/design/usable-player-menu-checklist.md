@@ -1,7 +1,7 @@
 # Usable Player-Menu Replacement Checklist
 
 Status: Active critical path  
-Updated: 2026-09-08
+Updated: 2026-09-09
 Parents: [Native player-menu implementation](native-player-menu-implementation-plan.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md)  
 Index: [VRPG design index](README.md)
 
@@ -55,11 +55,11 @@ the detailed steps below remain the implementation checklist.
 | 0. Existing groundwork | Complete | Navigation, capability, store, and renderer tests |
 | 1. First-release item contract | Complete | Canonical record and classifier tests |
 | 2. Authoritative store | Complete | Transaction, equipment, recovery, indexing, idempotency, and concurrency tests |
-| 3. Persistence | Complete | Versioned dual-generation world-save archive with recovery tests |
+| 3. Persistence | In progress | Flush-guaranteed archive/receipt prerequisite reviewed through `8cc953c`; full 843 tests before fixes, final covering 62. Native restart/paired-save acceptance and retention remain |
 | 4. `ItemStack` codec | Complete | Stable top-level/nested remapping, recovery, bounds, and audited content fixtures |
 | 5. Migration and recovery | Complete | Staged source snapshot, restart-safe journal, dry run, rollback, and admin recovery |
 | 5A. Character runtime authority | In progress | Hunger/nutrition/temperature verified; class step removed in a fresh-world run; movement-stat ownership and generic movement-effect runtime implemented; live movement/Evasive Step verification remains |
-| 6. Engine item flows | In progress | Common all-or-nothing grant ingress implemented behind the experimental ownership flag; live coverage and materialization remain |
+| 6. Engine item flows | In progress | Receipt coordinator, durable claims and loaded-token pickup reviewed through `8cc953c`. Fresh pre-publication identity, native outbound adapters, producer guards and full lifecycle remain |
 | 7. Combat and Home/Build loadouts | Not started | — |
 | 8. Inventory network service | In progress | Bounded protocol/cache reviewed through `b1ca60f`; production lifecycle/mutation attachment and transport admission remain |
 | 9. Native menu shell | In progress | Isolated shell and clarity fixes reviewed through `1a7d7ca`; focused menu regressions 45/45, final Back/resize coverage 23/23. Native checks require sign-in and remain unperformed |
@@ -160,6 +160,23 @@ rollback and no Vintage Story GUI dependency.
 Verified by 32 focused item-store tests and the complete 222-test suite.
 
 ## 3. Add durable per-player persistence
+
+2026-09-09 correction: the tests below establish archive serialization and recovery,
+not a crash-durable engine write barrier. Decompiled `SaveGame.StoreData` assigns
+to `ModData`; `ServerSystemLoadAndSaveGame.OnSeparateThreadTick` persists it later.
+An external transfer cannot treat that assignment as durable Prepared. This gate
+is reopened for a world-scoped flushed archive/journal generation and failure tests.
+
+- [x] Flush canonical store and bridge journal together before external effects;
+  bind storage to the world identity and fail closed on untrustworthy recovery.
+
+Source evidence: Task 3a commits `cfe678c` and `8cc953c`, independent review clean;
+843 full-suite tests before review fixes and 62 covering bridge/persistence tests
+afterward. Slot manifests/generation, malformed claims and structural retry
+identity have regression coverage. Linux temporary-filesystem checks were run;
+native joined-server/restart acceptance was not. Sidecar format 1 refuses rather
+than assuming missing slot history is valid. Paired world/sidecar recovery and
+the request-history retention ceiling remain explicit release constraints.
 
 - [x] Store two rotating blobs under `vrpg:player-items:a` and
   `vrpg:player-items:b` in Vintage Story's world save. Each binary slot contains

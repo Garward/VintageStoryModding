@@ -143,6 +143,15 @@ Evidence: `c67ee1e` passed 773 full-suite tests; `9c62db0` corrected the approve
 
 ## Task 3: Finish engine custody and bounded materialization
 
+2026-09-09 progress: prerequisite slice 3a is implemented and reviewed through
+`8cc953c`: flush-guaranteed world-bound archives, coherent receipt/canonical
+generations, durable claims, conservative loaded-token pickup and exact retry
+identity. Full suite 843 before review fixes; final covering 62. The engine audit
+showed StoreData is buffered and ordinary spawn events occur after publication.
+Task 3 remains open: next is fresh-source identity before publication, then native
+outbound adapters, producer guards and remaining lifecycle integration. The audit
+in `docs/design/player-item-flow-audit.md` records coverage and paired-backup rules.
+
 **Files:** Extend `src/Inventory/EngineItemIngressService.cs`, `src/Patches/EngineItemFlowPatch.cs`, `src/Inventory/ItemStackCodec.cs`; create `src/Inventory/Bridges/PlayerItemBridgeCoordinator.cs`, `PlayerItemBridgeJournal.cs`, `PlayerItemBridgeModels.cs`, `EngineItemBridgeAdapter.cs`; extend persistence models/serializer and startup wiring in `src/VRPGModSystem.cs`. Tests: extend `EngineItemIngressServiceTests.cs`, `ItemStackCodecTests.cs`, `PlayerItemPersistenceTests.cs`; create `PlayerItemBridgeTests.cs`.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.

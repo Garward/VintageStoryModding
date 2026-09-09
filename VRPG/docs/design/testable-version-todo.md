@@ -1,7 +1,7 @@
 # Testable Version TODO
 
 Status: Active implementation checklist
-Updated: 2026-09-08
+Updated: 2026-09-09
 Parents: [Combat HUD replacement](combat-hud-total-replacement.md) · [Native player-menu implementation](native-player-menu-implementation-plan.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md) · [Gear foundation](../superpowers/specs/2026-09-05-vrpg-gear-foundation-design.md)
 Index: [VRPG design index](README.md)
 
@@ -372,8 +372,13 @@ collision-policy consumers remain.
 - [x] Complete `IPlayerItemStore`: bounded query, revision-safe insert/extract,
   reservations, equip/unequip, flags, recovery, confirmed destruction, exact
   collision buckets, checked `long` quantities, and stable entry IDs.
-- [x] Complete storage durability with dirty versioned dual-generation persistence,
-  checksum validation, older-generation recovery, and forward-schema refusal.
+- [ ] Complete storage durability. Dirty versioned dual-generation archives,
+  checksum validation, older-generation recovery, and forward-schema refusal exist;
+  the 2026-09-09 engine audit found StoreData is memory-only until a later save.
+  Flush-guaranteed canonical store/transfer-journal persistence is now implemented
+  and source-reviewed through `8cc953c` (final covering 62 tests). Native paired-save
+  restart/recovery acceptance and high-volume retention remain open; full storage
+  readiness is not inferred from source tests.
 - [x] Implement typed category definitions with Gear, Materials, Consumables,
   Keys & Quest, Miscellaneous, and a guaranteed fallback.
 - [ ] Complete bounded queries end to end: the indexed store returns capped
