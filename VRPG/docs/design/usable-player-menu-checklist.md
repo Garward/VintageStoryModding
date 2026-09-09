@@ -49,6 +49,7 @@ continue independent implementation work without presenting it as readiness.
 - [x] Supported fresh-item pickup identity implemented and reviewed; isolated server startup verified.
 - [x] Real isolated-store Inventory/Recovery browsing and read-only Equipment disclosure implemented and reviewed.
 - [x] Supported native inventory packet/cursor refusal and confirmed-phase custody policy implemented and reviewed.
+- [x] Existing item custody stays protected when replacement is disabled; unsafe archive startup refuses gameplay.
 - [ ] Complete safe engine item transfers and lifecycle reconciliation.
 - [ ] Connect real inventory, equipment, item actions, and loadouts.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.
@@ -68,7 +69,7 @@ the detailed steps below remain the implementation checklist.
 | 4. `ItemStack` codec | Complete | Stable top-level/nested remapping, recovery, bounds, and audited content fixtures |
 | 5. Migration and recovery | Complete | Staged source snapshot, restart-safe journal, dry run, rollback, and admin recovery |
 | 5A. Character runtime authority | In progress | Hunger/nutrition/temperature verified; class step removed in a fresh-world run; movement-stat ownership and generic movement-effect runtime implemented; live movement/Evasive Step verification remains |
-| 6. Engine item flows | In progress | Pickup identity plus packet/cursor refusal reviewed through `871fa35`; full 1,016 before fixes, covering 204 then 72. Isolated 1.22.7 startup/restart verified before final serializer fix. Disabled-feature bootstrap, outbound adapters, remaining producers, durable cursor recovery and joined transfers remain |
+| 6. Engine item flows | In progress | Disabled-feature custody bootstrap reviewed through `c086f2d`; full 1,069 tests. Native fresh-disabled, historical-disabled and damaged-archive refusal checks passed. Background ticks, outbound adapters, remaining producers, durable cursor recovery and joined transfers remain |
 | 7. Combat and Home/Build loadouts | Not started | — |
 | 8. Inventory network service | In progress | Bounded protocol/cache reviewed through `b1ca60f`; production lifecycle/mutation attachment and transport admission remain |
 | 9. Native menu shell | In progress | Isolated shell and clarity fixes reviewed through `1a7d7ca`; focused menu regressions 45/45, final Back/resize coverage 23/23. Native checks require sign-in and remain unperformed |
@@ -316,8 +317,15 @@ first-run state.
   covering 204 then 72 afterward. Actual native handler fixtures include populated
   slots/callbacks; migration tests cover failed/ambiguous confirmation and no
   repeated Clear/Restore. Deep addon data survives load/save/reload.
-- [ ] Inspect existing custody when replacement is disabled; do not allow the
+- [x] Inspect existing custody when replacement is disabled; do not allow the
   feature flag or an unreadable archive to reopen a competing native owner.
+  Reviewed `ea86666`, `c086f2d`; full 1,069 tests. Fresh disabled native world
+  created no item sidecar; historical disabled world loaded protection and its
+  archive; a separate damaged archive refused startup before gameplay and stayed
+  unchanged. Both healthy fixtures stopped cleanly. These used no joined players;
+  unavailable gear was logged with RPG enabled but inventory operations disabled.
+- [ ] Guard background held/idle/breaking and transition ticks per player without
+  blocking verified Vanilla players sharing the same native tick.
 - [ ] Establish durable recovery or proven empty-cursor preconditions before
   activation. Current cursor refusal retains RAM only; native cursor serialization
   is empty. Packet guards do not cover direct producers or native held/transition ticks.

@@ -10,7 +10,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `871fa35`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Native acceptance remains unperformed. Parent3 disabled-feature bootstrap, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `c086f2d`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 background tick guards, outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
 
 ## Global constraints
 
@@ -166,9 +166,18 @@ does not repeat source Clear/Restore. Archive-depth compatibility is preserved.
 Full 1,016 tests before fixes; covering 204 then 72 after fixes. Startup and clean
 empty-store reload verified on 1.22.7 before final serializer correction.
 Cursor source retention is RAM-only, not crash recovery. Direct/native tick
-producers and outbound adapters remain open. Next prerequisite 3b3 brings the
-disabled-feature custody bootstrap forward from Task8; that task must reuse the
-phase authority rather than treating configuration as historical ownership.
+producers and outbound adapters remain open.
+
+Disabled-feature bootstrap slice3b3 is reviewed through `c086f2d` (`ea86666`
+implementation), with full 1,069 tests. Historical or uncertain custody triggers
+inspection and mandatory protection independently of requested operations; verified
+absence does not create a sidecar. Native1.22.7 fresh-disabled and historical-disabled
+runs reached gameplay ticking and stopped cleanly; a damaged separate archive
+refused startup before gameplay and stayed unchanged. No joined clients; disabled
+item operations log unavailable gear while RPG remains enabled. This closes the
+minimum bootstrap prerequisite brought forward from Task8, not its full handshake.
+Next bounded slice3b4 covers background held and transition ticks per custody owner;
+it must not register blanket slot/use readiness or claim remaining producer coverage.
 
 **Consumes:** `Reserve`, `Reservation`, `CommitReservation`, `RollbackReservation`, exact codec and durable archive. **Produces:** receipt-based engine operations for pickup, held item, use, drop, external transfer and Home placement. A receipt contains operation ID, player/store identity, amounts, source/destination, reservation, stage and actual external result.
 
