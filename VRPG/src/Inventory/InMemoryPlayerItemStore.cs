@@ -454,7 +454,7 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         if (entries.Count == 0) queryIndex.Remove(key);
     }
 
-    private static bool IsValid(PlayerItemPrototype? prototype, long quantity)
+    internal static bool IsValid(PlayerItemPrototype? prototype, long quantity)
     {
         return prototype != null
             && quantity > 0

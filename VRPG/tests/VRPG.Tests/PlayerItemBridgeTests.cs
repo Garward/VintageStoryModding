@@ -7,12 +7,134 @@ using VRPG.Inventory.Bridges;
 using Vintagestory.API.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace VRPG.Tests;
 
 public sealed class PlayerItemBridgeTests
 {
+    [Theory]
+    [InlineData("missing-newest")]
+    [InlineData("empty-newest")]
+    [InlineData("missing-older")]
+    [InlineData("empty-slots")]
+    [InlineData("stale-newest")]
+    [InlineData("missing-format")]
+    [InlineData("missing-generation")]
+    [InlineData("missing-manifest")]
+    [InlineData("cleared-slots-and-manifest")]
+    public void EnvelopeSlotDamageCannotSelectOlderOrEmptyWritableCustody(string damage)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "vrpg-slot-proof-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var durable = new WorldScopedPlayerItemArchiveStorage(root, "world", new MemoryStorage());
+            var repository = new PlayerItemArchiveRepository(durable);
+            Assert.True(repository.Save(new PlayerItemArchive()).Success);
+            Assert.True(repository.Save(new PlayerItemArchive()).Success);
+            var document = JObject.Parse(File.ReadAllText(durable.ArchivePath));
+            var slots = (JObject)document["Slots"]!;
+            if (damage == "missing-newest") slots.Remove(PlayerItemArchiveRepository.SlotBKey);
+            if (damage == "empty-newest") slots[PlayerItemArchiveRepository.SlotBKey] = "";
+            if (damage == "missing-older") slots.Remove(PlayerItemArchiveRepository.SlotAKey);
+            if (damage == "empty-slots") slots.RemoveAll();
+            if (damage == "stale-newest") slots[PlayerItemArchiveRepository.SlotBKey] = slots[PlayerItemArchiveRepository.SlotAKey]!.DeepClone();
+            if (damage == "missing-format") document.Remove("Format");
+            if (damage == "missing-generation") document.Remove("CommittedGeneration");
+            if (damage == "missing-manifest") document.Remove("SlotDigests");
+            if (damage == "cleared-slots-and-manifest")
+            {
+                slots.RemoveAll();
+                ((JObject)document["SlotDigests"]!).RemoveAll();
+            }
+            File.WriteAllText(durable.ArchivePath, document.ToString());
+            string damagedDocument = File.ReadAllText(durable.ArchivePath);
+            var service = new PlayerItemArchiveService(repository);
+            Assert.False(service.Load().Success);
+            Assert.False(service.IsLoaded);
+            Assert.False(service.SaveDirty().Success);
+            Assert.Equal(damagedDocument, File.ReadAllText(durable.ArchivePath));
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+
+    [Fact]
+    public void CompletedClaimRewrittenAsPreparedCannotReinsertAfterRestart()
+    {
+        var storage = new MemoryStorage();
+        var archive = Load(storage);
+        var item = new Item { Code = new AssetLocation("game:stone"), MaxStackSize = 64 };
+        var bridge = new PlayerItemBridgeCoordinator(archive, new Resolver(item));
+        bridge.RegisterClaimProducer("reward", PlayerItemBridgeOperation.Reward);
+        Assert.Equal(PlayerItemBridgeStage.Completed, bridge.RegisterClaim(new("claim", "player", PlayerItemBridgeOperation.Reward,
+            "reward", "", 3, "objective", "canonical", 0), new ItemStack(item, 3)).Stage);
+        var repository = new PlayerItemArchiveRepository(storage);
+        var corrupt = repository.Load().Archive;
+        corrupt.Bridges["claim"].Stage = PlayerItemBridgeStage.Prepared;
+        Assert.True(repository.Save(corrupt).Success);
+        var restarted = new PlayerItemArchiveService(repository);
+        Assert.False(restarted.Load().Success);
+        Assert.False(restarted.IsLoaded);
+        Assert.Empty(new PlayerItemBridgeCoordinator(restarted, new Resolver(item)).Reconcile());
+        Assert.Equal(3, repository.Load().Archive.Players["player"].Entries.Single().Quantity);
+    }
+
+    [Theory]
+    [InlineData("empty-code")]
+    [InlineData("kind")]
+    [InlineData("state-policy")]
+    [InlineData("unique-quantity")]
+    public void MalformedPreparedClaimPrototypeRefusesDeserialization(string damage)
+    {
+        var prototype = new PlayerItemPrototype(PlayerItemStorageKind.Aggregate, "game:stone", "materials", "Stone", new byte[] { 0 });
+        prototype = damage switch
+        {
+            "empty-code" => prototype with { AssetCode = "" },
+            "kind" => prototype with { Kind = (PlayerItemStorageKind)999 },
+            "state-policy" => prototype with { StatePolicy = (PlayerItemStatePolicy)999 },
+            _ => prototype with { Kind = PlayerItemStorageKind.Unique }
+        };
+        var receipt = new PlayerItemBridgeReceipt
+        {
+            Request = new("claim", "player", PlayerItemBridgeOperation.Reward, "reward", "", 2, "objective", "canonical", 0),
+            Stage = PlayerItemBridgeStage.Prepared, Claim = prototype
+        };
+        var serializer = new PlayerItemArchiveSerializer();
+        Assert.False(serializer.TryDeserialize(serializer.Serialize(new PlayerItemArchive { Bridges = new() { ["claim"] = receipt } }), out _, out _));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void EqualRequestExtensionsRetryAcrossCloneAndRestartButConflictsRefuse(bool claim)
+    {
+        var storage = new MemoryStorage();
+        var archive = Load(storage);
+        var item = new Item { Code = new AssetLocation("game:stone"), MaxStackSize = 64 };
+        var bridge = new PlayerItemBridgeCoordinator(archive, new Resolver(item));
+        var store = archive.Directory.ForPlayer("player");
+        var encoded = ItemStackCodec.Encode(new ItemStack(item, 2));
+        var inserted = store.Insert("seed", new PlayerItemPrototype(PlayerItemStorageKind.Aggregate,
+            "game:stone", "materials", "Stone", encoded.Payload.ExactState), 2, 0);
+        int destination = 0;
+        bridge.RegisterClaimProducer("producer", PlayerItemBridgeOperation.Reward);
+        bridge.Register(new EngineItemBridgeAdapter("producer", PlayerItemBridgeOperation.Drop,
+            (_, stack) => { destination += stack.StackSize; return new(true, 2, 0, "effect"); }, _ => new(false, 0, 0, "unknown")));
+        var request = new PlayerItemBridgeRequest("extensions", "player", claim ? PlayerItemBridgeOperation.Reward : PlayerItemBridgeOperation.Drop,
+            "producer", claim ? "" : inserted.EntryId, 2, "source", "destination", store.Revision)
+        { ExtensionData = new Dictionary<string, JToken> { ["future"] = JObject.Parse("{\"a\":1,\"b\":[2,3]}") } };
+        Assert.Equal(PlayerItemBridgeStage.Completed, claim ? bridge.RegisterClaim(request, new ItemStack(item, 2)).Stage : bridge.Execute(request).Stage);
+        var clone = request with { ExtensionData = new Dictionary<string, JToken> { ["future"] = JObject.Parse("{\"b\":[2,3],\"a\":1}") } };
+        Assert.Equal(PlayerItemBridgeStage.Completed, claim ? bridge.RegisterClaim(clone, new ItemStack(item, 2)).Stage : bridge.Execute(clone).Stage);
+        bridge = new PlayerItemBridgeCoordinator(Load(storage), new Resolver(item));
+        bridge.RegisterClaimProducer("producer", PlayerItemBridgeOperation.Reward);
+        Assert.Equal(PlayerItemBridgeStage.Completed, claim ? bridge.RegisterClaim(clone, new ItemStack(item, 2)).Stage : bridge.Execute(clone).Stage);
+        var conflict = clone with { ExtensionData = new Dictionary<string, JToken> { ["future"] = JObject.Parse("{\"a\":9,\"b\":[2,3]}") } };
+        Assert.Equal(PlayerItemBridgeStage.Refused, claim ? bridge.RegisterClaim(conflict, new ItemStack(item, 2)).Stage : bridge.Execute(conflict).Stage);
+        Assert.Equal(claim ? 0 : 2, destination);
+        Assert.Equal(claim ? 4 : 0, bridge.Archive.Directory.ForPlayer("player").Query(new("", "", 0, 100)).Entries.Sum(e => e.Quantity));
+    }
     [Theory]
     [InlineData(0, 2, PlayerItemBridgeStage.RolledBack, 0)]
     [InlineData(1, 1, PlayerItemBridgeStage.ReconcileRequired, 2)]
@@ -365,9 +487,10 @@ public sealed class PlayerItemBridgeTests
             var loaded = new PlayerItemArchiveRepository(durable).Load();
             Assert.True(loaded.Success, loaded.Error);
             Assert.Equal(1, loaded.Generation);
-            durable.Write(PlayerItemArchiveRepository.SlotBKey, new byte[] { 1, 2, 3 });
+            Assert.True(new PlayerItemArchiveRepository(durable).Save(new PlayerItemArchive()).Success);
+            byte[] expectedSlot = durable.Read(PlayerItemArchiveRepository.SlotBKey)!;
             var reopened = new WorldScopedPlayerItemArchiveStorage(root, "world-a", legacy);
-            Assert.Equal(new byte[] { 1, 2, 3 }, reopened.Read(PlayerItemArchiveRepository.SlotBKey));
+            Assert.Equal(expectedSlot, reopened.Read(PlayerItemArchiveRepository.SlotBKey));
             Assert.Null(new WorldScopedPlayerItemArchiveStorage(root, "world-b", new MemoryStorage())
                 .Read(PlayerItemArchiveRepository.SlotAKey));
             File.WriteAllText(durable.ArchivePath, "broken");

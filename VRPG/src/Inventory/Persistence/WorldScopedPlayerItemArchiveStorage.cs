@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -48,7 +49,11 @@ public sealed class WorldScopedPlayerItemArchiveStorage : IDurablePlayerItemArch
         lock (gate)
         {
             Envelope state = ReadOrImport();
+            if (!IsSlotKey(key) || !PlayerItemArchiveSlotCodec.TryDecode(data, out long generation, out _, out _)
+                || generation != checked(state.CommittedGeneration!.Value + 1))
+                throw new InvalidDataException("An archive write must contain the next valid committed generation.");
             state.Slots[key] = (byte[])data.Clone();
+            BindSlots(state);
             Flush(state);
         }
     }
@@ -76,6 +81,7 @@ public sealed class WorldScopedPlayerItemArchiveStorage : IDurablePlayerItemArch
             var imported = new Envelope { WorldIdentity = worldIdentity, WorldAnchor = Anchor(legacy.Read(CheckpointKey)) };
             foreach (string key in new[] { PlayerItemArchiveRepository.SlotAKey, PlayerItemArchiveRepository.SlotBKey })
                 if (legacy.Read(key) is { } bytes) imported.Slots[key] = bytes;
+            BindSlots(imported);
             Flush(imported);
             return imported;
         }
@@ -85,10 +91,47 @@ public sealed class WorldScopedPlayerItemArchiveStorage : IDurablePlayerItemArch
         {
             TypeNameHandling = TypeNameHandling.None, MaxDepth = 16
         });
-        if (state == null || state.Format != 1 || state.Slots == null
+        if (state == null || state.Format != 2 || state.Slots == null
             || state.WorldIdentity != worldIdentity || state.WorldAnchor != Anchor(legacy.Read(CheckpointKey)))
             throw new InvalidDataException("Player item archive identity, format or world checkpoint does not match. Preserve both copies for recovery.");
+        ValidateSlots(state);
         return state;
+    }
+
+    private static bool IsSlotKey(string key) =>
+        key is PlayerItemArchiveRepository.SlotAKey or PlayerItemArchiveRepository.SlotBKey;
+
+    private static void BindSlots(Envelope state)
+    {
+        var digests = new Dictionary<string, string>(StringComparer.Ordinal);
+        long generation = 0;
+        foreach (var pair in state.Slots)
+        {
+            if (!IsSlotKey(pair.Key) || !PlayerItemArchiveSlotCodec.TryDecode(pair.Value, out long slotGeneration, out _, out _))
+                throw new InvalidDataException("An archive slot is invalid; preserve its source for recovery.");
+            digests.Add(pair.Key, Convert.ToHexString(SHA256.HashData(pair.Value)));
+            generation = Math.Max(generation, slotGeneration);
+        }
+        state.SlotDigests = digests;
+        state.CommittedGeneration = generation;
+    }
+
+    private static void ValidateSlots(Envelope state)
+    {
+        if (state.SlotDigests == null || state.CommittedGeneration == null || state.CommittedGeneration < 0
+            || state.Slots.Count != state.SlotDigests.Count || state.Slots.Count > 2
+            || state.SlotDigests.Keys.Any(key => !state.Slots.ContainsKey(key)))
+            throw new InvalidDataException("Archive slot presence does not match its committed manifest.");
+        long actualGeneration = 0;
+        foreach (var pair in state.Slots)
+        {
+            if (!IsSlotKey(pair.Key) || !PlayerItemArchiveSlotCodec.TryDecode(pair.Value, out long generation, out _, out _)
+                || state.SlotDigests[pair.Key] != Convert.ToHexString(SHA256.HashData(pair.Value)))
+                throw new InvalidDataException("Archive slot bytes do not match the committed manifest.");
+            actualGeneration = Math.Max(actualGeneration, generation);
+        }
+        if (actualGeneration != state.CommittedGeneration)
+            throw new InvalidDataException("The latest committed archive generation is missing.");
     }
 
     private string Anchor(byte[]? checkpoint)
@@ -147,10 +190,18 @@ public sealed class WorldScopedPlayerItemArchiveStorage : IDurablePlayerItemArch
 
     private sealed class Envelope
     {
-        public int Format { get; set; } = 1;
+        [JsonProperty(Required = Required.Always)]
+        public int Format { get; set; } = 2;
+        [JsonProperty(Required = Required.Always)]
         public string WorldIdentity { get; set; } = "";
+        [JsonProperty(Required = Required.Always)]
         public string WorldAnchor { get; set; } = "";
+        [JsonProperty(Required = Required.Always)]
         public Dictionary<string, byte[]> Slots { get; set; } = new(StringComparer.Ordinal);
+        [JsonProperty(Required = Required.Always)]
+        public Dictionary<string, string>? SlotDigests { get; set; }
+        [JsonProperty(Required = Required.Always)]
+        public long? CommittedGeneration { get; set; }
         [JsonExtensionData] public IDictionary<string, JToken>? ExtensionData { get; set; }
     }
 }

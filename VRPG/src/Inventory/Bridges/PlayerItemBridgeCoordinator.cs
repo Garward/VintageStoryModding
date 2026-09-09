@@ -89,7 +89,7 @@ public sealed class PlayerItemBridgeCoordinator
                 return Refused(receipt, "A durable registered claim producer is required.");
             receipt.Claim = DescribeClaim(stack);
             if (journal.Find(request.OperationId) is { } prior)
-                return prior.Request != request || JsonConvert.SerializeObject(prior.Claim) != JsonConvert.SerializeObject(receipt.Claim)
+                return !prior.Request.HasSameIdentity(request) || JsonConvert.SerializeObject(prior.Claim) != JsonConvert.SerializeObject(receipt.Claim)
                     ? Refused(receipt, "Claim identity conflicts with an existing receipt.") : Claim(prior);
             receipt.Stage = PlayerItemBridgeStage.Prepared;
             if (!journal.Save(receipt)) return Pending(receipt, "Claim persistence is unavailable; producer retains custody.");
@@ -129,7 +129,7 @@ public sealed class PlayerItemBridgeCoordinator
             if (!ValidRequest(request) || !Archive.IsLoaded || !Archive.IsCrashDurable)
                 return Refused(receipt, "Durable custody or request identity is unavailable.");
             if (journal.Find(request.OperationId) is { } prior)
-                return prior.Request != request ? Refused(receipt, "Operation identity conflicts with an existing receipt.")
+                return !prior.Request.HasSameIdentity(request) ? Refused(receipt, "Operation identity conflicts with an existing receipt.")
                     : Resume(prior);
             if (!Supports(request.AdapterCode, request.Operation))
                 return Refused(receipt, "No audited adapter exists for this route.");

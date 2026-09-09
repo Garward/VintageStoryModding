@@ -27,7 +27,9 @@ public sealed class PlayerItemBridgeJournal(PlayerItemArchiveService archive)
             return false;
         if (receipt.ExternalResult is { } result && (result.Consumed < 0 || result.Returned < 0
             || result.Consumed > request.Quantity || result.Returned > request.Quantity - result.Consumed)) return false;
-        if (receipt.Claim != null) return receipt.Claim.ExactState != null
+        if (receipt.Claim != null) return InMemoryPlayerItemStore.IsValid(receipt.Claim, request.Quantity)
+            && string.IsNullOrEmpty(request.EntryId) && string.IsNullOrEmpty(receipt.ReservationId)
+            && receipt.Amounts.Length == 0 && receipt.ExternalResult == null
             && request.Operation is PlayerItemBridgeOperation.Pickup or PlayerItemBridgeOperation.Reward or PlayerItemBridgeOperation.AdminGrant
             && receipt.Stage is PlayerItemBridgeStage.Prepared or PlayerItemBridgeStage.CanonicalCommitted or PlayerItemBridgeStage.Completed;
         if (receipt.Stage is PlayerItemBridgeStage.ExternalRecorded or PlayerItemBridgeStage.CanonicalCommitted or PlayerItemBridgeStage.Completed)
@@ -43,9 +45,11 @@ public sealed class PlayerItemBridgeJournal(PlayerItemArchiveService archive)
 
     internal static bool MatchesCustody(PlayerItemBridgeReceipt receipt, PlayerItemStoreState? store)
     {
-        if (receipt.Claim != null && receipt.Stage == PlayerItemBridgeStage.Prepared) return true;
-        if (store == null) return false;
         string prefix = "bridge:" + receipt.Request.OperationId + ":";
+        if (receipt.Claim != null && receipt.Stage == PlayerItemBridgeStage.Prepared)
+            return store == null || !store.CompletedRequests.Any(r => r.Success
+                && r.RequestId.StartsWith(prefix + "claim:", StringComparison.Ordinal));
+        if (store == null) return false;
         if (receipt.Claim != null)
             return store.CompletedRequests.Any(r => r.Success && r.ResultKind == PlayerItemPersistedResultKind.Mutation
                 && r.RequestId.StartsWith(prefix + "claim:", StringComparison.Ordinal) && r.Quantity >= receipt.Request.Quantity);

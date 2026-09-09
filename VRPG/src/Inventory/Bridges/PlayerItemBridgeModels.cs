@@ -13,6 +13,13 @@ public sealed record PlayerItemBridgeRequest(string OperationId, string PlayerUi
     string Source, string Destination, long ExpectedRevision)
 {
     [JsonExtensionData] public IDictionary<string, JToken>? ExtensionData { get; set; }
+
+    /// <summary>Extensions participate in identity structurally: property order is irrelevant,
+    /// array order/types are significant, and null/empty extension maps both mean no extensions.</summary>
+    public bool HasSameIdentity(PlayerItemBridgeRequest? other) => other != null
+        && (this with { ExtensionData = null }) == (other with { ExtensionData = null })
+        && JToken.DeepEquals(JObject.FromObject(ExtensionData ?? new Dictionary<string, JToken>()),
+            JObject.FromObject(other.ExtensionData ?? new Dictionary<string, JToken>()));
 }
 
 /// <summary>Known means every requested unit is accounted for by the external system.</summary>
