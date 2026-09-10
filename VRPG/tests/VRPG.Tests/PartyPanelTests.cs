@@ -164,6 +164,17 @@ public sealed class PartyPanelTests
         Assert.Null(f.Service.Read("a", f.Now).PartyId);
         Assert.Null(client.Pending);
     }
+
+    [Fact]
+    public void RemovedMemberIsNoLongerSelectedAfterAuthoritativeResult()
+    {
+        using var f = new PartyPanelFixture("long-unbroken");
+        f.Panel.Open(new()); f.Panel.Select("b"); f.Panel.Handle("remove");
+        f.CompleteRemove();
+        Assert.Empty(f.Panel.State.SelectedId);
+        Assert.True(f.Panel.State.ShowDetails);
+        Assert.Equal("party-ok", f.Panel.FeedbackKey);
+    }
 }
 
 internal sealed class PartyPanelFixture : IDisposable
@@ -201,4 +212,16 @@ internal sealed class PartyPanelFixture : IDisposable
         Transport.Receive(snapshot);
     }
     public void Dispose() { Panel.Dispose(); Client.Dispose(); Transport.Dispose(); }
+    public void RejectDirectory(string intent)
+    {
+        Panel.Handle(intent);
+        var query = (PartyQueryPacket)Transport.ClientSent.Last();
+        Transport.Receive(new PartySnapshotPacket { SessionId = "session", RequestId = query.RequestId, Sequence = 2,
+            Revision = 7, Health = PartyHealth.Healthy, SelfUid = "a", Code = "rate-limit" });
+    }
+    public void CompleteRemove() => Transport.Receive(new PartyResultPacket {
+        SessionId = "session", RequestId = Client.Pending!.RequestId, Code = "ok", Success = true,
+        Snapshot = new PartySnapshotPacket { SessionId = "session", RequestId = Client.Pending.RequestId, Sequence = 2, Revision = 8,
+            Health = PartyHealth.Healthy, SelfUid = "a", PartyId = "22222222222222222222222222222222", LeaderUid = "a",
+            Members = new[] { new PartyMemberPacket { Uid = "a", DisplayName = "Rowan", IsOnline = true } } } });
 }

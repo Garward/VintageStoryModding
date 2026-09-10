@@ -9,6 +9,7 @@ public sealed class PartyPanel : IDisposable
     private readonly PartyClientService client;
     private string localFeedback = "";
     private bool hadPending, mutationSucceeded;
+    private PartyClientView? observedView;
     public event Action? Changed;
     public PartyPanelState State { get; } = new();
     public PartyClientView? View => client.View;
@@ -16,7 +17,7 @@ public sealed class PartyPanel : IDisposable
     public bool Pending => client.Pending != null;
     public bool ShowSearch(bool alternatePanes) => State.IsOpen && View?.Health == PartyHealth.Healthy
         && State.Section == "online" && (!alternatePanes || !State.ShowDetails);
-    public PartyPanel(PartyClientService client) { this.client = client; hadPending = client.Pending != null; client.Changed += OnChanged; }
+    public PartyPanel(PartyClientService client) { this.client = client; observedView = client.View; hadPending = client.Pending != null; client.Changed += OnChanged; }
     public string FeedbackKey => State.ConfirmDisband ? "" : Pending ? "party-pending" : localFeedback.Length > 0 ? localFeedback
         : client.LastResultCode == "ok" ? (mutationSucceeded ? "party-ok" : "") : ResultKey(client.LastResultCode);
     public void Open(PlayerMenuViewState context)
@@ -46,6 +47,17 @@ public sealed class PartyPanel : IDisposable
             Close(); State.SelectedId = State.Search = ""; State.Scroll = State.DetailScroll = 0; State.Section = "members";
             mutationSucceeded = false;
         }
+        else if (!ReferenceEquals(observedView, View) && State.SelectedId.Length > 0)
+        {
+            bool stillPresent = State.Section switch
+            {
+                "invitations" => View.IncomingInvitations.Any(i => i.InvitationId == State.SelectedId),
+                "online" => View.Targets.Any(t => t.Uid == State.SelectedId),
+                _ => View.Members.Any(m => m.Uid == State.SelectedId)
+            };
+            if (!stillPresent) State.SelectedId = "";
+        }
+        observedView = View;
         Changed?.Invoke();
     }
     public string DisabledReason(string intent)

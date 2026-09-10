@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cairo;
 using VRPG.Client.PlayerMenu.Components;
@@ -78,11 +79,20 @@ public sealed partial class PlayerMenuShell
             return;
         }
         double start = b.Y + 64;
+        bool compactFeedback = false;
         if (state.Section == "online")
         {
             controls.Add(("party:search", PartySearchBounds, new("party:search", "party-search", MenuControlState.Default)));
             Button(ctx, "party:find", "party-find", new(b.Right - 80, b.Y + 40, 72, 30));
             start = b.Y + 76;
+            if (Layout.AlternatePanes && panel.FeedbackKey.Length > 0)
+            {
+                string feedback = T(panel.FeedbackKey);
+                double height = MeasureTextHeight(ctx, feedback, b.Width - 16, 14);
+                Text(ctx, feedback, new(b.X + 8, start, b.Width - 16, height), 14, PlayerMenuTheme.Muted);
+                start += height + 4;
+                compactFeedback = true;
+            }
         }
         else
         {
@@ -93,18 +103,20 @@ public sealed partial class PlayerMenuShell
             Text(ctx, summary, new(b.X + 8, b.Y + 40, b.Width - 16, 22), 14, PlayerMenuTheme.Muted);
         }
         partyClip = new(b.X + 8, start, b.Width - 16, Math.Max(0, b.Bottom - start - 4));
-        var rows = PartyRows(); partyRowsCount = rows.Length; partyRowsVisible = Math.Max(1, (int)(partyClip.Height / 50));
+        double rowStep = compactFeedback ? 30 : 50, rowHeight = compactFeedback ? 26 : 46;
+        var rows = PartyRows(); partyRowsCount = rows.Length;
+        partyRowsVisible = Math.Max(0, (int)((partyClip.Height + rowStep - rowHeight) / rowStep));
         int scroll = Math.Clamp(state.Scroll, 0, Math.Max(0, rows.Length - partyRowsVisible));
         ctx.Save(); ctx.Rectangle(partyClip.X, partyClip.Y, partyClip.Width, partyClip.Height); ctx.Clip();
         if (rows.Length == 0 && panel.View?.Health == PartyHealth.Healthy)
             Text(ctx, T(state.Section == "online" ? "party-no-targets" : state.Section == "invitations" ? "party-no-invitations" : "party-create-help"), partyClip, 14, PlayerMenuTheme.Muted);
         foreach (var (row, index) in rows.Skip(scroll).Take(partyRowsVisible).Select((r, i) => (r, i)))
         {
-            var rect = new MenuRect(partyClip.X, partyClip.Y + index * 50, partyClip.Width, 46);
+            var rect = new MenuRect(partyClip.X, partyClip.Y + index * rowStep, partyClip.Width, rowHeight);
             string id = "party:select:" + row.Id;
             Button(ctx, id, "", rect, state.SelectedId == row.Id ? MenuControlState.Selected : MenuControlState.Default);
             Text(ctx, Ellipsis(ctx, row.Name, rect.Width - 20), new(rect.X + 10, rect.Y + 3, rect.Width - 20, 21), 15);
-            Text(ctx, row.Status, new(rect.X + 10, rect.Y + 25, rect.Width - 20, 19), 14, PlayerMenuTheme.Muted);
+            if (!compactFeedback) Text(ctx, row.Status, new(rect.X + 10, rect.Y + 25, rect.Width - 20, 19), 14, PlayerMenuTheme.Muted);
         }
         ctx.Restore();
         controls.RemoveAll(c => c.Id.StartsWith("party:select:") && c.Bounds.Bottom > partyClip.Bottom);
@@ -114,10 +126,10 @@ public sealed partial class PlayerMenuShell
     {
         var panel = party!; var state = panel.State; var b = PartyDetailBounds;
         Fill(ctx, b, PlayerMenuTheme.Iron950);
-        ctx.Save(); ctx.Rectangle(b.X, b.Y, b.Width, b.Height); ctx.Clip();
-        double y = b.Y + 8 - state.DetailScroll, x = b.X + 12, width = b.Width - 24;
+        double x = b.X + 12, width = b.Width - 24, contentHeight = 8;
+        var lines = new List<(string Text, double Size, string Color, double Height)>();
         void Line(string text, double size = 15, string color = PlayerMenuTheme.Text)
-        { double h = MeasureTextHeight(ctx, text, width, size); Text(ctx, text, new(x, y, width, h), size, color); y += h + 8; }
+        { double h = MeasureTextHeight(ctx, text, width, size); lines.Add((text, size, color, h)); contentHeight += h + 8; }
         var selected = PartyRows().FirstOrDefault(r => r.Id == state.SelectedId);
         if (state.ConfirmDisband) Line(T("party-disband-warning"), 18);
         else if (panel.View == null) Line(T("party-loading"), 18);
@@ -130,7 +142,15 @@ public sealed partial class PlayerMenuShell
         if (selected.Id != null && !state.ConfirmDisband)
             foreach (string reason in possible.Select(panel.DisabledReason).Where(r => r.Length > 0 && r != "party-pending" && r != "party-leader-required").Distinct()) Line(T(reason), 14, PlayerMenuTheme.Muted);
         if (panel.FeedbackKey.Length > 0) Line(T(panel.FeedbackKey), 14, panel.Pending ? PlayerMenuTheme.Muted : PlayerMenuTheme.Text);
-        partyDetailMaximum = Math.Max(0, (int)(y + state.DetailScroll - b.Bottom));
+        partyDetailMaximum = Math.Max(0, (int)Math.Ceiling(contentHeight - b.Height));
+        panel.Scroll(0, partyDetailMaximum, true);
+        double y = b.Y + 8 - state.DetailScroll;
+        ctx.Save(); ctx.Rectangle(b.X, b.Y, b.Width, b.Height); ctx.Clip();
+        foreach (var line in lines)
+        {
+            Text(ctx, line.Text, new(x, y, width, line.Height), line.Size, line.Color);
+            y += line.Height + 8;
+        }
         ctx.Restore();
         if (partyDetailMaximum > 0) DrawPartyScroll(ctx, b, state.DetailScroll, partyDetailMaximum);
     }

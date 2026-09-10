@@ -27,6 +27,7 @@ public static class PartyCompositionCapture
             .ToDictionary(kv => "vrpg:" + kv.Key, kv => kv.Value);
         Lang.DefaultLocale = "party-capture"; Lang.AvailableLanguages["party-capture"] = language; Lang.ChangeLanguage("party-capture");
         Directory.CreateDirectory(output);
+        if (Environment.GetEnvironmentVariable("VRPG_MENU_CAPTURE_FIX") == "1") { CaptureReviewFixes(output); return; }
         foreach (string scenario in new[] { "none", "solo", "invited", "many-invites", "expired", "member", "leader", "full", "offline", "loading", "unavailable", "pending", "error", "success", "long-name", "long-unbroken", "online", "online-many", "disband" })
         foreach (var (width, height) in new[] { (1120, 680), (800, 520), (400, 350) })
         {
@@ -66,6 +67,34 @@ public static class PartyCompositionCapture
             if (width == 400 && scenario is "long-name" or "long-unbroken")
             { f.Panel.Scroll(10000, maximumScroll, true); Capture("-scrolled"); f.Panel.Scroll(-10000, maximumScroll, true); }
             if (width == 400 && f.Panel.State.ShowDetails) { f.Panel.Back(); Capture("-list"); }
+        }
+    }
+    private static void CaptureReviewFixes(string output)
+    {
+        foreach (string action in new[] { "find", "next" })
+        foreach (var (width, height) in new[] { (400, 350), (800, 520) })
+        {
+            using var f = new PartyPanelFixture("leader");
+            var controller = new PlayerMenuController(new PlayerItemClientService(), f.Panel); controller.OpenParty(); f.Panel.Handle("section:online");
+            f.RejectDirectory(action);
+            var api = DispatchProxy.Create<ICoreClientAPI, InventoryCompositionCaptureTests.CaptureProxy>();
+            using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, width, height), PlayerMenuLayout.Resolve(width, height), controller.Session, null, _ => { }, party: f.Panel);
+            PartyMenuIntegrationTests.Draw(shell, width, height, System.IO.Path.Combine(output, $"rejected-{action}-{width}x{height}.png"));
+        }
+        foreach (bool removed in new[] { true, false })
+        {
+            using var f = new PartyPanelFixture("long-unbroken");
+            var controller = new PlayerMenuController(new PlayerItemClientService(), f.Panel); controller.OpenParty(); f.Panel.Select("b");
+            var api = DispatchProxy.Create<ICoreClientAPI, InventoryCompositionCaptureTests.CaptureProxy>();
+            using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, 400, 350), PlayerMenuLayout.Resolve(400, 350), controller.Session, null, _ => { }, party: f.Panel);
+            var controls = PartyMenuIntegrationTests.Draw(shell, 400, 350);
+            for (int i = 0; i < 20; i++) shell.OnKeyDown(api, new KeyEvent { KeyCode = (int)GlKeys.PageDown });
+            controls.Clear(); PartyMenuIntegrationTests.Draw(shell, 400, 350, System.IO.Path.Combine(output, $"detail-{(removed ? "removed" : "shortened")}-before-400x350.png"));
+            if (removed) { f.Panel.Handle("remove"); f.CompleteRemove(); }
+            else f.Transport.Receive(new PartySnapshotPacket { SessionId = "session", Sequence = 2, Revision = 8,
+                SelfUid = "a", Health = VRPG.Parties.PartyHealth.Healthy, PartyId = "22222222222222222222222222222222", LeaderUid = "a",
+                Members = new[] { new PartyMemberPacket { Uid = "a", DisplayName = "Rowan", IsOnline = true }, new PartyMemberPacket { Uid = "b", DisplayName = "Ash", IsOnline = true } } });
+            controls.Clear(); PartyMenuIntegrationTests.Draw(shell, 400, 350, System.IO.Path.Combine(output, $"detail-{(removed ? "removed" : "shortened")}-after-400x350.png"));
         }
     }
 }

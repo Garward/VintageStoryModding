@@ -8,6 +8,8 @@ using VRPG.Client.PlayerMenu;
 using VRPG.Client.PlayerMenu.Components;
 using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Client.PlayerMenu.Shell;
+using VRPG.Network;
+using VRPG.Parties;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -27,12 +29,13 @@ public sealed class PartyMenuIntegrationTests : IDisposable
         RuntimeEnv.GUIScale = 1;
         InventoryCompositionTestScope.EnsureCairo();
     }
-    internal static List<(string Id, MenuRect Bounds, FittedButton Button)> Draw(PlayerMenuShell shell, int width, int height)
+    internal static List<(string Id, MenuRect Bounds, FittedButton Button)> Draw(PlayerMenuShell shell, int width, int height, string? pngPath = null)
     {
         CairoReady();
         using var surface = new ImageSurface((Format)0, width, height);
         using var context = new Context(surface);
         typeof(PlayerMenuShell).GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
+        if (pngPath != null) surface.WriteToPng(pngPath);
         return (List<(string, MenuRect, FittedButton)>)typeof(PlayerMenuShell).GetField("controls", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(shell)!;
     }
     [Theory]
@@ -190,5 +193,50 @@ public sealed class PartyMenuIntegrationTests : IDisposable
         var row = Assert.Single(controls.Where(c => c.Id.StartsWith("party:select:")));
         Assert.True(row.Bounds.Bottom <= 276);
         Assert.EndsWith(scenario == "many-invites" ? 8.ToString("x32") : "target15", row.Id);
+    }
+
+    [Theory]
+    [InlineData("find")]
+    [InlineData("next")]
+    public void CompactRejectedDirectoryRequestShowsFeedbackBesideSearch(string intent)
+    {
+        using var f = new PartyPanelFixture("leader");
+        var controller = new PlayerMenuController(new PlayerItemClientService(), f.Panel); controller.OpenParty(); f.Panel.Handle("section:online");
+        f.RejectDirectory(intent);
+        var api = DispatchProxy.Create<ICoreClientAPI, InventoryCompositionCaptureTests.CaptureProxy>();
+        using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, 400, 350), PlayerMenuLayout.Resolve(400, 350), controller.Session, null, _ => { }, party: f.Panel);
+        var controls = Draw(shell, 400, 350);
+        Assert.False(f.Panel.State.ShowDetails);
+        Assert.Contains("Please wait a moment, then try again.", scope.Text);
+        Assert.Contains(controls, c => c.Id == "party:find" && c.Button.CanActivate);
+        Assert.Contains(controls, c => c.Id == "party:select:c" && c.Bounds.Bottom <= 276);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void DetailScrollClampsWhenUpdatedRosterShortensDisplayedContent(bool removed)
+    {
+        using var f = new PartyPanelFixture("long-unbroken");
+        var controller = new PlayerMenuController(new PlayerItemClientService(), f.Panel); controller.OpenParty(); f.Panel.Select("b");
+        var api = DispatchProxy.Create<ICoreClientAPI, InventoryCompositionCaptureTests.CaptureProxy>();
+        using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, 400, 350), PlayerMenuLayout.Resolve(400, 350), controller.Session, null, _ => { }, party: f.Panel);
+        var controls = Draw(shell, 400, 350);
+        for (int i = 0; i < 20; i++) shell.OnKeyDown(api, new KeyEvent { KeyCode = (int)GlKeys.PageDown });
+        Assert.True(f.Panel.State.DetailScroll > 0);
+        if (removed) { f.Panel.Handle("remove"); f.CompleteRemove(); }
+        else f.Transport.Receive(new PartySnapshotPacket { SessionId = "session", Sequence = 2, Revision = 8,
+            SelfUid = "a", Health = PartyHealth.Healthy, PartyId = "22222222222222222222222222222222", LeaderUid = "a",
+            Members = new[] { new PartyMemberPacket { Uid = "a", DisplayName = "Rowan", IsOnline = true }, new PartyMemberPacket { Uid = "b", DisplayName = "Ash", IsOnline = true } } });
+        controls.Clear(); scope.Text.Clear(); Draw(shell, 400, 350);
+        Assert.Equal(0, f.Panel.State.DetailScroll);
+        if (removed)
+        {
+            Assert.Contains("Select a person to see their options.", scope.Text);
+            Assert.Contains("Party updated.", scope.Text);
+            Assert.DoesNotContain(controls, c => c.Id is "party:remove" or "party:transfer");
+            Assert.Contains(controls, c => c.Id == "party:refresh" && c.Button.CanActivate);
+        }
+        else Assert.Contains(controls, c => c.Id == "party:remove" && c.Button.CanActivate);
     }
 }
