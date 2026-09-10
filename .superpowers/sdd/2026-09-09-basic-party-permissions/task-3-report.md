@@ -92,3 +92,40 @@ Focused new modules: `PartyPanel`, `PartyPanelState`, `PlayerMenuShell.Party` pa
 Self-review confirmed six pages only, no fake live inventory, no new ordinary dialog, no network/server contract changes, all eight mutations routed to the connection service, selected names remain full in detail, pending is never optimistic membership, captured inputs do not leak into Inventory, and old/disconnected updates cannot open the panel. Corrected feedback, offline-transfer guard, unavailable search visibility, real mouse return-focus ordering, duplicate Refresh, empty-state directions and scroll discoverability. Existing README/design README/overhaul guide/animation work is untouched and excluded from the commit.
 
 Parent work left open: joined/native verification, durable loot piles, full default menu ownership and the overall no-Vanilla Inventory/Character gate. Party tests do not implement or certify those tasks.
+
+## Review fix round 1 of 5
+
+Base `b1acd8b`. Fixed the two Important findings only. Compact Online now reserves measured feedback space immediately below Find/search. Its row becomes a readable single-line name while feedback is present, keeping a selectable result and fixed paging actions at 400x350. Detail rendering first measures the current content, then clamps local detail offset before drawing; shorter names and removed members cannot leave new guidance/result text above the viewport. On a newly accepted view, vanished selected records are cleared, so their old contextual controls disappear. Selection is preserved on feedback-only/pending events and while the record remains present.
+
+RED command (test runner socket escalation; no deployment/packaging):
+
+```sh
+dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj -p:DisableSharedDeploy=true -p:PackageOnRelease=false --filter 'FullyQualifiedName~CompactRejectedDirectory|FullyQualifiedName~DetailScrollClamps|FullyQualifiedName~RemovedMemberIsNoLonger' --logger 'console;verbosity=minimal'
+```
+
+```text
+Failed! - Failed: 5, Passed: 0, Skipped: 0, Total: 5, Duration: 129 ms
+```
+
+Find and Next rejection tests could not find the emitted localized feedback; both shortened-detail tests retained offset62 instead of0; removed-member selection remained `b`. Same focused command after implementation:
+
+```text
+Passed! - Failed: 0, Passed: 5, Skipped: 0, Total: 5, Duration: 148 ms
+```
+
+Scoped regression command:
+
+```sh
+dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj -p:DisableSharedDeploy=true -p:PackageOnRelease=false --filter 'FullyQualifiedName~PartyPanelTests|FullyQualifiedName~PartyMenuIntegrationTests' --logger 'console;verbosity=minimal'
+```
+
+```text
+Passed! - Failed: 0, Passed: 39, Skipped: 0, Total: 39, Duration: 226 ms
+```
+
+No warnings; `git diff --check` and staged diff check passed. No full-suite rerun, per controller dispatch. The previous 1563-test full suite remains evidence for the implementation base; this round adds scoped regression evidence.
+
+Targeted native Cairo captures: `/tmp/vrpg-party-review-fix1` (8 PNGs). Prior `/tmp/vrpg-party-capture-final`70-image evidence was not modified. Worker inspected `rejected-find-400x350.png`, `rejected-next-800x520.png`, `detail-removed-after-400x350.png`, and `detail-shortened-after-400x350.png`; feedback/current identity are visible, selected-result rows remain reachable, and removed-member controls are gone. Before/after detail pairs record the actual scroll transition. Reproduce with the prior capture command plus `VRPG_MENU_CAPTURE_FIX=1` and a new output path. Native text fields and joined input remain outside Cairo evidence. No game control, reload or world changes performed.
+
+Fix commit: `00b62f0` — `fix: keep party feedback visible after query and roster updates`.
+Root independently inspected rejected Find/Next at400 and both detail-after400 captures; no new visual issue was found. Fresh scoped review remains controller-owned.
