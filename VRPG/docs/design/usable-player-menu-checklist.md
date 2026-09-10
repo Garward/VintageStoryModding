@@ -69,7 +69,11 @@ continue independent implementation work without presenting it as readiness.
   - [x] Authenticated server/client party transport and world lifecycle reviewed
     at `4bf1b6a`; full suite: 1,529 passed. Intermediate native startup/cleanup
     observed on a disposable server; final joined-client actions remain unverified.
-  - [ ] Real inline Party controls and connected-game verification.
+  - [x] Real inline Party controls reviewed through `00b62f0`, including all
+    membership actions, bounded online search, Back restoration and native Cairo
+    captures. Full integration suite after review fixes: 1,568 passed; focused
+    panel coverage: 39 passed. Explicit isolated route only; no default menu takeover.
+  - [ ] Verify final Party build's native text input, GUI scales and joined actions.
 - [ ] Group nearby compatible drops into bounded loot piles to reduce entities,
   retaining exact items, quantities, permissions and restart-safe partial pickup.
 - [ ] Complete the first-join starter/appearance/Welcome handoff.

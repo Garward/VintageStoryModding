@@ -174,6 +174,12 @@ separate observed check if no client can be exercised.
 
 ## Task 3: Compact native Party panel and integration verification
 
+Source implemented at `b1acd8b`, review fixes at `00b62f0`; per-task review clean.
+Full integration suite after fixes: 1,568 passed; panel coverage: 39 passed. Native
+Cairo matrix and targeted update/error captures inspected. Joined native text
+input, GUI scales and actions await an approved reload of the temporary client.
+Final whole-plan review remains in progress; default menu ownership is not enabled.
+
 **Files:** Create `VRPG/src/Client/PlayerMenu/Party/PartyPanel.cs`, `PartyPanelState.cs`;
 modify `PlayerMenuController.cs`, `GuiDialogVrpgPlayerMenu.cs`, `Shell/PlayerMenuShell.cs`
 and a focused Party rendering partial, `Shell/PlayerMenuLayout.cs` if needed,
@@ -186,7 +192,7 @@ named intents to PartyCommand, owns selection/confirmation/filter/scroll only.
 `PartyPanelState` records opened state and return context. Reuse current shell;
 do not add PlayerMenuPage enum values or another ordinary dialog.
 
-- [ ] Use frontend-design and player-facing-ui/game-ui-review. Write RED tests
+- [x] Use frontend-design and player-facing-ui/game-ui-review. Write RED tests
   for each visible control and Back restoration; server data drives all state.
 ```csharp
 // Opening Party must preserve inventory browse context on return.
@@ -195,26 +201,27 @@ controller.OpenParty();
 controller.Back();
 Assert.Equal(before, controller.Session.Current);
 ```
-- [ ] Implement Party button and inline list using existing iron/copper theme,
+- [x] Implement Party button and inline list using existing iron/copper theme,
   typography, focus/buttons and clipping. Keep six tabs, semantic action close
   behavior and existing Inventory/Character routing. Target1120x680/800x520 and
   narrow400x350 without horizontal overflow. Add a focused shell partial rather
   than another large block in the existing long renderer.
-- [ ] Controls: Create, Invite online player with bounded search/page, Accept,
+- [x] Controls: Create, Invite online player with bounded search/page, Accept,
   Decline, Leave, Remove, Transfer leadership, Disband confirmation. Leader-only
   controls reflect actual role, valid targets and pending state. Show full member
   identity on focus/selection if row truncates. Empty/loading/offline/unavailable/
   expired/rejected/success states are localized plain language and local feedback.
   Health bars, bonuses and placeholder controls are absent.
-- [ ] Route actions through real connection service; close/reopen retains pending
+- [x] Route actions through real connection service; close/reopen retains pending
   tracking and fresh results. Reset on disconnect; old updates cannot reopen the
   panel. Test mouse, Tab/Enter, text input and Back without losing prior selection.
-- [ ] Render realistic solo/invited/member/leader/full/offline/pending/error cases
+- [x] Render realistic solo/invited/member/leader/full/offline/pending/error cases
   and long names at all sizes through existing native Cairo capture; inspect
   outputs and repair clipping/focus/overlap. No mock screenshots as runtime proof.
-  Root owns actual isolated server/client/desktop inspection when available; no
-  installed deployment/user world change. Report unavailable checks accurately.
-- [ ] Run focused tests and one full suite, self-review/scoped commit:
+- [ ] Root observes final-build isolated joined client input, GUI scales and actions
+  after user-approved reload/sign-in. No installed deployment/user world change.
+  Report unavailable checks accurately; native composition does not pass this gate.
+- [x] Run focused tests and one full suite, self-review/scoped commit:
   `feat: manage basic parties inside the player menu`.
 
 **Gate:** Every panel action connects to real authority and is tested; distinguish
