@@ -26,13 +26,17 @@ internal sealed class InventoryCompositionTestScope : IDisposable
     private readonly string oldLocale = Lang.CurrentLocale, oldDefault = Lang.DefaultLocale;
     private readonly InventoryCompositionCaptureTests.CaptureProxy translation;
     public List<string> Text => translation.TextCalls;
-    public InventoryCompositionTestScope()
+    internal static void EnsureCairo()
     {
         if (!cairoResolved)
         {
             NativeLibrary.SetDllImportResolver(typeof(Context).Assembly, (name, _, _) => name == "libcairo-2" ? NativeLibrary.Load("libcairo.so.2") : IntPtr.Zero);
             cairoResolved = true;
         }
+    }
+    public InventoryCompositionTestScope()
+    {
+        EnsureCairo();
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null && !File.Exists(System.IO.Path.Combine(directory.FullName, "VRPG/assets/vrpg/lang/en.json"))) directory = directory.Parent;
         string path = System.IO.Path.Combine(directory!.FullName, "VRPG/assets/vrpg/lang/en.json");

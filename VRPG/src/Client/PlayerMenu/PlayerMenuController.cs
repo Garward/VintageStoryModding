@@ -1,6 +1,7 @@
 using System;
 using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Network;
+using VRPG.Client.PlayerMenu.Party;
 
 namespace VRPG.Client.PlayerMenu;
 
@@ -11,21 +12,38 @@ public sealed class PlayerMenuController
     public PlayerMenuSessionState Session { get; } = new();
     public PlayerItemClientService Items { get; }
     public InventoryPage? Inventory { get; }
+    public PartyPanel? Party { get; }
     public event Action? Changed;
     public PlayerMenuController(PlayerItemClientService connectionItems) { Items = connectionItems; }
+    public PlayerMenuController(PlayerItemClientService connectionItems, PartyPanel party) { Items = connectionItems; Party = party; }
+    public PlayerMenuController(InventoryPage inventory, PartyPanel party) : this(inventory) { Party = party; }
+    public void OpenParty()
+    {
+        if (Party == null) return;
+        if (!Session.IsOpen) Session.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        Party.Open(Session.Current); Session.Update(Session.Current with { Focus = "party" }); Changed?.Invoke();
+    }
     public PlayerMenuController(InventoryPage inventory) { Inventory = inventory; Items = inventory.Items; }
     public void Enter(PlayerMenuEntryPoint entry, bool textInputFocused = false)
     {
         if (textInputFocused) return;
         Session.Enter(entry);
-        if (!Session.IsOpen) Items.CloseMenu();
+        if (!Session.IsOpen) { Party?.Close(); Items.CloseMenu(); }
         else if (Inventory != null && entry == PlayerMenuEntryPoint.CharacterMenu)
             ChangeInventoryQuery(Inventory.Query with { Category = VRPG.Inventory.PlayerItemCategories.Gear,
                 Location = VRPG.Inventory.PlayerItemLocation.Stored, Offset = 0, EquipmentOffset = 0 }, Environment.TickCount64);
         Changed?.Invoke();
     }
-    public void Close() { Session.Close(); Items.CloseMenu(); Changed?.Invoke(); }
-    public void Back(bool alternatePanes = false) { Session.Back(alternatePanes); if (!Session.IsOpen) Items.CloseMenu(); Changed?.Invoke(); }
+    public void Close() { Party?.Close(); Session.Close(); Items.CloseMenu(); Changed?.Invoke(); }
+    public void Back(bool alternatePanes = false)
+    {
+        if (Party?.State.IsOpen == true)
+        {
+            if (!Party.Back() && Party.Close() is { } context) Session.Update(context);
+        }
+        else { Session.Back(alternatePanes); if (!Session.IsOpen) Items.CloseMenu(); }
+        Changed?.Invoke();
+    }
     public void SetWorld(string identity)
     {
         if (worldIdentity == identity) return;

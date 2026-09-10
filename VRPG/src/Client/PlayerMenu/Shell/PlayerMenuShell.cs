@@ -8,6 +8,7 @@ using VRPG.Client.UI;
 using VRPG.Inventory;
 using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Network;
+using VRPG.Client.PlayerMenu.Party;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -15,11 +16,12 @@ using Vintagestory.API.Config;
 namespace VRPG.Client.PlayerMenu.Shell;
 
 /// <summary>Native cached composition host. Pages issue named intents; rendering owns no gameplay state.</summary>
-public sealed class PlayerMenuShell : GuiElement
+public sealed partial class PlayerMenuShell : GuiElement
 {
     private readonly PlayerMenuSessionState session;
     private readonly PlayerMenuGallery? gallery;
     private readonly InventoryPage? inventory;
+    private readonly PartyPanel? party;
     private readonly Action<string> intent;
     private readonly BoundedItemStackRenderer itemRenderer;
     private readonly Dictionary<string, ItemSlot> icons = new();
@@ -31,10 +33,11 @@ public sealed class PlayerMenuShell : GuiElement
     public PlayerMenuLayout Layout { get; }
     public override bool Focusable => true;
     public PlayerMenuShell(ICoreClientAPI api, ElementBounds bounds, PlayerMenuLayout layout,
-        PlayerMenuSessionState session, PlayerMenuGallery? gallery, Action<string> intent, InventoryPage? inventory = null) : base(api, bounds)
+        PlayerMenuSessionState session, PlayerMenuGallery? gallery, Action<string> intent, InventoryPage? inventory = null, PartyPanel? party = null) : base(api, bounds)
     {
         Layout = layout; this.session = session; this.gallery = gallery; this.intent = intent;
         this.inventory = inventory;
+        this.party = party;
         itemRenderer = new(api, bounds);
         focus = session.Current.Focus;
     }
@@ -62,10 +65,11 @@ public sealed class PlayerMenuShell : GuiElement
         Stroke(ctx, new(2, 2, Layout.Width - 4, Layout.Height - 4), PlayerMenuTheme.Iron700, 3);
         Button(ctx, "back", "back", Layout.Back);
         Button(ctx, "close", "close", Layout.Close);
-        Text(ctx, T(gallery != null ? "gallery-title" : inventory?.View.Error.Length > 0 ? "browse-error-short" : inventory?.View.Loading == true ? "loading" : "browse-title"),
-            new(122, 12, Math.Max(0, Layout.Width - 244), 30), Layout.Width < 800 ? 13 : 16);
-        if (inventory != null && Layout.AlternatePanes)
-            Button(ctx, "inspect", inventory.View.Error.Length > 0 ? "browse-error-short" : "browse-options", new(122, 12, Math.Max(0, Layout.Width - 244), 30));
+        if (party != null) Button(ctx, "party", "party", PartyHeaderBounds, PartyOpen ? MenuControlState.Selected : MenuControlState.Default);
+        if (Layout.Width >= 800 && !PartyOpen) Text(ctx, T(gallery != null ? "gallery-title" : inventory?.View.Error.Length > 0 ? "browse-error-short" : inventory?.View.Loading == true ? "loading" : "browse-title"),
+            new(122, 12, Math.Max(0, Layout.Width - 350), 30), 16);
+        if (inventory != null && Layout.AlternatePanes && !PartyOpen)
+            Button(ctx, "inspect", "inspect", new(Layout.Back.Right + 6, 10, Math.Max(0, (party == null ? Layout.Close.X : PartyHeaderBounds.X) - Layout.Back.Right - 12), 34));
         int columns = Layout.AlternatePanes ? 3 : 6;
         double tabWidth = (Layout.Width - 48) / columns;
         foreach (var page in Enum.GetValues<PlayerMenuPage>())
@@ -76,10 +80,11 @@ public sealed class PlayerMenuShell : GuiElement
         }
         string inventoryBinding = api.Input.GetHotKeyByCode(VanillaMenuActions.Inventory)?.CurrentMapping?.ToString() ?? "";
         string characterBinding = api.Input.GetHotKeyByCode(VanillaMenuActions.Character)?.CurrentMapping?.ToString() ?? "";
-        if (!Layout.AlternatePanes && inventoryBinding.Length > 0 && characterBinding.Length > 0)
+        if (!PartyOpen && !Layout.AlternatePanes && inventoryBinding.Length > 0 && characterBinding.Length > 0)
             Text(ctx, T("bindings", inventoryBinding, characterBinding), new(24, 94, Layout.Width - 48, 24), 13, PlayerMenuTheme.Muted);
         bool inspect = !Layout.AlternatePanes || session.Current.InspectorOnly;
         bool browse = !Layout.AlternatePanes || !session.Current.InspectorOnly;
+        if (PartyOpen) { DrawParty(ctx); return; }
         if (inventory != null)
         {
             if (session.Page != PlayerMenuPage.Inventory)
@@ -88,6 +93,7 @@ public sealed class PlayerMenuShell : GuiElement
             if (inspect) DrawInventoryInspector(ctx);
             return;
         }
+        if (gallery == null) { Text(ctx, T("page-unavailable"), Layout.Browser, 18); return; }
         if (browse) DrawBrowser(ctx);
         if (inspect) DrawInspector(ctx);
         if (inspect) Button(ctx, "action", "gallery-action", Layout.PrimaryAction, gallery!.State);
@@ -419,11 +425,17 @@ public sealed class PlayerMenuShell : GuiElement
     {
         string target = At(args.X, args.Y); pressed = "";
         if (args.Button == EnumMouseButton.Left && target.Length > 0)
-        { focus = target; session.Update(session.Current with { Focus = focus }); Activate(target); args.Handled = true; }
+        {
+            focus = target;
+            // Party captures the browse snapshot before assigning its own focus.
+            if (target != "party") session.Update(session.Current with { Focus = focus });
+            Activate(target); args.Handled = true;
+        }
         Refresh();
     }
     public override void OnKeyDown(ICoreClientAPI api, KeyEvent args)
     {
+        if (PartyOpen && HandlePartyKey(args)) return;
         PlayerMenuBrowseKey? browseKey = args.KeyCode switch
         {
             (int)GlKeys.Up => PlayerMenuBrowseKey.Up,
@@ -434,7 +446,7 @@ public sealed class PlayerMenuShell : GuiElement
             (int)GlKeys.End => PlayerMenuBrowseKey.End,
             _ => null
         };
-        if (browseKey != null && PlayerMenuNavigation.BrowserHasKeyboardFocus(session.Current, Layout.AlternatePanes))
+        if (!PartyOpen && (inventory != null || gallery != null) && browseKey != null && PlayerMenuNavigation.BrowserHasKeyboardFocus(session.Current, Layout.AlternatePanes))
         {
             session.Update(InventoryItemGrid.MoveFocus(session.Current,
                 BrowseIds(), browseKey.Value, inventory != null ? Layout.InventoryVisibleRows : Layout.VisibleRows, inventory?.View.Grid == true && inventory.Query.Category == PlayerItemCategories.Gear));
@@ -459,6 +471,7 @@ public sealed class PlayerMenuShell : GuiElement
         session.Update(session.Current with { Focus = focus });
         if (focus == "search") intent("focus-search");
         if (focus == "quantity") intent("quantity");
+        if (focus == "party:search") intent("party:search");
         Refresh();
     }
     private void Activate(string target)
@@ -468,6 +481,8 @@ public sealed class PlayerMenuShell : GuiElement
     public override void OnMouseWheel(ICoreClientAPI api, MouseWheelEventArgs args)
     {
         int amount = Math.Sign(args.deltaPrecise == 0 ? args.delta : args.deltaPrecise);
+        if (PartyOpen) { ScrollParty(-amount, api.Input.MouseX, api.Input.MouseY); args.SetHandled(); Refresh(); return; }
+        if (gallery == null && inventory == null) return;
         if (Layout.Inspector.Contains((api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale)
             && (!Layout.AlternatePanes || session.Current.InspectorOnly))
         {

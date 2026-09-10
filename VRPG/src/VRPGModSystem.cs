@@ -48,6 +48,8 @@ public sealed class VRPGModSystem : ModSystem
     private GuiDialogVRPGLibrary? clientLibraryDialog;
     private GuiDialogVRPGTalentEditor? clientTalentEditorDialog;
     private GuiDialogVRPGStarterPreview? clientStarterPreviewDialog;
+    private GuiDialogVrpgPlayerMenu? clientPartyMenu;
+    private PlayerMenuController? partyMenuController;
     private HudElementVRPGResources? clientResourceHud;
     private HudElementVRPGCombatConsole? clientCombatConsole;
     private HudElementVRPGEntityHealthBars? clientEntityHud;
@@ -197,6 +199,16 @@ public sealed class VRPGModSystem : ModSystem
         clientChannel = VRPGNetwork.RegisterClient(api);
         PartyClient?.Dispose();
         PartyClient = new PartyClientService(clientChannel, api.Event);
+        if (Environment.GetEnvironmentVariable("VRPG_PARTY_MENU") == "1")
+            api.ChatCommands.Create("vrpgparty").WithDescription(Lang.Get("vrpg:menu-party-command"))
+                .HandleWith(_ =>
+                {
+                    partyMenuController ??= new(new VRPG.Client.PlayerMenu.Inventory.PlayerItemClientService(), new PartyPanel(PartyClient));
+                    clientPartyMenu ??= new(api, partyMenuController);
+                    partyMenuController.OpenParty();
+                    clientPartyMenu.TryOpen();
+                    return TextCommandResult.Success();
+                });
         clientChannel
             .SetMessageHandler<OpenHubPacket>(packet => OpenHubDialog(api, packet))
             .SetMessageHandler<TalentTreeSnapshotPacket>(packet => ReceiveTalentTreeSnapshot(api, packet))
@@ -365,6 +377,9 @@ public sealed class VRPGModSystem : ModSystem
 
         modules.Clear();
         partyModule = null;
+        clientPartyMenu?.Dispose();
+        clientPartyMenu = null;
+        partyMenuController = null;
         PartyClient?.Dispose();
         PartyClient = null;
         clientHubDialog?.TryClose();
