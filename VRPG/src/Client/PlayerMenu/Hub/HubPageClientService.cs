@@ -27,6 +27,9 @@ public sealed class HubPageClientService : IDisposable
     public StatsPage Stats { get; }
     public SkillsPage Skills { get; }
     public TalentPage Talents { get; }
+    public LibraryPage Library { get; }
+    public OptionsPage Options { get; }
+    public bool LibraryReady { get; private set; }
     public long SnapshotRevision { get; private set; }
     public HubPageState State { get; set; } = new();
     public OpenHubPacket? Packet => packet == null ? null : Copy(packet);
@@ -41,7 +44,7 @@ public sealed class HubPageClientService : IDisposable
     public HubPageClientService(Action<OpenHubRequestPacket> requestHub, HubPageActions actions)
     {
         this.requestHub = requestHub ?? throw new ArgumentNullException(nameof(requestHub)); Actions = actions ?? throw new ArgumentNullException(nameof(actions));
-        Stats = new(this); Skills = new(this); Talents = new(this);
+        Stats = new(this); Skills = new(this); Talents = new(this); Library = new(this); Options = new(this);
     }
 
     // Include explicit zero/false values: wire serialization can omit them and reapply DTO initializers.
@@ -60,7 +63,7 @@ public sealed class HubPageClientService : IDisposable
     {
         if (disposed) return;
         packet = Copy(next);
-        packet.Entries ??= Array.Empty<LibraryEntryPacket>(); packet.BaseStats ??= Array.Empty<HubStatPacket>();
+        packet.Entries = NormalizeLibraryEntries(packet.Entries); packet.BaseStats ??= Array.Empty<HubStatPacket>();
         packet.Classes ??= Array.Empty<HubClassPacket>(); packet.Talents ??= Array.Empty<string>();
         packet.Options ??= new();
         foreach (var cls in packet.Classes)
@@ -72,6 +75,7 @@ public sealed class HubPageClientService : IDisposable
         packet.Resources ??= resources;
         resources = packet.Resources;
         libraryEntries = packet.Entries;
+        LibraryReady = true; Library.Receive(Copy(libraryEntries)); Options.Receive(packet.Options);
         Loading = false; ErrorKey = "";
         SnapshotRevision++;
         // Rebase only after tree identity and authoritative player state have both been updated.
@@ -143,16 +147,25 @@ public sealed class HubPageClientService : IDisposable
     public void Receive(OpenLibraryPacket next)
     {
         if (disposed) return;
-        libraryEntries = Copy(next).Entries ?? Array.Empty<LibraryEntryPacket>();
+        libraryEntries = NormalizeLibraryEntries(Copy(next).Entries);
         if (packet != null) packet.Entries = libraryEntries;
+        LibraryReady = true; Library.Receive(Copy(libraryEntries));
         Changed?.Invoke();
+    }
+
+    private static LibraryEntryPacket[] NormalizeLibraryEntries(LibraryEntryPacket[]? entries)
+    {
+        entries ??= Array.Empty<LibraryEntryPacket>();
+        foreach (var entry in entries)
+        { entry.Tags ??= Array.Empty<string>(); entry.Fields ??= Array.Empty<LibraryFieldPacket>(); }
+        return entries;
     }
 
     public void ResetConnection()
     {
         packet = null; talentTree = null; resources = null; libraryEntries = Array.Empty<LibraryEntryPacket>();
         State = new(); Loading = false; treeRequestPending = false; treeApplied = false; TalentTreeReady = false; ErrorKey = "";
-        Stats.Reset(); Skills.Reset(); Talents.Reset();
+        Stats.Reset(); Skills.Reset(); Talents.Reset(); Library.Reset(); Options.Reset(); LibraryReady = false;
         State = new();
         Changed?.Invoke();
     }

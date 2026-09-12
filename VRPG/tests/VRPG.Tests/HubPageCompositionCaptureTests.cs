@@ -19,6 +19,99 @@ namespace VRPG.Tests;
 public sealed class HubPageCompositionCaptureTests
 {
     [Fact]
+    public void NarrowLibraryKeyboardSelectionScrollsAndEveryVisualSettingIsReachable()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        using var hub = new HubPageClientService(_ => { }, new());
+        hub.Receive(new OpenHubPacket { Entries = LibraryOptionsPageTests.Entries() });
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Library);
+        using var shell = Shell(session, hub, 400, 350); Draw(shell, 400, 350);
+        shell.OnKeyDown(null!, new KeyEvent { KeyCode = (int)GlKeys.End });
+        Assert.Equal("vrpg:orb", hub.Library.SelectedEntry!.Code); Assert.Equal(1, hub.Library.Scroll);
+        Draw(shell, 400, 350); Activate(shell, "library-entry:1"); Assert.Null(shell.SelectedPageInput);
+        session.Navigate(PlayerMenuPage.Options); hub.Options.SelectCategory(OptionsCategory.CombatVisuals);
+        var visited = new HashSet<string>();
+        for (int i = 0; i < 8; i++)
+        {
+            Draw(shell, 400, 350);
+            foreach (var control in Controls(shell).Where(c => c.Id.StartsWith("option:", StringComparison.Ordinal))) visited.Add(control.Id);
+            if (Controls(shell).Single(c => c.Id == "options:next").Button.CanActivate) Activate(shell, "options:next");
+        }
+        Assert.Equal(8, visited.Count); Assert.Contains("option:intensity", visited);
+        Activate(shell, "option:intensity"); Assert.Equal(.75f, hub.Actions.CombatVisuals.Intensity);
+    }
+
+    [Fact]
+    public void LibraryAndOptionsRenderRealControlsAndSearchBelongsToSelectedPage()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        int saves = 0; using var hub = new HubPageClientService(_ => { }, new() { PersistClientConfig = () => saves++ });
+        hub.Receive(new OpenHubPacket { Entries = LibraryOptionsPageTests.Entries() });
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Library);
+        var text = new List<string>(); using var shell = Shell(session, hub, 1120, 680, text.Add);
+        Draw(shell, 1120, 680); Assert.Contains("Cleave", text); Assert.Contains(Controls(shell), c => c.Id == "search");
+        Assert.NotNull(shell.SelectedPageInput); shell.SetSearchText("Healing", 0); text.Clear(); Draw(shell, 1120, 680);
+        Assert.Equal("Healing", shell.SelectedPageInput!.Value); Assert.Contains("Life orb", text); Assert.DoesNotContain("Cleave", text);
+        session.Navigate(PlayerMenuPage.Options); text.Clear(); Draw(shell, 1120, 680);
+        Assert.Null(shell.SelectedPageInput); Assert.Contains("Cooldown notices", text);
+        Activate(shell, "options-category:3"); Draw(shell, 1120, 680); Activate(shell, "option:combat-text");
+        Assert.False(hub.Actions.CombatVisuals.CombatTextEnabled); Assert.Equal(1, saves);
+        session.Navigate(PlayerMenuPage.Library); Assert.Equal("Healing", shell.SelectedPageInput!.Value);
+        session.Update(session.Current with { InspectorOnly = true });
+        using var narrow = Shell(session, hub, 400, 350); Assert.Null(narrow.SelectedPageInput);
+    }
+
+    [Fact]
+    public void CapturesLibraryOptionsStatesWithBoundedControlsAndReadableDetails()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        string directory = Environment.GetEnvironmentVariable("VRPG_HUB_CAPTURE_PATH") ?? System.IO.Path.Combine(System.IO.Path.GetTempPath(), "vrpg-task6-captures");
+        Directory.CreateDirectory(directory);
+        foreach (var (width, height) in new[] { (1120, 680), (800, 520), (620, 520), (400, 350) })
+        foreach (string state in new[] { "loading", "empty", "normal", "search-empty", "long", "direct" })
+        {
+            using var hub = new HubPageClientService(_ => { }, new());
+            var entries = LibraryOptionsPageTests.Entries();
+            if (state == "long") entries = Enumerable.Range(0, 200).Select(i => new LibraryEntryPacket { Code = "vrpg:secret-" + i,
+                Name = "Ancient northern sanctuary recovery stone " + i, Category = "Currency", Source = "vrpg:core_registry",
+                Summary = string.Join(" ", Enumerable.Repeat("Recover health after using this stone near a sanctuary.", 12)),
+                Tags = new[] { "vrpg:healing" }, Fields = new[] { new LibraryFieldPacket { Label = "Effect", Value = "vrpg:restore_health" } } }).ToArray();
+            if (state == "loading") hub.RequestSnapshot();
+            else if (state == "direct") hub.Receive(new OpenLibraryPacket { Entries = entries });
+            else hub.Receive(new OpenHubPacket { Entries = state == "empty" ? Array.Empty<LibraryEntryPacket>() : entries });
+            if (state == "search-empty") hub.Library.SetQuery("nothing matches");
+            var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Library);
+            var text = new List<string>(); using var shell = Shell(session, hub, width, height, text.Add);
+            string path = System.IO.Path.Combine(directory, $"library-{state}-{width}x{height}");
+            Draw(shell, width, height, path + ".png");
+            Assert.All(Controls(shell), c => AssertInside(c.Bounds, width, height));
+            Assert.DoesNotContain(text, t => t.Contains("vrpg:", StringComparison.Ordinal));
+            if (state is "normal" or "direct") Assert.Contains("Cleave", text);
+            if (state == "empty") Assert.Contains("No library entries yet.", text);
+            if (state == "search-empty") Assert.Contains("No entries match your search.", text);
+            if (state == "long")
+            {
+                session.Update(session.Current with { InspectorOnly = true }); Draw(shell, width, height, path + "-details.png");
+                session.Update(session.Current with { InspectorScroll = 600 }); Draw(shell, width, height, path + "-scrolled.png");
+                Assert.DoesNotContain(text, t => t.Contains("vrpg:", StringComparison.Ordinal));
+            }
+        }
+        foreach (var (width, height) in new[] { (1120, 680), (800, 520), (620, 520), (400, 350) })
+        foreach (var category in Enum.GetValues<OptionsCategory>())
+        {
+            using var hub = new HubPageClientService(_ => { }, new()); hub.Receive(new OpenHubPacket()); hub.Options.SelectCategory(category);
+            var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Options);
+            using var shell = Shell(session, hub, width, height);
+            Draw(shell, width, height, System.IO.Path.Combine(directory, $"options-{category}-{width}x{height}.png"));
+            Assert.Contains(Controls(shell), c => c.Id.StartsWith("option:", StringComparison.Ordinal));
+            Assert.All(Controls(shell), c => AssertInside(c.Bounds, width, height));
+            session.Update(session.Current with { ScrollAnchor = 7 });
+            Draw(shell, width, height, System.IO.Path.Combine(directory, $"options-{category}-{width}x{height}-end.png"));
+            Assert.All(Controls(shell), c => AssertInside(c.Bounds, width, height));
+        }
+    }
+
+    [Fact]
     public void StaleTalentDetailsExplainLoadingAndDisableAllGeometryActions()
     {
         using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture(new[] { "root" });

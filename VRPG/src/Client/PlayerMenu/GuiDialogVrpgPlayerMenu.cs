@@ -21,6 +21,8 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     private bool composedPartyOpen;
     private bool composedPartySearch;
     private bool restoreInventorySearchFocus;
+    private bool composedPageSearch;
+    private PlayerMenuPage? composedPage;
     private PlayerMenuShell? shell;
     private PlayerMenuLayout? layout;
     public override string? ToggleKeyCombinationCode => null;
@@ -52,6 +54,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     public override void OnGuiClosed() { Inventory?.Close(); controller.Close(); base.OnGuiClosed(); }
     private void Compose()
     {
+        bool restorePageSearchFocus = composedPage == controller.Session.Page && SingleComposer?.GetTextInput("search")?.HasFocus == true;
         layout = PlayerMenuLayout.ForViewport(capi.Render.FrameWidth, capi.Render.FrameHeight, RuntimeEnv.GUIScale);
         gallery?.Equipment.SetExpanded(controller.Session.Current.EquipmentExpanded, controller.Session.ReducedMotion);
         var bounds = ElementBounds.Fixed(0, 0, layout.Width, layout.Height);
@@ -67,15 +70,17 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         var composer = capi.Gui.CreateCompo(gallery != null ? "vrpg-player-menu-gallery" : "vrpg-player-menu", ElementStdBounds.AutosizedMainDialog)
             .BeginChildElements(ElementBounds.Fixed(0, 0, layout.Width, layout.Height))
             .AddInteractiveElement(shell, "shell");
-        if (!partyOpen && (Inventory != null || gallery != null) && (!layout.AlternatePanes || !controller.Session.Current.InspectorOnly) && (Inventory == null || controller.Session.Page == PlayerMenuPage.Inventory))
+        var pageInput = shell.SelectedPageInput;
+        composedPageSearch = pageInput != null;
+        composedPage = controller.Session.Page;
+        if (pageInput != null)
         {
-            var searchBounds = Inventory == null ? layout.BrowserSearch : layout.InventorySearch;
+            var searchBounds = pageInput.Bounds;
             composer.AddTextInput(ElementBounds.Fixed(searchBounds.X, searchBounds.Y, searchBounds.Width, searchBounds.Height), value =>
             {
                 var input = new SearchField(); input.SetText(value ?? "");
                 if (input.Text != value) SingleComposer?.GetTextInput("search")?.SetValue(input.Text, false);
-                controller.Session.Update(controller.Session.Current with { Search = input.Text, ScrollAnchor = 0, Focus = "search" });
-                Inventory?.ChangeQuery(Inventory.Query with { Search = input.Text, Offset = 0 }, capi.World.ElapsedMilliseconds);
+                shell?.SetSearchText(input.Text, capi.World.ElapsedMilliseconds);
                 shell?.Refresh();
             }, CairoFont.WhiteSmallishText(), "search");
         }
@@ -91,14 +96,14 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         }
         SingleComposer = composer.EndChildElements().Compose();
         var search = SingleComposer.GetTextInput("search");
-        search?.SetValue(controller.Session.Current.Search, false);
-        search?.SetPlaceHolderText(PlayerMenuShell.T(Inventory == null ? "search" : "item-search"));
+        search?.SetValue(pageInput?.Value ?? "", false);
+        search?.SetPlaceHolderText(PlayerMenuShell.T(pageInput?.PlaceholderKey ?? "search"));
         SingleComposer.GetTextInput("party-search")?.SetValue(controller.Party?.State.Search ?? "", false);
         SingleComposer.GetTextInput("party-search")?.SetPlaceHolderText(PlayerMenuShell.T("party-search-hint"));
-        if (returning)
+        if (returning || restorePageSearchFocus)
         {
             var input = SingleComposer.GetTextInput("search");
-            if (restoreInventorySearchFocus && input != null) SingleComposer.FocusElement(input.TabIndex);
+            if ((restorePageSearchFocus || returning && restoreInventorySearchFocus) && input != null) SingleComposer.FocusElement(input.TabIndex);
         }
     }
     private void OnIntent(string intent)
@@ -120,6 +125,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
             return;
         }
         if (intent == "close") { TryClose(); return; }
+        if (intent == "library:compose") { hubDirty = true; return; }
         if (intent == "hub:retry") { controller.Hub?.RequestSnapshot(); Compose(); return; }
         if (Inventory != null && session.Page == PlayerMenuPage.Inventory && HandleInventoryIntent(intent)) { Compose(); return; }
         if (intent == "back") { if (controller.Party?.State.IsOpen != true) session.Update(session.Current with { Focus = "" }); controller.Back(layout?.AlternatePanes == true); if (!session.IsOpen) { TryClose(); return; } }
@@ -237,7 +243,12 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     public override void OnRenderGUI(float deltaTime)
     {
-        if (hubDirty) { hubDirty = false; shell?.Refresh(); }
+        if (hubDirty)
+        {
+            hubDirty = false;
+            if (composedPageSearch != (shell?.SelectedPageInput != null)) Compose();
+            else shell?.Refresh();
+        }
         if (partyDirty)
         {
             partyDirty = false;

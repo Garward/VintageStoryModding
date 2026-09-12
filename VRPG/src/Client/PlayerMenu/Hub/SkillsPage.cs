@@ -18,7 +18,7 @@ public sealed class SkillsPage
     public int SelectedSkillIndex { get; private set; }
     public HubClassPacket? SelectedClass => classes.ElementAtOrDefault(SelectedClassIndex);
     public HubSkillPacket? SelectedSkill => Skills.ElementAtOrDefault(SelectedSkillIndex);
-    public int VisibleSlots { get; private set; } = 4;
+    public int VisibleSlots => hub.Options.VisibleSkillSlots;
     public bool CanEquip => !Pending && !hub.Stats.Pending && !hub.Talents.Pending && !hub.Loading && SelectedSkill is { LearnedLevel: > 0, Code.Length: > 0 };
     public SkillsPage(HubPageClientService hub) => this.hub = hub;
     public void SelectClass(int index)
@@ -42,7 +42,6 @@ public sealed class SkillsPage
     }
     internal void Receive(OpenHubPacket packet)
     {
-        VisibleSlots = Math.Clamp(packet.Options.SkillHotbarSlots, 4, 8);
         string cls = hub.State.SelectedClass, skill = hub.State.SelectedSkill;
         int oldClass = SelectedClassIndex, oldSkill = SelectedSkillIndex;
         classes = packet.Classes;
@@ -56,6 +55,5 @@ public sealed class SkillsPage
     {
         classes = Array.Empty<HubClassPacket>(); Skills = Array.Empty<HubSkillPacket>();
         SelectedClassIndex = 0; SelectedSkillIndex = 0; Pending = false; Feedback = ""; FeedbackError = false;
-        VisibleSlots = 4;
     }
 }

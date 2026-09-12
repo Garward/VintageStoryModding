@@ -100,6 +100,8 @@ public sealed partial class PlayerMenuShell : GuiElement
             if (StatsSkillsOpen && session.Page == PlayerMenuPage.Stats) DrawStats(ctx);
             else if (StatsSkillsOpen && session.Page == PlayerMenuPage.Skills) DrawSkills(ctx);
             else if (TalentsOpen) DrawTalents(ctx);
+            else if (LibraryOpen) DrawLibrary(ctx);
+            else if (OptionsOpen) DrawOptions(ctx);
             else DrawHubState(ctx);
             return;
         }
@@ -479,6 +481,7 @@ public sealed partial class PlayerMenuShell : GuiElement
         if (PartyOpen && HandlePartyKey(args)) return;
         if (!PartyOpen && HandleSkillsKey(args)) return;
         if (!PartyOpen && HandleTalentKey(args)) return;
+        if (!PartyOpen && HandleLibraryOptionsKey(args)) return;
         PlayerMenuBrowseKey? browseKey = args.KeyCode switch
         {
             (int)GlKeys.Up => PlayerMenuBrowseKey.Up,
@@ -521,7 +524,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     private void Activate(string target)
     {
         if (!controls.Any(x => x.Id == target && x.Button.CanActivate)) return;
-        if (HandleStatsSkillsIntent(target) || HandleTalentIntent(target)) Refresh(); else intent(target);
+        if (HandleStatsSkillsIntent(target) || HandleTalentIntent(target) || HandleLibraryOptionsIntent(target)) Refresh(); else intent(target);
     }
     public override void OnMouseWheel(ICoreClientAPI api, MouseWheelEventArgs args)
     {
@@ -532,6 +535,16 @@ public sealed partial class PlayerMenuShell : GuiElement
             return;
         }
         if (PartyOpen) { ScrollParty(-amount, api.Input.MouseX, api.Input.MouseY); args.SetHandled(); Refresh(); return; }
+        if (LibraryOpen || OptionsOpen)
+        {
+            double x = (api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, y = (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale;
+            if (OptionsOpen && Layout.Inspector.Contains(x, y)) ScrollOptions(-amount);
+            else if (LibraryOpen && Layout.Inspector.Contains(x, y) && (!Layout.AlternatePanes || session.Current.InspectorOnly))
+                session.Update(session.Current with { InspectorScroll = Math.Clamp(session.Current.InspectorScroll - amount * 32, 0, inspectorMaximumScroll) });
+            else if (LibraryOpen && LibraryList.Contains(x, y)) hub!.Library.ScrollBy(-amount, LibraryRows);
+            else return;
+            args.SetHandled(); Refresh(); return;
+        }
         if (StatsSkillsOpen)
         {
             ScrollStatsSkills(-amount, (api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale);
