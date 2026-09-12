@@ -40,6 +40,18 @@ public sealed class NativeLegacyInspectionEvidenceTests(ITestOutputHelper output
             fixture.Source.CompareTo(snapshot));
     }
 
+    [Fact]
+    public void BuiltInTransientPlayerInventoriesDoNotMasqueradeAsOpenContainers()
+    {
+        var fixture = new NativeLegacyInventoryFixture();
+        fixture.OpenBuiltInTransientInventories();
+
+        LegacyInventoryInspection inspection = fixture.Source.Inspect();
+
+        Assert.Empty(inspection.BlockingReasons);
+        Assert.Equal(2, inspection.Slots.Length);
+    }
+
     [Theory]
     [MemberData(nameof(UnavailableCases))]
     public void IncompleteNativeInspectionCannotProveSourceContents(string reason, bool empty)

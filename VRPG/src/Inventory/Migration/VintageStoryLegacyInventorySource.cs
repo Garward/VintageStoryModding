@@ -20,6 +20,15 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
         GlobalConstants.craftingInvClassName
     };
 
+    // Vintage Story opens these built-in player inventories during join. They are
+    // transient/virtual transport surfaces, not external containers and not
+    // migration sources.
+    private static readonly string[] IgnoredOpenPlayerClasses =
+    {
+        GlobalConstants.groundInvClassName,
+        GlobalConstants.creativeInvClassName
+    };
+
     private readonly IServerPlayer player;
     private readonly PlayerItemClassifier classifier;
     private readonly WorldCollectibleResolver resolver;
@@ -53,13 +62,14 @@ public sealed class VintageStoryLegacyInventorySource : ILegacyPlayerInventorySo
     {
         var slots = new List<LegacyItemSlotState>();
         var blocking = new List<string>();
-        HashSet<string> managedIds = ManagedClasses
+        HashSet<string> playerSurfaceIds = ManagedClasses
+            .Concat(IgnoredOpenPlayerClasses)
             .Select(player.InventoryManager.GetInventoryName)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (IInventory opened in player.InventoryManager.OpenedInventories)
         {
-            if (!managedIds.Contains(opened.InventoryID))
+            if (!playerSurfaceIds.Contains(opened.InventoryID))
                 blocking.Add("Close the open container and try again.");
         }
 

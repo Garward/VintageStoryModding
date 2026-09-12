@@ -64,6 +64,16 @@ internal sealed class NativeLegacyInventoryFixture
         }
     }
 
+    public void OpenBuiltInTransientInventories()
+    {
+        foreach (string name in new[] { "ground", "creative" })
+        {
+            var inventory = new LegacyInventory(name, Inventories["hotbar"].Api);
+            inventory.Open(Player);
+            Registered.Add(inventory.InventoryID, inventory);
+        }
+    }
+
     public void MakeAvailable()
     {
         Registered.Clear();
