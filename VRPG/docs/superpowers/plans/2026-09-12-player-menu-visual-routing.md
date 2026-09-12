@@ -122,7 +122,7 @@ git commit -m "feat: establish VRPG player menu visual system"
 - Produces: `PlayerItemDisplayNameResolver.HumanizeAssetPath(string assetCode) -> string`.
 - Consumes: `PlayerItemEntryPacket.DisplayName` as an authored name only when it is demonstrably different from the technical asset path; never changes `EntryId` or `AssetCode`.
 
-- [ ] **Step 1: Write failing resolver tests**
+- [x] **Step 1: Write failing resolver tests**
 
 Cover authored gear, ordinary native localization, technical persisted names, absent localization, unresolved assets, non-ASCII names, and long names:
 
@@ -151,7 +151,7 @@ public void MissingLocalizationHumanizesPathWithoutDomain()
 
 Assert unresolved records show localized `Unknown item` in normal rows while retaining asset code only in Recovery details.
 
-- [ ] **Step 2: Run the resolver tests and verify they fail**
+- [x] **Step 2: Run the resolver tests and verify they fail**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter FullyQualifiedName~PlayerItemDisplayNameResolverTests
@@ -159,15 +159,15 @@ dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter FullyQualifiedName~
 
 Expected: failure because the resolver does not exist and the shell currently renders `entry.DisplayName` directly.
 
-- [ ] **Step 3: Implement presentation-only name resolution**
+- [x] **Step 3: Implement presentation-only name resolution**
 
 Resolve the native name from the client world registry by reconstructing a one-count `ItemStack` from `AssetKind` and `AssetCode`, then asking the collectible for its localized held-item name. Catch lookup/name failures and return `null` to the pure resolver. Treat a stored value equal to the full asset code, path, or separator-normalized path as technical. Preserve a distinct authored name for unique Gear. Humanize only the path portion by splitting hyphens, underscores, and camel-case boundaries, collapsing whitespace, and title-casing with the current culture. Add `menu-unknown-item` and concise recovery-detail copy to `en.json`.
 
-- [ ] **Step 4: Integrate the resolver across rows, inspector, equipment, and search-visible labels**
+- [x] **Step 4: Integrate the resolver across rows, inspector, equipment, and search-visible labels**
 
 Replace every normal inventory/equipment `DisplayName` draw with the resolver result. Do not change query identity, sort tie-breaks, action packets, or canonical storage. Add a capture scenario containing `game:pickaxe-iron`, `addon:ancient_vault-key`, authored `Emberwake`, and an unresolved asset; assert raw identifiers are absent from ordinary captured text calls.
 
-- [ ] **Step 5: Run focused tests and commit**
+- [x] **Step 5: Run focused tests and commit**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~PlayerItemDisplayNameResolverTests|FullyQualifiedName~InventoryCompositionCaptureTests"
