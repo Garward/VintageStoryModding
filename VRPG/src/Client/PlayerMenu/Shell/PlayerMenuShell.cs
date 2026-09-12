@@ -95,7 +95,13 @@ public sealed partial class PlayerMenuShell : GuiElement
         bool inspect = !Layout.AlternatePanes || session.Current.InspectorOnly;
         bool browse = !Layout.AlternatePanes || !session.Current.InspectorOnly;
         if (PartyOpen) { DrawParty(ctx); return; }
-        if (gallery == null && session.Page != PlayerMenuPage.Inventory) { DrawHubState(ctx); return; }
+        if (gallery == null && session.Page != PlayerMenuPage.Inventory)
+        {
+            if (hub?.HasSnapshot == true && hub.ErrorKey.Length == 0 && session.Page == PlayerMenuPage.Stats) DrawStats(ctx);
+            else if (hub?.HasSnapshot == true && hub.ErrorKey.Length == 0 && session.Page == PlayerMenuPage.Skills) DrawSkills(ctx);
+            else DrawHubState(ctx);
+            return;
+        }
         if (inventory != null)
         {
             if (browse) DrawInventoryBrowser(ctx);
@@ -469,6 +475,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     public override void OnKeyDown(ICoreClientAPI api, KeyEvent args)
     {
         if (PartyOpen && HandlePartyKey(args)) return;
+        if (!PartyOpen && HandleSkillsKey(args)) return;
         PlayerMenuBrowseKey? browseKey = args.KeyCode switch
         {
             (int)GlKeys.Up => PlayerMenuBrowseKey.Up,
@@ -509,12 +516,18 @@ public sealed partial class PlayerMenuShell : GuiElement
     }
     private void Activate(string target)
     {
-        if (controls.Any(x => x.Id == target && x.Button.CanActivate)) intent(target);
+        if (!controls.Any(x => x.Id == target && x.Button.CanActivate)) return;
+        if (HandleStatsSkillsIntent(target)) Refresh(); else intent(target);
     }
     public override void OnMouseWheel(ICoreClientAPI api, MouseWheelEventArgs args)
     {
         int amount = Math.Sign(args.deltaPrecise == 0 ? args.delta : args.deltaPrecise);
         if (PartyOpen) { ScrollParty(-amount, api.Input.MouseX, api.Input.MouseY); args.SetHandled(); Refresh(); return; }
+        if (StatsSkillsOpen)
+        {
+            ScrollStatsSkills(-amount, (api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale);
+            args.SetHandled(); Refresh(); return;
+        }
         if (gallery == null && (inventory == null || session.Page != PlayerMenuPage.Inventory)) return;
         if (Layout.Inspector.Contains((api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale)
             && (!Layout.AlternatePanes || session.Current.InspectorOnly))

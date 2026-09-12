@@ -170,7 +170,7 @@ public sealed class PlayerMenuHubCompositionTests
     [Theory]
     [InlineData(PlayerMenuPage.Stats)][InlineData(PlayerMenuPage.Skills)][InlineData(PlayerMenuPage.Talents)]
     [InlineData(PlayerMenuPage.Library)][InlineData(PlayerMenuPage.Options)]
-    public void SupportedRoutesComposeLoadingThenHonestUnavailableBody(PlayerMenuPage route)
+    public void SupportedRoutesComposeLoadingThenNativeEmptyOrHonestUnavailableBody(PlayerMenuPage route)
     {
         using var scope = new InventoryCompositionTestScope();
         using var items = new PlayerItemClientService();
@@ -188,7 +188,8 @@ public sealed class PlayerMenuHubCompositionTests
         Assert.Contains("Loading page…", scope.Text);
         hub.Receive(new OpenHubPacket()); scope.Text.Clear();
         draw.Invoke(shell, new object[] { context });
-        Assert.Contains("This page is not available yet.", scope.Text);
+        Assert.Contains(route == PlayerMenuPage.Stats ? "Character stats are not available yet."
+            : route == PlayerMenuPage.Skills ? "No classes are available yet." : "This page is not available yet.", scope.Text);
         Assert.DoesNotContain("This page is unavailable in inventory inspection.", scope.Text);
         hub.Receive(new TalentTreeSnapshotPacket { SchemaVersion = -1 }); scope.Text.Clear();
         draw.Invoke(shell, new object[] { context });

@@ -24,6 +24,9 @@ public sealed class HubPageClientService : IDisposable
     private LibraryEntryPacket[] libraryEntries = Array.Empty<LibraryEntryPacket>();
     private bool treeRequestPending, disposed;
     public HubPageActions Actions { get; }
+    public StatsPage Stats { get; }
+    public SkillsPage Skills { get; }
+    public long SnapshotRevision { get; private set; }
     public HubPageState State { get; set; } = new();
     public OpenHubPacket? Packet => packet == null ? null : Copy(packet);
     public TalentTreeSnapshotPacket? TalentTree => talentTree == null ? null : Copy(talentTree);
@@ -34,7 +37,10 @@ public sealed class HubPageClientService : IDisposable
     public event Action? Changed;
 
     public HubPageClientService(Action<OpenHubRequestPacket> requestHub, HubPageActions actions)
-    { this.requestHub = requestHub ?? throw new ArgumentNullException(nameof(requestHub)); Actions = actions ?? throw new ArgumentNullException(nameof(actions)); }
+    {
+        this.requestHub = requestHub ?? throw new ArgumentNullException(nameof(requestHub)); Actions = actions ?? throw new ArgumentNullException(nameof(actions));
+        Stats = new(this); Skills = new(this);
+    }
 
     // Include explicit zero/false values: wire serialization can omit them and reapply DTO initializers.
     private static T Copy<T>(T value) => JsonSerializer.Deserialize<T>(JsonSerializer.SerializeToUtf8Bytes(value, copyOptions), copyOptions)!;
@@ -65,6 +71,8 @@ public sealed class HubPageClientService : IDisposable
         resources = packet.Resources;
         libraryEntries = packet.Entries;
         Loading = false; ErrorKey = "";
+        SnapshotRevision++;
+        Stats.Receive(packet); Skills.Receive(Copy(packet));
         RequestMissingTree();
         Changed?.Invoke();
     }
@@ -123,6 +131,7 @@ public sealed class HubPageClientService : IDisposable
     {
         packet = null; talentTree = null; resources = null; libraryEntries = Array.Empty<LibraryEntryPacket>();
         State = new(); Loading = false; treeRequestPending = false; ErrorKey = "";
+        Stats.Reset(); Skills.Reset();
         Changed?.Invoke();
     }
     public void Dispose()
