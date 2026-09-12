@@ -16,6 +16,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     private readonly PlayerMenuGallery? gallery;
     private InventoryPage? Inventory => controller.Inventory;
     private bool inventoryDirty;
+    private bool hubDirty;
     private bool partyDirty;
     private bool composedPartyOpen;
     private bool composedPartySearch;
@@ -31,6 +32,15 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         if (controller.Inventory == null && controller.Party == null) throw new ArgumentException("An inventory or party adapter is required.", nameof(controller));
         if (controller.Inventory != null) controller.Inventory.Changed += OnInventoryChanged;
         if (controller.Party != null) controller.Party.Changed += OnPartyChanged;
+        if (controller.Hub != null) controller.Hub.Changed += OnHubChanged;
+    }
+    private void OnHubChanged() => hubDirty = true;
+    public void ShowPage(PlayerMenuPage page)
+    {
+        if (!controller.Session.IsOpen) controller.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        controller.Navigate(page);
+        if (IsOpened()) Compose();
+        else if (!TryOpen()) controller.Close();
     }
     private void OnInventoryChanged() => inventoryDirty = true;
     private void OnPartyChanged() => partyDirty = true;
@@ -52,7 +62,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         }
         bool returning = composedPartyOpen && !partyOpen;
         composedPartyOpen = partyOpen;
-        shell = new(capi, bounds, layout, controller.Session, gallery, OnIntent, Inventory, controller.Party);
+        shell = new(capi, bounds, layout, controller.Session, gallery, OnIntent, Inventory, controller.Party, hub: controller.Hub);
         SingleComposer?.Dispose();
         var composer = capi.Gui.CreateCompo(gallery != null ? "vrpg-player-menu-gallery" : "vrpg-player-menu", ElementStdBounds.AutosizedMainDialog)
             .BeginChildElements(ElementBounds.Fixed(0, 0, layout.Width, layout.Height))
@@ -110,12 +120,13 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
             return;
         }
         if (intent == "close") { TryClose(); return; }
-        if (Inventory != null && HandleInventoryIntent(intent)) { Compose(); return; }
+        if (intent == "hub:retry") { controller.Hub?.RequestSnapshot(); Compose(); return; }
+        if (Inventory != null && session.Page == PlayerMenuPage.Inventory && HandleInventoryIntent(intent)) { Compose(); return; }
         if (intent == "back") { if (controller.Party?.State.IsOpen != true) session.Update(session.Current with { Focus = "" }); controller.Back(layout?.AlternatePanes == true); if (!session.IsOpen) { TryClose(); return; } }
         else if (intent.StartsWith("page:", StringComparison.Ordinal))
         {
             if (controller.Party?.State.IsOpen == true && controller.Party.Close() is { } context) session.Update(context);
-            session.Navigate(Enum.Parse<PlayerMenuPage>(intent[5..]));
+            controller.Navigate(Enum.Parse<PlayerMenuPage>(intent[5..]));
         }
         else if (intent.StartsWith("entry:", StringComparison.Ordinal)) session.Update(session.Current with { SelectedEntry = intent[6..], InspectorOnly = layout?.AlternatePanes == true, InspectorScroll = 0 });
         else if (intent == "category-next")
@@ -215,6 +226,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     public override void OnRenderGUI(float deltaTime)
     {
+        if (hubDirty) { hubDirty = false; shell?.Refresh(); }
         if (partyDirty)
         {
             partyDirty = false;
@@ -234,6 +246,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     public override void Dispose()
     {
+        if (controller.Hub != null) controller.Hub.Changed -= OnHubChanged;
         if (Inventory != null) Inventory.Changed -= OnInventoryChanged;
         if (controller.Party != null) { controller.Party.Changed -= OnPartyChanged; controller.Party.Dispose(); }
         base.Dispose();

@@ -9,6 +9,28 @@ namespace VRPG.Tests;
 public sealed class PlayerMenuSessionStateTests
 {
     [Fact]
+    public void HubRoutesShareConnectionStateAcrossCloseAndClearOnWorldReset()
+    {
+        int requests = 0;
+        using var hub = new VRPG.Client.PlayerMenu.Hub.HubPageClientService(_ => requests++, new());
+        var controller = new PlayerMenuController(new PlayerItemClientService(), hub);
+        controller.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        Assert.Equal(0, requests);
+        controller.Navigate(PlayerMenuPage.Skills);
+        controller.Navigate(PlayerMenuPage.Library);
+        Assert.Equal(1, requests);
+        hub.Receive(new VRPG.Network.OpenHubPacket());
+        hub.State = hub.State with { SelectedClass = "warrior", LibraryQuery = "axe" };
+        controller.Close(); controller.Enter(PlayerMenuEntryPoint.LegacyHubMenu);
+        Assert.Equal(PlayerMenuPage.Stats, controller.Session.Page);
+        Assert.Equal(1, requests); Assert.Equal("axe", hub.State.LibraryQuery);
+        foreach (var page in System.Enum.GetValues<PlayerMenuPage>())
+        { controller.Navigate(page); Assert.Equal(page, controller.Session.Page); }
+        controller.ResetForWorldChange();
+        Assert.Null(hub.Packet); Assert.Equal("", hub.State.SelectedClass);
+    }
+
+    [Fact]
     public void WideCharacterBackCollapsesVisibleEquipmentWithoutAnInvisibleExtraStep()
     {
         var state = new PlayerMenuSessionState();

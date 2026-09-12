@@ -9,6 +9,7 @@ using VRPG.Inventory;
 using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Network;
 using VRPG.Client.PlayerMenu.Party;
+using VRPG.Client.PlayerMenu.Hub;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -22,6 +23,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     private readonly PlayerMenuGallery? gallery;
     private readonly InventoryPage? inventory;
     private readonly PartyPanel? party;
+    private readonly HubPageClientService? hub;
     private readonly Action<string> intent;
     private readonly BoundedItemStackRenderer itemRenderer;
     private readonly PlayerItemDisplayNameResolver displayNames;
@@ -37,11 +39,13 @@ public sealed partial class PlayerMenuShell : GuiElement
     public override bool Focusable => true;
     public PlayerMenuShell(ICoreClientAPI api, ElementBounds bounds, PlayerMenuLayout layout,
         PlayerMenuSessionState session, PlayerMenuGallery? gallery, Action<string> intent, InventoryPage? inventory = null, PartyPanel? party = null,
-        System.Func<PlayerItemEntryPacket, string?>? localizedCollectibleName = null, Action<string>? textDrawn = null) : base(api, bounds)
+        System.Func<PlayerItemEntryPacket, string?>? localizedCollectibleName = null, Action<string>? textDrawn = null,
+        HubPageClientService? hub = null) : base(api, bounds)
     {
         Layout = layout; this.session = session; this.gallery = gallery; this.intent = intent;
         this.inventory = inventory;
         this.party = party;
+        this.hub = hub;
         displayNames = new(() => T("unknown-item"));
         this.localizedCollectibleName = localizedCollectibleName ?? ResolveLocalizedCollectibleName;
         this.textDrawn = textDrawn;
@@ -76,7 +80,7 @@ public sealed partial class PlayerMenuShell : GuiElement
         if (party != null) Button(ctx, "party", "party", PartyHeaderBounds, PartyOpen ? MenuControlState.Selected : MenuControlState.Default);
         PlayerMenuDrawing.DrawSectionHeading(ctx, T(PartyOpen ? "party" : gallery != null ? "gallery-title" : session.Page.ToString().ToLowerInvariant()),
             Layout.Title, Layout.AlternatePanes ? 17 : 21);
-        if (inventory != null && Layout.AlternatePanes && !PartyOpen)
+        if (inventory != null && session.Page == PlayerMenuPage.Inventory && Layout.AlternatePanes && !PartyOpen)
             Button(ctx, "inspect", "inspect", new(Layout.Back.Right + 6, 10, Math.Max(0, (party == null ? Layout.Close.X : PartyHeaderBounds.X) - Layout.Back.Right - 12), 34));
         foreach (var page in Enum.GetValues<PlayerMenuPage>())
         {
@@ -91,10 +95,9 @@ public sealed partial class PlayerMenuShell : GuiElement
         bool inspect = !Layout.AlternatePanes || session.Current.InspectorOnly;
         bool browse = !Layout.AlternatePanes || !session.Current.InspectorOnly;
         if (PartyOpen) { DrawParty(ctx); return; }
+        if (gallery == null && session.Page != PlayerMenuPage.Inventory) { DrawHubState(ctx); return; }
         if (inventory != null)
         {
-            if (session.Page != PlayerMenuPage.Inventory)
-            { Text(ctx, T("page-unavailable"), Layout.Browser, 18); return; }
             if (browse) DrawInventoryBrowser(ctx);
             if (inspect) DrawInventoryInspector(ctx);
             return;
@@ -111,6 +114,14 @@ public sealed partial class PlayerMenuShell : GuiElement
             Button(ctx, "motion", session.ReducedMotion ? "motion-reduced" : "motion-normal",
                 Layout.PrimaryAction with { X = Layout.PrimaryAction.X + 2 * third + 8, Width = third });
         }
+    }
+    private void DrawHubState(Context ctx)
+    {
+        var b = Layout.Browser;
+        PlayerMenuDrawing.DrawWell(ctx, b);
+        string key = hub?.ErrorKey.Length > 0 ? hub.ErrorKey : hub?.Loading == true ? "hub-loading" : "hub-unavailable";
+        Text(ctx, T(key), new(b.X + 18, b.Y + 18, b.Width - 36, Math.Max(0, b.Height - 36)), 18);
+        if (hub?.ErrorKey.Length > 0) Button(ctx, "hub:retry", "retry", Layout.PrimaryAction);
     }
     private void DrawBrowser(Context ctx)
     {
@@ -468,7 +479,7 @@ public sealed partial class PlayerMenuShell : GuiElement
             (int)GlKeys.End => PlayerMenuBrowseKey.End,
             _ => null
         };
-        if (!PartyOpen && (inventory != null || gallery != null) && browseKey != null && PlayerMenuNavigation.BrowserHasKeyboardFocus(session.Current, Layout.AlternatePanes))
+        if (!PartyOpen && (inventory != null && session.Page == PlayerMenuPage.Inventory || gallery != null) && browseKey != null && PlayerMenuNavigation.BrowserHasKeyboardFocus(session.Current, Layout.AlternatePanes))
         {
             session.Update(InventoryItemGrid.MoveFocus(session.Current,
                 BrowseIds(), browseKey.Value, inventory != null ? Layout.InventoryVisibleRows : Layout.VisibleRows, inventory?.View.Grid == true && inventory.Query.Category == PlayerItemCategories.Gear));
@@ -504,7 +515,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     {
         int amount = Math.Sign(args.deltaPrecise == 0 ? args.delta : args.deltaPrecise);
         if (PartyOpen) { ScrollParty(-amount, api.Input.MouseX, api.Input.MouseY); args.SetHandled(); Refresh(); return; }
-        if (gallery == null && inventory == null) return;
+        if (gallery == null && (inventory == null || session.Page != PlayerMenuPage.Inventory)) return;
         if (Layout.Inspector.Contains((api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale)
             && (!Layout.AlternatePanes || session.Current.InspectorOnly))
         {

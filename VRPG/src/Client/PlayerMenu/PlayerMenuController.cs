@@ -2,6 +2,7 @@ using System;
 using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Network;
 using VRPG.Client.PlayerMenu.Party;
+using VRPG.Client.PlayerMenu.Hub;
 
 namespace VRPG.Client.PlayerMenu;
 
@@ -14,8 +15,11 @@ public sealed class PlayerMenuController
     public PlayerItemClientService Items { get; }
     public InventoryPage? Inventory { get; }
     public PartyPanel? Party { get; }
+    public HubPageClientService? Hub { get; }
     public event Action? Changed;
     public PlayerMenuController(PlayerItemClientService connectionItems) { Items = connectionItems; nowMilliseconds = static () => 0; }
+    public PlayerMenuController(PlayerItemClientService connectionItems, HubPageClientService hub) : this(connectionItems) { Hub = hub; }
+    public PlayerMenuController(InventoryPage inventory, Func<double> worldClock, HubPageClientService hub) : this(inventory, worldClock) { Hub = hub; }
     public PlayerMenuController(PlayerItemClientService connectionItems, PartyPanel party) : this(connectionItems) { Party = party; }
     public PlayerMenuController(InventoryPage inventory, PartyPanel party) : this(inventory) { Party = party; }
     public void OpenParty()
@@ -31,6 +35,7 @@ public sealed class PlayerMenuController
     {
         if (textInputFocused) return;
         Session.Enter(entry);
+        RequestPageSnapshot();
         if (!Session.IsOpen) { Party?.Close(); Items.CloseMenu(); }
         else if (Inventory != null && entry == PlayerMenuEntryPoint.CharacterMenu)
             ChangeInventoryQuery(Inventory.Query with { Category = VRPG.Inventory.PlayerItemCategories.Gear,
@@ -38,6 +43,16 @@ public sealed class PlayerMenuController
         Changed?.Invoke();
     }
     public void Close() { Party?.Close(); Session.Close(); Items.CloseMenu(); Changed?.Invoke(); }
+    public void Navigate(PlayerMenuPage page)
+    {
+        if (!Enum.IsDefined(page)) return;
+        if (Party?.State.IsOpen == true && Party.Close() is { } context) Session.Update(context);
+        Session.Navigate(page); RequestPageSnapshot(); Changed?.Invoke();
+    }
+    private void RequestPageSnapshot()
+    {
+        if (Session.IsOpen && Session.Page != PlayerMenuPage.Inventory && Hub?.HasSnapshot == false) Hub.RequestSnapshot();
+    }
     public void Back(bool alternatePanes = false)
     {
         if (Party?.State.IsOpen == true)
@@ -72,6 +87,7 @@ public sealed class PlayerMenuController
     }
     private void ResetRetainedWorldState()
     {
+        Hub?.ResetConnection();
         Inventory?.ResetForWorld();
         Session.ResetForWorldChange();
     }

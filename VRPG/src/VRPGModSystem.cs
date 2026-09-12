@@ -8,6 +8,7 @@ using VRPG.Client.UI;
 using VRPG.Client.Patches;
 using VRPG.Client.PlayerMenu;
 using VRPG.Client.PlayerMenu.Inventory;
+using VRPG.Client.PlayerMenu.Hub;
 using VRPG.Client.PlayerMenu.Party;
 using VRPG.Client.Interactions;
 using VRPG.Client.Movement;
@@ -52,6 +53,7 @@ public sealed class VRPGModSystem : ModSystem
     private GuiDialogVrpgPlayerMenu? clientPartyMenu;
     private PlayerMenuController? partyMenuController;
     private PlayerItemClientService? clientPlayerItems;
+    private HubPageClientService? clientHubPages;
     private InventoryPage? clientInventoryPage;
     private GuiDialogVrpgPlayerMenu? clientPlayerMenu;
     private PlayerMenuController? clientPlayerMenuController;
@@ -229,12 +231,12 @@ public sealed class VRPGModSystem : ModSystem
                     return TextCommandResult.Success();
                 });
         clientChannel
-            .SetMessageHandler<OpenHubPacket>(packet => OpenHubDialog(api, packet))
-            .SetMessageHandler<TalentTreeSnapshotPacket>(packet => ReceiveTalentTreeSnapshot(api, packet))
-            .SetMessageHandler<TalentProgressPacket>(packet => clientHubDialog?.UpdateTalentProgress(packet.Talents))
+            .SetMessageHandler<OpenHubPacket>(packet => clientHubPages?.Receive(packet))
+            .SetMessageHandler<TalentTreeSnapshotPacket>(packet => ReceivePlayerMenuTalentTree(api, packet))
+            .SetMessageHandler<TalentProgressPacket>(packet => clientHubPages?.Receive(packet))
             .SetMessageHandler<TalentEditorSnapshotPacket>(packet => OpenTalentEditorDialog(api, packet))
-            .SetMessageHandler<OpenLibraryPacket>(packet => OpenLibraryDialog(api, packet))
-            .SetMessageHandler<RpgResourcePacket>(packet => OpenResourceHudPacket(api, packet))
+            .SetMessageHandler<OpenLibraryPacket>(packet => OpenPlayerMenuLibrary(packet))
+            .SetMessageHandler<RpgResourcePacket>(packet => ReceivePlayerResources(api, packet))
             .SetMessageHandler<SkillLoadoutPacket>(packet => OpenSkillHotbarPacket(api, packet))
             .SetMessageHandler<MovementEffectPacket>(packet => clientMovementEffects?.Receive(packet))
             .SetMessageHandler<SkillChannelStatePacket>(packet => clientChannelBar?.SetState(packet))
@@ -366,7 +368,7 @@ public sealed class VRPGModSystem : ModSystem
             {
                 EnsureDataLoaded(api);
                 OpenLibraryPacket packet = BuildLibraryPacket();
-                OpenLibraryDialog(api, packet);
+                OpenPlayerMenuLibrary(packet);
                 return TextCommandResult.Success("Opened local VRPG library UI with " + packet.Entries.Length + " entries.");
             });
     }
@@ -376,7 +378,32 @@ public sealed class VRPGModSystem : ModSystem
         clientPlayerItems = new PlayerItemClientService();
         clientPlayerItems.Attach(channel);
         clientInventoryPage = new InventoryPage(clientPlayerItems);
-        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage, () => api.World.ElapsedMilliseconds);
+        clientHubPages = new HubPageClientService(packet => channel.SendPacket(packet), new HubPageActions
+        {
+            AdjustStat = (statCode, delta) => channel.SendPacket(new StatAllocationRequestPacket { StatCode = statCode, Delta = delta }),
+            UpdateOptions = (cooldown, resources) => channel.SendPacket(new UpdateHubOptionsPacket
+                { ShowCooldownNotifications = cooldown, ShowResourceNotifications = resources }),
+            UpdateHotbar = (locked, slots) => SetClientHotbarOptions(api, locked, slots),
+            UpdateAutoThrow = enabled => SetClientAutoThrow(api, enabled),
+            ResourceHud = config.Modules.Rpg.Hud,
+            SetResourceHudLocked = locked => SetClientResourceHudLocked(api, locked),
+            ResizeResourceHud = (width, height) => ResizeClientResourceHud(api, width, height),
+            ResetResourceHud = () => ResetClientResourceHud(api),
+            EquipSkill = (slot, skill) => channel.SendPacket(new SkillEquipRequestPacket { Slot = slot, SkillCode = skill }),
+            ApplyTalentPlan = (allocate, refund) => channel.SendPacket(new TalentPlanRequestPacket { Allocate = allocate, Refund = refund }),
+            OpenTalentEditor = () => channel.SendPacket(new TalentEditorOpenRequestPacket()),
+            CombatVisuals = config.Modules.Rpg.CombatVisuals,
+            PersistClientConfig = () => PersistClientConfig(api),
+            RequestTalentTree = packet => channel.SendPacket(packet),
+            ApplyClientOptions = options =>
+            {
+                options.SkillHotbarLocked = config.Modules.Rpg.SkillHotbar.Locked;
+                options.SkillHotbarSlots = config.Modules.Rpg.SkillHotbar.SlotCount;
+                options.HoldToRepeatChargedSkills = config.Modules.Rpg.SkillHotbar.HoldToRepeatChargedSkills;
+            },
+            ReportError = error => api.Logger.Error("[VRPG] Player menu update failed: {0}", error)
+        });
+        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage, () => api.World.ElapsedMilliseconds, clientHubPages);
         clientPlayerMenu = new(api, clientPlayerMenuController);
         clientPlayerMenuReplacement = new(api, clientPlayerMenuController, clientPlayerMenu);
         clientPlayerMenuEvents = api.Event;
@@ -397,6 +424,7 @@ public sealed class VRPGModSystem : ModSystem
     {
         clientPlayerMenuCapabilities = PlayerMenuCapabilityState.Unavailable;
         clientPlayerMenuReplacement?.LeaveWorld();
+        clientTalentTree = new();
     }
 
     public override void Dispose()
@@ -435,6 +463,8 @@ public sealed class VRPGModSystem : ModSystem
         clientPlayerMenuReplacement = null;
         clientPlayerMenu?.Dispose();
         clientPlayerMenu = null;
+        clientHubPages?.Dispose();
+        clientHubPages = null;
         clientInventoryPage?.Dispose();
         clientInventoryPage = null;
         clientPlayerItems?.Dispose();
@@ -1057,23 +1087,12 @@ public sealed class VRPGModSystem : ModSystem
 
     private bool OnHubHotkey(KeyCombination keyCombination)
     {
-        if (clientHubDialog?.IsOpened() == true)
+        if (clientPlayerMenu?.IsOpened() == true)
         {
-            clientHubDialog.TryClose();
+            clientPlayerMenu.TryClose();
             return true;
         }
-
-        if (clientLibraryDialog?.IsOpened() == true)
-        {
-            clientLibraryDialog.TryClose();
-            return true;
-        }
-
-        clientChannel?.SendPacket(new OpenHubRequestPacket
-        {
-            KnownTalentTreeCode = clientTalentTree.TreeCode,
-            KnownTalentTreeHash = clientTalentTree.ContentHash
-        });
+        clientPlayerMenu?.ShowPage(PlayerMenuPage.Stats);
         return true;
     }
 
@@ -1429,6 +1448,20 @@ public sealed class VRPGModSystem : ModSystem
         clientHubDialog?.UpdateTalentTree(packet);
     }
 
+    private void ReceivePlayerMenuTalentTree(ICoreClientAPI api, TalentTreeSnapshotPacket packet)
+    {
+        clientHubPages?.Receive(packet);
+        // Keep the privileged/legacy authoring reference current during the migration.
+        if (packet.SchemaVersion == TalentTreeSnapshotPacket.CurrentSchemaVersion && packet.Nodes != null
+            && packet.Nodes.Length <= TalentGraphComponent.MaximumNodeCount) ReceiveTalentTreeSnapshot(api, packet);
+    }
+
+    private void OpenPlayerMenuLibrary(OpenLibraryPacket packet)
+    {
+        clientHubPages?.Receive(packet);
+        clientPlayerMenu?.ShowPage(PlayerMenuPage.Library);
+    }
+
     private void OpenHubDialog(ICoreClientAPI api, OpenHubPacket packet)
     {
         packet.Options.SkillHotbarLocked = config.Modules.Rpg.SkillHotbar.Locked;
@@ -1521,8 +1554,9 @@ public sealed class VRPGModSystem : ModSystem
         clientLibraryDialog.TryOpen();
     }
 
-    private void OpenResourceHudPacket(ICoreClientAPI api, RpgResourcePacket packet)
+    private void ReceivePlayerResources(ICoreClientAPI api, RpgResourcePacket packet)
     {
+        clientHubPages?.Receive(packet);
         clientHubDialog?.UpdateResources(packet);
 
         if (config.Modules.Rpg.Hud.UnifiedCombatConsole)
