@@ -25,14 +25,23 @@ public sealed class PlayerItemDetailService
         }
         if (detail.Prototype.Category == PlayerItemCategories.Gear)
             result.RejectionCode = comparison.Compare(store, state, request.EntryId, request.RoleCode, result);
-        result.Actions = new[] { new PlayerItemActionAvailability { Action = PlayerItemAction.Equip,
-            Enabled = false, ReasonCode = result.RejectionCode.Length > 0 ? result.RejectionCode : "unsupported-action" } };
         if (store.Revision != result.StoreRevision)
         {
             result.Comparison = Array.Empty<PlayerItemComparisonPacket>();
             result.RejectionCode = "stale-store";
         }
+        result.Actions = EquipmentActions(detail, result);
         return result;
+    }
+
+    private static PlayerItemActionAvailability[] EquipmentActions(PlayerItemDetail detail, PlayerItemDetailResult result)
+    {
+        if (detail.Prototype.Category != PlayerItemCategories.Gear || result.RoleCode.Length == 0)
+            return Array.Empty<PlayerItemActionAvailability>();
+        PlayerItemAction action = detail.Location == PlayerItemLocation.Equipped
+            ? PlayerItemAction.Unequip : PlayerItemAction.Equip;
+        string reason = result.RejectionCode;
+        return new[] { new PlayerItemActionAvailability { Action = action, Enabled = reason.Length == 0, ReasonCode = reason } };
     }
 
     public static string Validate(PlayerItemDetailRequest request)

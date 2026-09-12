@@ -7,6 +7,7 @@ using VRPG.Client;
 using VRPG.Client.UI;
 using VRPG.Client.Patches;
 using VRPG.Client.PlayerMenu;
+using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Client.PlayerMenu.Party;
 using VRPG.Client.Interactions;
 using VRPG.Client.Movement;
@@ -50,6 +51,10 @@ public sealed class VRPGModSystem : ModSystem
     private GuiDialogVRPGStarterPreview? clientStarterPreviewDialog;
     private GuiDialogVrpgPlayerMenu? clientPartyMenu;
     private PlayerMenuController? partyMenuController;
+    private PlayerItemClientService? clientPlayerItems;
+    private InventoryPage? clientInventoryPage;
+    private GuiDialogVrpgPlayerMenu? clientPlayerMenu;
+    private PlayerMenuController? clientPlayerMenuController;
     private HudElementVRPGResources? clientResourceHud;
     private HudElementVRPGCombatConsole? clientCombatConsole;
     private HudElementVRPGEntityHealthBars? clientEntityHud;
@@ -77,6 +82,7 @@ public sealed class VRPGModSystem : ModSystem
     private readonly Dictionary<int, HeldRepeatCast> heldRepeatCasts = new Dictionary<int, HeldRepeatCast>();
     private ICoreClientAPI? clientApi;
     private long skillInputTickListenerId;
+    private long playerItemTickListenerId;
     private PlayerMenuCapabilityState clientPlayerMenuCapabilities = PlayerMenuCapabilityState.Unavailable;
     private OnboardingStatePacket? clientOnboardingState;
     private bool clientStarterPreviewDismissed;
@@ -197,6 +203,12 @@ public sealed class VRPGModSystem : ModSystem
         clientMovementEffects = new ClientMovementEffectController(api);
 
         clientChannel = VRPGNetwork.RegisterClient(api);
+        clientPlayerItems = new PlayerItemClientService();
+        clientPlayerItems.Attach(clientChannel);
+        clientInventoryPage = new InventoryPage(clientPlayerItems);
+        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage);
+        playerItemTickListenerId = api.Event.RegisterGameTickListener(_ =>
+            clientInventoryPage?.Pump(api.World.ElapsedMilliseconds), 25);
         PartyClient?.Dispose();
         PartyClient = new PartyClientService(clientChannel, api.Event);
         if (Environment.GetEnvironmentVariable("VRPG_PARTY_MENU") == "1")
@@ -207,6 +219,14 @@ public sealed class VRPGModSystem : ModSystem
                     clientPartyMenu ??= new(api, partyMenuController);
                     partyMenuController.OpenParty();
                     clientPartyMenu.TryOpen();
+                    return TextCommandResult.Success();
+                });
+        if (Environment.GetEnvironmentVariable("VRPG_PLAYER_MENU") == "1")
+            api.ChatCommands.Create("vrpgplayermenu").WithDescription(Lang.Get("vrpg:menu-test-command"))
+                .HandleWith(_ =>
+                {
+                    clientPlayerMenu ??= new(api, clientPlayerMenuController!);
+                    clientPlayerMenu.TryOpen();
                     return TextCommandResult.Success();
                 });
         clientChannel
@@ -380,6 +400,13 @@ public sealed class VRPGModSystem : ModSystem
         clientPartyMenu?.Dispose();
         clientPartyMenu = null;
         partyMenuController = null;
+        clientPlayerMenu?.Dispose();
+        clientPlayerMenu = null;
+        clientInventoryPage?.Dispose();
+        clientInventoryPage = null;
+        clientPlayerItems?.ResetConnection();
+        clientPlayerItems = null;
+        clientPlayerMenuController = null;
         PartyClient?.Dispose();
         PartyClient = null;
         clientHubDialog?.TryClose();
@@ -431,6 +458,11 @@ public sealed class VRPGModSystem : ModSystem
             clientApi.Event.UnregisterGameTickListener(skillInputTickListenerId);
         }
         skillInputTickListenerId = 0;
+        if (clientApi != null && playerItemTickListenerId != 0)
+        {
+            clientApi.Event.UnregisterGameTickListener(playerItemTickListenerId);
+        }
+        playerItemTickListenerId = 0;
         combatHeldItemController?.Deactivate();
         combatHeldItemController = null;
         if (combatInteractionController != null && clientInteractionPrompt != null)

@@ -19,9 +19,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     private bool partyDirty;
     private bool composedPartyOpen;
     private bool composedPartySearch;
-    private string quantityText = "";
     private bool restoreInventorySearchFocus;
-    private bool restoreInventoryQuantityFocus;
     private PlayerMenuShell? shell;
     private PlayerMenuLayout? layout;
     public override string? ToggleKeyCombinationCode => null;
@@ -50,9 +48,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         bool partyOpen = controller.Party?.State.IsOpen == true;
         if (!composedPartyOpen && partyOpen)
         {
-            quantityText = SingleComposer?.GetTextInput("quantity")?.GetText() ?? quantityText;
             restoreInventorySearchFocus = SingleComposer?.GetTextInput("search")?.HasFocus == true || controller.Party?.State.ReturnContext?.Focus == "search";
-            restoreInventoryQuantityFocus = SingleComposer?.GetTextInput("quantity")?.HasFocus == true || controller.Party?.State.ReturnContext?.Focus == "quantity";
         }
         bool returning = composedPartyOpen && !partyOpen;
         composedPartyOpen = partyOpen;
@@ -73,12 +69,6 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
                 shell?.Refresh();
             }, CairoFont.WhiteSmallishText(), "search");
         }
-        if (!partyOpen && Inventory != null && controller.Session.Page == PlayerMenuPage.Inventory && (!layout.AlternatePanes || controller.Session.Current.InspectorOnly))
-        {
-            var field = layout.PrimaryAction;
-            composer.AddTextInput(ElementBounds.Fixed(field.X, field.Y, field.Width * .56, field.Height),
-                _ => controller.Session.Update(controller.Session.Current with { Focus = "quantity" }), CairoFont.WhiteSmallishText(), "quantity");
-        }
         composedPartySearch = controller.Party?.ShowSearch(layout.AlternatePanes) == true;
         if (composedPartySearch)
         {
@@ -93,14 +83,12 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         var search = SingleComposer.GetTextInput("search");
         search?.SetValue(controller.Session.Current.Search, false);
         search?.SetPlaceHolderText(PlayerMenuShell.T(Inventory == null ? "search" : "item-search"));
-        SingleComposer.GetTextInput("quantity")?.SetValue(returning ? quantityText : Inventory?.View.Selected is { } row
-            ? InventoryItemRow.ExactQuantity(Inventory.View.Selection.Amounts.TryGetValue(row.EntryId, out long chosen) ? chosen : row.Quantity - row.ReservedQuantity) : "", false);
         SingleComposer.GetTextInput("party-search")?.SetValue(controller.Party?.State.Search ?? "", false);
         SingleComposer.GetTextInput("party-search")?.SetPlaceHolderText(PlayerMenuShell.T("party-search-hint"));
         if (returning)
         {
-            var input = SingleComposer.GetTextInput(restoreInventoryQuantityFocus ? "quantity" : "search");
-            if ((restoreInventoryQuantityFocus || restoreInventorySearchFocus) && input != null) SingleComposer.FocusElement(input.TabIndex);
+            var input = SingleComposer.GetTextInput("search");
+            if (restoreInventorySearchFocus && input != null) SingleComposer.FocusElement(input.TabIndex);
         }
     }
     private void OnIntent(string intent)
@@ -115,9 +103,9 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         if (intent == "party") { controller.OpenParty(); Compose(); return; }
         if (intent.StartsWith("party:", StringComparison.Ordinal))
         { controller.Party?.Handle(intent[6..]); Compose(); return; }
-        if (intent is "focus-search" or "search" or "quantity")
+        if (intent is "focus-search" or "search")
         {
-            var input = SingleComposer?.GetTextInput(intent == "quantity" ? "quantity" : "search");
+            var input = SingleComposer?.GetTextInput("search");
             if (input != null) SingleComposer?.FocusElement(input.TabIndex);
             return;
         }
@@ -157,14 +145,8 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
             page.Select(intent[6..]);
             session.Update(session.Current with { SelectedEntry = page.View.SelectedId, InspectorOnly = layout?.AlternatePanes == true, InspectorScroll = 0 });
         }
-        else if (intent == "quantity") { var input = SingleComposer?.GetTextInput("quantity"); if (input != null) SingleComposer?.FocusElement(input.TabIndex); }
-        else if (intent == "select-quantity")
-        {
-            if (!page.View.Stale && !page.View.Loading && page.View.Selected is { } row
-                && long.TryParse(SingleComposer?.GetTextInput("quantity")?.GetText(), out long quantity)
-                && page.View.Selection.Set(row, quantity)) page.View.DetailError = "";
-            else page.View.DetailError = "invalid-quantity";
-        }
+        else if (intent == "equip") page.TrySubmitAction(VRPG.Network.PlayerItemAction.Equip, now);
+        else if (intent == "unequip") page.TrySubmitAction(VRPG.Network.PlayerItemAction.Unequip, now);
         else if (intent == "select-page") { if (!page.View.Stale && !page.View.Loading) page.View.Selection.SelectPage(page.View.Entries); }
         else if (intent == "clear-selection") page.View.Selection.Clear();
         else if (intent == "retry-detail") page.Select(page.View.SelectedId);
@@ -204,8 +186,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     public override void OnKeyDown(KeyEvent args)
     {
-        var textField = SingleComposer?.GetTextInput("party-search")?.HasFocus == true ? SingleComposer.GetTextInput("party-search") : SingleComposer?.GetTextInput("quantity")?.HasFocus == true
-            ? SingleComposer.GetTextInput("quantity") : SingleComposer?.GetTextInput("search");
+        var textField = SingleComposer?.GetTextInput("party-search")?.HasFocus == true ? SingleComposer.GetTextInput("party-search") : SingleComposer?.GetTextInput("search");
         bool typing = textField?.HasFocus == true;
         if (args.KeyCode == (int)GlKeys.Escape)
         {
@@ -234,7 +215,6 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     public override void OnRenderGUI(float deltaTime)
     {
-        Inventory?.Pump(Environment.TickCount64);
         if (partyDirty)
         {
             partyDirty = false;
@@ -254,7 +234,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     public override void Dispose()
     {
-        if (Inventory != null) { Inventory.Changed -= OnInventoryChanged; Inventory.Dispose(); }
+        if (Inventory != null) Inventory.Changed -= OnInventoryChanged;
         if (controller.Party != null) { controller.Party.Changed -= OnPartyChanged; controller.Party.Dispose(); }
         base.Dispose();
     }

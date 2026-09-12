@@ -83,6 +83,9 @@ public sealed class GearComparisonServiceTests
         Assert.Equal(88.2f, (float)melee.After, 3);
         Assert.Empty(result.GainedTransformations);
         Assert.Empty(result.LostTransformations);
+        var action = Assert.Single(result.Actions);
+        Assert.Equal(PlayerItemAction.Equip, action.Action);
+        Assert.True(action.Enabled);
         Assert.DoesNotContain(result.Comparison, x => x.StatCode.Contains("score"));
     }
 

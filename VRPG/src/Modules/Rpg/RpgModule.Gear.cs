@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
 using VRPG.Inventory.Gear;
+using VRPG.Inventory.Networking;
+using VRPG.Inventory.Queries;
+using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Stats;
 using VRPG.Modules.Rpg.StatusEffects;
 using Vintagestory.API.Common;
@@ -24,10 +27,22 @@ public sealed partial class RpgModule
         GearReadinessResult result = gearRuntime.ValidateAndRecover(code =>
             !string.IsNullOrWhiteSpace(code) && serverApi.World.GetItem(new AssetLocation(code)) != null);
         if (result.Ready)
+        {
+            InitializePlayerItems();
             serverApi.Logger.Notification("[VRPG/Gear] Ready: {0} validated entries; {1} gear bases. Automatic Evasive Step awaits selected-class authority.",
                 result.ValidEntries, data.GearBases.All.Count);
+        }
         else
             serverApi.Logger.Error("[VRPG/Gear] Unavailable: {0}", result.Error);
+    }
+
+    private void InitializePlayerItems()
+    {
+        if (playerItems != null || itemArchive() is not { IsLoaded: true } archive || skillDamage == null) return;
+        var detail = new PlayerItemDetailService(new GearComparisonService(data, skillDamage,
+            new RpgResourceCalculator(config, talentTree)));
+        playerItems = new PlayerItemNetworkService(archive.Directory, playerStore, new PlayerItemQueryService(), detail, gearRuntime.Equipment);
+        playerItems.Attach(channel);
     }
 
     private void RegisterGearInspection(ICoreServerAPI api)
@@ -71,6 +86,7 @@ public sealed partial class RpgModule
 
     private void OnPlayerLeave(IServerPlayer player)
     {
+        playerItems?.Disconnect(player);
         gearRuntime.RemovePlayer(player.PlayerUID);
         talentEditorDrafts.Remove(player.PlayerUID);
         evasiveStep?.RemovePlayer(player.PlayerUID);

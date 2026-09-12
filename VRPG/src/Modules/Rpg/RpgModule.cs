@@ -10,7 +10,10 @@ using VRPG.Data.Definitions;
 using VRPG.Network;
 using VRPG.Interactions;
 using VRPG.Inventory;
+using VRPG.Inventory.Gear;
+using VRPG.Inventory.Networking;
 using VRPG.Inventory.Persistence;
+using VRPG.Inventory.Queries;
 using VRPG.Modules.Rpg.Combat;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Modules.Rpg.Scaling;
@@ -31,6 +34,7 @@ public sealed partial class RpgModule : IVrpgModule
     private readonly RpgModuleConfig config;
     private readonly VRPGDataRegistry data;
     private readonly IServerNetworkChannel channel;
+    private readonly Func<PlayerItemArchiveService?> itemArchive;
     private readonly RpgGearRuntime gearRuntime;
     private readonly RpgPlayerStore playerStore = new RpgPlayerStore();
     private readonly TalentTreeCatalog talentTree = new TalentTreeCatalog();
@@ -61,6 +65,7 @@ public sealed partial class RpgModule : IVrpgModule
     private Dictionary<string, int> savedTalentCosts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
     private TalentTreeSnapshotPacket activeTalentTree = new TalentTreeSnapshotPacket { TreeCode = "vrpg:default" };
     private readonly Dictionary<string, TalentEditorDraft> talentEditorDrafts = new Dictionary<string, TalentEditorDraft>(StringComparer.OrdinalIgnoreCase);
+    private PlayerItemNetworkService? playerItems;
 
     public RpgModule(
         RpgModuleConfig config,
@@ -71,7 +76,8 @@ public sealed partial class RpgModule : IVrpgModule
         this.config = config;
         this.data = data;
         this.channel = channel;
-        gearRuntime = new RpgGearRuntime(config, data, itemArchive ?? (() => null));
+        this.itemArchive = itemArchive ?? (() => null);
+        gearRuntime = new RpgGearRuntime(config, data, this.itemArchive);
         statusEffects = new StatusEffectTracker(data);
     }
 
@@ -147,6 +153,7 @@ public sealed partial class RpgModule : IVrpgModule
         api.Event.PlayerNowPlaying += SendOnboardingState;
         api.Event.PlayerNowPlaying += NormalizeCharacterRuntime;
         api.Event.PlayerNowPlaying += SendLoadout;
+        api.Event.PlayerNowPlaying += BeginPlayerItemSession;
         api.Event.PlayerNowPlaying += SendPlayerMenuCapabilities;
         groundAreaSnapshotHandler = player => groundAreas?.SendSnapshot(player);
         api.Event.PlayerNowPlaying += groundAreaSnapshotHandler;
@@ -184,9 +191,15 @@ public sealed partial class RpgModule : IVrpgModule
         {
             ProtocolVersion = PlayerMenuCapabilityProtocol.CurrentVersion,
             InventoryReplacementEnabled = replacementEnabled,
-            ItemStoreReady = replacementEnabled && gearRuntime.IsReady,
+            ItemStoreReady = replacementEnabled && gearRuntime.IsReady && playerItems != null,
             DialogReplacementReady = false
         }, player);
+    }
+
+    private void BeginPlayerItemSession(IServerPlayer player)
+    {
+        if (playerItems == null) return;
+        channel.SendPacket(playerItems.Connect(player), player);
     }
 
     private static void NormalizeCharacterRuntime(IServerPlayer player)
@@ -1032,6 +1045,7 @@ public sealed partial class RpgModule : IVrpgModule
             serverApi.Event.PlayerNowPlaying -= SendOnboardingState;
             serverApi.Event.PlayerNowPlaying -= NormalizeCharacterRuntime;
             serverApi.Event.PlayerNowPlaying -= SendPlayerMenuCapabilities;
+            serverApi.Event.PlayerNowPlaying -= BeginPlayerItemSession;
             serverApi.Event.SaveGameLoaded -= ValidateGearReadiness;
             serverApi.Event.PlayerLeave -= OnPlayerLeave;
             serverApi.Event.PlayerDisconnect -= OnPlayerLeave;
@@ -1067,6 +1081,7 @@ public sealed partial class RpgModule : IVrpgModule
         talentEditorDrafts.Clear();
         playerStore.Save();
         playerStore.Clear();
+        playerItems = null;
         PlayerDamageOverTimeContext.Clear();
         RpgDamageSourceTagger.Clear();
         if (resources != null)

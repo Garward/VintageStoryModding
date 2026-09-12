@@ -337,9 +337,6 @@ public sealed partial class PlayerMenuShell : GuiElement
                 }
             }
         }
-        Line(T("selection-count", view.Selection.Amounts.Count, view.Selection.HiddenCount(view.Entries)), 14, PlayerMenuTheme.Muted);
-        Button(ctx, "select-page", "select-page", new(x, y, (width - 4) / 2, 34), view.Loading || view.Stale || view.Entries.Count == 0 ? MenuControlState.Disabled : MenuControlState.Default);
-        Button(ctx, "clear-selection", "clear-selection", new(x + (width + 4) / 2, y, (width - 4) / 2, 34), view.Selection.Amounts.Count > 0 ? MenuControlState.Default : MenuControlState.Disabled); y += 44;
         if (page.Query.Category == PlayerItemCategories.Gear)
         { Button(ctx, "view", view.Grid ? "list-view" : "grid-view", new(x, y, width, 34)); y += 44; }
         if (view.CategoryTotal > 0)
@@ -389,9 +386,19 @@ public sealed partial class PlayerMenuShell : GuiElement
                         after.Value.ToString("0.##", CultureInfo.CurrentCulture), difference.Value.ToString("+0.##;-0.##;0", CultureInfo.CurrentCulture), T("unit-" + before.Unit)));
                     if (comparison.ConditionCode.Length > 0) Line(T("condition-" + comparison.ConditionCode, detail.ReferenceLevel), 13, PlayerMenuTheme.Muted);
                 }
+                foreach (var action in detail.Actions.Where(action => action.Action is PlayerItemAction.Equip or PlayerItemAction.Unequip))
+                {
+                    string actionId = action.Action == PlayerItemAction.Equip ? "equip" : "unequip";
+                    MenuControlState state = page.ActionPending ? MenuControlState.Pending
+                        : action.Enabled ? MenuControlState.Default : MenuControlState.Disabled;
+                    Button(ctx, actionId, actionId, new(x, y, width, 34), state); y += 42;
+                    if (!action.Enabled && action.ReasonCode.Length > 0) Line(ActionText(action.ReasonCode), 14, PlayerMenuTheme.Danger);
+                }
+                if (page.ActionPending) Line(T("action-pending"), 14, PlayerMenuTheme.Muted);
+                if (page.ActionFeedback.Length > 0)
+                    Line(ActionText(page.ActionFeedback), 14, page.ActionFeedbackIsError ? PlayerMenuTheme.Danger : PlayerMenuTheme.Muted);
             }
         }
-        Line(T("read-only"), 14, PlayerMenuTheme.Muted);
         if (Layout.CondensedBrowserChrome || view.CategoryTotal > 0)
         {
             Line(T("browse-options"), 18);
@@ -404,9 +411,6 @@ public sealed partial class PlayerMenuShell : GuiElement
         ctx.Restore();
         for (int i = controls.Count - 1; i >= firstInspectorControl; i--)
             if (controls[i].Bounds.Y < b.Y || controls[i].Bounds.Bottom > b.Bottom) controls.RemoveAt(i);
-        controls.Add(("quantity", Layout.PrimaryAction with { Width = Layout.PrimaryAction.Width * .56 }, new("quantity", "quantity", MenuControlState.Default)));
-        Button(ctx, "select-quantity", "select", Layout.PrimaryAction with { X = Layout.PrimaryAction.X + Layout.PrimaryAction.Width * .58, Width = Layout.PrimaryAction.Width * .42 },
-            view.Selected != null && !view.Loading && !view.Stale && InventoryItemRow.CanSelectQuantity(view.Selected) ? MenuControlState.Default : MenuControlState.Disabled);
     }
     private string StatName(string code)
     {
@@ -416,6 +420,8 @@ public sealed partial class PlayerMenuShell : GuiElement
         var data = api.ModLoader?.GetModSystem<VRPGModSystem>()?.DataRegistry;
         return data?.Stats.Get(code)?.Name ?? data?.Skills.Get(code)?.Name ?? T("additional-effect");
     }
+    private static string ActionText(string code) => Lang.GetIfExists("vrpg:menu-action-" + code)
+        ?? T("action-unavailable");
     private string[] BrowseIds() => inventory != null ? inventory.View.Entries.Select(x => x.EntryId).ToArray()
         : FilteredEntries().Select(x => x.Id).ToArray();
     private string At(int x, int y) => controls.LastOrDefault(control => control.Bounds.Contains((x - Bounds.absX) / RuntimeEnv.GUIScale, (y - Bounds.absY) / RuntimeEnv.GUIScale)).Id ?? "";
