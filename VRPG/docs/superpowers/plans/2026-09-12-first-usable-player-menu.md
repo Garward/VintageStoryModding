@@ -63,7 +63,7 @@ The first pass excludes crafting, storage, trading, drops, loot piles, party UI,
 - [x] Pass focused tests after each task and the full suite at the integration boundary.
 - [x] Clean Release-build and synchronize the installed development mod.
 - [x] Verify disposable dedicated-server startup and clean shutdown without claiming UI acceptance.
-- [ ] Verify a supported client joins and exercises both semantic actions; no client joined during this task.
+- [x] Verify a supported 1.22.7 client joins and exercises both semantic actions. Observed in a live single-player Adventure world on 2026-09-12: Inventory opened the VRPG Inventory view and Character opened it with Equipment expanded; neither route displayed its Vanilla dialog.
 - [ ] Have the user confirm that ordinary Inventory and Character actions never open Vanilla UI before marking replacement ready.
 - [x] Update the authoritative roadmap to distinguish this first usable replacement from later page and gameplay breadth.
 
