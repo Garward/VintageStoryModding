@@ -116,6 +116,7 @@ public sealed class HubPageClientService : IDisposable
         if (disposed) return;
         resources = Copy(next);
         if (packet != null) packet.Resources = resources;
+        Stats.UpdateResources(resources);
         Changed?.Invoke();
     }
 

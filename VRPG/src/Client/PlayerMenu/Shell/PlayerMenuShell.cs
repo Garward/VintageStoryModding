@@ -97,8 +97,8 @@ public sealed partial class PlayerMenuShell : GuiElement
         if (PartyOpen) { DrawParty(ctx); return; }
         if (gallery == null && session.Page != PlayerMenuPage.Inventory)
         {
-            if (hub?.HasSnapshot == true && hub.ErrorKey.Length == 0 && session.Page == PlayerMenuPage.Stats) DrawStats(ctx);
-            else if (hub?.HasSnapshot == true && hub.ErrorKey.Length == 0 && session.Page == PlayerMenuPage.Skills) DrawSkills(ctx);
+            if (StatsSkillsOpen && session.Page == PlayerMenuPage.Stats) DrawStats(ctx);
+            else if (StatsSkillsOpen && session.Page == PlayerMenuPage.Skills) DrawSkills(ctx);
             else DrawHubState(ctx);
             return;
         }
@@ -498,7 +498,8 @@ public sealed partial class PlayerMenuShell : GuiElement
             AdvanceFocus(args.ShiftPressed); args.Handled = true;
         }
         else if (args.KeyCode == (int)GlKeys.Enter && focus.Length > 0) { Activate(focus); args.Handled = true; }
-        else if (args.KeyCode is (int)GlKeys.PageDown or (int)GlKeys.PageUp)
+        else if (args.KeyCode is (int)GlKeys.PageDown or (int)GlKeys.PageUp
+            && (session.Page is not (PlayerMenuPage.Stats or PlayerMenuPage.Skills) || StatsSkillsOpen))
         {
             session.Update(session.Current with { InspectorScroll = Math.Clamp(session.Current.InspectorScroll + (args.KeyCode == (int)GlKeys.PageDown ? 96 : -96), 0, inspectorMaximumScroll) });
             args.Handled = true; Refresh();

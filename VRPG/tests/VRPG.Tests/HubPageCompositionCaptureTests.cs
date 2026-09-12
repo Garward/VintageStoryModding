@@ -20,6 +20,61 @@ public sealed class HubPageCompositionCaptureTests
 {
     private sealed class RootBounds : ElementBounds { public override double absX => 0; public override double absY => 0; }
     [Theory]
+    [InlineData(PlayerMenuPage.Skills, "Unknown skill: vrpg:cleave", "That skill is unavailable. Choose another skill.")]
+    [InlineData(PlayerMenuPage.Stats, "Unknown base stat: vrpg:strength", "That stat is unavailable. Try again later.")]
+    [InlineData(PlayerMenuPage.Skills, "Unavailable while in combat. Try again after combat.", "Unavailable while in combat. Try again after combat.")]
+    [InlineData(PlayerMenuPage.Stats, "No unspent stat points are available.", "No unspent stat points are available.")]
+    [InlineData(PlayerMenuPage.Stats, "System.InvalidOperationException: internal failure", "Could not change stats. Try again.")]
+    public void FeedbackPresentationKeepsHelpfulTextAndHidesDiagnostics(PlayerMenuPage page, string response, string expected)
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new StatsSkillsPageTests.Fixture();
+        if (page == PlayerMenuPage.Stats) f.Hub.Stats.Adjust("strength", 1); else f.Hub.Skills.EquipSelected(0);
+        var packet = StatsSkillsPageTests.Fixture.Packet(); packet.FeedbackError = true; packet.FeedbackMessage = response; f.Hub.Receive(packet);
+        var session = new PlayerMenuSessionState(); session.Navigate(page); session.Update(session.Current with { InspectorOnly = true });
+        var text = new List<string>(); using var shell = Shell(session, f.Hub, 400, 350, text.Add); Draw(shell, 400, 350);
+        string? captureDirectory = Environment.GetEnvironmentVariable("VRPG_HUB_CAPTURE_PATH");
+        if (captureDirectory != null && response.StartsWith("Unknown", StringComparison.Ordinal))
+        {
+            Directory.CreateDirectory(captureDirectory);
+            Draw(shell, 400, 350, System.IO.Path.Combine(captureDirectory, $"{page.ToString().ToLowerInvariant()}-diagnostic-rejection-400x350.png"));
+        }
+        Assert.Contains(expected, text);
+        Assert.DoesNotContain(text, t => t.Contains("vrpg:", StringComparison.Ordinal) || t.Contains("Exception", StringComparison.Ordinal));
+        Assert.Equal(response, f.Hub.Packet!.FeedbackMessage);
+    }
+
+    [Fact]
+    public void ExcessiveServerFeedbackHasBoundedPlayerCopy()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new StatsSkillsPageTests.Fixture();
+        f.Hub.Skills.EquipSelected(0); var packet = StatsSkillsPageTests.Fixture.Packet();
+        packet.FeedbackMessage = new string('x', 5000); packet.FeedbackError = true; f.Hub.Receive(packet);
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Skills);
+        var text = new List<string>(); using var shell = Shell(session, f.Hub, 1120, 680, text.Add); Draw(shell, 1120, 680);
+        Assert.Contains("Could not assign that skill. Try again.", text);
+        Assert.DoesNotContain(text, t => t.Length > 500);
+        Assert.Equal(5000, f.Hub.Packet!.FeedbackMessage.Length);
+    }
+
+    [Theory]
+    [InlineData((int)GlKeys.Down)][InlineData((int)GlKeys.PageDown)][InlineData((int)GlKeys.End)]
+    public void ErrorBodyDoesNotNavigateInvisibleSkills(int keyCode)
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new StatsSkillsPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Skills);
+        using var shell = Shell(session, f.Hub, 400, 350); Draw(shell, 400, 350);
+        f.Hub.Receive(new TalentTreeSnapshotPacket { SchemaVersion = -1 }); Draw(shell, 400, 350);
+        Assert.DoesNotContain(Controls(shell), c => c.Id.StartsWith("skill:", StringComparison.Ordinal));
+        var before = session.Current; var selection = f.Hub.State;
+        var key = new KeyEvent { KeyCode = keyCode }; shell.OnKeyDown(null!, key);
+        Assert.False(key.Handled); Assert.Equal(before, session.Current); Assert.Equal(selection, f.Hub.State);
+        f.Hub.ResetConnection(); Draw(shell, 400, 350);
+        var afterReset = session.Current;
+        key = new KeyEvent { KeyCode = keyCode }; shell.OnKeyDown(null!, key);
+        Assert.False(key.Handled); Assert.Equal(afterReset, session.Current);
+    }
+
+    [Theory]
     [InlineData(1120, 680)][InlineData(800, 520)][InlineData(620, 520)][InlineData(400, 350)]
     public void RealPagesKeepActionsVisibleAndInvokeAuthoritativeCallbacks(int width, int height)
     {

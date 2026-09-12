@@ -8,6 +8,8 @@ namespace VRPG.Client.PlayerMenu.Hub;
 public sealed class StatsPage
 {
     private readonly HubPageClientService hub;
+    private int strength, dexterity, intelligence, availablePoints;
+    private bool hasResources, combatLocked;
     public bool Pending { get; private set; }
     public bool FeedbackError { get; private set; }
     public string Feedback { get; private set; } = "";
@@ -19,10 +21,9 @@ public sealed class StatsPage
         ?? packet.BaseStats.FirstOrDefault(stat => stat.Code == code)?.Value ?? 0);
     public bool CanAdjust(string code, int delta)
     {
-        var packet = hub.Packet;
-        return !Pending && !hub.Skills.Pending && !hub.Loading && IsSupported(code) && delta is -1 or 1
-            && packet?.Resources is { } resources && resources.CombatLockRemainingSeconds <= 0
-            && (delta > 0 ? resources.UnspentStatPoints > 0 : Value(packet, code) > 0);
+        int value = code switch { "strength" => strength, "dexterity" => dexterity, "intelligence" => intelligence, _ => 0 };
+        return !Pending && !hub.Skills.Pending && !hub.Loading && hub.HasSnapshot && hasResources && !combatLocked
+            && IsSupported(code) && delta is -1 or 1 && (delta > 0 ? availablePoints > 0 : value > 0);
     }
     public void Adjust(string code, int delta)
     {
@@ -33,8 +34,20 @@ public sealed class StatsPage
     }
     internal void Receive(OpenHubPacket packet)
     {
+        strength = Value(packet, "strength"); dexterity = Value(packet, "dexterity"); intelligence = Value(packet, "intelligence");
+        UpdateResources(packet.Resources);
         if (!Pending) return;
-        Pending = false; Feedback = packet.FeedbackMessage; FeedbackError = packet.FeedbackError;
+        Pending = false; Feedback = HubPageFeedback.Present(packet.FeedbackMessage, packet.FeedbackError, PlayerMenuPage.Stats); FeedbackError = packet.FeedbackError;
     }
-    internal void Reset() { Pending = false; Feedback = ""; FeedbackCode = ""; FeedbackError = false; }
+    internal void UpdateResources(RpgResourcePacket? resources)
+    {
+        hasResources = resources != null;
+        availablePoints = resources?.UnspentStatPoints ?? 0;
+        combatLocked = resources?.CombatLockRemainingSeconds > 0;
+    }
+    internal void Reset()
+    {
+        Pending = false; Feedback = ""; FeedbackCode = ""; FeedbackError = false;
+        strength = dexterity = intelligence = 0; UpdateResources(null);
+    }
 }

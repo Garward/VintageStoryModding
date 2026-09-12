@@ -13,7 +13,8 @@ namespace VRPG.Client.PlayerMenu.Shell;
 
 public sealed partial class PlayerMenuShell
 {
-    private bool StatsSkillsOpen => hub != null && session.Page is PlayerMenuPage.Stats or PlayerMenuPage.Skills;
+    private bool StatsSkillsOpen => gallery == null && !PartyOpen && hub?.HasSnapshot == true && hub.ErrorKey.Length == 0
+        && session.Page is PlayerMenuPage.Stats or PlayerMenuPage.Skills;
     private MenuRect SkillsList => new(Layout.Browser.X + 8, Layout.Browser.Y + 48, Layout.Browser.Width - 16, Math.Max(0, Layout.Browser.Height - 56));
     private int SkillRows => Math.Max(1, (int)(SkillsList.Height / 52));
     private static string Number(float value) => value.ToString("0.#", CultureInfo.CurrentCulture);

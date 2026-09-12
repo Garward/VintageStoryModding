@@ -8,6 +8,25 @@ namespace VRPG.Tests;
 
 public sealed class StatsSkillsPageTests
 {
+    [Fact]
+    public void SimpleControlQueriesDoNotCloneUnrelatedHubContent()
+    {
+        using var f = new Fixture(); var packet = Fixture.Packet();
+        packet.Classes[0].Description = new string('x', 100000); packet.Options.SkillHotbarSlots = 99; f.Hub.Receive(packet);
+        _ = f.Hub.Skills.VisibleSlots; _ = f.Hub.Stats.CanAdjust("strength", 1);
+        long before = GC.GetAllocatedBytesForCurrentThread(); int slots = 0; bool allowed = true;
+        for (int i = 0; i < 10; i++) { slots = f.Hub.Skills.VisibleSlots; allowed &= f.Hub.Stats.CanAdjust("strength", 1); }
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Assert.Equal(8, slots); Assert.True(allowed);
+        Assert.True(allocated < 65536, $"Simple control queries allocated {allocated:N0} bytes by copying unrelated content.");
+        var external = f.Hub.Packet!; external.Options.SkillHotbarSlots = 4; external.Resources!.UnspentStatPoints = 0;
+        Assert.Equal(8, f.Hub.Skills.VisibleSlots); Assert.True(f.Hub.Stats.CanAdjust("strength", 1));
+        f.Hub.Receive(new RpgResourcePacket { UnspentStatPoints = 0, CombatLockRemainingSeconds = 2 });
+        Assert.False(f.Hub.Stats.CanAdjust("strength", 1)); Assert.False(f.Hub.Stats.CanAdjust("strength", -1));
+        f.Hub.Receive(new RpgResourcePacket { UnspentStatPoints = 1 }); Assert.True(f.Hub.Stats.CanAdjust("strength", 1));
+        packet.Options.SkillHotbarSlots = 2; f.Hub.Receive(packet); Assert.Equal(4, f.Hub.Skills.VisibleSlots);
+    }
+
     [Theory]
     [InlineData("strength")][InlineData("dexterity")][InlineData("intelligence")]
     public void AllocationSendsExactCodeAndDeltaAndSuppressesDuplicates(string code)
