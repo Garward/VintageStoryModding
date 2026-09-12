@@ -264,7 +264,7 @@ git commit -m "feat: connect all VRPG player menu routes"
 - Produces: `SkillsPage.SelectClass(int index)`, `SelectSkill(int index)`, and `EquipSelected(int slot)` using `HubPageActions.EquipSkill`.
 - Consumes: normalized `OpenHubPacket.BaseStats`, `Resources`, `Classes`, `Options`, and feedback.
 
-- [ ] **Step 1: Write failing state/action tests**
+- [x] **Step 1: Write failing state/action tests**
 
 Assert stat-code allowlisting (`strength`, `dexterity`, `intelligence`), pending duplicate suppression, class/skill index clamping after refresh, learned-skill-only assignment, same-slot unequip semantics, and exact callback arguments.
 
@@ -278,21 +278,21 @@ public void LearnedSkillUsesOneBasedVisibleSlot()
 }
 ```
 
-- [ ] **Step 2: Run focused tests and verify failure**
+- [x] **Step 2: Run focused tests and verify failure**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter FullyQualifiedName~StatsSkillsPageTests
 ```
 
-- [ ] **Step 3: Implement page state and renderers**
+- [x] **Step 3: Implement page state and renderers**
 
 Extract behavior from the legacy Hub without copying its full renderer. Stats renders a page title, resource/level summary, class identity, base-stat allocation rows, and supported combat/defense summaries. Skills renders class selectors, virtualized skill cards, selected-skill detail, learned/locked/requirement state, and visible hotbar slot assignment. Use shared plates/wells/buttons and localized copy. Keep raw class/skill codes out of ordinary text.
 
-- [ ] **Step 4: Add capture fixtures and inspect all supported sizes**
+- [x] **Step 4: Add capture fixtures and inspect all supported sizes**
 
 Capture loading, empty, normal, pending, and rejection states at 1120×680, 800×520, 620×520, and 400×350. Verify primary actions remain visible, long descriptions clip/wrap, and controls do not overlap.
 
-- [ ] **Step 5: Run focused tests and commit**
+- [x] **Step 5: Run focused tests and commit**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~StatsSkillsPageTests|FullyQualifiedName~HubPageCompositionCaptureTests"
