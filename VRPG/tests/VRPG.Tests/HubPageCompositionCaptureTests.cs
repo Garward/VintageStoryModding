@@ -18,7 +18,131 @@ namespace VRPG.Tests;
 [Collection("Inventory Cairo")]
 public sealed class HubPageCompositionCaptureTests
 {
-    private sealed class RootBounds : ElementBounds { public override double absX => 0; public override double absY => 0; }
+    [Fact]
+    public void TalentEditorRemainsPrivilegedAndInspectorActionsExplainCurrentOperation()
+    {
+        using var scope = new InventoryCompositionTestScope(); int opened = 0;
+        using var hub = new HubPageClientService(_ => { }, new() { OpenTalentEditor = () => opened++ });
+        hub.Receive(TalentPageTests.Fixture.Tree()); var packet = TalentPageTests.Fixture.Packet(Array.Empty<string>(), 3, 2); hub.Receive(packet);
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents);
+        using var shell = Shell(session, hub, 1120, 680); Draw(shell, 1120, 680);
+        Assert.DoesNotContain(Controls(shell), c => c.Id == "talent:editor");
+        packet.CanEditTalentTree = true; hub.Receive(packet); Draw(shell, 1120, 680);
+        Activate(shell, "talent:editor"); Assert.Equal(1, opened);
+        hub.Talents.QueueAllocation("root"); Draw(shell, 1120, 680);
+        Activate(shell, "talent:allocate"); Assert.Empty(hub.Talents.Allocations);
+    }
+    [Fact]
+    public void TalentDetailsCanBeReadWithMouseAtMinimumSize()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents); session.Update(session.Current with { InspectorOnly = true });
+        using var shell = Shell(session, f.Hub, 400, 350); Draw(shell, 400, 350);
+        Activate(shell, "talent:read"); Assert.True(session.Current.InspectorScroll > 0);
+        Draw(shell, 400, 350); Assert.All(Controls(shell), c => AssertInside(c.Bounds, 400, 350));
+    }
+    [Fact]
+    public void TalentErrorDoesNotScrollInvisibleInspector()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents); session.Update(session.Current with { InspectorOnly = true });
+        using var shell = Shell(session, f.Hub, 400, 350); Draw(shell, 400, 350);
+        f.Hub.Receive(new TalentTreeSnapshotPacket { SchemaVersion = -1 }); Draw(shell, 400, 350);
+        var key = new KeyEvent { KeyCode = (int)GlKeys.PageDown }; var before = session.Current;
+        shell.OnKeyDown(null!, key); Assert.False(key.Handled); Assert.Equal(before, session.Current);
+    }
+    [Fact]
+    public void TalentCompositionAndInputPreserveLogicalCoordinatesAndAuthoritativeApply()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents);
+        var text = new List<string>(); using var shell = Shell(session, f.Hub, 1120, 680, text.Add);
+        shell.Bounds.ParentBounds = new RootBounds(41, 29); Draw(shell, 1120, 680);
+        Assert.Contains("Way of the Sentinel", text); Assert.Contains(Controls(shell), c => c.Id == "talent:apply");
+        var root = Assert.Single(f.Hub.Talents.Graph.VisibleNodes.Where(n => n.Node.Code == "root"));
+        float old = Vintagestory.API.Config.RuntimeEnv.GUIScale;
+        try
+        {
+            foreach (float scale in new[] { 1f, 1.5f, 2f })
+            {
+                Vintagestory.API.Config.RuntimeEnv.GUIScale = scale;
+                f.Hub.Talents.ResetDraft(); Draw(shell, 1120, 680);
+                var now = f.Hub.Talents.Graph.VisibleNodes.Single(n => n.Node.Code == "root");
+                Assert.Equal(root.X, now.X); Assert.Equal(root.Radius, now.Radius);
+                var down = new MouseEvent(41 + (int)(root.X * scale), 29 + (int)(root.Y * scale), EnumMouseButton.Left, 0);
+                shell.OnMouseDownOnElement(null!, down); shell.OnMouseUpOnElement(null!, down);
+                Assert.Equal(new[] { "vrpg:root" }, f.Hub.Talents.Allocations);
+            }
+        }
+        finally { Vintagestory.API.Config.RuntimeEnv.GUIScale = old; }
+        Draw(shell, 1120, 680); Activate(shell, "talent:apply"); Assert.Single(f.Sent);
+    }
+
+    [Fact]
+    public void TalentDragDoesNotClickAndWheelOnlyConsumesGraph()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents);
+        using var shell = Shell(session, f.Hub, 1120, 680); shell.Bounds.ParentBounds = new RootBounds(); Draw(shell, 1120, 680);
+        var root = Assert.Single(f.Hub.Talents.Graph.VisibleNodes.Where(n => n.Node.Code == "root"));
+        var down = new MouseEvent((int)root.X, (int)root.Y, EnumMouseButton.Left, 0);
+        shell.OnMouseDownOnElement(null!, down);
+        shell.OnMouseMove(null!, new MouseEvent((int)root.X + 8, (int)root.Y + 8, EnumMouseButton.Left, 0));
+        shell.OnMouseUpOnElement(null!, down); Assert.Empty(f.Hub.Talents.Allocations);
+        Assert.False(shell.TalentWheel(1, shell.Layout.Inspector.X + 5, shell.Layout.Inspector.Y + 5));
+        double before = f.Hub.Talents.Graph.Zoom;
+        Assert.True(shell.TalentWheel(1, root.X, root.Y)); Assert.True(f.Hub.Talents.Graph.Zoom > before);
+        shell.OnMouseDownOnElement(null!, new MouseEvent(0, 0, EnumMouseButton.Left, 0));
+        shell.OnMouseUpOnElement(null!, down); Assert.Empty(f.Hub.Talents.Allocations);
+    }
+
+    [Fact]
+    public void TalentCapturesCoverDraftStatesAndAnchoredActions()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        string directory = Environment.GetEnvironmentVariable("VRPG_TALENT_CAPTURE_PATH") ?? System.IO.Path.Combine(System.IO.Path.GetTempPath(), "vrpg-task5-captures");
+        Directory.CreateDirectory(directory);
+        foreach (var (width, height) in new[] { (1120, 680), (800, 520), (620, 520), (400, 350) })
+        foreach (string state in new[] { "loading", "empty", "normal", "draft", "refund", "pending", "rejection", "error", "long", "no-points", "large" })
+        {
+            using var f = new TalentPageTests.Fixture(state == "refund" ? new[] { "root", "bridge", "leaf" } : null);
+            if (state == "loading") { f.Hub.ResetConnection(); f.Hub.RequestSnapshot(); }
+            if (state == "empty") { f.Hub.ResetConnection(); f.Hub.Receive(new OpenHubPacket()); f.Hub.Receive(new TalentTreeSnapshotPacket()); }
+            if (state == "error") f.Hub.Receive(new TalentTreeSnapshotPacket { SchemaVersion = -1 });
+            if (state is "draft" or "pending" or "rejection") { f.Hub.Talents.QueueAllocation("root"); f.Hub.Talents.QueueAllocation("bridge"); }
+            if (state is "pending" or "rejection") f.Hub.Talents.Apply();
+            if (state == "rejection") { var p = TalentPageTests.Fixture.Packet(Array.Empty<string>(), 3, 2); p.FeedbackError = true; p.FeedbackMessage = "Unknown talent: vrpg:private-node"; f.Hub.Receive(p); }
+            if (state == "refund") { f.Hub.Talents.QueueRefund("leaf"); f.Hub.Talents.Graph.Select("leaf"); }
+            if (state == "no-points") { f.Hub.Receive(TalentPageTests.Fixture.Packet(new[] { "root", "bridge" }, 0, 0)); f.Hub.Talents.Graph.Select("leaf"); }
+            if (state == "large")
+            {
+                var tree = TalentPageTests.Fixture.Tree();
+                tree.Nodes = Enumerable.Range(0, 2048).Select(i => new TalentTreeNodePacket { Code = "node-" + i, Name = "Sentinel " + i,
+                    Starter = i == 0, X = (i % 64) * 64, Y = (i / 64) * 64, Links = i < 2047 ? new[] { "node-" + (i + 1) } : Array.Empty<string>() }).ToArray();
+                f.Hub.Receive(tree);
+            }
+            if (state == "long")
+            {
+                var tree = TalentPageTests.Fixture.Tree(); tree.Nodes[0].Name = "Sentinels of the weathered northern mountain sanctuary";
+                tree.Nodes[0].Description = string.Join(" ", Enumerable.Repeat("Protect your allies and hold your ground through the longest battles.", 20));
+                f.Hub.Receive(tree);
+            }
+            var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents);
+            var text = new List<string>(); using var shell = Shell(session, f.Hub, width, height, text.Add);
+            string path = System.IO.Path.Combine(directory, $"talents-{state}-{width}x{height}");
+            Draw(shell, width, height, path + ".png"); Assert.All(Controls(shell), c => AssertInside(c.Bounds, width, height));
+            Assert.DoesNotContain(text, t => t.Contains("vrpg:", StringComparison.Ordinal));
+            if (state is "loading" or "error") continue;
+            Assert.Contains(Controls(shell), c => c.Id == "talent:apply");
+            Assert.Contains(Controls(shell), c => c.Id == "talent:reset");
+            if (shell.Layout.AlternatePanes)
+            { Activate(shell, "talent:details"); Draw(shell, width, height, path + "-details.png"); Assert.All(Controls(shell), c => AssertInside(c.Bounds, width, height)); }
+            if (state == "long") { session.Update(session.Current with { InspectorScroll = 400 }); Draw(shell, width, height, path + "-scrolled.png"); }
+            if (state == "rejection") Assert.Contains("Could not apply talents. Review your plan and try again.", text);
+        }
+    }
+
+    private sealed class RootBounds(double x = 0, double y = 0) : ElementBounds { public override double absX => x; public override double absY => y; }
     [Theory]
     [InlineData(PlayerMenuPage.Skills, "Unknown skill: vrpg:cleave", "That skill is unavailable. Choose another skill.")]
     [InlineData(PlayerMenuPage.Stats, "Unknown base stat: vrpg:strength", "That stat is unavailable. Try again later.")]

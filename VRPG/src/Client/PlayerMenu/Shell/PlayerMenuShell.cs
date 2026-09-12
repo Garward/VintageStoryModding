@@ -99,6 +99,7 @@ public sealed partial class PlayerMenuShell : GuiElement
         {
             if (StatsSkillsOpen && session.Page == PlayerMenuPage.Stats) DrawStats(ctx);
             else if (StatsSkillsOpen && session.Page == PlayerMenuPage.Skills) DrawSkills(ctx);
+            else if (TalentsOpen) DrawTalents(ctx);
             else DrawHubState(ctx);
             return;
         }
@@ -458,10 +459,11 @@ public sealed partial class PlayerMenuShell : GuiElement
     private string[] BrowseIds() => inventory != null ? inventory.View.Entries.Select(x => x.EntryId).ToArray()
         : FilteredEntries().Select(x => x.Id).ToArray();
     private string At(int x, int y) => controls.LastOrDefault(control => control.Bounds.Contains((x - Bounds.absX) / RuntimeEnv.GUIScale, (y - Bounds.absY) / RuntimeEnv.GUIScale)).Id ?? "";
-    public override void OnMouseMove(ICoreClientAPI api, MouseEvent args) { string next = At(args.X, args.Y); if (hover != next) { hover = next; Refresh(); } }
-    public override void OnMouseDownOnElement(ICoreClientAPI api, MouseEvent args) { pressed = At(args.X, args.Y); Refresh(); args.Handled = pressed.Length > 0; }
+    public override void OnMouseMove(ICoreClientAPI api, MouseEvent args) { if (MoveTalentDrag(args)) return; string next = At(args.X, args.Y); if (hover != next) { hover = next; Refresh(); } }
+    public override void OnMouseDownOnElement(ICoreClientAPI api, MouseEvent args) { if (BeginTalentDrag(args)) return; pressed = At(args.X, args.Y); Refresh(); args.Handled = pressed.Length > 0; }
     public override void OnMouseUpOnElement(ICoreClientAPI api, MouseEvent args)
     {
+        if (EndTalentDrag(args)) return;
         string target = At(args.X, args.Y); pressed = "";
         if (args.Button == EnumMouseButton.Left && target.Length > 0)
         {
@@ -476,6 +478,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     {
         if (PartyOpen && HandlePartyKey(args)) return;
         if (!PartyOpen && HandleSkillsKey(args)) return;
+        if (!PartyOpen && HandleTalentKey(args)) return;
         PlayerMenuBrowseKey? browseKey = args.KeyCode switch
         {
             (int)GlKeys.Up => PlayerMenuBrowseKey.Up,
@@ -499,7 +502,7 @@ public sealed partial class PlayerMenuShell : GuiElement
         }
         else if (args.KeyCode == (int)GlKeys.Enter && focus.Length > 0) { Activate(focus); args.Handled = true; }
         else if (args.KeyCode is (int)GlKeys.PageDown or (int)GlKeys.PageUp
-            && (session.Page is not (PlayerMenuPage.Stats or PlayerMenuPage.Skills) || StatsSkillsOpen))
+            && (session.Page is not (PlayerMenuPage.Stats or PlayerMenuPage.Skills or PlayerMenuPage.Talents) || StatsSkillsOpen))
         {
             session.Update(session.Current with { InspectorScroll = Math.Clamp(session.Current.InspectorScroll + (args.KeyCode == (int)GlKeys.PageDown ? 96 : -96), 0, inspectorMaximumScroll) });
             args.Handled = true; Refresh();
@@ -518,11 +521,16 @@ public sealed partial class PlayerMenuShell : GuiElement
     private void Activate(string target)
     {
         if (!controls.Any(x => x.Id == target && x.Button.CanActivate)) return;
-        if (HandleStatsSkillsIntent(target)) Refresh(); else intent(target);
+        if (HandleStatsSkillsIntent(target) || HandleTalentIntent(target)) Refresh(); else intent(target);
     }
     public override void OnMouseWheel(ICoreClientAPI api, MouseWheelEventArgs args)
     {
         int amount = Math.Sign(args.deltaPrecise == 0 ? args.delta : args.deltaPrecise);
+        if (session.Page == PlayerMenuPage.Talents && !PartyOpen)
+        {
+            if (TalentWheel(amount, (api.Input.MouseX - Bounds.absX) / RuntimeEnv.GUIScale, (api.Input.MouseY - Bounds.absY) / RuntimeEnv.GUIScale)) args.SetHandled();
+            return;
+        }
         if (PartyOpen) { ScrollParty(-amount, api.Input.MouseX, api.Input.MouseY); args.SetHandled(); Refresh(); return; }
         if (StatsSkillsOpen)
         {

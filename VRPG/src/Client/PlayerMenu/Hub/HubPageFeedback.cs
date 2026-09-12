@@ -16,7 +16,7 @@ internal static class HubPageFeedback
     {
         string text = message?.Trim() ?? "";
         if (text.Length == 0) return "";
-        string route = page == PlayerMenuPage.Stats ? "stats" : "skills";
+        string route = page == PlayerMenuPage.Stats ? "stats" : page == PlayerMenuPage.Talents ? "talents" : "skills";
         if (text.StartsWith("Unknown skill:", StringComparison.OrdinalIgnoreCase)
             || text.StartsWith("Unknown base stat:", StringComparison.OrdinalIgnoreCase))
             return Lang.Get("vrpg:menu-feedback-" + route + "-unavailable");

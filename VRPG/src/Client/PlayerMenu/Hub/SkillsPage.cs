@@ -19,7 +19,7 @@ public sealed class SkillsPage
     public HubClassPacket? SelectedClass => classes.ElementAtOrDefault(SelectedClassIndex);
     public HubSkillPacket? SelectedSkill => Skills.ElementAtOrDefault(SelectedSkillIndex);
     public int VisibleSlots { get; private set; } = 4;
-    public bool CanEquip => !Pending && !hub.Stats.Pending && !hub.Loading && SelectedSkill is { LearnedLevel: > 0, Code.Length: > 0 };
+    public bool CanEquip => !Pending && !hub.Stats.Pending && !hub.Talents.Pending && !hub.Loading && SelectedSkill is { LearnedLevel: > 0, Code.Length: > 0 };
     public SkillsPage(HubPageClientService hub) => this.hub = hub;
     public void SelectClass(int index)
     {

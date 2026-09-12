@@ -33,6 +33,11 @@ public sealed class TalentGraphComponent
     public TalentTreeSnapshotPacket Snapshot => snapshot;
     public IReadOnlyList<TalentGraphNodeVisual> VisibleNodes => visibleNodes;
     public double Zoom => zoom;
+    public double PanX => panX;
+    public double PanY => panY;
+    /// <summary>Logical-coordinate hosts use 1; legacy hosts retain engine pixel scaling.</summary>
+    public double? CoordinateScale { get; set; }
+    public bool ShowPlayerSelection { get; set; }
     public int Count => snapshot.Nodes.Length;
     public bool AuthoringMode { get; set; }
 
@@ -220,7 +225,7 @@ public sealed class TalentGraphComponent
 
             double radius = radii[code];
             TalentGraphNodeState state = StateFor(node);
-            bool selected = AuthoringMode && string.Equals(code, selectedCode, StringComparison.OrdinalIgnoreCase);
+            bool selected = (AuthoringMode || ShowPlayerSelection) && string.Equals(code, selectedCode, StringComparison.OrdinalIgnoreCase);
             DrawNode(ctx, point.X, point.Y, radius, node, state, selected);
             visibleNodes.Add(new TalentGraphNodeVisual(node, state, point.X, point.Y, radius));
         }
@@ -277,7 +282,7 @@ public sealed class TalentGraphComponent
         ctx.LineWidth = S(activeFrontier ? (selected ? 3.4 : 2.2) : (selected ? 2.6 : 1.6));
     }
 
-    private static void DrawNode(Context ctx, double x, double y, double radius, TalentTreeNodePacket node, TalentGraphNodeState state, bool selected)
+    private void DrawNode(Context ctx, double x, double y, double radius, TalentTreeNodePacket node, TalentGraphNodeState state, bool selected)
     {
         string tier = NormalizeCode(node.VisualTier);
         bool starter = node.Starter || tier == "start";
@@ -425,7 +430,7 @@ public sealed class TalentGraphComponent
         }
     }
 
-    private static void ClampAxis(double viewportSize, double contentMin, double contentMax, ref double pan)
+    private void ClampAxis(double viewportSize, double contentMin, double contentMax, ref double pan)
     {
         double padding = S(48.0);
         if (contentMax - contentMin <= Math.Max(1.0, viewportSize - padding * 2.0))
@@ -437,7 +442,7 @@ public sealed class TalentGraphComponent
         pan = GameMath.Clamp(pan, viewportSize * 0.5 - padding - contentMax, padding - viewportSize * 0.5 - contentMin);
     }
 
-    private static double NodeRadius(TalentTreeNodePacket node)
+    private double NodeRadius(TalentTreeNodePacket node)
     {
         string tier = NormalizeCode(node.VisualTier);
         return S(node.Starter || tier == "start" ? 36.0 : tier == "gamechanger" ? 24.0 : tier == "major" ? 20.0 : 16.0);
@@ -473,7 +478,7 @@ public sealed class TalentGraphComponent
         for (int i = 0; i < values.Length; i++) target.Add(NormalizeCode(values[i]));
     }
 
-    private static double S(double value) => value * RuntimeEnv.GUIScale;
+    private double S(double value) => value * (CoordinateScale ?? RuntimeEnv.GUIScale);
 
     private static void DrawGearRing(Context ctx, double x, double y, double outerRadius, double innerRadius, int teeth)
     {

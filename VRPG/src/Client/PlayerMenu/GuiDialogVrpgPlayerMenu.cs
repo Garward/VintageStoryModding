@@ -195,6 +195,17 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
         }
         return true;
     }
+    public override void OnMouseMove(MouseEvent args)
+    {
+        if (shell?.TalentDragging == true) shell.OnMouseMove(capi, args);
+        else base.OnMouseMove(args);
+    }
+    public override void OnMouseUp(MouseEvent args)
+    {
+        // The dialog owns capture so releases outside the graph cannot become a click later.
+        if (shell?.TalentDragging == true) shell.OnMouseUpOnElement(capi, args);
+        else base.OnMouseUp(args);
+    }
     public override void OnKeyDown(KeyEvent args)
     {
         var textField = SingleComposer?.GetTextInput("party-search")?.HasFocus == true ? SingleComposer.GetTextInput("party-search") : SingleComposer?.GetTextInput("search");

@@ -22,7 +22,7 @@ public sealed class StatsPage
     public bool CanAdjust(string code, int delta)
     {
         int value = code switch { "strength" => strength, "dexterity" => dexterity, "intelligence" => intelligence, _ => 0 };
-        return !Pending && !hub.Skills.Pending && !hub.Loading && hub.HasSnapshot && hasResources && !combatLocked
+        return !Pending && !hub.Skills.Pending && !hub.Talents.Pending && !hub.Loading && hub.HasSnapshot && hasResources && !combatLocked
             && IsSupported(code) && delta is -1 or 1 && (delta > 0 ? availablePoints > 0 : value > 0);
     }
     public void Adjust(string code, int delta)

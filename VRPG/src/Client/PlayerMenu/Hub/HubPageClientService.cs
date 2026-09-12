@@ -26,6 +26,7 @@ public sealed class HubPageClientService : IDisposable
     public HubPageActions Actions { get; }
     public StatsPage Stats { get; }
     public SkillsPage Skills { get; }
+    public TalentPage Talents { get; }
     public long SnapshotRevision { get; private set; }
     public HubPageState State { get; set; } = new();
     public OpenHubPacket? Packet => packet == null ? null : Copy(packet);
@@ -39,7 +40,7 @@ public sealed class HubPageClientService : IDisposable
     public HubPageClientService(Action<OpenHubRequestPacket> requestHub, HubPageActions actions)
     {
         this.requestHub = requestHub ?? throw new ArgumentNullException(nameof(requestHub)); Actions = actions ?? throw new ArgumentNullException(nameof(actions));
-        Stats = new(this); Skills = new(this);
+        Stats = new(this); Skills = new(this); Talents = new(this);
     }
 
     // Include explicit zero/false values: wire serialization can omit them and reapply DTO initializers.
@@ -72,7 +73,7 @@ public sealed class HubPageClientService : IDisposable
         libraryEntries = packet.Entries;
         Loading = false; ErrorKey = "";
         SnapshotRevision++;
-        Stats.Receive(packet); Skills.Receive(Copy(packet));
+        Stats.Receive(packet); Skills.Receive(Copy(packet)); Talents.Receive(packet);
         RequestMissingTree();
         Changed?.Invoke();
     }
@@ -99,6 +100,7 @@ public sealed class HubPageClientService : IDisposable
         }
         talentTree = Copy(next);
         foreach (var node in talentTree.Nodes) { node.Links ??= Array.Empty<string>(); node.Modifiers ??= Array.Empty<string>(); }
+        Talents.Receive(Copy(talentTree));
         ErrorKey = "";
         // The server sends this before a refreshed Hub packet. Its previous identity is not a refresh target.
         Changed?.Invoke();
@@ -108,6 +110,7 @@ public sealed class HubPageClientService : IDisposable
     {
         if (disposed) return;
         if (packet != null) packet.Talents = (string[])(next.Talents?.Clone() ?? Array.Empty<string>());
+        Talents.Receive(new TalentProgressPacket { Talents = next.Talents ?? Array.Empty<string>() });
         Changed?.Invoke();
     }
 
@@ -117,6 +120,7 @@ public sealed class HubPageClientService : IDisposable
         resources = Copy(next);
         if (packet != null) packet.Resources = resources;
         Stats.UpdateResources(resources);
+        Talents.UpdateResources(resources);
         Changed?.Invoke();
     }
 
@@ -132,7 +136,8 @@ public sealed class HubPageClientService : IDisposable
     {
         packet = null; talentTree = null; resources = null; libraryEntries = Array.Empty<LibraryEntryPacket>();
         State = new(); Loading = false; treeRequestPending = false; ErrorKey = "";
-        Stats.Reset(); Skills.Reset();
+        Stats.Reset(); Skills.Reset(); Talents.Reset();
+        State = new();
         Changed?.Invoke();
     }
     public void Dispose()
