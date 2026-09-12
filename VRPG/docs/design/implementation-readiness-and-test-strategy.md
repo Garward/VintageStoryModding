@@ -1,6 +1,6 @@
 # Implementation Readiness and Test Strategy
 
-Status: Living coverage audit and recommended implementation order  
+Status: Supporting coverage audit; execution order lives in the [playable vertical-slice checklist](testable-version-todo.md)
 Index: [VRPG design index](README.md)  
 Master: [Complete game design](complete-game-design.md)
 
@@ -54,23 +54,30 @@ A system may enter exploratory prototyping at A. It should not become a dependen
 
 The grade describes documentation and evidence, not importance or code quality. Existing VRPG combat, UI, data loading, dungeon layout, scaling, status, and visual tests provide useful foundations but do not yet prove the total-conversion architecture.
 
-## 4. Critical missing specifications
+## 4. Important unresolved contracts
 
-These are required before broad implementation proceeds.
+These contracts still matter, but they do not all precede useful implementation.
+Specify each one when the active playable gate is about to consume it. The current
+order is maintained only in the [playable vertical-slice checklist](testable-version-todo.md).
 
-### 4.1 Total-conversion ownership and patch map
+### 4.1 Total-conversion ownership and removal map
 
 For every Survival system, record:
 
 - Owning assemblies, systems, assets, configs, packets, saves, commands, handbook entries, and HUD surfaces.
 - Activation timing and client/server side.
 - VRPG disposition and effective feature owner.
-- Preferred disable method: configuration, asset replacement, public API, event interception, or Harmony patch.
+- Preferred removal method: configuration or asset removal first, then public API,
+  event interception, or Harmony only when an unavoidable retained path requires it.
 - Patch target and expected original behavior when Harmony is unavoidable.
 - Dependencies and compatibility fallback.
 - A boot, interaction, persistence, and multiplayer test.
 
-This map is the prerequisite for safely disabling hunger, backpacks, block mutation, Survival combat and healing, durability chores, tutorials, recipes, traders, spawning, and other inherited loops.
+Prioritize removal of systems that can produce or mutate items: containers,
+crafting grids, trade, ground storage, and ordinary block placement/breaking.
+Use a loud diagnostic at unavoidable native ingress boundaries and fix real callers
+found in play. Exhaustively proving every hypothetical producer is not a release
+gate.
 
 ### 4.2 Runtime composition and capability registry
 
@@ -117,9 +124,13 @@ First arrival uses a validated private space as its primary safety boundary.
 Guide acknowledgement and protection release are separate server transitions:
 release requires both acknowledgement and a valid safe state.
 
-### 4.8 Owned realm runtime
+### 4.8 Realm runtime pressure test
 
-Replace the optional reflective Manifold boundary with [VRPG's focused realm architecture](realm-runtime-architecture.md). Allocation, generation, transit, persistence, multiplayer isolation, quarantine, recovery, and cleanup must reach parity before expeditions or housing treat it as bedrock.
+Use the working Manifold boundary for the first combat sandbox and expedition.
+Revisit [VRPG's focused realm architecture](realm-runtime-architecture.md) only
+when a concrete expedition or housing requirement demonstrates a transaction,
+isolation, recovery, or scaling limitation. Upstream parity is not a prerequisite
+for the current playable gates.
 
 ## 5. Recommended architecture spine
 
@@ -225,22 +236,23 @@ Automated validity does not prove agency or feel. Instrument and observe:
 
 ## 8. Vertical implementation gates
 
-### Gate 0: Total-conversion shell
+### Gate 0: Repeatable live verification
 
-- Runtime profile and capability report.
-- Owned realm registry, manifest and transition prototype; Manifold remains only as a temporary parity fallback.
-- VRPG world creation preset.
-- First Survival ownership audit and safe feature disable checks.
-- Versioned world/player stores with backup and migration harness.
+- Login-capable client and dedicated server on the supported game build.
+- Reproducible test world and configuration.
+- Joined-client smoke script covering load, one interaction, reconnect, save,
+  restart, and clean shutdown.
+- Known client/server log locations and explicit failure criteria.
 
 ### Gate 1: Protected combat sandbox
 
-- Protected main-world mutation and Housing-only building mode.
-- Flat arena plus slab-smoothed approaches.
-- Burst movement and representative projectile skill.
-- Advance, range, orbit, shield, and charge enemies.
-- Temporary wall with AI response and cleanup.
-- Performance/debug overlays for movement, intent, paths, and mutation.
+- One deterministic flat arena with permanent block mutation disabled.
+- Existing skills and starter gear connected to a repeatable combat loadout.
+- Three representative enemies: advance, range, and one pressure behavior.
+- XP, death, respawn/reset, and enough feedback to diagnose combat.
+- Explicit Hub or command route to the server-backed inventory; no Vanilla-dialog takeover.
+- One-page TTK, incoming-damage, and effective-health budget.
+- Ten-minute joined-client playtest plus focused performance/debug evidence.
 
 ### Gate 2: One complete expedition
 
@@ -248,6 +260,7 @@ Automated validity does not prove agency or feel. Instrument and observe:
 - One propagation kit and multiple defeat responses.
 - Targeted reward family and inventory delivery.
 - Seed regression and multiplayer integration suite.
+- Concrete runtime-pressure evidence before replacing the working Manifold boundary.
 
 ### Gate 3: Return-home loop
 
@@ -256,6 +269,8 @@ Automated validity does not prove agency or feel. Instrument and observe:
 - One material transformation with useful/craft/sell alternatives.
 - One NPC buyer and one non-expiring targeted request.
 - Complete crash, migration, overflow and concurrent transaction tests.
+- Inventory UI promotion based on observed use; semantic-dialog takeover remains
+  optional until it solves a demonstrated problem.
 
 ### Gate 4: Persistent nonlinear progression
 
@@ -272,20 +287,19 @@ Automated validity does not prove agency or feel. Instrument and observe:
 
 Do not begin breadth merely because every subsystem has a stub. Advance when the current gate proves the player loop and its failure behavior.
 
-## 9. Immediate design work queue
+## 9. Immediate design work
 
-Recommended next documents, in dependency order:
+Write only the contracts consumed by the active gate:
 
-1. Survival ownership and Harmony boundary map.
-2. Runtime profile, capabilities, persistence and migration architecture.
-3. Owned realm runtime API/schema, selective Manifold derivation and parity tests.
-4. Combat simulation, targeting and network authority contract.
-5. Expedition lifecycle, director and reconnect specification.
-6. Loot generation, crafting, salvage, NPC economy and trade specification.
-7. Character progression, class, equipment and Rebirth transaction specification.
-8. Multiplayer party, scaling, ownership and abuse specification.
-9. First-hour onboarding, map, settings and accessibility specification.
-10. Content-authoring pipeline, debug tools, metrics and release checklist.
+1. Combat math budget: target TTK, incoming DPS, and total effective health at
+   levels 1, 20, 50, and 100.
+2. Arena test contract: entry, reset, three enemy roles, navigation limits,
+   diagnostics, and the ten-minute playtest rubric.
+3. Item-producer removal map for the systems exercised by that sandbox.
+
+Expedition lifecycle, economy, progression breadth, owned realms, creature
+ingestion, housing, Rebirth, and release-hardening documents wait until their
+playable gate approaches. Documentation is not evidence of player value.
 
 ## 10. Definition of design-complete
 

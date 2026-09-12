@@ -10,7 +10,7 @@ Plan: [Delivery plan](../plans/2026-09-06-unified-player-menu.md)
 
 A player finishes character creation, opens Inventory, finds their real starter equipment, and manages items and their build in one coherent native menu. Inventory, Character, VRPG Hub, and Library no longer open competing windows. Ordinary material collection requires no manual stack maintenance. Equipment, skills, talents, and stats explain the choices that change the build.
 
-This document consolidates prior decisions and proposes the remaining interaction details. It does not enable the overwrite, assert that onboarding is complete, or approve new economy/Rebirth rules. The narrow [usable replacement checklist](../../design/usable-player-menu-checklist.md) remains the first custody gate; this specification defines what follows through the full end goal.
+This document consolidates prior decisions and proposes the remaining interaction details. It does not enable the overwrite, assert that onboarding is complete, or approve new economy/Rebirth rules. The [player-menu acceptance checklist](../../design/usable-player-menu-checklist.md) defines a possible future takeover; the [playable vertical-slice checklist](../../design/testable-version-todo.md) controls current implementation order.
 
 ## 2. Existing decisions and observed implementation
 

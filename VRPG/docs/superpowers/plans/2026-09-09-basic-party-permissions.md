@@ -1,5 +1,8 @@
 # Basic Party Permissions Implementation Plan
 
+> **Schedule note (2026-09-09):** Historical completed work. Further party and
+> party-loot features are deferred by the [playable vertical-slice checklist](../../design/testable-version-todo.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
 **Goal:** Deliver persisted, server-owned basic parties and real membership controls inside the replacement menu, with a reusable current-membership loot permission boundary.

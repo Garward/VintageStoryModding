@@ -1,5 +1,9 @@
 # VRPG
 
+Start with the [overhaul guide](docs/overhaul-guide.md) for the player-facing feature list, subsystem implementation status, and links to the design and code behind each system.
+
+The [playable vertical-slice checklist](docs/design/testable-version-todo.md) is the only authoritative implementation order. It currently prioritizes a repeatable joined-client test loop and a ten-minute combat sandbox.
+
 The [design index](docs/design/README.md) maps the end-goal design and focused subsystem specifications. Start with the [complete game design](docs/design/complete-game-design.md) for the total-conversion playstyle, combat loop, elemental regions, expeditions, loot, and Rebirth.
 
 The complete target-state service and authority picture is in the [ASCII architecture and ownership map](docs/design/architecture-ownership-map.md).
@@ -12,13 +16,13 @@ Building is scoped to a persistent player Home by default; its realm, resource-p
 
 New VRPG worlds use custom generation designed for protected, non-mineable combat and exploration terrain, while authorized skills may create temporary combat terrain; see [docs/design/world-generation-and-world-mutation.md](docs/design/world-generation-and-world-mutation.md).
 
-The current coverage gaps, implementation order, slab-slope strategy, and required test layers are tracked in [docs/design/implementation-readiness-and-test-strategy.md](docs/design/implementation-readiness-and-test-strategy.md).
+Coverage gaps, the slab-slope strategy, and test layers are tracked in [docs/design/implementation-readiness-and-test-strategy.md](docs/design/implementation-readiness-and-test-strategy.md).
 
 The playable data-driven skill slice is documented in [docs/skill-authoring-guide.md](docs/skill-authoring-guide.md). It includes the JSON contract, projectile modeling conventions, validation rules, admin acquisition commands, and in-game test workflow.
 
 All menus, HUD elements, tooltips, and combat feedback must follow the design and verification gates in [docs/ui-authoring-guide.md](docs/ui-authoring-guide.md).
 
-The current path to an internally testable build and the later one-hour gameplay vertical slice are tracked in [docs/design/testable-version-todo.md](docs/design/testable-version-todo.md).
+The current joined-client and playable combat gates are tracked in [docs/design/testable-version-todo.md](docs/design/testable-version-todo.md).
 
 Creature health and outgoing skill-damage curves can be swept across every level
 and provisional rarity with the [damage scaling tool](docs/damage-scaling-tool.md).

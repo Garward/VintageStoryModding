@@ -1,6 +1,12 @@
 # Native Player Menu Implementation Plan
 
-Status: Implementation plan; navigation contract started  
+> **Schedule note (2026-09-12):** The small Inventory/Character semantic-owner
+> swap is the active first usable Adventure-menu boundary. The
+> [playable vertical-slice checklist](testable-version-todo.md) still controls
+> implementation order: Stats, Skills, Talents, Library, Options, and the full
+> shell remain deferred from the current vertical slice.
+
+Status: First usable Inventory/Equipment ownership implementation complete; live acceptance pending
 Parents: [UI visual language](ui-visual-language-and-hub.md) · [Inventory, loot, and storage](inventory-loot-and-storage.md)  
 Index: [VRPG design index](README.md)
 
@@ -21,7 +27,12 @@ legacy Hub action -----> Stats during migration
 Inventory | Stats | Skills | Talents | Library | Options
 ```
 
-The overwrite must remain disabled until the Inventory page can display and safely mutate real server-owned items. A visual placeholder is not sufficient: replacing the Inventory action's dialog owner too early would hide working Vanilla custody behind controls that cannot preserve, equip or move items.
+The first usable overwrite may activate only after the Inventory page can display
+and safely mutate real server-owned items. A visual placeholder is not sufficient:
+replacing the Inventory action's dialog owner too early would hide working Vanilla
+custody behind controls that cannot preserve, equip or move items. The implemented
+first pass meets that source/test boundary; joined-client and player acceptance
+remain required before it is called replacement-ready.
 
 The browser workbench remains the interaction and density reference. It is not a runtime data source.
 

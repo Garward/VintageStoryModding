@@ -1,6 +1,10 @@
 # VRPG Design Index
 
+For a plain-language tour of the planned features and what currently exists, read the [overhaul guide](../overhaul-guide.md). It separates implementation foundations from complete player-facing features.
+
 This directory is the authoritative map for VRPG's total-conversion design. The master document defines the whole game; subsystem specifications turn its decisions into contracts that can later be implemented and tested.
+
+Implementation order is defined only by the [playable vertical-slice checklist](testable-version-todo.md). Subsystem checklists supply acceptance criteria when their gate becomes active; they do not set the project schedule.
 
 ## North star
 
@@ -18,8 +22,9 @@ The [unified Inventory, Character, and Hub design](../superpowers/specs/2026-09-
 consolidates the complete six-page target, five inventory categories, high quantities,
 equipment comparison, recovery, character-creation handoff and service integrations.
 Its [delivery plan](../superpowers/plans/2026-09-06-unified-player-menu.md) starts from
-the current store/gear foundations. Both are proposed for review; the existing
-usable-replacement checklist remains the first custody gate.
+the current store/gear foundations. The end-state design remains available, while
+the first usable Inventory/Equipment handoff is implemented as a narrow
+semantic-dialog swap; later page expansion remains deferred.
 
 ## Documents
 
@@ -32,17 +37,17 @@ usable-replacement checklist remains the first custody gate.
 | [UI visual language and Hub contract](ui-visual-language-and-hub.md) | Oxidized-iron “rusty gears” direction, material hierarchy, interaction states, screen contracts, motion, accessibility, and workbench plan |
 | [Combat HUD total replacement](combat-hud-total-replacement.md) | Unified health, resource, XP, quick-use, skill, target and boss presentation; Vanilla suppression ownership; input parity; staged implementation and test gates |
 | [Native player-menu implementation](native-player-menu-implementation-plan.md) | Clean source boundaries, semantic-dialog ownership seam, inventory-first migration sequence, and native test ladder |
-| [Usable player-menu replacement checklist](usable-player-menu-checklist.md) | Dependency-ordered critical path from the current scaffolding to a safe, playable Inventory/Character replacement |
+| [Player-menu acceptance checklist](usable-player-menu-checklist.md) | First usable Inventory/Character semantic-dialog handoff and its still-open live acceptance checks |
 | [Combat spaces, movement, and AI](combat-spaces-movement-and-ai.md) | Arena geometry, anti-cheese rules, burst movement, navigation, enemy tactics, squad behavior, extension interfaces, and performance budgets |
 | [Inventory, loot, and storage](inventory-loot-and-storage.md) | Fixed player capacity, typed tabs, high quantities, pickup flow, base storage, performance, and the inventory screen contract |
 | [Player housing and building](player-housing-and-building.md) | Housing realm, world-building restrictions, resource processing, NPC trade, permissions, configuration, persistence, and backend options |
 | [World generation and world mutation](world-generation-and-world-mutation.md) | Custom main-world topology, immutable traversal, non-mining resources, temporary terrain, authorized world changes, and validation |
-| [Implementation readiness and test strategy](implementation-readiness-and-test-strategy.md) | Coverage audit, critical missing specifications, architecture spine, slab strategy, test layers, and vertical implementation gates |
+| [Implementation readiness and test strategy](implementation-readiness-and-test-strategy.md) | Supporting coverage audit, architecture spine, slab strategy, test layers, and rationale for the vertical implementation gates |
 | [Survival-system ownership audit](survival-system-ownership-audit.md) | Concrete Keep/Reframe/Replace/Disable map; begins with character/environment stats and complete Vanilla class neutralization |
 | [Character creation and onboarding](character-creation-and-onboarding.md) | Rethemed appearance flow, data-defined starter kits, first skill, protected Welcome guide, idempotency, and release gate |
 | [Mod compatibility and addon contract](mod-compatibility-and-addon-contract.md) | Strict total-conversion compatibility tiers, Home content boundary, native addon API expectations, missing-content recovery, and non-goals |
 | [Realm runtime architecture](realm-runtime-architecture.md) | Decision to own realms internally, selective Manifold derivation, logical instances, travel, persistence, recovery, and tests |
-| [Testable-version TODO](testable-version-todo.md) | Current implementation path and vertical-slice work |
+| [Playable vertical-slice checklist](testable-version-todo.md) | The only authoritative implementation order, beginning with live verification and a ten-minute combat sandbox |
 
 ## Adopted decisions at a glance
 
@@ -60,7 +65,7 @@ usable-replacement checklist remains the first custody gate.
   VRPG starter-kit decision rather than a permanent Vanilla class.
 - Broad Survival-mod compatibility is not a goal. Supported expansion comes from VRPG-native addons, compatible creature ingestion, and narrowly audited Home content.
 - Creature packs are a deliberate compatibility exception: compatible presentation assets can be automatically converted into synthetic VRPG actors, while VRPG replaces their AI, stats, combat, spawning and rewards.
-- Manifold is transitional, not an end-state requirement. VRPG owns a focused realm runtime derived where useful from Manifold's MIT-licensed implementation and tests.
+- Manifold remains the working realm boundary until a playable expedition or Home demonstrates a concrete limitation. An owned runtime is a possible later replacement, not a current prerequisite.
 - Storage and loot handling minimize sorting, hauling, deposit trips, and repeated menu work.
 - Player building is confined to an authorized Home by default. Survival's building assets and interactions become a secondary creative and processing layer instead of mutable combat terrain.
 - New VRPG worlds use custom generation designed for protected terrain. Required travel, combat, and resources never assume mining or permanent block placement.
@@ -99,9 +104,9 @@ usable-replacement checklist remains the first custody gate.
 | Can skills create walls or other terrain? | [Temporary combat terrain](world-generation-and-world-mutation.md#5-temporary-combat-terrain) |
 | What may change protected terrain? | [Mutation classes](world-generation-and-world-mutation.md#7-mutation-classes) |
 | How are smooth slab slopes generated and tested? | [Half-step slope surfacing](world-generation-and-world-mutation.md#31-half-step-slope-surfacing) and [implementation strategy](implementation-readiness-and-test-strategy.md#6-slab-slope-implementation-strategy) |
-| What design and engineering contracts are still missing? | [Current coverage audit](implementation-readiness-and-test-strategy.md#3-current-coverage-audit) and [critical missing specifications](implementation-readiness-and-test-strategy.md#4-critical-missing-specifications) |
-| What should we implement first? | [Vertical implementation gates](implementation-readiness-and-test-strategy.md#8-vertical-implementation-gates) |
-| What remains before `E` and `C` can be safely replaced? | [Usable player-menu replacement checklist](usable-player-menu-checklist.md) |
+| What design and engineering contracts are still missing? | [Current coverage audit](implementation-readiness-and-test-strategy.md#3-current-coverage-audit) and [important unresolved contracts](implementation-readiness-and-test-strategy.md#4-important-unresolved-contracts) |
+| What should we implement first? | [Playable vertical-slice checklist](testable-version-todo.md) |
+| What must be true before `E` and `C` are called replaced? | [Player-menu acceptance checklist](usable-player-menu-checklist.md) |
 | What happens to the Survival character stats shown in the reference? | [Character and environment panels](survival-system-ownership-audit.md#3-character-and-environment-panels) |
 | How is the Vanilla class system disabled safely? | [Vanilla class and trait system](survival-system-ownership-audit.md#4-vanilla-class-and-trait-system) and [disable strategy](survival-system-ownership-audit.md#5-vanilla-class-disable-strategy) |
 | Which other mods does VRPG support? | [Compatibility tiers](mod-compatibility-and-addon-contract.md#2-compatibility-tiers) and [explicit non-goals](mod-compatibility-and-addon-contract.md#11-explicit-non-goals) |
@@ -123,16 +128,19 @@ New subsystem specifications should contain:
 
 If a subsystem spec and the master design disagree, resolve the disagreement explicitly in both documents. Do not silently let the more recent file win.
 
-## Planned specifications
+## Specification backlog
+
+This list records likely future contracts, not implementation order. Pull an item
+forward only when the active playable gate needs it.
 
 - Expedition generation, room grammar, and director.
 - Skills, statuses, propagation, and defeat responses.
 - Itemization, crafting, salvage, and reward targeting.
 - Factions and detailed elemental-region content.
 - Character progression, classes, talents, and Rebirth.
-- Complete the remaining Survival-system ownership and Harmony boundary groups.
+- Complete the remaining Survival-system removal map as active gates encounter the systems.
 - Runtime profile, persistence, and migration architecture.
-- Implement the owned realm runtime and retire the transitional Manifold adapter after parity.
+- Reassess the realm boundary if a playable expedition or Home exposes a concrete Manifold limitation.
 - Combat simulation and network-authority contract.
 - Expedition lifecycle and director.
 - Loot, crafting, salvage, NPC economy, and trade.

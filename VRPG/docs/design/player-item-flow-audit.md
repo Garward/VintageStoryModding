@@ -1,5 +1,15 @@
 # Player item custody audit
 
+Status: **Historical boundary record; not an activation gate or implementation roadmap**
+Current direction: [Playable vertical-slice checklist](testable-version-todo.md)
+
+This file records the detailed engine paths investigated during the original
+prove-then-activate approach. Its commit hashes and test results are historical
+evidence. Current work keeps the canonical store, removes unwanted producers at
+their owning systems, preserves explicit transactions for retained flows, and uses
+diagnostics to identify real unknown callers during live testing. Unfinished paths
+below do not block the combat sandbox or server-backed inventory access.
+
 Task 3 implementation audit, 2026-09-09. Native source reference is the locally
 decompiled installed engine under `VanillaSource/decompiled`. This audit is a
 coverage ledger, **not approval to activate the full native profile**.

@@ -1,5 +1,10 @@
 # Unified Player Menu Implementation Plan
 
+> **Schedule note (2026-09-09):** Paused as a deferred subsystem plan. The
+> [playable vertical-slice checklist](../../design/testable-version-todo.md) controls
+> current implementation order. Completed foundations remain reusable; unfinished
+> menu takeover, party, and exhaustive producer work do not block the combat slice.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (when delegated execution is authorized) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
 **Goal:** Deliver the complete native Inventory/Character replacement merged with the VRPG Hub, preserving exact high-count item custody and existing progression behavior.
@@ -10,7 +15,7 @@
 
 **Spec:** [Unified player-menu design](../specs/2026-09-06-unified-player-menu-design.md)
 
-**Status:** Approved; implementation in progress on `main`. Tasks 1/2, Task3 prerequisites through `51024f5`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. Parent3 outbound adapters, remaining producers and lifecycle are next before dependent actions and activation. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them.
+**Status:** Deferred after partial implementation. Tasks 1/2, Task3 prerequisites through `51024f5`, and Task4 isolated shell through `1a7d7ca` are source-reviewed. Task5 read-only browsing and Equipment disclosure are reviewed through `c916f99`, with 104 covering tests after fixes and inspected Cairo composition. Joined-menu acceptance remains unperformed. No native replacement or full runtime readiness is claimed. Extend working foundations rather than recreate them if this plan resumes.
 
 ## Global constraints
 
