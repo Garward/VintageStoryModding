@@ -195,7 +195,7 @@ git commit -m "fix: show player-facing inventory item names"
 - Produces: `HubPageActions` record containing the existing stat, option, hotbar, auto-throw, HUD, skill-equip, talent-plan, talent-editor, and config-persist callbacks.
 - Modifies: `PlayerMenuController` exposes `HubPageClientService? Hub` and calls `Hub.RequestSnapshot()` when navigating to any non-Inventory page without current state.
 
-- [ ] **Step 1: Write failing service lifecycle and route tests**
+- [x] **Step 1: Write failing service lifecycle and route tests**
 
 Assert that snapshots are connection-owned, stale talent trees request refresh, resources update closed-menu state, world reset clears player data, all six tabs exist in production, and navigating to Library does not instantiate another dialog:
 
@@ -210,7 +210,7 @@ public void ClosedMenuStillAcceptsResourceUpdates()
 }
 ```
 
-- [ ] **Step 2: Run focused tests and verify failure**
+- [x] **Step 2: Run focused tests and verify failure**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~HubPageClientServiceTests|FullyQualifiedName~PlayerMenuReplacementCompositionTests|FullyQualifiedName~PlayerMenuSessionStateTests"
@@ -218,13 +218,13 @@ dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName
 
 Expected: failure because Hub state is still owned by `GuiDialogVRPGHub` and production navigation exposes only Inventory.
 
-- [ ] **Step 3: Implement the service and controller ownership**
+- [x] **Step 3: Implement the service and controller ownership**
 
 Create a bounded service that normalizes null arrays/options, exposes immutable read access to the latest accepted packets, coalesces duplicate open requests while loading, clears pending state after response, and raises `Changed` once per accepted update. Store selected class, selected skill, Options category, Library query/selection, and talent viewport/draft in dedicated service state rather than shell fields.
 
 Wire `GuiDialogVrpgPlayerMenu` to subscribe to `Hub.Changed`, refresh/recompose as needed, and pass Hub state to `PlayerMenuShell`. Always render `Enum.GetValues<PlayerMenuPage>()`; remove the Inventory-only `availablePages` branch and `page-unavailable` rejection for supported routes.
 
-- [ ] **Step 4: Redirect network handlers into the connection service**
+- [x] **Step 4: Redirect network handlers into the connection service**
 
 In `InitializeClientPlayerMenu`, construct `HubPageClientService` with the existing channel callbacks and client configuration methods. Change handlers as follows:
 
@@ -238,7 +238,7 @@ In `InitializeClientPlayerMenu`, construct `HubPageClientService` with the exist
 
 The resource handler must continue updating the combat console/HUD after updating Hub page state. World leave and mod disposal reset/dispose the service and unsubscribe events.
 
-- [ ] **Step 5: Run focused tests and commit**
+- [x] **Step 5: Run focused tests and commit**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~HubPageClientServiceTests|FullyQualifiedName~PlayerMenuReplacementCompositionTests|FullyQualifiedName~PlayerMenuSessionStateTests"
