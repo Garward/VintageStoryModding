@@ -24,6 +24,9 @@ public sealed partial class PlayerMenuShell : GuiElement
     private readonly PartyPanel? party;
     private readonly Action<string> intent;
     private readonly BoundedItemStackRenderer itemRenderer;
+    private readonly PlayerItemDisplayNameResolver displayNames;
+    private readonly System.Func<PlayerItemEntryPacket, string?> localizedCollectibleName;
+    private readonly Action<string>? textDrawn;
     private readonly Dictionary<string, ItemSlot> icons = new();
     private readonly List<(string Id, MenuRect Bounds, FittedButton Button)> controls = new();
     private readonly List<(ItemSlot Slot, MenuRect Bounds)> visibleIcons = new();
@@ -33,11 +36,15 @@ public sealed partial class PlayerMenuShell : GuiElement
     public PlayerMenuLayout Layout { get; }
     public override bool Focusable => true;
     public PlayerMenuShell(ICoreClientAPI api, ElementBounds bounds, PlayerMenuLayout layout,
-        PlayerMenuSessionState session, PlayerMenuGallery? gallery, Action<string> intent, InventoryPage? inventory = null, PartyPanel? party = null) : base(api, bounds)
+        PlayerMenuSessionState session, PlayerMenuGallery? gallery, Action<string> intent, InventoryPage? inventory = null, PartyPanel? party = null,
+        System.Func<PlayerItemEntryPacket, string?>? localizedCollectibleName = null, Action<string>? textDrawn = null) : base(api, bounds)
     {
         Layout = layout; this.session = session; this.gallery = gallery; this.intent = intent;
         this.inventory = inventory;
         this.party = party;
+        displayNames = new(() => T("unknown-item"));
+        this.localizedCollectibleName = localizedCollectibleName ?? ResolveLocalizedCollectibleName;
+        this.textDrawn = textDrawn;
         itemRenderer = new(api, bounds);
         focus = session.Current.Focus;
     }
@@ -211,8 +218,11 @@ public sealed partial class PlayerMenuShell : GuiElement
     }
     private static void Fill(Context ctx, MenuRect b, string color) => PlayerMenuDrawing.Fill(ctx, b, color);
     private static void Stroke(Context ctx, MenuRect b, string color, double line) => PlayerMenuDrawing.Stroke(ctx, b, color, line);
-    private static void Text(Context ctx, string text, MenuRect b, double size, string color = PlayerMenuTheme.Text) =>
+    private void Text(Context ctx, string text, MenuRect b, double size, string color = PlayerMenuTheme.Text)
+    {
+        textDrawn?.Invoke(text);
         PlayerMenuDrawing.DrawBodyText(ctx, text, b, size, color);
+    }
     private static double MeasureTextHeight(Context ctx, string text, double width, double size)
     {
         ctx.SelectFontFace(PlayerMenuTheme.Font, FontSlant.Normal, FontWeight.Normal); ctx.SetFontSize(size);
@@ -257,7 +267,7 @@ public sealed partial class PlayerMenuShell : GuiElement
             index++;
             Button(ctx, "entry:" + entry.EntryId, "", row, view.Stale || view.Loading ? MenuControlState.Disabled
                 : entry.EntryId == view.SelectedId ? MenuControlState.Selected : MenuControlState.Default);
-            Text(ctx, entry.DisplayName, new(row.X + 48, row.Y + 3, row.Width - 54, 23), 15);
+            Text(ctx, DisplayName(entry), new(row.X + 48, row.Y + 3, row.Width - 54, 23), 15);
             string marker = view.Selection.Amounts.ContainsKey(entry.EntryId) ? T("selected-marker") + " " : "";
             string quantity = entry.Kind == PlayerItemStorageKind.Ledger ? T("balance", InventoryItemRow.QuantityOverlay(entry.Quantity))
                 : entry.Kind == PlayerItemStorageKind.Protected ? T("protected-record") : InventoryItemRow.QuantityOverlay(entry.Quantity);
@@ -286,6 +296,24 @@ public sealed partial class PlayerMenuShell : GuiElement
             : api.World.GetItem(asset) is { } item ? new ItemStack(item) : null;
         if (stack == null) return null;
         slot = new DummySlot(stack); icons[key] = slot; return slot;
+    }
+    private string DisplayName(PlayerItemEntryPacket entry) => displayNames.Resolve(entry, localizedCollectibleName);
+    private string? ResolveLocalizedCollectibleName(PlayerItemEntryPacket entry)
+    {
+        try
+        {
+            var asset = new AssetLocation(entry.AssetCode);
+            CollectibleObject? collectible = entry.AssetKind == PlayerItemAssetKind.Block
+                ? api.World.GetBlock(asset)
+                : api.World.GetItem(asset);
+            if (collectible == null) return null;
+            string name = new ItemStack(collectible, 1).GetName();
+            return string.IsNullOrWhiteSpace(name) ? null : name;
+        }
+        catch
+        {
+            return null;
+        }
     }
     private void DrawInventoryInspector(Context ctx)
     {
@@ -316,7 +344,7 @@ public sealed partial class PlayerMenuShell : GuiElement
                             !view.Loading && page.Query.EquipmentOffset + 64 < view.Equipment.Total ? MenuControlState.Default : MenuControlState.Disabled); y += 44;
                     }
                     if (view.Equipment.Entries.Count == 0) Line(T("equipment-empty"), 14, PlayerMenuTheme.Muted);
-                    foreach (var worn in view.Equipment.Entries) Line(worn.DisplayName, 15);
+                    foreach (var worn in view.Equipment.Entries) Line(DisplayName(worn), 15);
                 }
             }
         }
@@ -334,14 +362,18 @@ public sealed partial class PlayerMenuShell : GuiElement
         if (view.Selected is not { } entry) Line(T("select-item"), 20);
         else
         {
-            Line(entry.DisplayName, 21);
+            Line(DisplayName(entry), 21);
             Line(PlayerItemCategories.Required.Contains(entry.Category) ? T("category-" + entry.Category) : entry.CategoryName, 14, PlayerMenuTheme.Muted);
             if (entry.Kind == PlayerItemStorageKind.Protected) Line(T("protected-record"));
             Line(T(entry.Kind == PlayerItemStorageKind.Ledger ? "balance" : "quantity", InventoryItemRow.ExactQuantity(entry.Quantity)), 18);
             if (entry.ReservedQuantity > 0) Line(T("reserved", InventoryItemRow.ExactQuantity(entry.ReservedQuantity)));
             if (entry.Flags.HasFlag(PlayerItemFlags.Favorite)) Line(T("favorite"));
             if (entry.Flags.HasFlag(PlayerItemFlags.Protected)) Line(T(entry.ProtectionSource.HasFlag(PlayerItemProtectionSource.System) ? "system-protected" : "user-protected"));
-            if (RecoveryView.IsRecovery(entry.Location)) Line(T(RecoveryView.ReasonKey(entry)), 15, PlayerMenuTheme.Muted);
+            if (RecoveryView.IsRecovery(entry.Location))
+            {
+                Line(T(RecoveryView.ReasonKey(entry)), 15, PlayerMenuTheme.Muted);
+                Line(T("recovery-item", entry.AssetCode), 13, PlayerMenuTheme.Muted);
+            }
             if (view.DetailLoading) Line(T("detail-loading"));
             if (view.DetailError.Length > 0)
             {

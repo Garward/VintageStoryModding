@@ -22,6 +22,48 @@ namespace VRPG.Tests;
 [Collection("Inventory Cairo")]
 public sealed class InventoryCompositionCaptureTests
 {
+    [Fact]
+    public void ProductionInventoryCapturesPlayerFacingNamesAndLimitsRawAssetCodesToRecoveryDetails()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        var store = new InMemoryPlayerItemStore();
+        store.Insert(new(PlayerItemStorageKind.Aggregate, "game:pickaxe-iron", "materials", "pickaxe-iron", Array.Empty<byte>()), 1, 0);
+        store.Insert(new(PlayerItemStorageKind.Aggregate, "addon:ancient_vault-key", "materials", "ancient_vault-key", Array.Empty<byte>()), 1, store.Revision);
+        store.Insert(new(PlayerItemStorageKind.Unique, "game:sword-iron", "gear", "Emberwake", Array.Empty<byte>()), 1, store.Revision);
+        store.ImportRecovery("missing", new(PlayerItemStorageKind.Aggregate, "missing:lost-relic", "materials", "missing:lost-relic", Array.Empty<byte>()),
+            1, PlayerItemLocation.Unresolved, PlayerItemRecoveryReason.MissingAsset, "capture", store.Revision);
+        using var page = InventoryPage.CreateReadOnlyTestStore(store);
+        page.ChangeQuery(new(Category: ""), 0); page.Pump(200);
+        var session = new PlayerMenuSessionState(); session.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        var api = DispatchProxy.Create<ICoreClientAPI, CaptureProxy>();
+        var textCalls = new List<string>();
+        using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, 1120, 680),
+            PlayerMenuLayout.Resolve(1120, 680), session, null, _ => { }, page,
+            localizedCollectibleName: entry => entry.AssetCode == "game:pickaxe-iron" ? "Iron Pickaxe"
+                : entry.AssetCode == "game:sword-iron" ? "Iron Sword" : null,
+            textDrawn: textCalls.Add);
+        using var surface = new ImageSurface((Format)0, 1120, 680);
+        using var context = new Context(surface);
+
+        typeof(PlayerMenuShell).GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
+
+        Assert.Contains("Iron Pickaxe", textCalls);
+        Assert.Contains("Ancient Vault Key", textCalls);
+        Assert.Contains("Emberwake", textCalls);
+        Assert.DoesNotContain(textCalls, text => text.Contains("game:pickaxe-iron", StringComparison.Ordinal)
+            || text.Contains("addon:ancient_vault-key", StringComparison.Ordinal)
+            || text.Contains("game:sword-iron", StringComparison.Ordinal));
+
+        page.ChangeQuery(page.Query with { Location = PlayerItemLocation.Unresolved }, 300); page.Pump(500);
+        page.Select(page.View.Entries.Single().EntryId);
+        textCalls.Clear();
+        typeof(PlayerMenuShell).GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
+
+        Assert.Contains("Unknown item", textCalls);
+        Assert.Contains("Recovery item: missing:lost-relic", textCalls);
+        Assert.DoesNotContain("missing:lost-relic", textCalls);
+    }
+
     [Theory]
     [InlineData(1120, 680)][InlineData(800, 520)][InlineData(620, 520)][InlineData(400, 350)]
     public void ProductionInventoryExposesSixCenteredPageControls(int width, int height)
@@ -84,14 +126,21 @@ public sealed class InventoryCompositionCaptureTests
         Directory.CreateDirectory(output);
         try
         {
-            foreach (string scenario in new[] { "normal", "empty", "maximum", "gear-grid", "consumables", "protected", "currency", "long-name", "recovery", "loading", "rejected", "equipment", "effect-condition" })
+            foreach (string scenario in new[] { "normal", "empty", "maximum", "gear-grid", "consumables", "protected", "currency", "long-name", "localized-names", "recovery", "loading", "rejected", "equipment", "effect-condition" })
             foreach (var (width, height) in new[] { (1120, 680), (800, 520), (620, 520), (400, 350) })
             {
                 string? scenarioFilter = Environment.GetEnvironmentVariable("VRPG_MENU_CAPTURE_SCENARIO");
                 string? sizeFilter = Environment.GetEnvironmentVariable("VRPG_MENU_CAPTURE_SIZE");
                 if (scenarioFilter != null && scenario != scenarioFilter || sizeFilter != null && sizeFilter != $"{width}x{height}") continue;
                 var store = new InMemoryPlayerItemStore();
-                if (scenario != "empty")
+                if (scenario == "localized-names")
+                {
+                    store.Insert(new(PlayerItemStorageKind.Aggregate, "game:pickaxe-iron", "materials", "pickaxe-iron", Array.Empty<byte>()), 1, 0);
+                    store.Insert(new(PlayerItemStorageKind.Aggregate, "addon:ancient_vault-key", "materials", "ancient_vault-key", Array.Empty<byte>()), 1, store.Revision);
+                    store.Insert(new(PlayerItemStorageKind.Unique, "game:sword-iron", "gear", "Emberwake", Array.Empty<byte>()), 1, store.Revision);
+                    store.Insert(new(PlayerItemStorageKind.Aggregate, "missing:lost-relic", "materials", "missing:lost-relic", Array.Empty<byte>()), 1, store.Revision);
+                }
+                else if (scenario != "empty")
                 {
                     int count = scenario is "equipment" or "effect-condition" ? 0 : scenario == "recovery" ? 10000 : scenario == "maximum" ? 512 : 12;
                     for (int i = 0; i < count; i++)
@@ -133,7 +182,9 @@ public sealed class InventoryCompositionCaptureTests
                 var session = new PlayerMenuSessionState(); session.Enter(scenario == "equipment" ? PlayerMenuEntryPoint.CharacterMenu : PlayerMenuEntryPoint.InventoryMenu);
                 session.Update(session.Current with { Category = "", SelectedEntry = page.View.SelectedId });
                 var api = DispatchProxy.Create<ICoreClientAPI, CaptureProxy>();
-                using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, width, height), PlayerMenuLayout.Resolve(width, height), session, null, _ => { }, page);
+                using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, width, height), PlayerMenuLayout.Resolve(width, height), session, null, _ => { }, page,
+                    localizedCollectibleName: scenario == "localized-names" ? entry => entry.AssetCode == "game:pickaxe-iron" ? "Iron Pickaxe"
+                        : entry.AssetCode == "game:sword-iron" ? "Iron Sword" : null : null);
                 using var surface = new ImageSurface((Format)0, width, height);
                 using var context = new Context(surface);
                 typeof(PlayerMenuShell).GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
