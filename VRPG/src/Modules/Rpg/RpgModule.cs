@@ -187,12 +187,13 @@ public sealed partial class RpgModule : IVrpgModule
     private void SendPlayerMenuCapabilities(IServerPlayer player)
     {
         bool replacementEnabled = config.InventoryReplacement.Enabled;
+        bool itemServiceReady = replacementEnabled && gearRuntime.IsReady && playerItems != null;
         channel.SendPacket(new PlayerMenuCapabilityPacket
         {
             ProtocolVersion = PlayerMenuCapabilityProtocol.CurrentVersion,
             InventoryReplacementEnabled = replacementEnabled,
-            ItemStoreReady = replacementEnabled && gearRuntime.IsReady && playerItems != null,
-            DialogReplacementReady = false
+            ItemStoreReady = itemServiceReady,
+            DialogReplacementReady = itemServiceReady
         }, player);
     }
 

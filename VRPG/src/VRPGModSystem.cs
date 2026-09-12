@@ -55,6 +55,7 @@ public sealed class VRPGModSystem : ModSystem
     private InventoryPage? clientInventoryPage;
     private GuiDialogVrpgPlayerMenu? clientPlayerMenu;
     private PlayerMenuController? clientPlayerMenuController;
+    private PlayerMenuReplacement? clientPlayerMenuReplacement;
     private IClientEventAPI? clientPlayerMenuEvents;
     private HudElementVRPGResources? clientResourceHud;
     private HudElementVRPGCombatConsole? clientCombatConsole;
@@ -204,14 +205,7 @@ public sealed class VRPGModSystem : ModSystem
         clientMovementEffects = new ClientMovementEffectController(api);
 
         clientChannel = VRPGNetwork.RegisterClient(api);
-        clientPlayerItems = new PlayerItemClientService();
-        clientPlayerItems.Attach(clientChannel);
-        clientInventoryPage = new InventoryPage(clientPlayerItems);
-        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage, () => api.World.ElapsedMilliseconds);
-        clientPlayerMenuEvents = api.Event;
-        clientPlayerMenuEvents.LeaveWorld += OnClientPlayerMenuLeaveWorld;
-        playerItemTickListenerId = api.Event.RegisterGameTickListener(_ =>
-            clientInventoryPage?.Pump(api.World.ElapsedMilliseconds), 25);
+        InitializeClientPlayerMenu(api, clientChannel);
         PartyClient?.Dispose();
         PartyClient = new PartyClientService(clientChannel, api.Event);
         if (Environment.GetEnvironmentVariable("VRPG_PARTY_MENU") == "1")
@@ -251,8 +245,6 @@ public sealed class VRPGModSystem : ModSystem
                 clientStarterPreviewDismissed = false;
                 TryOpenStarterPreview(api);
             })
-            .SetMessageHandler<PlayerMenuCapabilityPacket>(packet =>
-                clientPlayerMenuCapabilities = PlayerMenuCapabilityState.FromPacket(packet))
             .SetMessageHandler<CombatInteractionResultPacket>(packet =>
                 combatInteractionController?.HandleResult(packet));
 
@@ -377,9 +369,32 @@ public sealed class VRPGModSystem : ModSystem
             });
     }
 
+    private void InitializeClientPlayerMenu(ICoreClientAPI api, IClientNetworkChannel channel)
+    {
+        clientPlayerItems = new PlayerItemClientService();
+        clientPlayerItems.Attach(channel);
+        clientInventoryPage = new InventoryPage(clientPlayerItems);
+        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage, () => api.World.ElapsedMilliseconds);
+        clientPlayerMenu = new(api, clientPlayerMenuController);
+        clientPlayerMenuReplacement = new(api, clientPlayerMenuController, clientPlayerMenu);
+        clientPlayerMenuEvents = api.Event;
+        clientPlayerMenuEvents.LeaveWorld += OnClientPlayerMenuLeaveWorld;
+        playerItemTickListenerId = api.Event.RegisterGameTickListener(_ =>
+        {
+            clientPlayerMenuReplacement?.Poll();
+            clientInventoryPage?.Pump(api.World.ElapsedMilliseconds);
+        }, 25);
+        channel.SetMessageHandler<PlayerMenuCapabilityPacket>(packet =>
+        {
+            clientPlayerMenuCapabilities = PlayerMenuCapabilityState.FromPacket(packet);
+            clientPlayerMenuReplacement?.Receive(packet);
+        });
+    }
+
     private void OnClientPlayerMenuLeaveWorld()
     {
-        clientPlayerMenuController?.ResetForWorldChange();
+        clientPlayerMenuCapabilities = PlayerMenuCapabilityState.Unavailable;
+        clientPlayerMenuReplacement?.LeaveWorld();
     }
 
     public override void Dispose()
@@ -414,6 +429,8 @@ public sealed class VRPGModSystem : ModSystem
         clientPartyMenu?.Dispose();
         clientPartyMenu = null;
         partyMenuController = null;
+        clientPlayerMenuReplacement?.Dispose();
+        clientPlayerMenuReplacement = null;
         clientPlayerMenu?.Dispose();
         clientPlayerMenu = null;
         clientInventoryPage?.Dispose();
