@@ -118,6 +118,97 @@ public sealed class PlayerItemProtocolTests
     }
 
     [Fact]
+    public void EquipAndUnequipUseCanonicalGearAndReturnAffectedEntries()
+    {
+        var f = new Fixture();
+        string gearId = f.InsertGear(requiredLevel: 1);
+        f.Refresh();
+
+        PlayerItemActionResult equipped = f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, gearId, PlayerEquipmentRoles.MainWeapon, 1));
+
+        Assert.True(equipped.Success);
+        Assert.Equal("", equipped.RejectionCode);
+        Assert.Equal(PlayerItemLocation.Equipped, Assert.Single(equipped.ChangedEntries).Location);
+        Assert.Equal(gearId, equipped.ChangedEntries[0].EntryId);
+        Assert.Equal(new[] { "inventory", "equipment", "character" }, equipped.InvalidatedScopes);
+        Assert.Equal(gearId, Assert.Single(f.Store.Equipment().Entries).EntryId);
+
+        f.Refresh();
+        PlayerItemActionResult unequipped = f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Unequip, gearId, PlayerEquipmentRoles.MainWeapon, 2));
+
+        Assert.True(unequipped.Success);
+        Assert.Equal(PlayerItemLocation.Stored, Assert.Single(unequipped.ChangedEntries).Location);
+        Assert.Equal(gearId, unequipped.ChangedEntries[0].EntryId);
+        Assert.Equal(new[] { "inventory", "equipment", "character" }, unequipped.InvalidatedScopes);
+        Assert.Empty(f.Store.Equipment().Entries);
+    }
+
+    [Fact]
+    public void ReplacingEquippedGearReturnsBothAuthoritativelyChangedEntries()
+    {
+        var f = new Fixture();
+        f.Players.GetOrCreate("p").Level = 20;
+        string firstGearId = f.InsertGear(requiredLevel: 20);
+        string secondGearId = f.InsertGear(requiredLevel: 20);
+        f.Refresh();
+        Assert.True(f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, firstGearId, PlayerEquipmentRoles.MainWeapon, 1)).Success);
+        f.Refresh();
+
+        PlayerItemActionResult result = f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, secondGearId, PlayerEquipmentRoles.MainWeapon, 2));
+
+        Assert.True(result.Success);
+        Assert.Equal(2, result.ChangedEntries.Length);
+        Assert.Contains(result.ChangedEntries, entry => entry.EntryId == firstGearId && entry.Location == PlayerItemLocation.Stored);
+        Assert.Contains(result.ChangedEntries, entry => entry.EntryId == secondGearId && entry.Location == PlayerItemLocation.Equipped);
+    }
+
+    [Fact]
+    public void EquipRejectsStaleInvalidMissingAndUnmetRequestsWithoutMutation()
+    {
+        var f = new Fixture();
+        string gearId = f.InsertGear(requiredLevel: 20);
+        f.Refresh();
+        long revision = f.Store.Revision;
+
+        Assert.Equal("stale-store", f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, gearId, PlayerEquipmentRoles.MainWeapon, 1, revision - 1)).RejectionCode);
+        Assert.Equal("equipment-role-mismatch", f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, gearId, "armor.invalid", 2)).RejectionCode);
+        Assert.Equal("entry-missing", f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, "missing", PlayerEquipmentRoles.MainWeapon, 3)).RejectionCode);
+        Assert.Equal("requirement-not-met", f.Service.Action(f.Player, f.Action(
+            PlayerItemAction.Equip, gearId, PlayerEquipmentRoles.MainWeapon, 4)).RejectionCode);
+        Assert.Equal(revision, f.Store.Revision);
+        Assert.Empty(f.Store.Equipment().Entries);
+    }
+
+    [Fact]
+    public void SuccessfulEquipReplayReturnsTheOriginalResultWithoutRepeatingMutation()
+    {
+        var f = new Fixture();
+        f.Players.GetOrCreate("p").Level = 20;
+        string gearId = f.InsertGear(requiredLevel: 20);
+        f.Refresh();
+        PlayerItemActionRequest request = f.Action(
+            PlayerItemAction.Equip, gearId, PlayerEquipmentRoles.MainWeapon, 1);
+
+        PlayerItemActionResult first = f.Service.Action(f.Player, request);
+        PlayerItemActionResult replay = f.Service.Action(f.Player, request);
+
+        Assert.True(first.Success);
+        Assert.True(replay.Success);
+        Assert.Equal(first.StoreRevision, replay.StoreRevision);
+        Assert.Equal(first.BuildRevision, replay.BuildRevision);
+        Assert.Equal(Assert.Single(first.ChangedEntries).EntryId, Assert.Single(replay.ChangedEntries).EntryId);
+        Assert.Equal(first.StoreRevision, f.Store.Revision);
+        Assert.Equal(gearId, Assert.Single(f.Store.Equipment().Entries).EntryId);
+    }
+
+    [Fact]
     public void RateLimitRunsBeforeStoreLookupAndRecoversNextWindow()
     {
         var f = new Fixture();
@@ -220,18 +311,32 @@ public sealed class PlayerItemProtocolTests
         public readonly PlayerItemNetworkService Service;
         public double Now;
         private readonly string id;
+        public IPlayerItemStore Store => Items.ForPlayer("p");
         public Fixture()
         {
             var talents = new TalentTreeCatalog();
             Service = new(Items, Players, new(), new(new GearComparisonService(TestGearDefinitions.Registry(),
-                new(talents), new(new RpgModuleConfig(), talents))), () => Now);
-            id = Items.ForPlayer("p").Insert("insert", PlayerItemQueryServiceTests.Item("a"), 10000, 0).EntryId;
+                new(talents), new(new RpgModuleConfig(), talents))), new GearEquipmentService(TestGearDefinitions.Registry()), () => Now);
+            id = Store.Insert("insert", PlayerItemQueryServiceTests.Item("a"), 10000, 0).EntryId;
             Service.Connect(Player);
         }
         public PlayerItemQueryRequest Query() => new() { ConnectionGeneration = 1, QueryId = 1 };
-        public PlayerItemActionRequest Action(long sequence = 1) => new() { ConnectionGeneration = 1,
-            RequestId = "request-" + sequence, RequestSequence = sequence, Action = PlayerItemAction.Destroy,
-            EntryId = id, Quantity = 1, ExpectedStoreRevision = 1, ExpectedBuildRevision = 1 };
+        public void Refresh() => Assert.Equal("", Service.Query(Player, Query()).RejectionCode);
+        public string InsertGear(int requiredLevel)
+        {
+            var instance = GearReadinessValidatorTests.Instance() with { RequiredLevel = requiredLevel };
+            return Store.Insert("gear-" + Store.Revision, new(PlayerItemStorageKind.Unique, "game:test-sword",
+                PlayerItemCategories.Gear, "Test Sword", GearItemStateCodec.Encode(instance)), 1, Store.Revision).EntryId;
+        }
+        public PlayerItemActionRequest Action(long sequence) => Action(PlayerItemAction.Destroy, null, "", sequence);
+        public PlayerItemActionRequest Action(PlayerItemAction action = PlayerItemAction.Destroy, string? entryId = null,
+            string roleCode = "", long sequence = 1, long? expectedStoreRevision = null) => new()
+        {
+            ConnectionGeneration = 1, RequestId = "request-" + sequence, RequestSequence = sequence, Action = action,
+            EntryId = entryId ?? id, RoleCode = roleCode, Quantity = 1,
+            ExpectedStoreRevision = expectedStoreRevision ?? Store.Revision,
+            ExpectedBuildRevision = Players.GetBuildRevision("p", Store.Equipment())
+        };
     }
 
     private sealed class TestPlayer(string uid) : Vintagestory.Server.ServerPlayer(null!,

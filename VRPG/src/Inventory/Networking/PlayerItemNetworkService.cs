@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using ProtoBuf;
+using VRPG.Inventory.Gear;
 using VRPG.Inventory.Queries;
 using VRPG.Modules.Rpg.Players;
 using VRPG.Network;
@@ -19,17 +21,20 @@ public sealed class PlayerItemNetworkService
     private readonly RpgPlayerStore players;
     private readonly PlayerItemQueryService queries;
     private readonly PlayerItemDetailService details;
+    private readonly GearEquipmentService equipment;
     private readonly Func<double> seconds;
     private readonly Dictionary<string, Session> sessions = new(StringComparer.OrdinalIgnoreCase);
     private long generation;
 
     public PlayerItemNetworkService(PlayerItemStoreDirectory items, RpgPlayerStore players,
-        PlayerItemQueryService queries, PlayerItemDetailService details, Func<double>? seconds = null)
+        PlayerItemQueryService queries, PlayerItemDetailService details, GearEquipmentService equipment,
+        Func<double>? seconds = null)
     {
         this.items = items;
         this.players = players;
         this.queries = queries;
         this.details = details;
+        this.equipment = equipment;
         this.seconds = seconds ?? (() => Environment.TickCount64 / 1000d);
     }
 
@@ -114,16 +119,97 @@ public sealed class PlayerItemNetworkService
         else if (!session.Refreshed) result.RejectionCode = "refresh-required";
         else if (request.ExpectedStoreRevision != result.StoreRevision) result.RejectionCode = "stale-store";
         else if (request.ExpectedBuildRevision != result.BuildRevision) result.RejectionCode = "stale-build";
-        else if (!store.TryGet(request.EntryId, out var entry) || entry == null) result.RejectionCode = "entry-missing";
-        else if (request.Quantity > entry.Quantity) result.RejectionCode = "insufficient-quantity";
-        else result.RejectionCode = "unsupported-action";
-        // This slice deliberately has no mutation dispatcher. Later action bridges must preserve all checks above.
+        else DispatchEquipmentAction(player, request, store, result);
         session.LastSequence = Math.Max(session.LastSequence, request.RequestSequence);
         if (session.Replay.Count == ReplayCapacity) session.Replay.Remove(session.Order.Dequeue());
         session.Replay[request.RequestId!] = (fingerprint, Serializer.DeepClone(result));
         session.Order.Enqueue(request.RequestId!);
         return result;
     }
+
+    private void DispatchEquipmentAction(
+        IServerPlayer player,
+        PlayerItemActionRequest request,
+        IPlayerItemStore store,
+        PlayerItemActionResult result)
+    {
+        if (request.Action is not (PlayerItemAction.Equip or PlayerItemAction.Unequip))
+        {
+            result.RejectionCode = "unsupported-action";
+            return;
+        }
+
+        string priorEntryId = request.Action == PlayerItemAction.Equip
+            ? store.Equipment().Entries.FirstOrDefault(entry => string.Equals(
+                entry.RoleCode, request.RoleCode, StringComparison.Ordinal))?.EntryId ?? ""
+            : "";
+        PlayerItemOperationResult operation;
+        if (request.Action == PlayerItemAction.Equip)
+        {
+            if (!store.TryGet(request.EntryId, out PlayerItemDetail? entry) || entry == null)
+            {
+                result.RejectionCode = "entry-missing";
+                return;
+            }
+            operation = equipment.TryEquip(store, players.GetOrCreate(player.PlayerUID).Level,
+                request.RequestId, entry.EntryId, request.RoleCode, request.ExpectedStoreRevision);
+        }
+        else
+        {
+            operation = store.Unequip(request.RequestId, request.RoleCode, request.ExpectedStoreRevision);
+        }
+
+        result.StoreRevision = operation.Revision;
+        result.BuildRevision = players.GetBuildRevision(player.PlayerUID, store.Equipment());
+        result.Success = operation.Success;
+        result.RejectionCode = operation.Success ? "" : RejectionCode(operation.Rejection);
+        if (!operation.Success) return;
+
+        result.ChangedEntries = ChangedEntries(store, operation.EntryId, priorEntryId);
+        result.InvalidatedScopes = new[] { "inventory", "equipment", "character" };
+    }
+
+    private static PlayerItemEntryPacket[] ChangedEntries(IPlayerItemStore store, params string[] entryIds)
+    {
+        var entries = new List<PlayerItemEntryPacket>(entryIds.Length);
+        foreach (string entryId in entryIds)
+        {
+            if (entryId.Length == 0 || entries.Any(entry => string.Equals(entry.EntryId, entryId, StringComparison.OrdinalIgnoreCase)))
+                continue;
+            if (!store.TryGet(entryId, out PlayerItemDetail? detail) || detail == null) continue;
+            entries.Add(PlayerItemQueryService.ToPacket(new PlayerItemSummary(
+                detail.EntryId,
+                detail.Prototype.Kind,
+                detail.Prototype.AssetCode,
+                detail.Prototype.Category,
+                detail.Prototype.DisplayName,
+                detail.Quantity,
+                detail.Prototype.AssetKind,
+                detail.Location,
+                detail.Flags,
+                0,
+                detail.ProtectionSource,
+                detail.Prototype.Category)));
+        }
+        return entries.ToArray();
+    }
+
+    private static string RejectionCode(PlayerItemOperationRejection rejection) => rejection switch
+    {
+        PlayerItemOperationRejection.StaleRevision => "stale-store",
+        PlayerItemOperationRejection.RequestIdConflict => "request-id-conflict",
+        PlayerItemOperationRejection.EntryMissing => "entry-missing",
+        PlayerItemOperationRejection.EntryUnavailable => "entry-unavailable",
+        PlayerItemOperationRejection.EntryReserved => "entry-reserved",
+        PlayerItemOperationRejection.EntryProtected => "entry-protected",
+        PlayerItemOperationRejection.InsufficientQuantity => "insufficient-quantity",
+        PlayerItemOperationRejection.EquipmentRoleMissing => "equipment-role-mismatch",
+        PlayerItemOperationRejection.NotEquippable => "not-equippable",
+        PlayerItemOperationRejection.InvalidGear => "invalid-gear",
+        PlayerItemOperationRejection.EquipmentRoleMismatch => "equipment-role-mismatch",
+        PlayerItemOperationRejection.RequirementNotMet => "requirement-not-met",
+        _ => "invalid-request"
+    };
 
     public PlayerItemInvalidationPacket Invalidate(IServerPlayer player, params string[] scopes)
     {
