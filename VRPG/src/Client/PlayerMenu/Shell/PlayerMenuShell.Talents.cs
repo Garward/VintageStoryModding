@@ -29,7 +29,7 @@ public sealed partial class PlayerMenuShell
             HubBrowseLabel(ctx, string.IsNullOrWhiteSpace(page.Graph.Snapshot.TreeName) ? T("talents") : page.Graph.Snapshot.TreeName,
                 new(b.X + 12, b.Y + 7, b.Width - 24 - (page.CanEditTree ? 120 : 0), 24), 18);
             if (page.CanEditTree) Button(ctx, "talent:editor", "talent-editor", new(b.Right - 120, b.Y + 4, 112, 28));
-            Text(ctx, T("talent-points", page.PlannedPoints, page.RemainingRespec), new(b.X + 12, b.Y + 33, b.Width - 24, 22), 14, PlayerMenuTheme.Muted);
+            Text(ctx, hub.TalentTreeReady ? T("talent-points", page.PlannedPoints, page.RemainingRespec) : T("talent-loading"), new(b.X + 12, b.Y + 33, b.Width - 24, 22), 14, PlayerMenuTheme.Muted);
             var graph = TalentWell; PlayerMenuDrawing.DrawWell(ctx, graph);
             if (page.Graph.Count == 0)
                 Text(ctx, T(hub.TalentTree == null ? "talent-loading" : "talent-empty"), new(graph.X + 10, graph.Y + 8, graph.Width - 20, graph.Height - 16), 16);
@@ -60,6 +60,7 @@ public sealed partial class PlayerMenuShell
         var page = hub!.Talents; var b = Layout.Inspector;
         PlayerMenuDrawing.DrawWell(ctx, b);
         var lines = new List<(string Text, double Size)>();
+        if (!hub.TalentTreeReady) lines.Add((T("talent-loading"), 16));
         if (page.Pending) lines.Add((T("talent-applying"), 16));
         else if (page.Feedback.Length > 0) lines.Add((page.Feedback, 16));
         if (page.Graph.SelectedNode is { } node)
@@ -67,7 +68,7 @@ public sealed partial class PlayerMenuShell
             lines.Add((string.IsNullOrWhiteSpace(node.Name) ? T("talent-node") : node.Name, 20));
             lines.Add((TalentState(page.Graph.StateFor(node)) + " · " + (node.Starter ? T("talent-free") : T(page.Cost(node.Code) == 1 ? "talent-cost-one" : "talent-cost", page.Cost(node.Code))), 15));
             lines.Add((T("talent-points", page.PlannedPoints, page.RemainingRespec), 15));
-            if (page.Changes > 0 && !page.CanApply && !page.Pending) lines.Add((T("talent-review-plan"), 15));
+            if (page.Changes > 0 && page.CanEdit && !page.CanApply && page.Feedback.Length == 0) lines.Add((T("talent-review-plan"), 15));
             lines.Add((T("talent-effects"), 17));
             if (node.Modifiers.Length == 0) lines.Add((T("talent-no-effects"), 15));
             foreach (string modifier in node.Modifiers) lines.Add((modifier.Replace("vrpg:", "", StringComparison.OrdinalIgnoreCase).Replace('_', ' '), 16));
@@ -113,7 +114,7 @@ public sealed partial class PlayerMenuShell
 
     private bool BeginTalentDrag(MouseEvent args)
     {
-        if (!TalentGraphOpen || args.Button is not (EnumMouseButton.Left or EnumMouseButton.Right)) return false;
+        if (!TalentGraphOpen || !hub!.TalentTreeReady || args.Button is not (EnumMouseButton.Left or EnumMouseButton.Right)) return false;
         double x = (args.X - Bounds.absX) / RuntimeEnv.GUIScale, y = (args.Y - Bounds.absY) / RuntimeEnv.GUIScale;
         if (!TalentWell.Contains(x, y)) return false;
         talentDragging = true; talentMoved = false; talentButton = args.Button;
@@ -141,18 +142,18 @@ public sealed partial class PlayerMenuShell
     /// <summary>Consumes logical pointer coordinates; only the graph owns wheel zoom.</summary>
     public bool TalentWheel(int direction, double x, double y)
     {
-        if (!TalentGraphOpen || !TalentWell.Contains(x, y)) return false;
+        if (!TalentGraphOpen || !hub!.TalentTreeReady || !TalentWell.Contains(x, y)) return false;
         hub!.Talents.ZoomAt(direction, x - TalentWell.X - TalentWell.Width / 2, y - TalentWell.Y - TalentWell.Height / 2, TalentWell.Width, TalentWell.Height);
         Refresh(); return true;
     }
     private bool HandleTalentKey(KeyEvent args)
     {
         if (!TalentsOpen) return false;
-        if (focus == "talent:graph" && TalentGraphOpen && args.KeyCode is (int)GlKeys.Left or (int)GlKeys.Right)
+        if (focus == "talent:graph" && TalentGraphOpen && hub!.TalentTreeReady && args.KeyCode is (int)GlKeys.Left or (int)GlKeys.Right)
         {
             var graph = hub!.Talents.Graph; var nodes = graph.Snapshot.Nodes;
             if (nodes.Length > 0)
-            { int index = Array.IndexOf(nodes, graph.SelectedNode); graph.Select(nodes[(index + (args.KeyCode == (int)GlKeys.Right ? 1 : nodes.Length - 1)) % nodes.Length].Code); hub.Talents.SaveView(); }
+            { int index = Array.IndexOf(nodes, graph.SelectedNode); graph.Select(nodes[(index + (args.KeyCode == (int)GlKeys.Right ? 1 : nodes.Length - 1)) % nodes.Length].Code); hub.Talents.SaveView(); session.Update(session.Current with { InspectorScroll = 0 }); }
         }
         else if (focus == "talent:graph" && args.KeyCode == (int)GlKeys.Enter && hub!.Talents.Graph.SelectedNode is { } node) hub.Talents.QueueAllocation(node.Code);
         else if ((!Layout.AlternatePanes || session.Current.InspectorOnly) && args.KeyCode is (int)GlKeys.PageDown or (int)GlKeys.PageUp)

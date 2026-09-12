@@ -22,7 +22,7 @@ public sealed class HubPageClientService : IDisposable
     private TalentTreeSnapshotPacket? talentTree;
     private RpgResourcePacket? resources;
     private LibraryEntryPacket[] libraryEntries = Array.Empty<LibraryEntryPacket>();
-    private bool treeRequestPending, disposed;
+    private bool treeRequestPending, treeApplied, disposed;
     public HubPageActions Actions { get; }
     public StatsPage Stats { get; }
     public SkillsPage Skills { get; }
@@ -34,6 +34,7 @@ public sealed class HubPageClientService : IDisposable
     public LibraryEntryPacket[] LibraryEntries => Copy(libraryEntries);
     public bool HasSnapshot => packet != null;
     public bool Loading { get; private set; }
+    public bool TalentTreeReady { get; private set; }
     public string ErrorKey { get; private set; } = "";
     public event Action? Changed;
 
@@ -73,7 +74,10 @@ public sealed class HubPageClientService : IDisposable
         libraryEntries = packet.Entries;
         Loading = false; ErrorKey = "";
         SnapshotRevision++;
+        // Rebase only after tree identity and authoritative player state have both been updated.
+        TalentTreeReady = false;
         Stats.Receive(packet); Skills.Receive(Copy(packet)); Talents.Receive(packet);
+        RefreshTalentTreeReadiness();
         RequestMissingTree();
         Changed?.Invoke();
     }
@@ -88,6 +92,17 @@ public sealed class HubPageClientService : IDisposable
         catch (Exception error) { treeRequestPending = false; ErrorKey = "hub-error"; Actions.ReportError(error); }
     }
 
+    private void RefreshTalentTreeReadiness()
+    {
+        TalentTreeReady = packet != null && talentTree != null
+            && (string.IsNullOrEmpty(packet.TalentTreeCode) && string.IsNullOrEmpty(packet.TalentTreeHash)
+                || string.Equals(packet.TalentTreeCode, talentTree.TreeCode, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(packet.TalentTreeHash, talentTree.ContentHash, StringComparison.Ordinal));
+        if (!TalentTreeReady) return;
+        if (!treeApplied) { treeApplied = true; Talents.Receive(Copy(talentTree!)); }
+        else Talents.Revalidate();
+    }
+
     public void Receive(TalentTreeSnapshotPacket next)
     {
         if (disposed) return;
@@ -100,7 +115,8 @@ public sealed class HubPageClientService : IDisposable
         }
         talentTree = Copy(next);
         foreach (var node in talentTree.Nodes) { node.Links ??= Array.Empty<string>(); node.Modifiers ??= Array.Empty<string>(); }
-        Talents.Receive(Copy(talentTree));
+        treeApplied = false;
+        RefreshTalentTreeReadiness();
         ErrorKey = "";
         // The server sends this before a refreshed Hub packet. Its previous identity is not a refresh target.
         Changed?.Invoke();
@@ -135,7 +151,7 @@ public sealed class HubPageClientService : IDisposable
     public void ResetConnection()
     {
         packet = null; talentTree = null; resources = null; libraryEntries = Array.Empty<LibraryEntryPacket>();
-        State = new(); Loading = false; treeRequestPending = false; ErrorKey = "";
+        State = new(); Loading = false; treeRequestPending = false; treeApplied = false; TalentTreeReady = false; ErrorKey = "";
         Stats.Reset(); Skills.Reset(); Talents.Reset();
         State = new();
         Changed?.Invoke();

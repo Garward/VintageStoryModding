@@ -330,6 +330,7 @@
   "menu-talent-free": "Free",
   "menu-talent-cost": "Cost: {0} points",
   "menu-talent-cost-one": "Cost: 1 point",
+  "menu-talent-plan-limit": "Apply up to 512 changes at a time. Remove some changes first.",
   "menu-talent-review-plan": "This plan needs more points or a connected path. Remove changes or reset the plan.",
   "menu-talent-no-effects": "No effects assigned",
   "menu-talent-apply": "Apply {0}",

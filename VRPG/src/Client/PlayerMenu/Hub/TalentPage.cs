@@ -11,31 +11,39 @@ namespace VRPG.Client.PlayerMenu.Hub;
 /// <summary>Retained talent viewport and draft; the server owns committed progression.</summary>
 public sealed class TalentPage
 {
+    // Mirrors TalentAllocationService.ApplyPlan's combined wire-request limit.
+    private const int MaximumChanges = 512;
     private readonly HubPageClientService hub;
     private readonly HashSet<string> allocations = new(StringComparer.OrdinalIgnoreCase), refunds = new(StringComparer.OrdinalIgnoreCase);
-    private string[] serverTalents = Array.Empty<string>();
-    private int points, respec;
+    private readonly Dictionary<string, TalentTreeNodePacket> nodes = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, int> costs = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, HashSet<string>> adjacency = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> starters = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> serverTalents = new(StringComparer.OrdinalIgnoreCase), effective = new(StringComparer.OrdinalIgnoreCase);
+    private int points, respec, rawPoints, validationVersion, selectedVersion = -1;
+    private bool connected, editorGranted, selectedAllocate, selectedRefund, feedbackError;
+    private bool validationDirty = true, needsRebase = true;
+    private string selectedValidationCode = "", feedback = "";
     public TalentPage(HubPageClientService hub) => this.hub = hub;
     public TalentGraphComponent Graph { get; private set; } = new() { CoordinateScale = 1, ShowPlayerSelection = true };
     public IReadOnlyCollection<string> Allocations => allocations.ToArray();
     public IReadOnlyCollection<string> Refunds => refunds.ToArray();
-    public IReadOnlyCollection<string> EffectiveTalents => Effective();
-    public int PlannedPoints => Math.Max(0, RawPoints);
+    public IReadOnlyCollection<string> EffectiveTalents => effective.ToArray();
+    public int PlannedPoints => Math.Max(0, rawPoints);
     public int RemainingRespec => Math.Max(0, respec - refunds.Count);
     public int Changes => allocations.Count + refunds.Count;
     public bool Pending { get; private set; }
-    public bool CanEditTree { get; private set; }
-    public bool CanEdit => hub.HasSnapshot && !hub.Loading && hub.ErrorKey.Length == 0 && !Pending && !hub.Stats.Pending && !hub.Skills.Pending;
-    public bool CanApply => CanEdit && Changes > 0 && RawPoints >= 0 && refunds.Count <= respec && Connected();
-    public string Feedback { get; private set; } = "";
-    public bool FeedbackError { get; private set; }
-    private int RawPoints => points + refunds.Sum(Cost) - allocations.Sum(Cost);
+    public bool CanEditTree => editorGranted && hub.TalentTreeReady && !hub.Loading && hub.ErrorKey.Length == 0 && !Pending;
+    public bool CanEdit => hub.HasSnapshot && hub.TalentTreeReady && !hub.Loading && hub.ErrorKey.Length == 0 && !Pending && !hub.Stats.Pending && !hub.Skills.Pending;
+    public bool CanApply => CanEdit && Changes is > 0 and <= MaximumChanges && rawPoints >= 0 && refunds.Count <= respec && connected;
+    public string Feedback => Changes > MaximumChanges && !Pending ? Shell.PlayerMenuShell.T("talent-plan-limit") : feedback;
+    public bool FeedbackError => feedbackError || Changes > MaximumChanges && !Pending;
     private static string Canonical(string code) => code.Trim().Contains(':') ? code.Trim().ToLowerInvariant() : "vrpg:" + code.Trim().ToLowerInvariant();
-    private TalentTreeNodePacket? Node(string code) => Array.Find(Graph.Snapshot.Nodes, n => Canonical(n.Code) == Canonical(code));
-    public int Cost(string code) => Node(code)?.Starter == true ? 0 : Math.Max(1, Node(code)?.Cost ?? 1);
+    public int Cost(string code) => costs.GetValueOrDefault(Canonical(code), 1);
+    private int CalculatePoints() => points + refunds.Sum(code => costs.GetValueOrDefault(code, 1)) - allocations.Sum(code => costs.GetValueOrDefault(code, 1));
     private HashSet<string> Effective()
     {
-        var result = new HashSet<string>(serverTalents.Select(Canonical), StringComparer.OrdinalIgnoreCase);
+        var result = new HashSet<string>(serverTalents, StringComparer.OrdinalIgnoreCase);
         result.ExceptWith(refunds); result.UnionWith(allocations); return result;
     }
     public void QueueAllocation(string code) => Queue(code, false);
@@ -44,88 +52,134 @@ public sealed class TalentPage
     {
         if (!CanEdit || Graph.SelectedNode is not { } node) return false;
         string code = Canonical(node.Code);
+        if (selectedVersion != validationVersion || selectedValidationCode != code)
+        {
+            selectedValidationCode = code; selectedVersion = validationVersion;
+            selectedAllocate = CanQueue(code, false); selectedRefund = CanQueue(code, true);
+        }
+        return refund ? selectedRefund : selectedAllocate;
+    }
+    private bool CanQueue(string code, bool refund)
+    {
+        if (!nodes.TryGetValue(code, out var node)) return false;
         if (allocations.Contains(code)) return true;
         if (refunds.Contains(code))
-        { var restored = Effective(); restored.Add(code); return RawPoints >= Cost(code) && Reachable(restored).Count == restored.Count; }
-        if (!refund) return Graph.StateFor(node) == TalentGraphNodeState.Available;
-        if (Graph.StateFor(node) != TalentGraphNodeState.Allocated || refunds.Count >= respec) return false;
-        var remaining = Effective(); remaining.Remove(code); return remaining.Count == 0 || Reachable(remaining).Count == remaining.Count;
+        { var restored = new HashSet<string>(effective, StringComparer.OrdinalIgnoreCase); restored.Add(code); return rawPoints >= costs[code] && Connected(restored); }
+        if (!refund) return !effective.Contains(code)
+            && (effective.Count == 0 ? node.Starter : !node.Starter && adjacency[code].Any(effective.Contains))
+            && (node.Starter || Math.Max(0, rawPoints) >= costs[code]);
+        if (!serverTalents.Contains(code) || refunds.Count >= respec) return false;
+        var remaining = new HashSet<string>(effective, StringComparer.OrdinalIgnoreCase); remaining.Remove(code); return Connected(remaining);
     }
     private void Queue(string code, bool refund)
     {
-        if (!CanEdit || Node(code) is not { } node) return;
         code = Canonical(code);
+        if (!CanEdit || !CanQueue(code, refund)) return;
+        validationDirty = true;
         if (allocations.Remove(code)) Prune();
-        else if (refunds.Remove(code)) { if (RawPoints < 0 || !Connected()) refunds.Add(code); }
-        else if (!refund && Graph.StateFor(node) == TalentGraphNodeState.Available) allocations.Add(code);
-        else if (refund && Graph.StateFor(node) == TalentGraphNodeState.Allocated && refunds.Count < respec)
-        { refunds.Add(code); if (!Connected()) refunds.Remove(code); }
+        else if (!refunds.Remove(code)) { if (refund) refunds.Add(code); else allocations.Add(code); }
         UpdateGraph();
     }
-    private HashSet<string> Reachable(HashSet<string> effective)
+    private HashSet<string> Reachable(HashSet<string> plan)
     {
         var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var roots = Graph.Snapshot.Nodes.Where(n => n.Starter && effective.Contains(Canonical(n.Code))).ToArray();
-        if (roots.Length != 1) return visited;
-        var queue = new Queue<TalentTreeNodePacket>(); queue.Enqueue(roots[0]); visited.Add(Canonical(roots[0].Code));
+        string? root = null;
+        foreach (string starter in starters)
+            if (plan.Contains(starter)) { if (root != null) return visited; root = starter; }
+        if (root == null) return visited;
+        var queue = new Queue<string>(); queue.Enqueue(root); visited.Add(root);
         while (queue.TryDequeue(out var current))
-            foreach (var candidate in Graph.Snapshot.Nodes)
-            {
-                string code = Canonical(candidate.Code);
-                if (!effective.Contains(code) || visited.Contains(code)) continue;
-                if (!current.Links.Any(link => Canonical(link) == code) && !candidate.Links.Any(link => Canonical(link) == Canonical(current.Code))) continue;
-                visited.Add(code); queue.Enqueue(candidate);
-            }
+            foreach (string neighbor in adjacency[current])
+                if (plan.Contains(neighbor) && visited.Add(neighbor)) queue.Enqueue(neighbor);
         return visited;
     }
-    private bool Connected() { var effective = Effective(); return effective.Count == 0 || Reachable(effective).Count == effective.Count; }
+    private bool Connected(HashSet<string> plan) => plan.Count == 0 || Reachable(plan).Count == plan.Count;
     private void Prune() { var reachable = Reachable(Effective()); allocations.RemoveWhere(code => !reachable.Contains(code)); }
+    internal void Revalidate()
+    {
+        // In-flight arrays describe the exact submitted request until its Hub response arrives.
+        if (needsRebase && !Pending && hub.TalentTreeReady)
+        {
+            allocations.RemoveWhere(code => !nodes.ContainsKey(code) || serverTalents.Contains(code));
+            refunds.RemoveWhere(code => !nodes.ContainsKey(code) || !serverTalents.Contains(code));
+            Prune();
+            needsRebase = false; validationDirty = true;
+        }
+        UpdateGraph();
+    }
     public void Apply()
     {
         if (!CanApply) return;
-        Pending = true; Feedback = ""; FeedbackError = false;
+        Pending = true; feedback = ""; feedbackError = false;
         try { hub.Actions.ApplyTalentPlan(allocations.ToArray(), refunds.ToArray()); }
-        catch (Exception error) { Pending = false; FeedbackError = true; Feedback = Shell.PlayerMenuShell.T("feedback-talents-failed"); hub.Actions.ReportError(error); }
+        catch (Exception error) { Pending = false; feedbackError = true; feedback = Shell.PlayerMenuShell.T("feedback-talents-failed"); hub.Actions.ReportError(error); }
     }
-    public void ResetDraft() { if (Pending) return; allocations.Clear(); refunds.Clear(); Feedback = ""; FeedbackError = false; UpdateGraph(); }
+    public void ResetDraft() { if (Pending) return; allocations.Clear(); refunds.Clear(); feedback = ""; feedbackError = false; validationDirty = true; UpdateGraph(); }
     public bool SelectAt(double x, double y, EnumMouseButton button)
     {
-        if (!Graph.SelectAt(x, y)) return false;
+        if (!hub.TalentTreeReady || !Graph.SelectAt(x, y)) return false;
         string code = Graph.SelectedNode!.Code;
         if (button == EnumMouseButton.Left) QueueAllocation(code); else if (button == EnumMouseButton.Right) QueueRefund(code);
         SaveView(); return true;
     }
-    public void Pan(double x, double y, double width, double height) { Graph.Pan(x, y, width, height); SaveView(); }
-    public void ZoomAt(int direction, double x, double y, double width, double height) { Graph.ZoomAt(direction, x, y, width, height); SaveView(); }
+    public void Pan(double x, double y, double width, double height) { if (!hub.TalentTreeReady) return; Graph.Pan(x, y, width, height); SaveView(); }
+    public void ZoomAt(int direction, double x, double y, double width, double height) { if (!hub.TalentTreeReady) return; Graph.ZoomAt(direction, x, y, width, height); SaveView(); }
     public void SaveView() => hub.State = hub.State with { TalentPanX = Graph.PanX, TalentPanY = Graph.PanY, TalentZoom = Graph.Zoom,
         TalentSelection = Graph.SelectedNode?.Code ?? "", TalentAllocations = allocations.ToImmutableArray(), TalentRefunds = refunds.ToImmutableArray() };
     private void UpdateGraph()
     {
-        Graph.SetPlayerPlan(serverTalents, Effective().ToArray(), allocations.ToArray(), refunds.ToArray(), PlannedPoints); SaveView();
+        if (!validationDirty) return;
+        effective = Effective(); rawPoints = CalculatePoints(); connected = Connected(effective); validationVersion++;
+        validationDirty = false;
+        Graph.SetPlayerPlan(serverTalents.ToArray(), effective.ToArray(), allocations.ToArray(), refunds.ToArray(), PlannedPoints); SaveView();
     }
     internal void Receive(OpenHubPacket packet)
     {
-        serverTalents = (string[])packet.Talents.Clone(); CanEditTree = packet.CanEditTalentTree; UpdateResources(packet.Resources);
+        UpdateServerTalents(packet.Talents); editorGranted = packet.CanEditTalentTree; UpdateResources(packet.Resources);
         if (Pending)
         {
-            Pending = false; FeedbackError = packet.FeedbackError;
-            Feedback = HubPageFeedback.Present(packet.FeedbackMessage, packet.FeedbackError, PlayerMenuPage.Talents);
-            if (!packet.FeedbackError) { allocations.Clear(); refunds.Clear(); }
+            Pending = false; feedbackError = packet.FeedbackError;
+            feedback = HubPageFeedback.Present(packet.FeedbackMessage, packet.FeedbackError, PlayerMenuPage.Talents);
+            if (!packet.FeedbackError) { allocations.Clear(); refunds.Clear(); validationDirty = true; }
         }
-        UpdateGraph();
+        Revalidate();
     }
     internal void Receive(TalentTreeSnapshotPacket packet)
     {
         if (!Graph.SetTree(packet, preserveView: Graph.Count > 0)) return;
-        allocations.RemoveWhere(code => Node(code) == null); refunds.RemoveWhere(code => Node(code) == null);
-        Prune(); UpdateGraph();
+        validationDirty = true; needsRebase = true;
+        nodes.Clear(); costs.Clear(); adjacency.Clear(); starters.Clear();
+        foreach (var node in packet.Nodes)
+        {
+            string code = Canonical(node.Code); nodes[code] = node; costs[code] = node.Starter ? 0 : Math.Max(1, node.Cost);
+            adjacency[code] = new(StringComparer.OrdinalIgnoreCase); if (node.Starter) starters.Add(code);
+        }
+        foreach (var (code, node) in nodes)
+            foreach (string link in node.Links)
+            {
+                string other = Canonical(link); if (!adjacency.ContainsKey(other)) continue;
+                adjacency[code].Add(other); adjacency[other].Add(code);
+            }
+        Revalidate();
     }
-    internal void Receive(TalentProgressPacket packet) { serverTalents = (string[])packet.Talents.Clone(); UpdateGraph(); }
+    private void UpdateServerTalents(string[] values)
+    {
+        var next = new HashSet<string>(values.Select(Canonical), StringComparer.OrdinalIgnoreCase);
+        if (serverTalents.SetEquals(next)) return;
+        serverTalents = next; validationDirty = true; needsRebase = true;
+    }
+    internal void Receive(TalentProgressPacket packet) { UpdateServerTalents(packet.Talents); Revalidate(); }
     internal void UpdateResources(RpgResourcePacket? packet)
-    { points = Math.Max(0, packet?.UnspentTalentPoints ?? 0); respec = Math.Max(0, packet?.RespecPoints ?? 0); UpdateGraph(); }
+    {
+        int nextPoints = Math.Max(0, packet?.UnspentTalentPoints ?? 0), nextRespec = Math.Max(0, packet?.RespecPoints ?? 0);
+        if (points == nextPoints && respec == nextRespec) return;
+        points = nextPoints; respec = nextRespec; validationDirty = true; UpdateGraph();
+    }
     internal void Reset()
     {
-        Pending = false; CanEditTree = false; Feedback = ""; FeedbackError = false; points = 0; respec = 0; serverTalents = Array.Empty<string>();
-        allocations.Clear(); refunds.Clear(); Graph = new() { CoordinateScale = 1, ShowPlayerSelection = true }; UpdateGraph();
+        Pending = false; editorGranted = false; feedback = ""; feedbackError = false; points = 0; respec = 0; serverTalents.Clear();
+        allocations.Clear(); refunds.Clear(); nodes.Clear(); costs.Clear(); adjacency.Clear(); starters.Clear();
+        validationDirty = true; needsRebase = true;
+        Graph = new() { CoordinateScale = 1, ShowPlayerSelection = true }; UpdateGraph();
     }
 }

@@ -19,6 +19,31 @@ namespace VRPG.Tests;
 public sealed class HubPageCompositionCaptureTests
 {
     [Fact]
+    public void StaleTalentDetailsExplainLoadingAndDisableAllGeometryActions()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture(new[] { "root" });
+        var packet = TalentPageTests.Fixture.Packet(new[] { "root" }, 3, 2); packet.TalentTreeCode = "vrpg:test"; packet.TalentTreeHash = "first"; packet.CanEditTalentTree = true;
+        f.Hub.Receive(packet); f.Hub.Talents.QueueAllocation("bridge");
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents); session.Update(session.Current with { InspectorOnly = true });
+        var text = new List<string>(); using var shell = Shell(session, f.Hub, 400, 350, text.Add); Draw(shell, 400, 350);
+        packet.TalentTreeHash = "replacement"; f.Hub.Receive(packet); text.Clear(); Draw(shell, 400, 350);
+        Assert.Contains("Loading talents…", text);
+        Assert.DoesNotContain(text, line => line.StartsWith("This plan needs more points", StringComparison.Ordinal));
+        Assert.DoesNotContain(Controls(shell), c => c.Id == "talent:editor");
+        Assert.All(Controls(shell).Where(c => c.Id is "talent:apply" or "talent:allocate" or "talent:refund"), c => Assert.False(c.Button.CanActivate));
+        string? directory = Environment.GetEnvironmentVariable("VRPG_TALENT_CAPTURE_PATH");
+        if (directory != null) Draw(shell, 400, 350, System.IO.Path.Combine(directory, "talents-stale-tree-400x350-details.png"));
+    }
+    [Fact]
+    public void KeyboardTalentSelectionReturnsInspectorToItsHeading()
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new TalentPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Talents); session.Update(session.Current with { Focus = "talent:graph", InspectorScroll = 300 });
+        using var shell = Shell(session, f.Hub, 1120, 680); Draw(shell, 1120, 680);
+        var key = new KeyEvent { KeyCode = (int)GlKeys.Right }; shell.OnKeyDown(null!, key);
+        Assert.True(key.Handled); Assert.Equal("bridge", f.Hub.Talents.Graph.SelectedNode!.Code); Assert.Equal(0, session.Current.InspectorScroll);
+    }
+    [Fact]
     public void TalentEditorRemainsPrivilegedAndInspectorActionsExplainCurrentOperation()
     {
         using var scope = new InventoryCompositionTestScope(); int opened = 0;
