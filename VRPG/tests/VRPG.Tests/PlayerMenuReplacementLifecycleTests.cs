@@ -12,6 +12,69 @@ namespace VRPG.Tests;
 public sealed class PlayerMenuReplacementLifecycleTests
 {
     [Fact]
+    public void PendingRestorationRemainsExplicitUntilTheActualNativeHandlerRecovers()
+    {
+        using var f = new Fixture(); f.AddOwners();
+        f.Items.BeginSession(new() { ConnectionGeneration = 1 }); f.Replacement.Receive(Ready());
+        var proxy = (ApiProxy)(object)f.Api;
+        f.Inventory!.BindFailures = 3;
+        f.Replacement.Receive(new());
+        Assert.True(f.Replacement.RestorationPending);
+        Assert.NotNull(f.Replacement.LastFailure);
+        Assert.IsType<PlayerMenuEntryDialog>(proxy.Handlers[VanillaMenuActions.Inventory].Target);
+        proxy.RunTicks();
+        Assert.True(f.Replacement.RestorationPending);
+        Assert.IsType<PlayerMenuEntryDialog>(proxy.Handlers[VanillaMenuActions.Inventory].Target);
+        proxy.RunTicks();
+        Assert.False(f.Replacement.RestorationPending);
+        Assert.Same(f.Inventory, proxy.Handlers[VanillaMenuActions.Inventory].Target);
+        Assert.Empty(proxy.Ticks);
+    }
+    [Theory]
+    [InlineData("capability")]
+    [InlineData("disconnect")]
+    [InlineData("leave")]
+    [InlineData("dispose")]
+    public void TransientRestorationFailureRecoversWithoutReadinessAndCannotSkipCleanup(string reason)
+    {
+        using var f = new Fixture(); f.AddOwners();
+        f.Items.BeginSession(new() { ConnectionGeneration = 1 });
+        f.Replacement.Receive(Ready());
+        f.Controller.Enter(PlayerMenuEntryPoint.CharacterMenu);
+        var proxy = (ApiProxy)(object)f.Api;
+        Assert.IsType<PlayerMenuEntryDialog>(proxy.Handlers[VanillaMenuActions.Inventory].Target);
+        f.Inventory!.BindFailures = 1;
+        Exception? failure = Record.Exception(() =>
+        {
+            switch (reason)
+            {
+                case "capability": f.Replacement.Receive(new()); break;
+                case "disconnect": f.Items.ResetConnection(); break;
+                case "leave": f.Replacement.LeaveWorld(); break;
+                case "dispose": f.Replacement.Dispose(); break;
+            }
+        });
+        Assert.Null(failure);
+        Assert.False(f.Controller.Session.IsOpen);
+        if (reason is "leave" or "disconnect") Assert.Equal(0, f.Items.ConnectionGeneration);
+        if (reason == "dispose")
+        {
+            // Ordinary ModSystem ticks are removed by disposal: use the lifecycle's scheduled retry.
+            Assert.NotEmpty(proxy.Ticks);
+            proxy.RunTicks();
+        }
+        else f.Replacement.Poll();
+        Assert.Same(f.Inventory, proxy.Handlers[VanillaMenuActions.Inventory].Target);
+        Assert.Same(f.Character, proxy.Handlers[VanillaMenuActions.Character].Target);
+        Assert.Empty(proxy.Ticks);
+        if (reason == "dispose")
+        {
+            int binds = f.NativeBinds.Count;
+            f.Items.ResetConnection(); f.Replacement.Receive(Ready()); f.Replacement.Poll();
+            Assert.Equal(binds, f.NativeBinds.Count);
+        }
+    }
+    [Fact]
     public void CapabilityAndNativeRegistrationMayArriveInEitherOrder()
     {
         using var f = new Fixture();
@@ -87,20 +150,35 @@ public sealed class PlayerMenuReplacementLifecycleTests
     }
     private sealed class NativeDialog(ICoreClientAPI api, string action, List<string> binds) : GuiDialog(api)
     {
+        public int BindFailures;
         public override string ToggleKeyCombinationCode => action;
-        public override void OnBlockTexturesLoaded() => binds.Add(action);
+        public override void OnBlockTexturesLoaded()
+        {
+            binds.Add(action);
+            if (BindFailures > 0) { BindFailures--; throw new InvalidOperationException("Transient native handler failure."); }
+            base.OnBlockTexturesLoaded();
+        }
     }
     public class ApiProxy : DispatchProxy
     {
         public List<GuiDialog> Dialogs = new();
+        public Dictionary<string, Delegate> Handlers = new();
+        public Dictionary<long, Delegate> Ticks = new();
+        public void RunTicks()
+        {
+            foreach (var tick in new List<Delegate>(Ticks.Values)) tick.DynamicInvoke(0.025f);
+        }
         protected override object? Invoke(MethodInfo? method, object?[]? args)
         {
             if (method!.Name == "get_LoadedGuis") return Dialogs;
+            if (method.Name == "SetHotKeyHandler") { Handlers[(string)args![0]!] = (Delegate)args[1]!; return null; }
+            if (method.Name == "RegisterGameTickListener") { long id = Ticks.Count + 1; Ticks[id] = (Delegate)args![0]!; return id; }
+            if (method.Name == "UnregisterGameTickListener") { Ticks.Remove((long)args![0]!); return null; }
             Type type = method.ReturnType;
             if (type.IsInterface)
             {
                 var proxy = typeof(DispatchProxy).GetMethod("Create", Type.EmptyTypes)!.MakeGenericMethod(type, typeof(ApiProxy)).Invoke(null, null)!;
-                ((ApiProxy)proxy).Dialogs = Dialogs; return proxy;
+                ((ApiProxy)proxy).Dialogs = Dialogs; ((ApiProxy)proxy).Handlers = Handlers; ((ApiProxy)proxy).Ticks = Ticks; return proxy;
             }
             return type.IsValueType && type != typeof(void) ? Activator.CreateInstance(type) : null;
         }

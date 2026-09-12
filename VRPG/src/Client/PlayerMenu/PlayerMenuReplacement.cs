@@ -11,11 +11,14 @@ public sealed class PlayerMenuReplacement : IDisposable
     private readonly GuiDialogVrpgPlayerMenu menu;
     private readonly PlayerMenuEntryDialog inventoryEntry, characterEntry;
     private readonly PlayerMenuReplacementCoordinator<GuiDialog> coordinator;
+    private readonly IClientEventAPI events;
+    private long restorationTickId;
     private PlayerMenuCapabilityState capability;
     private bool disposed;
     public PlayerMenuReplacement(ICoreClientAPI api, PlayerMenuController controller, GuiDialogVrpgPlayerMenu menu)
     {
         this.controller = controller; this.menu = menu;
+        events = api.Event;
         inventoryEntry = new(api, VanillaMenuActions.Inventory, PlayerMenuEntryPoint.InventoryMenu, Enter);
         characterEntry = new(api, VanillaMenuActions.Character, PlayerMenuEntryPoint.CharacterMenu, Enter);
         coordinator = new(api.Gui.LoadedGuis, inventoryEntry, characterEntry, d => d.ToggleKeyCombinationCode,
@@ -23,6 +26,8 @@ public sealed class PlayerMenuReplacement : IDisposable
         controller.Items.ConnectionChanged += OnConnectionChanged;
     }
     public bool IsInstalled => coordinator.IsInstalled;
+    public bool RestorationPending => coordinator.RestorationPending;
+    public Exception? LastFailure { get; private set; }
     public void Receive(PlayerMenuCapabilityPacket packet)
     {
         if (disposed) return;
@@ -33,8 +38,11 @@ public sealed class PlayerMenuReplacement : IDisposable
     // Native dialogs can register after the capability packet; retry on the client game thread.
     public void Poll()
     {
-        if (!disposed) coordinator.TryInstall(capability.DialogReplacementReady
+        if (disposed && !RestorationPending) return;
+        coordinator.TryInstall(!disposed && capability.DialogReplacementReady
             && controller.Items.ConnectionGeneration > 0 && controller.Inventory != null);
+        LastFailure = coordinator.LastFailure;
+        UpdateRestorationRetry();
     }
     private void Enter(PlayerMenuEntryPoint entry)
     {
@@ -56,11 +64,25 @@ public sealed class PlayerMenuReplacement : IDisposable
     }
     private void Restore()
     {
-        try { if (menu.IsOpened()) menu.TryClose(); }
-        finally
+        LastFailure = null;
+        Attempt(() => { if (menu.IsOpened()) menu.TryClose(); });
+        Attempt(controller.Close);
+        Attempt(coordinator.Restore);
+        UpdateRestorationRetry();
+    }
+    private void Attempt(Action action)
+    {
+        try { action(); }
+        catch (Exception failure) { LastFailure = LastFailure == null ? failure : new AggregateException(LastFailure, failure); }
+    }
+    private void UpdateRestorationRetry()
+    {
+        if (RestorationPending && restorationTickId == 0)
+            restorationTickId = events.RegisterGameTickListener(_ => Poll(), 25);
+        else if (!RestorationPending && restorationTickId != 0)
         {
-            controller.Close();
-            coordinator.Restore();
+            events.UnregisterGameTickListener(restorationTickId);
+            restorationTickId = 0;
         }
     }
     public void LeaveWorld()
@@ -71,10 +93,12 @@ public sealed class PlayerMenuReplacement : IDisposable
     }
     public void Dispose()
     {
-        if (disposed) return;
-        Restore();
+        if (disposed) { if (RestorationPending) Poll(); return; }
         disposed = true;
+        capability = PlayerMenuCapabilityState.Unavailable;
         controller.Items.ConnectionChanged -= OnConnectionChanged;
-        inventoryEntry.Dispose(); characterEntry.Dispose();
+        Restore();
+        Attempt(inventoryEntry.Dispose);
+        Attempt(characterEntry.Dispose);
     }
 }

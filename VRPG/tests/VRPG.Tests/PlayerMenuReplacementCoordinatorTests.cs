@@ -10,6 +10,75 @@ namespace VRPG.Tests;
 public sealed class PlayerMenuReplacementCoordinatorTests
 {
     [Theory]
+    [InlineData("setter", 1)]
+    [InlineData("setter", 2)]
+    [InlineData("bind-entry-inventorydialog", 0)]
+    [InlineData("bind-entry-characterdialog", 0)]
+    public void FailedInstallationRestoresExactPostCloseOrder(string failure, int setter)
+    {
+        var f = new Fixture(); var late = new Dialog("late");
+        f.OnClose = () => { f.Dialogs.Insert(0, late); f.OnClose = null; };
+        f.Dialogs.FailOnSet = setter;
+        if (failure != "setter") f.FailAt = failure;
+        Assert.False(f.Coordinator.TryInstall(true));
+        Assert.Equal(new[] { late, f.Other, f.Inventory, f.Character }, f.Dialogs);
+    }
+
+    [Fact]
+    public void UnavailableInstallationPollRetriesPendingRestoration()
+    {
+        var f = new Fixture(); Assert.True(f.Coordinator.TryInstall(true));
+        f.FailAt = "bind-inventorydialog";
+        Assert.Throws<AggregateException>(() => f.Coordinator.Restore());
+        Assert.False(f.Coordinator.TryInstall(false));
+        Assert.Same(f.Inventory, f.Handlers[VanillaMenuActions.Inventory]);
+        Assert.Same(f.Character, f.Handlers[VanillaMenuActions.Character]);
+    }
+
+    [Theory]
+    [InlineData("duplicate-inventory")]
+    [InlineData("duplicate-character")]
+    [InlineData("remove")]
+    [InlineData("identity")]
+    public void ClosingMustLeaveTheSameUniqueSemanticOwners(string change)
+    {
+        var f = new Fixture();
+        var late = new Dialog(change == "duplicate-character" ? VanillaMenuActions.Character : VanillaMenuActions.Inventory);
+        f.OnClose = () =>
+        {
+            f.OnClose = null;
+            if (change.StartsWith("duplicate")) f.Dialogs.Add(late);
+            else if (change == "remove") f.Dialogs.Remove(f.Character);
+            else f.Inventory.Action = "handbook";
+        };
+        Assert.False(f.Coordinator.TryInstall(true));
+        Assert.DoesNotContain(f.InventoryEntry, f.Dialogs);
+        Assert.DoesNotContain(f.CharacterEntry, f.Dialogs);
+        Assert.Contains(f.Other, f.Dialogs);
+        if (change.StartsWith("duplicate")) Assert.Contains(late, f.Dialogs);
+    }
+
+    [Fact]
+    public void RestoreUsesCurrentAdapterPositionsAfterUnrelatedInsertion()
+    {
+        var f = new Fixture(); Assert.True(f.Coordinator.TryInstall(true));
+        var late = new Dialog("late"); f.Dialogs.Insert(0, late);
+        f.Coordinator.Restore();
+        Assert.Equal(new[] { late, f.Other, f.Inventory, f.Character }, f.Dialogs);
+    }
+
+    [Fact]
+    public void MissingAdapterFallsBackToPostClosePositionWithoutMovingPresentOriginals()
+    {
+        var f = new Fixture(); var late = new Dialog("late");
+        f.OnClose = () => { f.Dialogs.Insert(0, late); f.OnClose = null; };
+        Assert.True(f.Coordinator.TryInstall(true));
+        f.Dialogs.Remove(f.InventoryEntry);
+        f.Coordinator.Restore();
+        Assert.Equal(new[] { late, f.Other, f.Inventory, f.Character }, f.Dialogs);
+    }
+
+    [Theory]
     [InlineData(1)]
     [InlineData(2)]
     public void RegistryMutationFailureRestoresTheCompleteOriginalPair(int failOnMutation)
@@ -46,9 +115,7 @@ public sealed class PlayerMenuReplacementCoordinatorTests
         Assert.DoesNotContain(f.Inventory, f.Dialogs);
         Assert.DoesNotContain(f.Character, f.Dialogs);
         f.Coordinator.Restore();
-        Assert.Contains(late, f.Dialogs);
-        Assert.Contains(f.Other, f.Dialogs);
-        Assert.Equal(4, f.Dialogs.Count);
+        Assert.Equal(new[] { late, f.Other, f.Inventory, f.Character }, f.Dialogs);
     }
     [Fact]
     public void SwapPreservesIndicesClosesOwnersAndRebindsBothActions()
