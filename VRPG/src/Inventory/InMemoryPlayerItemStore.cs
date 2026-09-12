@@ -145,6 +145,22 @@ public sealed partial class InMemoryPlayerItemStore : IPlayerItemStore
         }
     }
 
+    public bool TryGetSummary(string entryId, out PlayerItemSummary? summary)
+    {
+        lock (sync)
+        {
+            if (string.IsNullOrWhiteSpace(entryId)
+                || !byId.TryGetValue(entryId, out StoredEntry? entry))
+            {
+                summary = null;
+                return false;
+            }
+
+            summary = Summary(entry);
+            return true;
+        }
+    }
+
     public PlayerItemMutationResult Insert(
         PlayerItemPrototype prototype,
         long quantity,

@@ -6,6 +6,7 @@ public interface IPlayerItemStore
     PlayerItemCapacitySummary CapacitySummary();
     PlayerItemPage Query(PlayerItemQuery query);
     PlayerItemCategoryPage QueryCategories(PlayerItemLocation location, int offset, int limit);
+    bool TryGetSummary(string entryId, out PlayerItemSummary? summary);
     bool TryGet(string entryId, out PlayerItemDetail? detail);
     PlayerItemMutationResult Insert(
         string requestId,

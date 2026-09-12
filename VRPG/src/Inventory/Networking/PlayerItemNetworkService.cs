@@ -176,20 +176,10 @@ public sealed class PlayerItemNetworkService
         {
             if (entryId.Length == 0 || entries.Any(entry => string.Equals(entry.EntryId, entryId, StringComparison.OrdinalIgnoreCase)))
                 continue;
-            if (!store.TryGet(entryId, out PlayerItemDetail? detail) || detail == null) continue;
-            entries.Add(PlayerItemQueryService.ToPacket(new PlayerItemSummary(
-                detail.EntryId,
-                detail.Prototype.Kind,
-                detail.Prototype.AssetCode,
-                detail.Prototype.Category,
-                detail.Prototype.DisplayName,
-                detail.Quantity,
-                detail.Prototype.AssetKind,
-                detail.Location,
-                detail.Flags,
-                0,
-                detail.ProtectionSource,
-                detail.Prototype.Category)));
+            if (!store.TryGetSummary(entryId, out PlayerItemSummary? summary) || summary == null) continue;
+            PlayerItemEntryPacket packet = PlayerItemQueryService.ToPacket(summary);
+            if (!PlayerItemQueryService.ValidEntry(packet)) return Array.Empty<PlayerItemEntryPacket>();
+            entries.Add(packet);
         }
         return entries.ToArray();
     }
