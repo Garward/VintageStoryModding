@@ -60,8 +60,8 @@ public sealed class InventoryCompositionCaptureTests
         typeof(PlayerMenuShell).GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
 
         Assert.Contains("Unknown item", textCalls);
-        Assert.Contains("Recovery item: missing:lost-relic", textCalls);
-        Assert.DoesNotContain("missing:lost-relic", textCalls);
+        Assert.Equal(new[] { "Recovery item: missing:lost-relic" },
+            textCalls.Where(text => text.Contains("missing:lost-relic", StringComparison.Ordinal)));
     }
 
     [Theory]

@@ -48,11 +48,19 @@ public sealed class PlayerItemDisplayNameResolverTests
     }
 
     [Fact]
-    public void MissingLocalizationUsesDistinctSemanticDefinitionName()
+    public void MissingLocalizationHumanizesAssetInsteadOfTrustingOrdinaryStoredName()
     {
         var entry = Entry(asset: "addon:ward-token", display: "Keeper's Ward");
 
-        Assert.Equal("Keeper's Ward", resolver.Resolve(entry, _ => null));
+        Assert.Equal("Ward Token", resolver.Resolve(entry, _ => null));
+    }
+
+    [Fact]
+    public void OrdinaryStoredTechnicalIdentifierFromAnotherAssetCannotLeak()
+    {
+        var entry = Entry(asset: "addon:ward-token", display: "game:debug-placeholder-record");
+
+        Assert.Equal("Ward Token", resolver.Resolve(entry, _ => null));
     }
 
     [Fact]

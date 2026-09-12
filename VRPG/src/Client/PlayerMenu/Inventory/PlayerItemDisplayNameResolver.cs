@@ -41,7 +41,6 @@ public sealed class PlayerItemDisplayNameResolver
             localizedName = "";
         }
         if (localizedName.Length > 0 && !IsTechnicalName(localizedName, entry.AssetCode)) return localizedName;
-        if (storedNameIsAuthored) return storedName;
 
         string fallback = HumanizeAssetPath(entry.AssetCode);
         return fallback.Length > 0 ? fallback : UnknownItemName();
