@@ -1,4 +1,5 @@
 using System;
+using Vintagestory.API.Server;
 using System.Collections.Generic;
 using ProtoBuf;
 using VRPG.Network;
@@ -17,6 +18,36 @@ namespace VRPG.Tests;
 
 public sealed class PlayerItemProtocolTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void LostAdventureAuthorityRevokesBeforeQueriesOrActionsAndCannotReviveTheSession(bool action)
+    {
+        bool ready = true;
+        int revocations = 0;
+        var f = new Fixture(readiness: () => ready, revoked: _ => revocations++);
+        f.Refresh();
+        long revision = f.Store.Revision;
+        ready = false;
+        Assert.Equal("adventure-unavailable", action
+            ? f.Service.Action(f.Player, f.Action()).RejectionCode
+            : f.Service.Query(f.Player, f.Query()).RejectionCode);
+        Assert.Equal(1, revocations);
+        Assert.Equal(revision, f.Store.Revision);
+        ready = true;
+        Assert.Equal("unauthorized-player", f.Service.Query(f.Player, f.Query()).RejectionCode);
+        Assert.Equal("unauthorized-player", f.Service.Action(f.Player, f.Action()).RejectionCode);
+    }
+
+    [Fact]
+    public void DuplicateConnectKeepsGenerationAndRateState()
+    {
+        var f = new Fixture();
+        for (int i = 0; i < PlayerItemNetworkService.RequestsPerSecond; i++) f.Refresh();
+        Assert.Equal(1, f.Service.Connect(f.Player).ConnectionGeneration);
+        Assert.Equal("rate-limit", f.Service.Query(f.Player, f.Query()).RejectionCode);
+    }
+
     [Theory]
     [InlineData("rate-limit")]
     [InlineData("protocol-version")]
@@ -360,12 +391,14 @@ public sealed class PlayerItemProtocolTests
         public double Now;
         private readonly string id;
         public IPlayerItemStore Store => Items.ForPlayer("p");
-        public Fixture(Func<string>? createEntryId = null, PlayerItemCategoryRegistry? categories = null)
+        public Fixture(Func<string>? createEntryId = null, PlayerItemCategoryRegistry? categories = null,
+            Func<bool>? readiness = null, Action<IServerPlayer>? revoked = null)
         {
             Items = new(_ => new InMemoryPlayerItemStore(createEntryId, categories: categories));
             var talents = new TalentTreeCatalog();
             Service = new(Items, Players, new(), new(new GearComparisonService(TestGearDefinitions.Registry(),
-                new(talents), new(new RpgModuleConfig(), talents))), new GearEquipmentService(TestGearDefinitions.Registry()), () => Now);
+                new(talents), new(new RpgModuleConfig(), talents))), new GearEquipmentService(TestGearDefinitions.Registry()), () => Now,
+                canParticipate: _ => readiness?.Invoke() != false, sessionRevoked: revoked);
             id = Store.Insert("insert", PlayerItemQueryServiceTests.Item("a"), 10000, 0).EntryId;
             Service.Connect(Player);
         }

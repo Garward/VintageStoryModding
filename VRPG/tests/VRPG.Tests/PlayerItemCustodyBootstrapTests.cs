@@ -483,7 +483,7 @@ public sealed class PlayerItemCustodyBootstrapTests
         public void Write(string key, byte[] data) { Values[key] = data; Writes++; }
     }
 
-    private sealed class LifecycleScope : IDisposable
+    internal sealed class LifecycleScope : IDisposable
     {
         private readonly string previousDataPath = GamePaths.DataPath;
         private readonly Dictionary<string, Delegate?> events = new();

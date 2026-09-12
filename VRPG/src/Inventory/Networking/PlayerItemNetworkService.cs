@@ -23,6 +23,8 @@ public sealed class PlayerItemNetworkService : IDisposable
     private readonly PlayerItemDetailService details;
     private readonly GearEquipmentService equipment;
     private readonly Func<double> seconds;
+    private readonly Func<IServerPlayer, bool> canParticipate;
+    private readonly Action<IServerPlayer>? sessionRevoked;
     private readonly Dictionary<string, Session> sessions = new(StringComparer.OrdinalIgnoreCase);
     private long generation;
     private IServerNetworkChannel? channel;
@@ -30,7 +32,8 @@ public sealed class PlayerItemNetworkService : IDisposable
 
     public PlayerItemNetworkService(PlayerItemStoreDirectory items, RpgPlayerStore players,
         PlayerItemQueryService queries, PlayerItemDetailService details, GearEquipmentService equipment,
-        Func<double>? seconds = null)
+        Func<double>? seconds = null, Func<IServerPlayer, bool>? canParticipate = null,
+        Action<IServerPlayer>? sessionRevoked = null)
     {
         this.items = items;
         this.players = players;
@@ -38,6 +41,8 @@ public sealed class PlayerItemNetworkService : IDisposable
         this.details = details;
         this.equipment = equipment;
         this.seconds = seconds ?? (() => Environment.TickCount64 / 1000d);
+        this.canParticipate = canParticipate ?? (_ => true);
+        this.sessionRevoked = sessionRevoked;
     }
 
     /// <summary>Lifecycle owner calls on connect and sends this packet before accepting queries.</summary>
@@ -45,6 +50,9 @@ public sealed class PlayerItemNetworkService : IDisposable
     {
         if (player == null || !PlayerItemQueryService.Text(player.PlayerUID, 128, true))
             throw new ArgumentException("A connected server player is required.", nameof(player));
+        if (!HasAuthority(player)) throw new InvalidOperationException("Adventure player authority is unavailable.");
+        if (sessions.TryGetValue(player.PlayerUID, out var current) && ReferenceEquals(current.Player, player))
+            return new() { ConnectionGeneration = current.Generation };
         var session = new Session(player, checked(++generation));
         sessions[player.PlayerUID] = session;
         return new() { ConnectionGeneration = session.Generation };
@@ -54,6 +62,25 @@ public sealed class PlayerItemNetworkService : IDisposable
     {
         if (sessions.TryGetValue(player.PlayerUID, out var session) && ReferenceEquals(session.Player, player))
             sessions.Remove(player.PlayerUID);
+    }
+
+    /// <summary>Server lifecycle checks idle connections as well as the per-request authority gate.</summary>
+    public void RevokeUnavailableSessions()
+    {
+        foreach (var session in sessions.Values.ToArray())
+            if (!HasAuthority(session.Player)) Revoke(session.Player);
+    }
+
+    private bool HasAuthority(IServerPlayer player)
+    {
+        try { return !disposed && canParticipate(player); }
+        catch { return false; }
+    }
+
+    private void Revoke(IServerPlayer player)
+    {
+        Disconnect(player);
+        sessionRevoked?.Invoke(player);
     }
 
     /// <summary>Registers handlers only; caller owns capability gating and connect/disconnect event attachment.</summary>
@@ -253,6 +280,12 @@ public sealed class PlayerItemNetworkService : IDisposable
         session = null;
         if (player == null || string.IsNullOrWhiteSpace(player.PlayerUID)
             || !sessions.TryGetValue(player.PlayerUID, out session) || !ReferenceEquals(session.Player, player)) return "unauthorized-player";
+        if (!HasAuthority(player))
+        {
+            Revoke(player);
+            session = null;
+            return "adventure-unavailable";
+        }
         if (session.Generation != requestGeneration) return "connection-generation";
         double now = seconds();
         if (now - session.WindowStart >= 1) { session.WindowStart = now; session.Count = 0; }

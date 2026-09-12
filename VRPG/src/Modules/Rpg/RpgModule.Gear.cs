@@ -41,7 +41,9 @@ public sealed partial class RpgModule
         if (playerItems != null || itemArchive() is not { IsLoaded: true } archive || skillDamage == null) return;
         var detail = new PlayerItemDetailService(new GearComparisonService(data, skillDamage,
             new RpgResourceCalculator(config, talentTree)));
-        playerItems = new PlayerItemNetworkService(archive.Directory, playerStore, new PlayerItemQueryService(), detail, gearRuntime.Equipment);
+        playerItems = new PlayerItemNetworkService(archive.Directory, playerStore, new PlayerItemQueryService(), detail, gearRuntime.Equipment,
+            canParticipate: AdventurePlayerReady,
+            sessionRevoked: player => RefuseAdventureParticipation(player, "Adventure readiness or canonical custody was lost."));
         playerItems.Attach(channel);
     }
 

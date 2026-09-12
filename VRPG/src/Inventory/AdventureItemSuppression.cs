@@ -23,10 +23,13 @@ public sealed class AdventureItemSuppression(bool enabled, Action<string> diagno
 
     private sealed class MaterializationScope : IDisposable
     {
+        private readonly int ownerThread = Environment.CurrentManagedThreadId;
         private bool disposed;
         public MaterializationScope() => materializationDepth++;
         public void Dispose()
         {
+            if (Environment.CurrentManagedThreadId != ownerThread)
+                throw new InvalidOperationException("Materialization scopes must be disposed on their creating thread.");
             if (disposed) return;
             disposed = true;
             materializationDepth--;

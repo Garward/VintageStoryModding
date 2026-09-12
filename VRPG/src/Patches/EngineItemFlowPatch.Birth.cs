@@ -59,13 +59,24 @@ public static partial class EngineItemFlowPatch
                 "E7C4CCDAACEB299CAA63106A6CB65753CDEF1B8330C1EC7BC9727A2806705C2C", apiModule);
             Require(typeof(EntityItem), nameof(EntityItem.FromBytes), new[] { typeof(BinaryReader), typeof(bool) },
                 "2FFF18C0B8DF6E0D31DA9A430334A4345D8274E5B9455042A57F44F5BB314C78", apiModule);
+            const string serverModule = "8a3ad3aa-2940-4c39-ae1b-881de9e65346";
+            Require(server, "SpawnEntity", new[] { typeof(Entity) },
+                "8D1CC7EC48A2F81921F61E63AECC5763341B0A4662A61C494A24945B09FCE92D", serverModule);
+            Require(server, "SpawnEntity", new[] { typeof(Entity), typeof(EntityProperties) },
+                "EEA74BA0FF1E6C1E432DE88BB9331C45DC7B8216746B0B4E0FD55148AB65BC23", serverModule);
+            Require(server, "SpawnPriorityEntity", new[] { typeof(Entity) },
+                "DF78CD8ACAF73AC67754B2AFFD1BA219DE67D4DE74A2AF2D3FEB9847BE1D9AF2", serverModule);
             if (typeof(EntityItem).GetMethod(nameof(Entity.AfterInitialized))?.DeclaringType != typeof(Entity)
                 || typeof(EntityItem).GetMethod(nameof(Entity.ToBytes))?.DeclaringType != typeof(Entity))
                 throw new InvalidOperationException("EntityItem publication/serialization override changed.");
-            var installation = new BirthInstallation(harmony, targets.ToArray(), logger);
+            var installation = new BirthInstallation(harmony, targets.ToArray(),
+                targets.Where(method => method.DeclaringType == server).ToArray(), logger);
             birthInstallation = installation;
             harmony.Patch(targets[0], prefix: new HarmonyMethod(typeof(EngineItemFlowPatch), nameof(BeforeSpawnPrefix))
             { priority = Priority.First });
+            foreach (var wrapper in installation.SpawnTargets.Skip(1))
+                harmony.Patch(wrapper, prefix: new HarmonyMethod(typeof(EngineItemFlowPatch), nameof(BeforePublicSpawnPrefix))
+                { priority = Priority.First });
             if (!installation.HasOnlyExpectedPatches()) throw new InvalidOperationException("Birth prefix installation was not confirmed.");
             logger.Notification("[VRPG/Inventory] Validated prepublication item identity hook installed (native 1.22.7); fresh pickup requires a live persistence observer.");
         }
@@ -75,6 +86,9 @@ public static partial class EngineItemFlowPatch
             logger.Error("[VRPG/Inventory] Fresh pickup is unavailable; native birth validation failed: {0}", error.Message);
         }
     }
+
+    public static bool BeforePublicSpawnPrefix(Entity entity) =>
+        entity is not EntityItem || AdventureSuppression?.RefusePublication() != true;
 
     public static bool BeforeSpawnPrefix(Entity entity)
     {
@@ -108,20 +122,27 @@ public static partial class EngineItemFlowPatch
     {
         var prior = birthInstallation;
         birthInstallation = null;
-        prior?.Harmony.Unpatch(prior.Targets[0], AccessTools.Method(typeof(EngineItemFlowPatch), nameof(BeforeSpawnPrefix)));
+        if (prior == null) return;
+        foreach (var target in prior.SpawnTargets)
+            prior.Harmony.Unpatch(target, AccessTools.Method(typeof(EngineItemFlowPatch),
+                target == prior.Targets[0] ? nameof(BeforeSpawnPrefix) : nameof(BeforePublicSpawnPrefix)));
     }
 
-    private sealed record BirthInstallation(Harmony Harmony, MethodInfo[] Targets, ILogger Logger)
+    private sealed record BirthInstallation(Harmony Harmony, MethodInfo[] Targets, MethodInfo[] SpawnTargets, ILogger Logger)
     {
         public bool Failed { get; set; }
         public bool IsReady() => !Failed && BeforePublicationObserver != null && HasOnlyExpectedPatches();
         public bool HasOnlyExpectedPatches()
         {
-            var info = HarmonyLib.Harmony.GetPatchInfo(Targets[0]);
-            return info != null && info.Prefixes.Count == 1 && info.Prefixes[0].owner == Harmony.Id
-                && info.Prefixes[0].PatchMethod == AccessTools.Method(typeof(EngineItemFlowPatch), nameof(BeforeSpawnPrefix))
-                && info.Postfixes.Count == 0 && info.Transpilers.Count == 0 && info.Finalizers.Count == 0
-                && Targets.Skip(1).All(method => HarmonyLib.Harmony.GetPatchInfo(method)?.Owners.Count is null or 0);
+            return Targets.All(target =>
+            {
+                var info = HarmonyLib.Harmony.GetPatchInfo(target);
+                if (!SpawnTargets.Contains(target)) return info?.Owners.Count is null or 0;
+                return info != null && info.Prefixes.Count == 1 && info.Prefixes[0].owner == Harmony.Id
+                    && info.Prefixes[0].PatchMethod == AccessTools.Method(typeof(EngineItemFlowPatch),
+                        target == Targets[0] ? nameof(BeforeSpawnPrefix) : nameof(BeforePublicSpawnPrefix))
+                    && info.Postfixes.Count == 0 && info.Transpilers.Count == 0 && info.Finalizers.Count == 0;
+            });
         }
     }
 }

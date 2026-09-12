@@ -79,10 +79,8 @@ internal sealed class NativeLegacyInventoryFixture
 
     internal sealed class AdmissionPlayer : ServerPlayer
     {
-        public string? DisconnectReason;
         public AdmissionPlayer() : base(null!, null!) { }
         public override void BroadcastPlayerData(bool sendInventory = false) { }
-        public override void Disconnect(string reason) => DisconnectReason = reason;
     }
 
     internal sealed class LegacyInventory : InventoryBasePlayer

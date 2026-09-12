@@ -60,6 +60,7 @@ public sealed partial class RpgModule : IVrpgModule
     private long skillTickListenerId;
     private long movementTickListenerId;
     private long onboardingTickListenerId;
+    private long adventureSessionTickListenerId;
     private ICoreServerAPI? serverApi;
     private string savedTalentTreeHash = "";
     private Dictionary<string, int> savedTalentCosts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -151,6 +152,7 @@ public sealed partial class RpgModule : IVrpgModule
         creatures = new CreatureProgressionService(api, scaling, resources);
         new RpgCommandSystem(api, config, data, playerStore, statusEffects, resources, skills, talentAllocation).Register();
         api.Event.PlayerNowPlaying += OnPlayerNowPlaying;
+        adventureSessionTickListenerId = api.Event.RegisterGameTickListener(_ => playerItems?.RevokeUnavailableSessions(), 250);
         creatures.Start();
         statusTickListenerId = api.Event.RegisterGameTickListener(dt => statusEffects.Tick(dt), 1000);
         resourceTickListenerId = api.Event.RegisterGameTickListener(resources.Tick, 1000);
@@ -1014,6 +1016,7 @@ public sealed partial class RpgModule : IVrpgModule
         if (serverApi != null)
         {
             serverApi.Event.PlayerNowPlaying -= OnPlayerNowPlaying;
+            if (adventureSessionTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(adventureSessionTickListenerId);
             serverApi.Event.SaveGameLoaded -= ValidateGearReadiness;
             serverApi.Event.PlayerLeave -= OnPlayerLeave;
             serverApi.Event.PlayerDisconnect -= OnPlayerLeave;

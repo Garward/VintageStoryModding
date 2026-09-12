@@ -18,8 +18,76 @@ using Xunit;
 namespace VRPG.Tests;
 
 [Collection("EngineItemBirth")]
-public sealed class EngineItemBirthTests
+public sealed class EngineItemBirthTests(Xunit.Abstractions.ITestOutputHelper output)
 {
+    [Fact]
+    public void MaterializationScopeRejectsCrossThreadDisposalWithoutLeakingOwnerAuthority()
+    {
+        Exception? error = null;
+        bool restored = false;
+        var owner = new System.Threading.Thread(() =>
+        {
+            var policy = new AdventureItemSuppression(true, _ => { });
+            using var lease = AdventureItemSuppression.AllowMaterialization();
+            var other = new System.Threading.Thread(() => error = Record.Exception(lease.Dispose));
+            other.Start(); other.Join();
+            lease.Dispose();
+            restored = policy.RefusePublication();
+        });
+        owner.Start(); owner.Join();
+        Assert.IsType<InvalidOperationException>(error);
+        Assert.True(restored);
+    }
+
+    [Theory]
+    [InlineData("SpawnEntity", false)]
+    [InlineData("SpawnEntity", true)]
+    [InlineData("SpawnPriorityEntity", false)]
+    public void PublicSpawnWrappersRefuseBeforeLookupInitializationAndPublication(string name, bool withProperties)
+    {
+        using var scope = new BirthScope();
+        EngineItemFlowPatch.AdventureSuppression = new(true, _ => { });
+        var method = AccessTools.Method(typeof(ServerMain), name, withProperties
+            ? new[] { typeof(Entity), typeof(EntityProperties) } : new[] { typeof(Entity) });
+        output.WriteLine(name + " " + withProperties + " " + method.Module.ModuleVersionId + " "
+            + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(method.GetMethodBody()!.GetILAsByteArray()!)));
+        using var world = new PublicSpawnFixture();
+        var entity = ItemEntity();
+        Assert.Null(Record.Exception(() => method.Invoke(world.Server, withProperties
+            ? new object?[] { entity, null } : new object[] { entity })));
+        Assert.Null(entity.Api);
+        Assert.Equal(0, entity.EntityId);
+        Assert.Equal(3, entity.Itemstack.StackSize);
+        Assert.Empty(world.Server.EntitySpawnSendQueue);
+        Assert.Equal(0, world.Initializations);
+        Assert.Equal(0, world.PrioritySends);
+        Assert.Equal(0, scope.Total());
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public void PublicSpawnWrappersKeepNonItemsAndExplicitMaterializationContinuations(bool priority, bool materialization)
+    {
+        using var scope = new BirthScope();
+        EngineItemFlowPatch.AdventureSuppression = new(true, _ => { });
+        using var world = new PublicSpawnFixture();
+        Entity entity = materialization ? ItemEntity() : new EntityPlayer { Code = new("game:item") };
+        using (materialization ? AdventureItemSuppression.AllowMaterialization() : null)
+        {
+            if (priority) world.Server.SpawnPriorityEntity(entity);
+            else world.Server.SpawnEntity(entity);
+        }
+        Assert.Equal(1, world.Initializations);
+        Assert.Equal(priority ? 1 : 0, world.PrioritySends);
+        Assert.Equal(priority ? 0 : 1, world.Server.EntitySpawnSendQueue.Count);
+        Assert.Equal(71, entity.EntityId);
+        if (entity is EntityItem item) Assert.Equal(3, item.Itemstack.StackSize);
+        Assert.Equal(0, scope.Total());
+    }
+
     [Fact]
     public void AdventureRefusesNativePublicationBeforeInitializationWithoutDeliveryOrLogFlood()
     {
@@ -292,6 +360,8 @@ public sealed class EngineItemBirthTests
 
     [Theory]
     [InlineData("SpawnEntity_internal")]
+    [InlineData("SpawnEntity")]
+    [InlineData("SpawnPriorityEntity")]
     [InlineData("Initialize")]
     [InlineData("AfterInitialized")]
     [InlineData("ToBytes")]
