@@ -31,7 +31,6 @@ public sealed class PlayerItemClientService : IDisposable
     private PlayerItemDetailResult? detail;
     private bool readOnlyTransport;
     private IClientNetworkChannel? channel;
-    private IClientEventAPI? events;
     private bool disposed;
 
     public long ConnectionGeneration { get; private set; }
@@ -56,13 +55,12 @@ public sealed class PlayerItemClientService : IDisposable
         readOnlyTransport = true; sendQuery = query; sendDetail = detail; sendAction = null;
     }
 
-    public void Attach(IClientNetworkChannel channel, IClientEventAPI? events = null)
+    public void Attach(IClientNetworkChannel channel)
     {
         if (disposed) throw new ObjectDisposedException(nameof(PlayerItemClientService));
         if (readOnlyTransport) throw new InvalidOperationException("Read-only transport cannot become writable.");
         if (this.channel != null) throw new InvalidOperationException("Transport already attached.");
         this.channel = channel;
-        this.events = events;
         sendQuery = request => channel.SendPacket(request);
         sendDetail = request => channel.SendPacket(request);
         sendAction = request => channel.SendPacket(request);
@@ -71,7 +69,6 @@ public sealed class PlayerItemClientService : IDisposable
         channel.SetMessageHandler<PlayerItemDetailResult>(packet => Receive(packet));
         channel.SetMessageHandler<PlayerItemActionResult>(packet => Receive(packet));
         channel.SetMessageHandler<PlayerItemInvalidationPacket>(packet => Receive(packet));
-        if (events != null) events.LeaveWorld += ResetConnection;
     }
 
     public void ResetConnection()
@@ -232,13 +229,12 @@ public sealed class PlayerItemClientService : IDisposable
     {
         if (disposed) return;
         disposed = true;
-        if (events != null) events.LeaveWorld -= ResetConnection;
         channel?.SetMessageHandler<PlayerItemSessionPacket>(_ => { });
         channel?.SetMessageHandler<PlayerItemQueryResult>(_ => { });
         channel?.SetMessageHandler<PlayerItemDetailResult>(_ => { });
         channel?.SetMessageHandler<PlayerItemActionResult>(_ => { });
         channel?.SetMessageHandler<PlayerItemInvalidationPacket>(_ => { });
-        channel = null; events = null;
+        channel = null;
         ResetState();
         ActionCompleted = null; PageReceived = null; DetailReceived = null; QueryRejected = null; Invalidated = null; ConnectionChanged = null;
     }

@@ -56,14 +56,19 @@ public sealed class InventoryPage : IDisposable
         View.Begin(sameItems, auxiliaryOnly); Items.QueueQuery(Query.ToRequest(), milliseconds); pageDeadline = milliseconds + 10200; Changed?.Invoke();
     }
     public void Refresh(double milliseconds) => ChangeQuery(Query, milliseconds);
+    /// <summary>Closes this retained view and drops world-specific browse preferences before a new connection starts.</summary>
+    public void ResetForWorld()
+    {
+        Query = new();
+        open = false;
+        now = pageDeadline = detailDeadline = 0;
+    }
     public void NextPage(double milliseconds)
     { if (!View.Loading && Query.Offset + 64 < View.Total) ChangeQuery(Query with { Offset = checked(Query.Offset + 64) }, milliseconds); }
     public void PreviousPage(double milliseconds) => ChangeQuery(Query with { Offset = Math.Max(0, Query.Offset - 64) }, milliseconds);
     public void Pump(double milliseconds)
     {
-        now = milliseconds; if (!open) return; Items.Pump(milliseconds);
-        if (View.Loading && milliseconds >= pageDeadline) { View.Loading = false; View.Error = "timeout"; Changed?.Invoke(); }
-        if (View.DetailLoading && milliseconds >= detailDeadline) { View.DetailLoading = false; View.DetailError = "timeout"; Changed?.Invoke(); }
+        now = milliseconds;
         if (ActionPending && milliseconds >= actionDeadline)
         {
             Items.AbandonMutation(pendingActionRequestId);
@@ -72,6 +77,10 @@ public sealed class InventoryPage : IDisposable
             RefreshIfOpen();
             Changed?.Invoke();
         }
+        if (!open) return;
+        Items.Pump(milliseconds);
+        if (View.Loading && milliseconds >= pageDeadline) { View.Loading = false; View.Error = "timeout"; Changed?.Invoke(); }
+        if (View.DetailLoading && milliseconds >= detailDeadline) { View.DetailLoading = false; View.DetailError = "timeout"; Changed?.Invoke(); }
     }
     public void Select(string id)
     {

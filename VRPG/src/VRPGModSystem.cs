@@ -55,6 +55,7 @@ public sealed class VRPGModSystem : ModSystem
     private InventoryPage? clientInventoryPage;
     private GuiDialogVrpgPlayerMenu? clientPlayerMenu;
     private PlayerMenuController? clientPlayerMenuController;
+    private IClientEventAPI? clientPlayerMenuEvents;
     private HudElementVRPGResources? clientResourceHud;
     private HudElementVRPGCombatConsole? clientCombatConsole;
     private HudElementVRPGEntityHealthBars? clientEntityHud;
@@ -204,9 +205,11 @@ public sealed class VRPGModSystem : ModSystem
 
         clientChannel = VRPGNetwork.RegisterClient(api);
         clientPlayerItems = new PlayerItemClientService();
-        clientPlayerItems.Attach(clientChannel, api.Event);
+        clientPlayerItems.Attach(clientChannel);
         clientInventoryPage = new InventoryPage(clientPlayerItems);
-        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage);
+        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage, () => api.World.ElapsedMilliseconds);
+        clientPlayerMenuEvents = api.Event;
+        clientPlayerMenuEvents.LeaveWorld += OnClientPlayerMenuLeaveWorld;
         playerItemTickListenerId = api.Event.RegisterGameTickListener(_ =>
             clientInventoryPage?.Pump(api.World.ElapsedMilliseconds), 25);
         PartyClient?.Dispose();
@@ -374,6 +377,11 @@ public sealed class VRPGModSystem : ModSystem
             });
     }
 
+    private void OnClientPlayerMenuLeaveWorld()
+    {
+        clientPlayerMenuController?.ResetForWorldChange();
+    }
+
     public override void Dispose()
     {
         if (skillNotificationEvents != null)
@@ -383,6 +391,12 @@ public sealed class VRPGModSystem : ModSystem
             skillNotificationEvents = null;
         }
         unavailableSkillNotifications.Clear();
+
+        if (clientPlayerMenuEvents != null)
+        {
+            clientPlayerMenuEvents.LeaveWorld -= OnClientPlayerMenuLeaveWorld;
+            clientPlayerMenuEvents = null;
+        }
 
         for (int i = modules.Count - 1; i >= 0; i--)
         {

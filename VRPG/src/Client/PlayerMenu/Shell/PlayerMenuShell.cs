@@ -390,8 +390,9 @@ public sealed partial class PlayerMenuShell : GuiElement
                 foreach (var action in detail.Actions.Where(action => action.Action is PlayerItemAction.Equip or PlayerItemAction.Unequip))
                 {
                     string actionId = action.Action == PlayerItemAction.Equip ? "equip" : "unequip";
-                    MenuControlState state = page.IsActionPending(entry.EntryId, action.Action) ? MenuControlState.Pending
-                        : action.Enabled ? MenuControlState.Default : MenuControlState.Disabled;
+                    bool pendingHere = page.IsActionPending(entry.EntryId, action.Action);
+                    MenuControlState state = pendingHere ? MenuControlState.Pending
+                        : action.Enabled && !page.ActionPending ? MenuControlState.Default : MenuControlState.Disabled;
                     Button(ctx, actionId, actionId, new(x, y, width, 34), state); y += 42;
                     if (!action.Enabled && action.ReasonCode.Length > 0) Line(ActionText(action.ReasonCode), 14, PlayerMenuTheme.Danger);
                 }

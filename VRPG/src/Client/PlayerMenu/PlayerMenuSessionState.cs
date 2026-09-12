@@ -50,7 +50,17 @@ public sealed class PlayerMenuSessionState
     public void SetWorld(string identity)
     {
         if (world == identity) return;
-        world = identity; pages.Clear(); IsOpen = false; Page = PlayerMenuPage.Inventory;
+        world = identity;
+        ClearWorldState();
+    }
+    public void ResetForWorldChange()
+    {
+        world = "";
+        ClearWorldState();
+    }
+    private void ClearWorldState()
+    {
+        pages.Clear(); IsOpen = false; Page = PlayerMenuPage.Inventory;
         libraryReturn = PlayerMenuPage.Inventory;
     }
 }

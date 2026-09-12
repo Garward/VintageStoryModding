@@ -9,13 +9,14 @@ namespace VRPG.Client.PlayerMenu;
 public sealed class PlayerMenuController
 {
     private string worldIdentity = "";
+    private readonly Func<double> nowMilliseconds;
     public PlayerMenuSessionState Session { get; } = new();
     public PlayerItemClientService Items { get; }
     public InventoryPage? Inventory { get; }
     public PartyPanel? Party { get; }
     public event Action? Changed;
-    public PlayerMenuController(PlayerItemClientService connectionItems) { Items = connectionItems; }
-    public PlayerMenuController(PlayerItemClientService connectionItems, PartyPanel party) { Items = connectionItems; Party = party; }
+    public PlayerMenuController(PlayerItemClientService connectionItems) { Items = connectionItems; nowMilliseconds = static () => 0; }
+    public PlayerMenuController(PlayerItemClientService connectionItems, PartyPanel party) : this(connectionItems) { Party = party; }
     public PlayerMenuController(InventoryPage inventory, PartyPanel party) : this(inventory) { Party = party; }
     public void OpenParty()
     {
@@ -23,7 +24,9 @@ public sealed class PlayerMenuController
         if (!Session.IsOpen) Session.Enter(PlayerMenuEntryPoint.InventoryMenu);
         Party.Open(Session.Current); Session.Update(Session.Current with { Focus = "party" }); Changed?.Invoke();
     }
-    public PlayerMenuController(InventoryPage inventory) { Inventory = inventory; Items = inventory.Items; }
+    public PlayerMenuController(InventoryPage inventory) { Inventory = inventory; Items = inventory.Items; nowMilliseconds = static () => 0; }
+    public PlayerMenuController(InventoryPage inventory, Func<double> worldClock) : this(inventory)
+    { nowMilliseconds = worldClock ?? throw new ArgumentNullException(nameof(worldClock)); }
     public void Enter(PlayerMenuEntryPoint entry, bool textInputFocused = false)
     {
         if (textInputFocused) return;
@@ -31,7 +34,7 @@ public sealed class PlayerMenuController
         if (!Session.IsOpen) { Party?.Close(); Items.CloseMenu(); }
         else if (Inventory != null && entry == PlayerMenuEntryPoint.CharacterMenu)
             ChangeInventoryQuery(Inventory.Query with { Category = VRPG.Inventory.PlayerItemCategories.Gear,
-                Location = VRPG.Inventory.PlayerItemLocation.Stored, Offset = 0, EquipmentOffset = 0 }, Environment.TickCount64);
+                Location = VRPG.Inventory.PlayerItemLocation.Stored, Offset = 0, EquipmentOffset = 0 }, nowMilliseconds());
         Changed?.Invoke();
     }
     public void Close() { Party?.Close(); Session.Close(); Items.CloseMenu(); Changed?.Invoke(); }
@@ -47,9 +50,31 @@ public sealed class PlayerMenuController
     public void SetWorld(string identity)
     {
         if (worldIdentity == identity) return;
-        worldIdentity = identity; Items.ResetConnection(); Session.SetWorld(identity); Changed?.Invoke();
+        worldIdentity = identity;
+        ResetRetainedWorldState();
+        Items.ResetConnection();
+        Changed?.Invoke();
     }
-    public void ResetConnection(string identity) { Items.ResetConnection(); SetWorld(identity); }
+    /// <summary>Resets every world-scoped menu state once from the lifecycle owner.</summary>
+    public void ResetForWorldChange()
+    {
+        worldIdentity = "";
+        ResetRetainedWorldState();
+        Items.ResetConnection();
+        Changed?.Invoke();
+    }
+    public void ResetConnection(string identity)
+    {
+        worldIdentity = identity;
+        ResetRetainedWorldState();
+        Items.ResetConnection();
+        Changed?.Invoke();
+    }
+    private void ResetRetainedWorldState()
+    {
+        Inventory?.ResetForWorld();
+        Session.ResetForWorldChange();
+    }
     public void QueueInventoryQuery(double nowMilliseconds) => Items.QueueQuery(new PlayerItemQueryRequest
     { Category = Session.Current.Category, Search = Session.Current.Search, Offset = Session.Current.ScrollAnchor, Limit = 64 }, nowMilliseconds);
     public void ChangeInventoryQuery(InventoryQueryState query, double nowMilliseconds)

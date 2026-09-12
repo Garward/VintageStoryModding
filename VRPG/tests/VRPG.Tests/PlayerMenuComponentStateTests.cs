@@ -98,6 +98,37 @@ public sealed class PlayerMenuComponentStateTests
         controller.SetWorld("one"); Assert.Equal(9, service.ConnectionGeneration);
         controller.SetWorld("two"); Assert.Equal(0, service.ConnectionGeneration);
     }
+
+    [Fact]
+    public void CharacterEntryQueuesTheInventoryQueryOnItsInjectedWorldClock()
+    {
+        var service = new PlayerItemClientService(); service.BeginSession(new() { ConnectionGeneration = 1 });
+        using var page = new InventoryPage(service);
+        var controller = new PlayerMenuController(page, () => 1_000);
+
+        controller.Enter(PlayerMenuEntryPoint.CharacterMenu);
+
+        Assert.Null(service.Pump(1_199));
+        Assert.Equal(PlayerItemCategories.Gear, service.Pump(1_200)!.Category);
+    }
+
+    [Fact]
+    public void WorldResetClearsTheRetainedQueryAndSessionAlongsideTheConnection()
+    {
+        var service = new PlayerItemClientService(); service.BeginSession(new() { ConnectionGeneration = 1 });
+        using var page = new InventoryPage(service);
+        var controller = new PlayerMenuController(page);
+        page.ChangeQuery(new(Search: "old world", Offset: 64, EquipmentOffset: 64), 0);
+        controller.Enter(PlayerMenuEntryPoint.CharacterMenu);
+        controller.Session.Update(controller.Session.Current with { Focus = "search", SelectedEntry = "old-entry", InspectorScroll = 40 });
+
+        controller.ResetForWorldChange();
+
+        Assert.Equal(new InventoryQueryState(), page.Query);
+        Assert.Equal(0, service.ConnectionGeneration);
+        Assert.False(controller.Session.IsOpen);
+        Assert.Equal(new PlayerMenuViewState(), controller.Session.Current);
+    }
     [Fact]
     public void CategoryCopiesCannotMutateContractAndGalleryKeepsExactQuantities()
     {

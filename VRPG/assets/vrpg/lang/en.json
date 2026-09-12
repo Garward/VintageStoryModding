@@ -129,6 +129,7 @@
   "menu-unequip": "Unequip",
   "menu-action-equipment-updated": "Equipment updated.",
   "menu-action-pending": "Updating equipment…",
+  "menu-action-action-timeout": "Equipment update timed out. Try again.",
   "menu-action-stale": "Equipment changed. Updating item details.",
   "menu-action-action-unavailable": "This action is not available right now.",
   "menu-action-requirement-not-met": "Your level is too low to equip this item.",
