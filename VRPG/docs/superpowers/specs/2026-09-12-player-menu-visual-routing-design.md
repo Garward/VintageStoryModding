@@ -5,6 +5,8 @@ Date: 2026-09-12
 Scope: First cohesive player-facing pass of the native VRPG replacement menu
 Parents: [Unified player menu](2026-09-06-unified-player-menu-design.md) · [Visual language](../../design/ui-visual-language-and-hub.md) · [Usable player-menu checklist](../../design/usable-player-menu-checklist.md)
 
+Approved visual target: [Inventory concept](../../design/assets/player-menu-inventory-visual-target.png)
+
 ## 1. Outcome
 
 The native VRPG player menu stops reading like an engineering terminal and becomes the single coherent home for Inventory, Stats, Skills, Talents, Library, and Options. The combat hotbar is the visual reference: layered charcoal surfaces, thin amber structure, inset wells, compact ornament, and orange reserved for active or actionable state. The menu applies that language at a calmer, more spacious scale.
@@ -40,6 +42,8 @@ The shell always exposes these top-level routes in this order:
 ## 4. Visual system
 
 The hotbar replacement establishes the family resemblance, but the menu must not inherit hotbar density.
+
+The approved Inventory concept is authoritative for theme, hierarchy, panel rhythm, centered controls, browser/inspector balance, and selection emphasis. It is not authoritative for gameplay: generated controls such as Move to Storage or Drop appear only when backed by the real capability/action contract, and its example counts, item properties, rarities, and icons are illustrative.
 
 ### 4.1 Chassis
 
