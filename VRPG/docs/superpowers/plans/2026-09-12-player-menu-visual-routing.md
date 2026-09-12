@@ -318,25 +318,25 @@ git commit -m "feat: add native Stats and Skills pages"
 - Produces: `TalentPage.SelectAt`, `Pan`, `ZoomAt`, `QueueAllocation`, `QueueRefund`, `Apply`, `ResetDraft`, `EffectiveTalents`, and `PlannedPoints`.
 - Consumes: `TalentGraphComponent` as reusable graph geometry/state, `OpenHubPacket.Talents`, `Resources.UnspentTalentPoints`, respec points, and `TalentTreeSnapshotPacket`.
 
-- [ ] **Step 1: Write failing parity tests around the extracted draft model**
+- [x] **Step 1: Write failing parity tests around the extracted draft model**
 
 Port the existing legacy behavior into direct tests: exactly one starter root, allocation cost, refund credit, respec limit, connected effective plan, pruning disconnected queued allocations, right-click refund, response success clearing the draft, response rejection retaining it, and snapshot change revalidation.
 
-- [ ] **Step 2: Run focused tests and verify failure**
+- [x] **Step 2: Run focused tests and verify failure**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter FullyQualifiedName~TalentPageTests
 ```
 
-- [ ] **Step 3: Extract reusable graph behavior and implement the page**
+- [x] **Step 3: Extract reusable graph behavior and implement the page**
 
 Move draft-plan decisions out of `GuiElementVrpgHub` into `TalentPage`; keep reusable graph layout/drawing calculations in `TalentGraphComponent`. Render the graph in a large recessed well with a selected-node inspector, point/respec summary, legend, Apply/Reset actions, pan/zoom input, and honest empty/loading/error states. Preserve server validation as final authority.
 
-- [ ] **Step 4: Route mouse and wheel input through the single dialog owner**
+- [x] **Step 4: Route mouse and wheel input through the single dialog owner**
 
 In `PlayerMenuShell`, only capture talent drag when the pointer begins inside the graph well. Convert screen to local logical coordinates once, preserve click-versus-drag threshold, and consume wheel input only over the graph. Keep Escape/back behavior owned by `GuiDialogVrpgPlayerMenu`.
 
-- [ ] **Step 5: Capture, inspect, run tests, and commit**
+- [x] **Step 5: Capture, inspect, run tests, and commit**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~TalentPageTests|FullyQualifiedName~HubPageCompositionCaptureTests"
