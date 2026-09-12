@@ -13,12 +13,60 @@ using VRPG.Inventory;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 using Path = System.IO.Path;
+using Xunit;
+using VRPG.Client.PlayerMenu.Components;
 
 namespace VRPG.Tests;
 
 /// <summary>Opt-in capture of the production Cairo shell; does not emulate a joined game or GL models.</summary>
+[Collection("Inventory Cairo")]
 public sealed class InventoryCompositionCaptureTests
 {
+    [Theory]
+    [InlineData(1120, 680)][InlineData(800, 520)][InlineData(620, 520)][InlineData(400, 350)]
+    public void ProductionInventoryExposesSixCenteredPageControls(int width, int height)
+    {
+        using var scope = new InventoryCompositionTestScope();
+        using var page = InventoryPage.CreateReadOnlyTestStore(new InMemoryPlayerItemStore());
+        page.Open(0); page.Pump(200);
+        var session = new PlayerMenuSessionState(); session.Enter(PlayerMenuEntryPoint.InventoryMenu);
+        var api = DispatchProxy.Create<ICoreClientAPI, CaptureProxy>();
+        using var shell = new PlayerMenuShell(api, ElementBounds.Fixed(0, 0, width, height),
+            PlayerMenuLayout.Resolve(width, height), session, null, _ => { }, page);
+        using var surface = new ImageSurface((Format)0, width, height);
+        using var context = new Context(surface);
+        typeof(PlayerMenuShell).GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
+        var controls = (List<(string Id, MenuRect Bounds, FittedButton Button)>)typeof(PlayerMenuShell)
+            .GetField("controls", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(shell)!;
+        var tabs = controls.Where(c => c.Id.StartsWith("page:", StringComparison.Ordinal)).ToArray();
+        Assert.Equal(new[] { "page:Inventory", "page:Stats", "page:Skills", "page:Talents", "page:Library", "page:Options" }, tabs.Select(c => c.Id));
+        surface.Flush();
+        byte[] pixels = new byte[surface.Stride * height];
+        Marshal.Copy(surface.DataPtr, pixels, 0, pixels.Length);
+        foreach (var tab in tabs.Concat(controls.Where(c => c.Id == "category-next")))
+        {
+            // Find the actual light text ink; copper borders and selected plates are darker.
+            int left = width, right = -1, top = height, bottom = -1;
+            for (int y = (int)tab.Bounds.Y + 5; y < tab.Bounds.Bottom - 5; y++)
+            for (int x = (int)tab.Bounds.X + 5; x < tab.Bounds.Right - 5; x++)
+            {
+                int at = y * surface.Stride + x * 4;
+                if (pixels[at] < 165 || pixels[at + 1] < 190 || pixels[at + 2] < 200) continue;
+                left = Math.Min(left, x); right = Math.Max(right, x);
+                top = Math.Min(top, y); bottom = Math.Max(bottom, y);
+            }
+            Assert.True(right >= left, "Missing label ink for " + tab.Id);
+            Assert.InRange((left + right + 1) / 2d - (tab.Bounds.X + tab.Bounds.Width / 2), -1.5, 1.5);
+            Assert.InRange((top + bottom + 1) / 2d - (tab.Bounds.Y + tab.Bounds.Height / 2), -1.5, 1.5);
+            context.SelectFontFace(PlayerMenuTheme.Font, FontSlant.Normal, FontWeight.Normal); context.SetFontSize(14);
+            var metrics = context.TextExtents(PlayerMenuShell.T(tab.Id == "category-next" ? "all-types" : tab.Button.LabelKey));
+            var origin = PlayerMenuDrawing.CenteredOrigin(tab.Bounds,
+                new MenuTextMetrics(metrics.Width, metrics.Height, metrics.XBearing, metrics.YBearing), 0);
+            Assert.True(tab.Bounds.Contains(origin.X, origin.Y));
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1013", Justification = "Explicit opt-in entry point for VRPG.MenuCapture, not an automated test.")]
     public void CaptureActualShellFromRealStoreWhenRequested()
     {
         string? output = Environment.GetEnvironmentVariable("VRPG_MENU_CAPTURE_PATH");

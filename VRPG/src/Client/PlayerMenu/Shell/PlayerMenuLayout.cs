@@ -14,6 +14,17 @@ public sealed record PlayerMenuLayout(double Width, double Height, bool Alternat
     MenuRect Close, MenuRect Back, MenuRect Browser, MenuRect Inspector, MenuRect PrimaryAction)
 {
     public const double RowHeight = 54;
+    public MenuRect Header => new(Back.X, Back.Y, Math.Max(0, Close.Right - Back.X), Back.Height);
+    public MenuRect Title => new(Back.X, 48, Header.Width, AlternatePanes ? 20 : 26);
+    public MenuRect Navigation => new(Back.X, AlternatePanes ? 72 : 80, Header.Width, AlternatePanes ? 64 : 34);
+    public MenuRect Footer => new(Back.X, Browser.Bottom, Header.Width, Math.Max(0, Height - Browser.Bottom));
+    public MenuRect PageTab(int index)
+    {
+        int columns = AlternatePanes ? 3 : 6;
+        double width = Math.Max(0, (Navigation.Width - (columns - 1) * 4) / columns);
+        return new(Navigation.X + index % columns * (width + 4), Navigation.Y + index / columns * 34,
+            width, AlternatePanes ? 30 : 34);
+    }
     public bool CondensedBrowserChrome => Browser.Height < 142 + RowHeight + 4;
     public double BrowserHeaderHeight => CondensedBrowserChrome ? 78 : 142;
     public MenuRect BrowserSearch => new(Browser.X + 12, Browser.Y + (CondensedBrowserChrome ? 40 : 94), Browser.Width - 24, 30);
@@ -34,7 +45,7 @@ public sealed record PlayerMenuLayout(double Width, double Height, bool Alternat
         width = Math.Max(0, width); height = Math.Max(0, height);
         double margin = Math.Min(24, width / 20), inner = Math.Max(0, width - margin * 2);
         bool alternate = width < 800 || height < 520;
-        double top = Math.Min(alternate ? 142 : 122, height * .45);
+        double top = Math.Min(alternate ? 142 : 126, height * .45);
         double footer = Math.Min(70, height * .2), bodyHeight = Math.Max(0, height - top - footer);
         double gap = alternate ? 0 : 24, browserWidth = alternate ? inner : (inner - gap) * .55;
         double detailX = alternate ? margin : margin + browserWidth + gap;

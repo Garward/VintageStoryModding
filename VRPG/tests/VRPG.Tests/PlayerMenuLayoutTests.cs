@@ -5,6 +5,31 @@ namespace VRPG.Tests;
 
 public sealed class PlayerMenuLayoutTests
 {
+    [Theory]
+    [InlineData(1120, 680)][InlineData(800, 520)][InlineData(620, 520)][InlineData(400, 350)]
+    public void HeaderTitleNavigationBodyAndFooterHaveDedicatedSpace(double width, double height)
+    {
+        var layout = PlayerMenuLayout.Resolve(width, height);
+        Assert.True(layout.Header.Bottom <= layout.Title.Y);
+        Assert.True(layout.Title.Bottom <= layout.Navigation.Y);
+        Assert.True(layout.Navigation.Bottom <= layout.Browser.Y);
+        Assert.True(layout.Browser.Bottom <= layout.Footer.Y);
+        Assert.True(layout.PrimaryAction.Y >= layout.Footer.Y);
+        for (int i = 0; i < 6; i++)
+        {
+            var tab = layout.PageTab(i);
+            Assert.True(tab.X >= layout.Navigation.X && tab.Right <= layout.Navigation.Right);
+            Assert.True(tab.Y >= layout.Navigation.Y && tab.Bottom <= layout.Navigation.Bottom);
+            Assert.True(tab.Width >= 90 && tab.Height >= 30);
+            for (int j = 0; j < i; j++)
+            {
+                var other = layout.PageTab(j);
+                Assert.True(tab.X >= other.Right || tab.Y >= other.Bottom);
+            }
+        }
+        Assert.True(layout.InventoryVisibleRows >= 1);
+    }
+
     [Fact]
     public void SmallWindowKeepsASelectableBrowserRowBelowItsChrome()
     {

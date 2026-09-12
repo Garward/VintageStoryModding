@@ -61,28 +61,26 @@ public sealed partial class PlayerMenuShell : GuiElement
     }
     private void Draw(Context ctx)
     {
-        Fill(ctx, new(0, 0, Layout.Width, Layout.Height), PlayerMenuTheme.Iron900);
-        Stroke(ctx, new(2, 2, Layout.Width - 4, Layout.Height - 4), PlayerMenuTheme.Iron700, 3);
+        PlayerMenuDrawing.DrawChassis(ctx, new(0, 0, Layout.Width, Layout.Height));
+        PlayerMenuDrawing.DrawPlate(ctx, Layout.Header);
+        PlayerMenuDrawing.DrawPlate(ctx, Layout.Navigation);
         Button(ctx, "back", "back", Layout.Back);
         Button(ctx, "close", "close", Layout.Close);
         if (party != null) Button(ctx, "party", "party", PartyHeaderBounds, PartyOpen ? MenuControlState.Selected : MenuControlState.Default);
-        if (Layout.Width >= 800 && !PartyOpen) Text(ctx, T(gallery != null ? "gallery-title" : inventory?.View.Error.Length > 0 ? "browse-error-short" : inventory?.View.Loading == true ? "loading" : "browse-title"),
-            new(122, 12, Math.Max(0, Layout.Width - 350), 30), 16);
+        PlayerMenuDrawing.DrawSectionHeading(ctx, T(PartyOpen ? "party" : gallery != null ? "gallery-title" : session.Page.ToString().ToLowerInvariant()),
+            Layout.Title, Layout.AlternatePanes ? 17 : 21);
         if (inventory != null && Layout.AlternatePanes && !PartyOpen)
             Button(ctx, "inspect", "inspect", new(Layout.Back.Right + 6, 10, Math.Max(0, (party == null ? Layout.Close.X : PartyHeaderBounds.X) - Layout.Back.Right - 12), 34));
-        int columns = inventory != null && gallery == null ? 1 : Layout.AlternatePanes ? 3 : 6;
-        double tabWidth = (Layout.Width - 48) / columns;
-        var availablePages = inventory != null && gallery == null ? new[] { PlayerMenuPage.Inventory } : Enum.GetValues<PlayerMenuPage>();
-        foreach (var page in availablePages)
+        foreach (var page in Enum.GetValues<PlayerMenuPage>())
         {
-            int i = (int)page;
-            Button(ctx, "page:" + page, page.ToString().ToLowerInvariant(), new(24 + i % columns * tabWidth, 52 + i / columns * 38, tabWidth - 4, 34),
+            Button(ctx, "page:" + page, page.ToString().ToLowerInvariant(), Layout.PageTab((int)page),
                 session.Page == page ? MenuControlState.Selected : MenuControlState.Default);
         }
         string inventoryBinding = api.Input.GetHotKeyByCode(VanillaMenuActions.Inventory)?.CurrentMapping?.ToString() ?? "";
         string characterBinding = api.Input.GetHotKeyByCode(VanillaMenuActions.Character)?.CurrentMapping?.ToString() ?? "";
         if (!PartyOpen && !Layout.AlternatePanes && inventoryBinding.Length > 0 && characterBinding.Length > 0)
-            Text(ctx, T("bindings", inventoryBinding, characterBinding), new(24, 94, Layout.Width - 48, 24), 13, PlayerMenuTheme.Muted);
+            Text(ctx, T("bindings", inventoryBinding, characterBinding),
+                new(Layout.Back.Right + 16, Layout.Header.Y + 7, Math.Max(0, (party == null ? Layout.Close.X : PartyHeaderBounds.X) - Layout.Back.Right - 32), 22), 13, PlayerMenuTheme.Muted);
         bool inspect = !Layout.AlternatePanes || session.Current.InspectorOnly;
         bool browse = !Layout.AlternatePanes || !session.Current.InspectorOnly;
         if (PartyOpen) { DrawParty(ctx); return; }
@@ -110,7 +108,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     private void DrawBrowser(Context ctx)
     {
         var bounds = Layout.Browser;
-        Fill(ctx, bounds, PlayerMenuTheme.Iron950);
+        PlayerMenuDrawing.DrawWell(ctx, bounds);
         if (Layout.CondensedBrowserChrome)
         {
             double half = (bounds.Width - 28) / 2;
@@ -157,7 +155,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     private void DrawInspector(Context ctx)
     {
         var b = Layout.Inspector;
-        Fill(ctx, b, PlayerMenuTheme.Iron950);
+        PlayerMenuDrawing.DrawWell(ctx, b);
         ctx.Save(); ctx.Rectangle(b.X + 2, b.Y + 2, b.Width - 4, b.Height - 4); ctx.Clip();
         var entry = FilteredEntries().FirstOrDefault(x => x.Id == session.Current.SelectedEntry);
         double x = b.X + 20, y = b.Y + 16 - session.Current.InspectorScroll, width = b.Width - 40;
@@ -201,35 +199,20 @@ public sealed partial class PlayerMenuShell : GuiElement
         if (item == null) return null;
         var slot = new DummySlot(new ItemStack(item)); icons.Add(code, slot); return slot;
     }
-    private void Button(Context ctx, string id, string key, MenuRect bounds, MenuControlState state = MenuControlState.Default)
+    private void Button(Context ctx, string id, string key, MenuRect bounds, MenuControlState state = MenuControlState.Default, string? labelOverride = null)
     {
         var button = new FittedButton(id, key, state);
         controls.Add((id, bounds, button));
         var visual = pressed == id && button.CanActivate ? MenuControlState.Pressed : hover == id && button.CanActivate ? MenuControlState.Hover : state;
-        double offset = new FittedButton(id, key, visual).PressOffset(session.ReducedMotion);
-        Fill(ctx, bounds with { Y = bounds.Y + offset }, visual == MenuControlState.Pressed ? PlayerMenuTheme.Iron950 : PlayerMenuTheme.Iron800);
-        Stroke(ctx, bounds, visual == MenuControlState.Hover ? PlayerMenuTheme.CopperWorn : PlayerMenuTheme.CopperDull, .7);
-        if (state is MenuControlState.Selected or MenuControlState.Pending)
-            Fill(ctx, new(bounds.X + 3, bounds.Y + 4, 3, bounds.Height - 8), PlayerMenuTheme.Heat);
-        if (focus == id || state == MenuControlState.Focused) Stroke(ctx, new(bounds.X + 3, bounds.Y + 3, bounds.Width - 6, bounds.Height - 6), PlayerMenuTheme.HeatHot, 2);
-        string label = key.Length == 0 ? "" : key == "gallery-count" ? T(key, gallery!.Entries(session.Current.Category).Count,
-            session.Current.Category == PlayerItemCategories.Gear ? 120 : 512) : T(key);
-        if (key.Length > 0) Text(ctx, label, new(bounds.X + 10, bounds.Y + 5 + offset, bounds.Width - 20, bounds.Height - 8), 14,
-            button.CanActivate ? PlayerMenuTheme.Text : PlayerMenuTheme.Muted);
+        string label = labelOverride ?? (key.Length == 0 ? "" : key == "gallery-count" ? T(key, gallery!.Entries(session.Current.Category).Count,
+            session.Current.Category == PlayerItemCategories.Gear ? 120 : 512) : T(key));
+        PlayerMenuDrawing.DrawButton(ctx, bounds, label, button, visual, focus == id, session.ReducedMotion,
+            id.StartsWith("page:", StringComparison.Ordinal));
     }
-    private static void Color(Context ctx, string hex) => ctx.SetSourceRGB(Convert.ToInt32(hex[..2], 16) / 255d, Convert.ToInt32(hex[2..4], 16) / 255d, Convert.ToInt32(hex[4..], 16) / 255d);
-    private static void Fill(Context ctx, MenuRect b, string color) { Color(ctx, color); ctx.Rectangle(b.X, b.Y, b.Width, b.Height); ctx.Fill(); }
-    private static void Stroke(Context ctx, MenuRect b, string color, double line) { Color(ctx, color); ctx.LineWidth = line; ctx.Rectangle(b.X, b.Y, b.Width, b.Height); ctx.Stroke(); }
-    private static void Text(Context ctx, string text, MenuRect b, double size, string color = PlayerMenuTheme.Text)
-    {
-        if (b.Width <= 0 || b.Height <= 0) return;
-        ctx.Save(); ctx.Rectangle(b.X, b.Y, b.Width, b.Height); ctx.Clip();
-        ctx.SelectFontFace(PlayerMenuTheme.Font, FontSlant.Normal, FontWeight.Normal); ctx.SetFontSize(size); Color(ctx, color);
-        double y = b.Y + size;
-        foreach (string line in PlayerMenuTextLayout.Wrap(text, b.Width, value => ctx.TextExtents(value).Width))
-        { ctx.MoveTo(b.X, y); ctx.ShowText(line); y += size + 5; }
-        ctx.Restore();
-    }
+    private static void Fill(Context ctx, MenuRect b, string color) => PlayerMenuDrawing.Fill(ctx, b, color);
+    private static void Stroke(Context ctx, MenuRect b, string color, double line) => PlayerMenuDrawing.Stroke(ctx, b, color, line);
+    private static void Text(Context ctx, string text, MenuRect b, double size, string color = PlayerMenuTheme.Text) =>
+        PlayerMenuDrawing.DrawBodyText(ctx, text, b, size, color);
     private static double MeasureTextHeight(Context ctx, string text, double width, double size)
     {
         ctx.SelectFontFace(PlayerMenuTheme.Font, FontSlant.Normal, FontWeight.Normal); ctx.SetFontSize(size);
@@ -238,15 +221,14 @@ public sealed partial class PlayerMenuShell : GuiElement
     private void DrawInventoryBrowser(Context ctx)
     {
         var page = inventory!; var view = page.View; var b = Layout.Browser;
-        Fill(ctx, b, PlayerMenuTheme.Iron950);
+        PlayerMenuDrawing.DrawWell(ctx, b);
         double inner = b.Width - 24, third = (inner - 8) / 3;
         double top = b.Y + (Layout.CondensedBrowserChrome ? 2 : 10);
         string category = page.Query.Category.Length == 0 ? T("all-types") : PlayerItemCategories.Required.Contains(page.Query.Category)
             ? T("category-" + page.Query.Category) : view.Categories.FirstOrDefault(x => x.Code == page.Query.Category)?.DisplayName ?? T("other-type");
         if (Layout.CondensedBrowserChrome)
         {
-            Button(ctx, "category-next", "", new(b.X + 12, top, inner * .55 - 4, 34), MenuControlState.Selected);
-            Text(ctx, category, new(b.X + 22, top + 5, inner * .55 - 24, 26), 14);
+            Button(ctx, "category-next", "", new(b.X + 12, top, inner * .55 - 4, 34), MenuControlState.Selected, category);
             Button(ctx, "location", "location-" + page.Query.Location.ToString().ToLowerInvariant(), new(b.X + 12 + inner * .55, top, inner * .45, 34));
         }
         else
@@ -309,7 +291,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     {
         int firstInspectorControl = controls.Count;
         var page = inventory!; var view = page.View; var b = Layout.Inspector;
-        Fill(ctx, b, PlayerMenuTheme.Iron950);
+        PlayerMenuDrawing.DrawWell(ctx, b);
         ctx.Save(); ctx.Rectangle(b.X + 2, b.Y + 2, b.Width - 4, b.Height - 4); ctx.Clip();
         double x = b.X + 18, y = b.Y + 12 - session.Current.InspectorScroll, width = b.Width - 36;
         void Line(string text, double size = 15, string color = PlayerMenuTheme.Text)

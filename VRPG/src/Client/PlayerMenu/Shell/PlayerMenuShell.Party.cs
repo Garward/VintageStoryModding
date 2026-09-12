@@ -14,8 +14,8 @@ public sealed partial class PlayerMenuShell
     private bool PartyOpen => party?.State.IsOpen == true;
     private MenuRect PartyHeaderBounds => new(Layout.Close.X - 84, 10, 78, 34);
     public MenuRect PartySearchBounds => new(PartyListBounds.X + 8, PartyListBounds.Y + 40, Math.Max(0, PartyListBounds.Width - 96), 30);
-    private MenuRect PartyBody => new(Layout.Back.X, Layout.AlternatePanes ? 134 : 96,
-        Layout.Width - 2 * Layout.Back.X, Math.Max(0, Layout.Height - (Layout.AlternatePanes ? 134 : 96) - 74));
+    private MenuRect PartyBody => new(Layout.Browser.X, Layout.Browser.Y,
+        Layout.Header.Width, Math.Max(0, Layout.Browser.Height - 4));
     private MenuRect PartyListBounds => PartyBody with { Width = Layout.AlternatePanes ? PartyBody.Width : PartyBody.Width * .52 - 12 };
     private MenuRect PartyDetailBounds => Layout.AlternatePanes ? PartyBody : PartyBody with { X = PartyBody.X + PartyBody.Width * .52 + 12, Width = PartyBody.Width * .48 - 12 };
     private MenuRect partyClip;
@@ -68,7 +68,7 @@ public sealed partial class PlayerMenuShell
     private void DrawPartyList(Context ctx)
     {
         var panel = party!; var state = panel.State; var b = PartyListBounds;
-        Fill(ctx, b, PlayerMenuTheme.Iron950);
+        PlayerMenuDrawing.DrawWell(ctx, b);
         string[] sections = { "members", "invitations", "online" };
         double tabWidth = (b.Width - 16) / 3;
         for (int i = 0; i < sections.Length; i++) Button(ctx, "party:section:" + sections[i], "party-" + sections[i],
@@ -125,7 +125,7 @@ public sealed partial class PlayerMenuShell
     private void DrawPartyDetail(Context ctx)
     {
         var panel = party!; var state = panel.State; var b = PartyDetailBounds;
-        Fill(ctx, b, PlayerMenuTheme.Iron950);
+        PlayerMenuDrawing.DrawWell(ctx, b);
         double x = b.X + 12, width = b.Width - 24, contentHeight = 8;
         var lines = new List<(string Text, double Size, string Color, double Height)>();
         void Line(string text, double size = 15, string color = PlayerMenuTheme.Text)
