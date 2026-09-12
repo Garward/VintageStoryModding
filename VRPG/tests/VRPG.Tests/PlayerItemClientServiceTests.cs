@@ -144,6 +144,26 @@ public sealed class PlayerItemClientServiceTests
     }
 
     [Fact]
+    public void ResetConnectionAcceptsGenerationOneFromANewServer()
+    {
+        var client = Ready();
+        client.ResetConnection();
+        client.BeginSession(new PlayerItemSessionPacket { ConnectionGeneration = 1 });
+        Assert.Equal(1, client.ConnectionGeneration);
+        Assert.False(client.CanWrite);
+    }
+
+    [Fact]
+    public void DisposalIsIdempotentAndStopsSessionAdmission()
+    {
+        var client = new PlayerItemClientService();
+        client.Dispose();
+        client.Dispose();
+        client.BeginSession(new PlayerItemSessionPacket { ConnectionGeneration = 1 });
+        Assert.Equal(0, client.ConnectionGeneration);
+    }
+
+    [Fact]
     public void PageAndDetailCachesEvictAtFixedBoundsAndOwnCopies()
     {
         var client = Connected();

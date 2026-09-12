@@ -70,9 +70,10 @@ public sealed partial class PlayerMenuShell : GuiElement
             new(122, 12, Math.Max(0, Layout.Width - 350), 30), 16);
         if (inventory != null && Layout.AlternatePanes && !PartyOpen)
             Button(ctx, "inspect", "inspect", new(Layout.Back.Right + 6, 10, Math.Max(0, (party == null ? Layout.Close.X : PartyHeaderBounds.X) - Layout.Back.Right - 12), 34));
-        int columns = Layout.AlternatePanes ? 3 : 6;
+        int columns = inventory != null && gallery == null ? 1 : Layout.AlternatePanes ? 3 : 6;
         double tabWidth = (Layout.Width - 48) / columns;
-        foreach (var page in Enum.GetValues<PlayerMenuPage>())
+        var availablePages = inventory != null && gallery == null ? new[] { PlayerMenuPage.Inventory } : Enum.GetValues<PlayerMenuPage>();
+        foreach (var page in availablePages)
         {
             int i = (int)page;
             Button(ctx, "page:" + page, page.ToString().ToLowerInvariant(), new(24 + i % columns * tabWidth, 52 + i / columns * 38, tabWidth - 4, 34),
@@ -389,13 +390,13 @@ public sealed partial class PlayerMenuShell : GuiElement
                 foreach (var action in detail.Actions.Where(action => action.Action is PlayerItemAction.Equip or PlayerItemAction.Unequip))
                 {
                     string actionId = action.Action == PlayerItemAction.Equip ? "equip" : "unequip";
-                    MenuControlState state = page.ActionPending ? MenuControlState.Pending
+                    MenuControlState state = page.IsActionPending(entry.EntryId, action.Action) ? MenuControlState.Pending
                         : action.Enabled ? MenuControlState.Default : MenuControlState.Disabled;
                     Button(ctx, actionId, actionId, new(x, y, width, 34), state); y += 42;
                     if (!action.Enabled && action.ReasonCode.Length > 0) Line(ActionText(action.ReasonCode), 14, PlayerMenuTheme.Danger);
                 }
-                if (page.ActionPending) Line(T("action-pending"), 14, PlayerMenuTheme.Muted);
-                if (page.ActionFeedback.Length > 0)
+                if (page.IsActionPending(entry.EntryId, PlayerItemAction.Equip) || page.IsActionPending(entry.EntryId, PlayerItemAction.Unequip)) Line(T("action-pending"), 14, PlayerMenuTheme.Muted);
+                if (page.HasActionFeedback(entry.EntryId, PlayerItemAction.Equip) || page.HasActionFeedback(entry.EntryId, PlayerItemAction.Unequip))
                     Line(ActionText(page.ActionFeedback), 14, page.ActionFeedbackIsError ? PlayerMenuTheme.Danger : PlayerMenuTheme.Muted);
             }
         }

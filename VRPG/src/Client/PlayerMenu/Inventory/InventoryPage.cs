@@ -14,6 +14,7 @@ namespace VRPG.Client.PlayerMenu.Inventory;
 /// <summary>Browse lifecycle in the existing connection owner. The isolated store route has no mutation transport.</summary>
 public sealed class InventoryPage : IDisposable
 {
+    public const int ActionTimeoutMilliseconds = 10200;
     public PlayerItemClientService Items { get; }
     public InventoryViewModel View { get; } = new();
     public InventoryQueryState Query { get; private set; } = new();
@@ -25,6 +26,11 @@ public sealed class InventoryPage : IDisposable
     private bool open;
     private double now, pageDeadline, detailDeadline;
     private string pendingActionRequestId = "";
+    private string pendingActionEntryId = "";
+    private PlayerItemAction pendingAction;
+    private double actionDeadline;
+    private string feedbackEntryId = "";
+    private PlayerItemAction feedbackAction;
     public InventoryPage(PlayerItemClientService items)
     {
         Items = items; items.PageReceived += OnPage; items.DetailReceived += OnDetail; items.ActionCompleted += OnActionCompleted;
@@ -58,10 +64,19 @@ public sealed class InventoryPage : IDisposable
         now = milliseconds; if (!open) return; Items.Pump(milliseconds);
         if (View.Loading && milliseconds >= pageDeadline) { View.Loading = false; View.Error = "timeout"; Changed?.Invoke(); }
         if (View.DetailLoading && milliseconds >= detailDeadline) { View.DetailLoading = false; View.DetailError = "timeout"; Changed?.Invoke(); }
+        if (ActionPending && milliseconds >= actionDeadline)
+        {
+            Items.AbandonMutation(pendingActionRequestId);
+            SetActionFeedback(pendingActionEntryId, pendingAction, "action-timeout", true);
+            ClearPendingAction();
+            RefreshIfOpen();
+            Changed?.Invoke();
+        }
     }
     public void Select(string id)
     {
         if (!View.Select(id)) return;
+        if (id != feedbackEntryId) { ActionFeedback = ""; ActionFeedbackIsError = false; feedbackEntryId = ""; feedbackAction = PlayerItemAction.None; }
         detailDeadline = now + 10000; Items.Select(id); Changed?.Invoke();
     }
     /// <summary>Submits only the selected server-advertised equipment action and keeps its feedback at that control.</summary>
@@ -73,8 +88,7 @@ public sealed class InventoryPage : IDisposable
         PlayerItemActionAvailability? availability = detail.Actions.FirstOrDefault(candidate => candidate.Action == action);
         if (availability == null || !availability.Enabled || action is not (PlayerItemAction.Equip or PlayerItemAction.Unequip))
         {
-            ActionFeedback = availability?.ReasonCode ?? "action-unavailable";
-            ActionFeedbackIsError = true;
+            SetActionFeedback(entry.EntryId, action, availability?.ReasonCode ?? "action-unavailable", true);
             Changed?.Invoke();
             return false;
         }
@@ -87,17 +101,22 @@ public sealed class InventoryPage : IDisposable
         });
         if (request == null)
         {
-            ActionFeedback = "action-unavailable";
-            ActionFeedbackIsError = true;
+            SetActionFeedback(entry.EntryId, action, "action-unavailable", true);
             Changed?.Invoke();
             return false;
         }
         pendingActionRequestId = request.RequestId;
-        ActionFeedback = "";
-        ActionFeedbackIsError = false;
+        pendingActionEntryId = entry.EntryId;
+        pendingAction = action;
+        actionDeadline = milliseconds + ActionTimeoutMilliseconds;
+        ActionFeedback = ""; ActionFeedbackIsError = false; feedbackEntryId = ""; feedbackAction = PlayerItemAction.None;
         Changed?.Invoke();
         return true;
     }
+    public bool IsActionPending(string entryId, PlayerItemAction action) => ActionPending
+        && pendingActionEntryId == entryId && pendingAction == action;
+    public bool HasActionFeedback(string entryId, PlayerItemAction action) => ActionFeedback.Length > 0
+        && feedbackEntryId == entryId && feedbackAction == action;
     private void OnPage(PlayerItemQueryResult page)
     {
         if (!open) return; View.Apply(page);
@@ -115,23 +134,21 @@ public sealed class InventoryPage : IDisposable
     private void OnActionCompleted(PlayerItemActionResult result)
     {
         if (!string.Equals(result.RequestId, pendingActionRequestId, StringComparison.Ordinal)) return;
-        pendingActionRequestId = "";
+        string entryId = pendingActionEntryId; PlayerItemAction action = pendingAction;
+        ClearPendingAction();
         if (result.Success)
         {
-            ActionFeedback = "equipment-updated";
-            ActionFeedbackIsError = false;
+            SetActionFeedback(entryId, action, "equipment-updated", false);
             RefreshIfOpen();
         }
         else if (result.RejectionCode is "stale-store" or "stale-build")
         {
-            ActionFeedback = "stale";
-            ActionFeedbackIsError = false;
+            SetActionFeedback(entryId, action, "stale", false);
             RefreshIfOpen();
         }
         else
         {
-            ActionFeedback = result.RejectionCode.Length == 0 ? "action-unavailable" : result.RejectionCode;
-            ActionFeedbackIsError = true;
+            SetActionFeedback(entryId, action, result.RejectionCode.Length == 0 ? "action-unavailable" : result.RejectionCode, true);
         }
         Changed?.Invoke();
     }
@@ -140,9 +157,12 @@ public sealed class InventoryPage : IDisposable
         if (open) Refresh(now);
         else View.Stale = View.Capacity != null;
     }
+    private void ClearPendingAction() { pendingActionRequestId = pendingActionEntryId = ""; pendingAction = PlayerItemAction.None; actionDeadline = 0; }
+    private void SetActionFeedback(string entryId, PlayerItemAction action, string feedback, bool error)
+    { feedbackEntryId = entryId; feedbackAction = action; ActionFeedback = feedback; ActionFeedbackIsError = error; }
     private void OnRejected(string reason) { if (!open) return; View.Loading = false; View.Error = reason; Changed?.Invoke(); }
     private void OnInvalidated() { if (open) Refresh(now); else View.Stale = View.Capacity != null; }
-    private void OnConnection() { pendingActionRequestId = ""; ActionFeedback = ""; ActionFeedbackIsError = false; View.Reset(); if (open) Refresh(now); Changed?.Invoke(); }
+    private void OnConnection() { ClearPendingAction(); ActionFeedback = ""; ActionFeedbackIsError = false; feedbackEntryId = ""; feedbackAction = PlayerItemAction.None; View.Reset(); if (open) Refresh(now); Changed?.Invoke(); }
     public void Dispose()
     {
         Close(); Items.PageReceived -= OnPage; Items.DetailReceived -= OnDetail; Items.ActionCompleted -= OnActionCompleted;

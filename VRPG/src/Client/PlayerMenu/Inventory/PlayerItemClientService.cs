@@ -10,7 +10,7 @@ using Vintagestory.API.Client;
 namespace VRPG.Client.PlayerMenu.Inventory;
 
 /// <summary>Connection-owned state; the GUI owns neither pending mutations nor network callbacks.</summary>
-public sealed class PlayerItemClientService
+public sealed class PlayerItemClientService : IDisposable
 {
     public const int PageCacheCapacity = 8;
     public const int DetailCacheCapacity = 32;
@@ -30,6 +30,9 @@ public sealed class PlayerItemClientService
     private PlayerItemQueryResult? page;
     private PlayerItemDetailResult? detail;
     private bool readOnlyTransport;
+    private IClientNetworkChannel? channel;
+    private IClientEventAPI? events;
+    private bool disposed;
 
     public long ConnectionGeneration { get; private set; }
     public long StoreRevision { get; private set; }
@@ -53,9 +56,13 @@ public sealed class PlayerItemClientService
         readOnlyTransport = true; sendQuery = query; sendDetail = detail; sendAction = null;
     }
 
-    public void Attach(IClientNetworkChannel channel)
+    public void Attach(IClientNetworkChannel channel, IClientEventAPI? events = null)
     {
+        if (disposed) throw new ObjectDisposedException(nameof(PlayerItemClientService));
         if (readOnlyTransport) throw new InvalidOperationException("Read-only transport cannot become writable.");
+        if (this.channel != null) throw new InvalidOperationException("Transport already attached.");
+        this.channel = channel;
+        this.events = events;
         sendQuery = request => channel.SendPacket(request);
         sendDetail = request => channel.SendPacket(request);
         sendAction = request => channel.SendPacket(request);
@@ -64,22 +71,19 @@ public sealed class PlayerItemClientService
         channel.SetMessageHandler<PlayerItemDetailResult>(packet => Receive(packet));
         channel.SetMessageHandler<PlayerItemActionResult>(packet => Receive(packet));
         channel.SetMessageHandler<PlayerItemInvalidationPacket>(packet => Receive(packet));
+        if (events != null) events.LeaveWorld += ResetConnection;
     }
 
     public void ResetConnection()
     {
-        ConnectionGeneration = StoreRevision = BuildRevision = 0;
-        sequence = 0;
-        refreshed = false;
-        mutations.Clear();
-        ClearQueries();
+        ResetState();
         ConnectionChanged?.Invoke();
     }
 
     public void BeginSession(PlayerItemSessionPacket packet)
     {
-        if (packet.ProtocolVersion != 1 || packet.ConnectionGeneration <= ConnectionGeneration) return;
-        ResetConnection();
+        if (disposed || packet.ProtocolVersion != 1 || packet.ConnectionGeneration <= ConnectionGeneration) return;
+        ResetState();
         ConnectionGeneration = packet.ConnectionGeneration;
         ConnectionChanged?.Invoke();
     }
@@ -174,7 +178,7 @@ public sealed class PlayerItemClientService
 
     public PlayerItemActionRequest? Submit(PlayerItemActionRequest request)
     {
-        if (!CanWrite || mutations.Count >= 128) return null;
+        if (disposed || !CanWrite || mutations.Count >= 128) return null;
         var copy = Serializer.DeepClone(request);
         copy.ConnectionGeneration = ConnectionGeneration;
         copy.ExpectedStoreRevision = StoreRevision;
@@ -220,6 +224,29 @@ public sealed class PlayerItemClientService
         selected = null;
         latestPage = checked(++queryId);
         detail = null;
+    }
+
+    public bool AbandonMutation(string requestId) => mutations.Remove(requestId);
+
+    public void Dispose()
+    {
+        if (disposed) return;
+        disposed = true;
+        if (events != null) events.LeaveWorld -= ResetConnection;
+        channel?.SetMessageHandler<PlayerItemSessionPacket>(_ => { });
+        channel?.SetMessageHandler<PlayerItemQueryResult>(_ => { });
+        channel?.SetMessageHandler<PlayerItemDetailResult>(_ => { });
+        channel?.SetMessageHandler<PlayerItemActionResult>(_ => { });
+        channel?.SetMessageHandler<PlayerItemInvalidationPacket>(_ => { });
+        channel = null; events = null;
+        ResetState();
+        ActionCompleted = null; PageReceived = null; DetailReceived = null; QueryRejected = null; Invalidated = null; ConnectionChanged = null;
+    }
+
+    private void ResetState()
+    {
+        ConnectionGeneration = StoreRevision = BuildRevision = 0;
+        sequence = 0; refreshed = false; mutations.Clear(); ClearQueries();
     }
 
     private void Observe(long storeRevision, long buildRevision)

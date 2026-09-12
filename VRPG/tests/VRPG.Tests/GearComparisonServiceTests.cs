@@ -107,6 +107,19 @@ public sealed class GearComparisonServiceTests
     }
 
     [Fact]
+    public void ReservedStoredGearIsAdvertisedAsUnavailableBeforeEquip()
+    {
+        var f = new GearReadinessValidatorTests.Fixture();
+        string id = f.Insert(GearItemStateCodec.Encode(GearReadinessValidatorTests.Instance()));
+        Assert.True(f.Store.Reserve("reserve", new[] { new PlayerItemAmount(id, 1) }, f.Store.Revision).Success);
+        var talents = new TalentTreeCatalog();
+        var result = new PlayerItemDetailService(new GearComparisonService(f.Data, new(talents), new(new RpgModuleConfig(), talents)))
+            .Detail(f.Store, new() { Level = 20 }, 1, new() { ConnectionGeneration = 1, QueryId = 1, EntryId = id, RoleCode = PlayerEquipmentRoles.MainWeapon });
+        var action = Assert.Single(result.Actions);
+        Assert.Equal(PlayerItemAction.Equip, action.Action); Assert.False(action.Enabled); Assert.Equal("entry-reserved", action.ReasonCode);
+    }
+
+    [Fact]
     public void GearResourceComparisonUsesFullRuntimeTotals()
     {
         var f = new GearReadinessValidatorTests.Fixture();

@@ -54,6 +54,24 @@ public sealed class InventoryActionPageTests
         Assert.Equal("gear-1", page.View.SelectedId);
     }
 
+    [Fact]
+    public void LostActionResultTimesOutAndKeepsFeedbackWithItsInitiatingEntry()
+    {
+        var items = new PlayerItemClientService(); items.BeginSession(new PlayerItemSessionPacket { ConnectionGeneration = 1 });
+        using var page = new InventoryPage(items); page.Open(0);
+        long query = items.QueueQuery(new PlayerItemQueryRequest(), 0); page.Pump(200);
+        Assert.True(items.Receive(Page(query, "gear-1")));
+        page.Select("gear-1"); var selected = items.Select("gear-1", PlayerEquipmentRoles.MainWeapon);
+        Assert.True(items.Receive(new PlayerItemDetailResult { ConnectionGeneration = 1, QueryId = selected.QueryId, EntryId = "gear-1",
+            RoleCode = PlayerEquipmentRoles.MainWeapon, StoreRevision = 1, BuildRevision = 1,
+            Actions = new[] { new PlayerItemActionAvailability { Action = PlayerItemAction.Equip, Enabled = true } } }));
+        Assert.True(page.TrySubmitAction(PlayerItemAction.Equip, 250));
+        page.Pump(250 + InventoryPage.ActionTimeoutMilliseconds);
+        Assert.False(page.ActionPending); Assert.Equal(0, items.PendingMutations);
+        Assert.True(page.HasActionFeedback("gear-1", PlayerItemAction.Equip));
+        Assert.Equal("action-timeout", page.ActionFeedback);
+    }
+
     private static PlayerItemQueryResult Page(long query, string entryId) => new()
     {
         ConnectionGeneration = 1,

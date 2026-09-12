@@ -13,7 +13,7 @@ using Vintagestory.API.Server;
 namespace VRPG.Inventory.Networking;
 
 /// <summary>Connection authority and bounded request lifetime. Call only on the server game thread.</summary>
-public sealed class PlayerItemNetworkService
+public sealed class PlayerItemNetworkService : IDisposable
 {
     public const int RequestsPerSecond = 20;
     public const int ReplayCapacity = 128;
@@ -25,6 +25,8 @@ public sealed class PlayerItemNetworkService
     private readonly Func<double> seconds;
     private readonly Dictionary<string, Session> sessions = new(StringComparer.OrdinalIgnoreCase);
     private long generation;
+    private IServerNetworkChannel? channel;
+    private bool disposed;
 
     public PlayerItemNetworkService(PlayerItemStoreDirectory items, RpgPlayerStore players,
         PlayerItemQueryService queries, PlayerItemDetailService details, GearEquipmentService equipment,
@@ -57,6 +59,9 @@ public sealed class PlayerItemNetworkService
     /// <summary>Registers handlers only; caller owns capability gating and connect/disconnect event attachment.</summary>
     public void Attach(IServerNetworkChannel channel)
     {
+        if (disposed) throw new ObjectDisposedException(nameof(PlayerItemNetworkService));
+        if (this.channel != null) throw new InvalidOperationException("Transport already attached.");
+        this.channel = channel;
         channel.SetMessageHandler<PlayerItemQueryRequest>((p, r) => channel.SendPacket(Query(p, r), p));
         channel.SetMessageHandler<PlayerItemDetailRequest>((p, r) => channel.SendPacket(Detail(p, r), p));
         channel.SetMessageHandler<PlayerItemActionRequest>((p, r) => channel.SendPacket(Action(p, r), p));
@@ -64,6 +69,7 @@ public sealed class PlayerItemNetworkService
 
     public PlayerItemQueryResult Query(IServerPlayer player, PlayerItemQueryRequest request)
     {
+        if (disposed) return new() { ConnectionGeneration = request.ConnectionGeneration, QueryId = request.QueryId, RejectionCode = "unavailable" };
         string error = PlayerItemQueryService.Validate(request);
         Session? session = null;
         if (error.Length == 0) error = Authorize(player, request.ConnectionGeneration, out session);
@@ -78,6 +84,7 @@ public sealed class PlayerItemNetworkService
 
     public PlayerItemDetailResult Detail(IServerPlayer player, PlayerItemDetailRequest request)
     {
+        if (disposed) return new() { ConnectionGeneration = request.ConnectionGeneration, QueryId = request.QueryId, RejectionCode = "unavailable" };
         string error = PlayerItemDetailService.Validate(request);
         if (error.Length == 0) error = Authorize(player, request.ConnectionGeneration, out _);
         if (error.Length > 0) return new() { ConnectionGeneration = request.ConnectionGeneration,
@@ -97,6 +104,7 @@ public sealed class PlayerItemNetworkService
 
     public PlayerItemActionResult Action(IServerPlayer player, PlayerItemActionRequest request)
     {
+        if (disposed) return new() { ConnectionGeneration = request.ConnectionGeneration, RequestId = request.RequestId, RejectionCode = "unavailable" };
         string error = ValidateAction(request);
         Session? session = null;
         if (error.Length == 0) error = Authorize(player, request.ConnectionGeneration, out session);
@@ -211,6 +219,17 @@ public sealed class PlayerItemNetworkService
         session.Refreshed = false;
         return new() { ConnectionGeneration = session.Generation, StoreRevision = store.Revision,
             BuildRevision = players.GetBuildRevision(player.PlayerUID, store.Equipment()), Scopes = (string[])scopes.Clone() };
+    }
+
+    public void Dispose()
+    {
+        if (disposed) return;
+        disposed = true;
+        channel?.SetMessageHandler<PlayerItemQueryRequest>((_, _) => { });
+        channel?.SetMessageHandler<PlayerItemDetailRequest>((_, _) => { });
+        channel?.SetMessageHandler<PlayerItemActionRequest>((_, _) => { });
+        channel = null;
+        sessions.Clear();
     }
 
     public static string ValidateAction(PlayerItemActionRequest request)

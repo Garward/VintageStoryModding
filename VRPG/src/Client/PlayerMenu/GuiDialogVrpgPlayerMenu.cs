@@ -37,7 +37,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     public override void OnGuiOpened()
     {
         if (!controller.Session.IsOpen) controller.Enter(PlayerMenuEntryPoint.InventoryMenu);
-        Inventory?.Open(Environment.TickCount64); Compose(); base.OnGuiOpened();
+        Inventory?.Open(capi.World.ElapsedMilliseconds); Compose(); base.OnGuiOpened();
     }
     public override void OnGuiClosed() { Inventory?.Close(); controller.Close(); base.OnGuiClosed(); }
     private void Compose()
@@ -65,7 +65,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
                 var input = new SearchField(); input.SetText(value ?? "");
                 if (input.Text != value) SingleComposer?.GetTextInput("search")?.SetValue(input.Text, false);
                 controller.Session.Update(controller.Session.Current with { Search = input.Text, ScrollAnchor = 0, Focus = "search" });
-                Inventory?.ChangeQuery(Inventory.Query with { Search = input.Text, Offset = 0 }, Environment.TickCount64);
+                Inventory?.ChangeQuery(Inventory.Query with { Search = input.Text, Offset = 0 }, capi.World.ElapsedMilliseconds);
                 shell?.Refresh();
             }, CairoFont.WhiteSmallishText(), "search");
         }
@@ -138,7 +138,7 @@ public sealed class GuiDialogVrpgPlayerMenu : GuiDialog
     }
     private bool HandleInventoryIntent(string intent)
     {
-        var page = Inventory!; var session = controller.Session; double now = Environment.TickCount64;
+        var page = Inventory!; var session = controller.Session; double now = capi.World.ElapsedMilliseconds;
         var query = page.Query;
         if (intent.StartsWith("entry:", StringComparison.Ordinal))
         {

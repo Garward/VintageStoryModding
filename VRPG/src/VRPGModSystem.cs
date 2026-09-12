@@ -204,7 +204,7 @@ public sealed class VRPGModSystem : ModSystem
 
         clientChannel = VRPGNetwork.RegisterClient(api);
         clientPlayerItems = new PlayerItemClientService();
-        clientPlayerItems.Attach(clientChannel);
+        clientPlayerItems.Attach(clientChannel, api.Event);
         clientInventoryPage = new InventoryPage(clientPlayerItems);
         clientPlayerMenuController = new PlayerMenuController(clientInventoryPage);
         playerItemTickListenerId = api.Event.RegisterGameTickListener(_ =>
@@ -404,7 +404,7 @@ public sealed class VRPGModSystem : ModSystem
         clientPlayerMenu = null;
         clientInventoryPage?.Dispose();
         clientInventoryPage = null;
-        clientPlayerItems?.ResetConnection();
+        clientPlayerItems?.Dispose();
         clientPlayerItems = null;
         clientPlayerMenuController = null;
         PartyClient?.Dispose();

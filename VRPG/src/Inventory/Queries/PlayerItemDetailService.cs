@@ -30,17 +30,19 @@ public sealed class PlayerItemDetailService
             result.Comparison = Array.Empty<PlayerItemComparisonPacket>();
             result.RejectionCode = "stale-store";
         }
-        result.Actions = EquipmentActions(detail, result);
+        result.Actions = EquipmentActions(store, detail, result);
         return result;
     }
 
-    private static PlayerItemActionAvailability[] EquipmentActions(PlayerItemDetail detail, PlayerItemDetailResult result)
+    private static PlayerItemActionAvailability[] EquipmentActions(IPlayerItemStore store, PlayerItemDetail detail, PlayerItemDetailResult result)
     {
         if (detail.Prototype.Category != PlayerItemCategories.Gear || result.RoleCode.Length == 0)
             return Array.Empty<PlayerItemActionAvailability>();
         PlayerItemAction action = detail.Location == PlayerItemLocation.Equipped
             ? PlayerItemAction.Unequip : PlayerItemAction.Equip;
         string reason = result.RejectionCode;
+        if (reason.Length == 0 && action == PlayerItemAction.Equip && store.TryGetSummary(detail.EntryId, out var summary)
+            && summary != null && summary.ReservedQuantity > 0) reason = "entry-reserved";
         return new[] { new PlayerItemActionAvailability { Action = action, Enabled = reason.Length == 0, ReasonCode = reason } };
     }
 

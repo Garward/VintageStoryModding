@@ -1033,6 +1033,7 @@ public sealed partial class RpgModule : IVrpgModule
 
     public void Dispose()
     {
+        playerItems?.Dispose();
         gearRuntime.Dispose();
         if (serverApi != null)
         {
