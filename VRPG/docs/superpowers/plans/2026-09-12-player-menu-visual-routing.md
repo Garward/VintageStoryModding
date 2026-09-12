@@ -41,7 +41,7 @@
 - Produces: shared `DrawChassis`, `DrawPlate`, `DrawWell`, `DrawButton`, `DrawSectionHeading`, and `DrawBodyText` methods used by every later page partial.
 - Consumes: existing `MenuRect`, `MenuControlState`, `FittedButton`, `PlayerMenuTheme`, and Cairo `Context`.
 
-- [ ] **Step 1: Write failing geometry and composition tests**
+- [x] **Step 1: Write failing geometry and composition tests**
 
 Add a pure text-metrics record and assertions that account for Cairo bearings rather than assuming the baseline is the font size:
 
@@ -63,7 +63,7 @@ public void CenteredOriginUsesMeasuredInkBounds(
 
 Extend layout tests to assert a dedicated header/title/navigation/body/footer rhythm at 1120×680, 800×520, 620×520, and 400×350. Extend composition capture assertions so all six page controls exist in production Inventory mode and their label origins fall inside their hit regions.
 
-- [ ] **Step 2: Run focused tests and verify the new expectations fail**
+- [x] **Step 2: Run focused tests and verify the new expectations fail**
 
 Run:
 
@@ -73,7 +73,7 @@ dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName
 
 Expected: failure because `PlayerMenuDrawing`, `MenuTextMetrics`, and the six production navigation controls do not exist.
 
-- [ ] **Step 3: Implement shared measured drawing primitives**
+- [x] **Step 3: Implement shared measured drawing primitives**
 
 Create the pure geometry API and keep the Cairo adapter small:
 
@@ -95,11 +95,11 @@ public static class PlayerMenuDrawing
 
 Move the shell's generic fill, stroke, text, and button drawing behind shared methods. Use `Context.TextExtents` for every single-line button label, add layered outer chassis/plate/well rendering, selected attached-tab treatment, focus inset, and restrained fastener/notch details. Keep multiline body text left-aligned. Update theme tokens for scrim, chassis layers, inset shadows, amber edge strengths, and semantic states. Adjust layout so title and navigation no longer collide and all six tabs remain reachable at supported sizes.
 
-- [ ] **Step 4: Render the production capture matrix and visually inspect it**
+- [x] **Step 4: Render the production capture matrix and visually inspect it**
 
 Run the focused tests, then capture at minimum `normal`, `long-name`, `equipment`, `loading`, and `rejected` for 1120×680, 800×520, 620×520, and 400×350 using the existing `VRPG_MENU_CAPTURE_*` harness. Inspect generated PNGs for centered labels, clipping, contrast, selected-tab attachment, and non-terminal panel hierarchy.
 
-- [ ] **Step 5: Commit the visual foundation**
+- [x] **Step 5: Commit the visual foundation**
 
 ```bash
 git add VRPG/src/Client/PlayerMenu/Shell VRPG/tests/VRPG.Tests/PlayerMenuDrawingTests.cs VRPG/tests/VRPG.Tests/PlayerMenuLayoutTests.cs VRPG/tests/VRPG.Tests/InventoryCompositionCaptureTests.cs
