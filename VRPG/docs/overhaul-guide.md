@@ -4,7 +4,15 @@ Choose a goal, put your build to work, and venture somewhere dangerous. Drop an 
 
 VRPG is becoming a **total overhaul of Vintage Story built around combat**, with a persistent world, flexible character builds, and expeditions shaped by your decisions.
 
-**Development snapshot: 9 September 2026.** The combat foundations already exist. The wider overhaul is still taking shape. The current milestone is a repeatable live test loop followed by a ten-minute combat sandbox with one arena and three readable enemy roles. The server-backed inventory can remain available through the Hub or a command; replacing the Vanilla Inventory and Character actions is deferred. This guide follows the current development files and recorded checks. Installed and published builds may differ.
+**Development snapshot: 12 September 2026.** The combat foundations already exist.
+The wider overhaul is still taking shape. The immediate prerequisite for the first
+usable Adventure profile is the implemented paired handoff from the ordinary
+Inventory and Character actions to server-backed Inventory/Equipment. Its
+joined-client and player acceptance checks remain open. After that live check, the
+current milestone is a ten-minute combat sandbox with one arena and three readable
+enemy roles. The complete six-page menu remains later work. This guide follows the
+current development files and recorded checks. Installed and published builds may
+differ.
 
 ## The adventure taking shape
 
@@ -27,7 +35,7 @@ These are the overhaul's intended features. The status guide below separates exi
 - **Prototype:** an early version exists to try out the idea.
 - **Planned:** described in the design; no complete implementation was identified in this review.
 
-Each entry describes the intended player experience, then names **Built so far** and **Still to come**. A system can have working pieces while its full adventure is still unfinished. Automated checks and menu previews help, but playing through the feature is a separate check. The [playable vertical-slice checklist](design/testable-version-todo.md) sets implementation order; the [player-menu checklist](design/usable-player-menu-checklist.md) is deferred acceptance guidance.
+Each entry describes the intended player experience, then names **Built so far** and **Still to come**. A system can have working pieces while its full adventure is still unfinished. Automated checks and menu previews help, but playing through the feature is a separate check. The [playable vertical-slice checklist](design/testable-version-todo.md) sets implementation order; the [player-menu checklist](design/usable-player-menu-checklist.md) defines the current first-pass Inventory/Equipment acceptance boundary.
 
 ## Fighting and building your character
 
@@ -119,7 +127,11 @@ Each entry describes the intended player experience, then names **Built so far**
 
 **Built so far:** The server can track items, large material quantities, and unique equipment, save them, move older items into the new storage, and handle recovery. Inventory, Recovery, and Equipment previews can display real stored items in a separate test setup.
 
-**Still to come:** Reliable pickup, use, stack splitting, dropping, and death handling; visible held equipment; and checks that everything survives reconnects and restarts. These must work before the new inventory takes over.
+**Still to come:** Reliable pickup, use, stack splitting, dropping, death handling,
+visible held equipment, and broader reconnect/restart journeys. These are later
+item-flow breadth, not prerequisites for the narrow Inventory/Equipment semantic
+handoff. That first pass is limited to browsing, inspecting, Equip, and Unequip;
+its joined-client and player acceptance checks are still open.
 
 [Inventory design](design/inventory-loot-and-storage.md) · [Current acceptance checklist](design/usable-player-menu-checklist.md) · [Store code](../src/Inventory/InMemoryPlayerItemStore.cs) · [Persistence code](../src/Inventory/Persistence)
 
@@ -137,9 +149,16 @@ Each entry describes the intended player experience, then names **Built so far**
 
 **For players:** Manage Inventory, Stats, Skills, Talents, Library, and Options in one consistent place.
 
-**Built so far:** The existing Hub and a separate test version of the new menu, with item browsing, Recovery, comparisons, and expandable Equipment details. Rendered menu previews have been inspected.
+**Built so far:** The existing Hub and a production Inventory/Equipment menu route,
+with item browsing, Recovery, comparisons, and expandable Equipment details. The
+ordinary Inventory and Character semantic owners now hand off together to that
+route in Adventure; source/test, Release-build, deployment, and isolated-server
+startup evidence exist, while live client acceptance remains open.
 
-**Still to come:** Live item actions, all six pages together, checks at different menu sizes and controls, and replacement of both Vanilla menus while playing on a server.
+**Still to come:** Live joined-client acceptance of the implemented first pass,
+all six pages together, and checks at different menu sizes and controls. Stats,
+Skills, Talents, Library, Options, appearance, and other player-page integration
+are later work; they do not block the first Inventory/Equipment handoff.
 
 [Unified-menu design](superpowers/specs/2026-09-06-unified-player-menu-design.md) · [Acceptance checklist](design/usable-player-menu-checklist.md) · [Menu implementation](../src/Client/PlayerMenu)
 
@@ -342,15 +361,18 @@ Each entry describes the intended player experience, then names **Built so far**
 ## What comes next
 
 First, establish a repeatable login-capable client and dedicated-server smoke loop.
-Then build a deterministic arena with three simple enemy roles and connect the
-existing skills, starter gear, XP, death, respawn, HUD feedback, and server-backed
-inventory into ten useful minutes of play.
+Use it to verify the completed paired Inventory/Character semantic-owner handoff
+to Inventory/Equipment and obtain player confirmation that neither route opens the
+Vanilla UI. Then build a deterministic arena with three simple enemy roles and
+connect the existing skills, starter gear, XP, death, respawn, HUD feedback, and
+server-backed inventory into ten useful minutes of play.
 
 The canonical item store remains. Unwanted Vanilla item producers should be
 disabled at their owning systems, while real VRPG rewards and retained transfers
-keep explicit authoritative transactions. Full dialog takeover, loot piles, party
-breadth, owned realms, custom world generation, housing, and Rebirth wait until a
-playable gate demonstrates their need.
+keep explicit authoritative transactions. The narrow dialog handoff is complete in
+source but awaits live acceptance; the full six-page integration, loot piles,
+party breadth, owned realms, custom world generation, housing, and Rebirth wait
+until a playable gate demonstrates their need.
 
 For the only current execution sequence, use the [playable vertical-slice checklist](design/testable-version-todo.md). For the complete destination, use the [master design](design/complete-game-design.md). For individual technical contracts, use the [design index](design/README.md).
 

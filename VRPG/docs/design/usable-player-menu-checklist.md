@@ -51,16 +51,17 @@ commit hashes stay in git rather than in this checklist.
 - [ ] Close, Back, death, disconnect, reconnect, and server restart cannot duplicate
   or lose an item.
 
-## Character-page acceptance
+## Character action in the first pass
 
-- [ ] The replacement presents every retained player fact previously requiring the
-  Vanilla Character dialog, including appearance access and relevant stats.
-- [ ] Removed Survival attributes are absent rather than displayed as stale or
-  misleading values.
-- [ ] Stats, skills, talents, and progression shown here come from server-owned
-  state and update after authoritative changes.
-- [ ] Appearance, starter selection, Welcome flow, and normal play do not reopen an
-  obsolete Vanilla class or trait choice.
+- [ ] The Character semantic action opens the same server-backed Inventory page
+  with Equipment expanded, without a separate Character page.
+- [ ] The Equipment disclosure shows the selected item, equipped state,
+  requirements, mechanical effects, comparison, and Equip/Unequip result needed
+  for this first pass.
+
+Appearance, retained Character facts, Stats, Skills, Talents, Library, Options,
+progression, starter selection, and Welcome integration are later player-page
+work. They do not gate this Inventory/Equipment handoff.
 
 ## Semantic-dialog ownership transaction
 
@@ -83,7 +84,7 @@ commit hashes stay in git rather than in this checklist.
 - [ ] Join a dedicated VRPG server with the supported client build.
 - [ ] Open both semantic actions through default and remapped bindings.
 - [ ] Confirm neither ordinary route opens the Vanilla Inventory or Character UI.
-- [ ] Exercise inventory browsing, equipment changes, character information,
+- [ ] Exercise inventory browsing, equipment changes, the Equipment disclosure,
   recovery, resize, death, reconnect, save, and server restart.
 - [ ] Confirm any startup or runtime failure follows the declared fallback policy
   and leaves items recoverable.

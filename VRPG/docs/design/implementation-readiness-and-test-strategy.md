@@ -250,7 +250,9 @@ Automated validity does not prove agency or feel. Instrument and observe:
 - Existing skills and starter gear connected to a repeatable combat loadout.
 - Three representative enemies: advance, range, and one pressure behavior.
 - XP, death, respawn/reset, and enough feedback to diagnose combat.
-- Explicit Hub or command route to the server-backed inventory; no Vanilla-dialog takeover.
+- Required first usable Adventure handoff: Inventory and Character semantic owners
+  route together to server-backed Inventory/Equipment. This is a narrow paired
+  swap, not completion of the six-page menu or proof of every possible producer.
 - One-page TTK, incoming-damage, and effective-health budget.
 - Ten-minute joined-client playtest plus focused performance/debug evidence.
 
@@ -269,8 +271,8 @@ Automated validity does not prove agency or feel. Instrument and observe:
 - One material transformation with useful/craft/sell alternatives.
 - One NPC buyer and one non-expiring targeted request.
 - Complete crash, migration, overflow and concurrent transaction tests.
-- Inventory UI promotion based on observed use; semantic-dialog takeover remains
-  optional until it solves a demonstrated problem.
+- Expand beyond the completed first Inventory/Equipment handoff only when observed
+  play identifies the next necessary page or action.
 
 ### Gate 4: Persistent nonlinear progression
 
