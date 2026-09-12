@@ -9,7 +9,7 @@ using System.Text;
 
 namespace VRPG.Inventory.Bridges;
 
-/// <summary>Activation must name every exposed producer; an installed manager prefix is not coverage.</summary>
+/// <summary>Legacy producer diagnostics. Adventure admission uses its central refusal guards instead.</summary>
 public sealed class PlayerItemBridgeCoverage
 {
     private readonly Dictionary<string, System.Func<bool>> guards = new(StringComparer.Ordinal);

@@ -35,6 +35,7 @@ public sealed partial class RpgModule : IVrpgModule
     private readonly VRPGDataRegistry data;
     private readonly IServerNetworkChannel channel;
     private readonly Func<PlayerItemArchiveService?> itemArchive;
+    private readonly Func<AdventureProfile?> adventureProfile;
     private readonly RpgGearRuntime gearRuntime;
     private readonly RpgPlayerStore playerStore = new RpgPlayerStore();
     private readonly TalentTreeCatalog talentTree = new TalentTreeCatalog();
@@ -59,7 +60,6 @@ public sealed partial class RpgModule : IVrpgModule
     private long skillTickListenerId;
     private long movementTickListenerId;
     private long onboardingTickListenerId;
-    private Vintagestory.API.Common.PlayerDelegate? groundAreaSnapshotHandler;
     private ICoreServerAPI? serverApi;
     private string savedTalentTreeHash = "";
     private Dictionary<string, int> savedTalentCosts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -71,12 +71,14 @@ public sealed partial class RpgModule : IVrpgModule
         RpgModuleConfig config,
         VRPGDataRegistry data,
         IServerNetworkChannel channel,
-        Func<PlayerItemArchiveService?>? itemArchive = null)
+        Func<PlayerItemArchiveService?>? itemArchive = null,
+        Func<AdventureProfile?>? adventureProfile = null)
     {
         this.config = config;
         this.data = data;
         this.channel = channel;
         this.itemArchive = itemArchive ?? (() => null);
+        this.adventureProfile = adventureProfile ?? (() => null);
         gearRuntime = new RpgGearRuntime(config, data, this.itemArchive);
         statusEffects = new StatusEffectTracker(data);
     }
@@ -148,15 +150,7 @@ public sealed partial class RpgModule : IVrpgModule
         var scaling = new RpgScalingService(api, data, playerStore);
         creatures = new CreatureProgressionService(api, scaling, resources);
         new RpgCommandSystem(api, config, data, playerStore, statusEffects, resources, skills, talentAllocation).Register();
-        api.Event.PlayerNowPlaying += resources.OnPlayerNowPlaying;
-        api.Event.PlayerNowPlaying += AdvanceOnboardingAfterAppearance;
-        api.Event.PlayerNowPlaying += SendOnboardingState;
-        api.Event.PlayerNowPlaying += NormalizeCharacterRuntime;
-        api.Event.PlayerNowPlaying += SendLoadout;
-        api.Event.PlayerNowPlaying += BeginPlayerItemSession;
-        api.Event.PlayerNowPlaying += SendPlayerMenuCapabilities;
-        groundAreaSnapshotHandler = player => groundAreas?.SendSnapshot(player);
-        api.Event.PlayerNowPlaying += groundAreaSnapshotHandler;
+        api.Event.PlayerNowPlaying += OnPlayerNowPlaying;
         creatures.Start();
         statusTickListenerId = api.Event.RegisterGameTickListener(dt => statusEffects.Tick(dt), 1000);
         resourceTickListenerId = api.Event.RegisterGameTickListener(resources.Tick, 1000);
@@ -182,25 +176,6 @@ public sealed partial class RpgModule : IVrpgModule
     public void HandleInteraction(IServerPlayer player, CombatInteractionRequestPacket packet)
     {
         interactions?.Handle(player, packet);
-    }
-
-    private void SendPlayerMenuCapabilities(IServerPlayer player)
-    {
-        bool replacementEnabled = config.InventoryReplacement.Enabled;
-        bool itemServiceReady = replacementEnabled && gearRuntime.IsReady && playerItems != null;
-        channel.SendPacket(new PlayerMenuCapabilityPacket
-        {
-            ProtocolVersion = PlayerMenuCapabilityProtocol.CurrentVersion,
-            InventoryReplacementEnabled = replacementEnabled,
-            ItemStoreReady = itemServiceReady,
-            DialogReplacementReady = itemServiceReady
-        }, player);
-    }
-
-    private void BeginPlayerItemSession(IServerPlayer player)
-    {
-        if (playerItems == null) return;
-        channel.SendPacket(playerItems.Connect(player), player);
     }
 
     private static void NormalizeCharacterRuntime(IServerPlayer player)
@@ -1038,24 +1013,10 @@ public sealed partial class RpgModule : IVrpgModule
         gearRuntime.Dispose();
         if (serverApi != null)
         {
-            if (resources != null)
-            {
-                serverApi.Event.PlayerNowPlaying -= resources.OnPlayerNowPlaying;
-            }
-            serverApi.Event.PlayerNowPlaying -= SendLoadout;
-            serverApi.Event.PlayerNowPlaying -= AdvanceOnboardingAfterAppearance;
-            serverApi.Event.PlayerNowPlaying -= SendOnboardingState;
-            serverApi.Event.PlayerNowPlaying -= NormalizeCharacterRuntime;
-            serverApi.Event.PlayerNowPlaying -= SendPlayerMenuCapabilities;
-            serverApi.Event.PlayerNowPlaying -= BeginPlayerItemSession;
+            serverApi.Event.PlayerNowPlaying -= OnPlayerNowPlaying;
             serverApi.Event.SaveGameLoaded -= ValidateGearReadiness;
             serverApi.Event.PlayerLeave -= OnPlayerLeave;
             serverApi.Event.PlayerDisconnect -= OnPlayerLeave;
-            if (groundAreaSnapshotHandler != null)
-            {
-                serverApi.Event.PlayerNowPlaying -= groundAreaSnapshotHandler;
-                groundAreaSnapshotHandler = null;
-            }
             if (statusTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(statusTickListenerId);
             if (resourceTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(resourceTickListenerId);
             if (loadoutTickListenerId != 0) serverApi.Event.UnregisterGameTickListener(loadoutTickListenerId);

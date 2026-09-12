@@ -159,7 +159,8 @@ public sealed class VRPGModSystem : ModSystem
         partyModule = new PartyModule(serverChannel);
         AddAndStart(api, partyModule);
 
-        playerItemPersistence = PlayerItemCustodyBootstrap.CreateModule(api, config.Modules.Rpg.InventoryReplacement.Enabled);
+        playerItemPersistence = PlayerItemCustodyBootstrap.CreateModule(api,
+            AdventureProfile.IsEnabled(config.Modules.Rpg.Enabled, config.Modules.Rpg.InventoryReplacement.Enabled));
         if (playerItemPersistence != null)
         {
             AddAndStart(api, playerItemPersistence);
@@ -181,7 +182,8 @@ public sealed class VRPGModSystem : ModSystem
                 config.Modules.Rpg,
                 DataRegistry,
                 serverChannel!,
-                () => playerItemPersistence?.Service);
+                () => playerItemPersistence?.Service,
+                () => playerItemPersistence?.Adventure);
             AddAndStart(api, rpgModule);
         }
 

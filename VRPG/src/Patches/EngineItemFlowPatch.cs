@@ -11,6 +11,7 @@ namespace VRPG.Patches;
 /// <summary>Intercepts identifiable pickup before Vanilla selects any player slot.</summary>
 public static partial class EngineItemFlowPatch
 {
+    public static AdventureItemSuppression? AdventureSuppression { get; set; }
     public static System.Func<string, PlayerItemCustodySnapshot>? CustodyResolver { get; set; }
     public static System.Func<PlayerItemBridgeCoordinator?>? CoordinatorResolver { get; set; }
     private static Harmony? pickupHarmony;
@@ -45,6 +46,11 @@ public static partial class EngineItemFlowPatch
 
     public static bool OnFoundCollectiblePrefix(EntityBehavior __instance, Entity foundEntity, ref bool __result)
     {
+        if (foundEntity is EntityItem && AdventureSuppression?.Enabled == true)
+        {
+            __result = false;
+            return false;
+        }
         var coordinator = CoordinatorResolver?.Invoke();
         var source = foundEntity.GetType() == typeof(EntityItem) ? new EngineItemPickupSource((EntityItem)foundEntity) : null;
         if (source != null && coordinator?.HasPickupClaim(source.Token) == true)
@@ -73,6 +79,7 @@ public static partial class EngineItemFlowPatch
 
     public static void Reset()
     {
+        AdventureSuppression = null;
         ResetBirth();
         CustodyResolver = null;
         CoordinatorResolver = null;

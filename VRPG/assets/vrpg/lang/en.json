@@ -1,4 +1,5 @@
 {
+  "adventure-unavailable": "Your inventory could not be opened. Reconnect to try again. If this continues, ask a server admin for help.",
   "menu-party": "Party",
   "menu-party-command": "Open party management in the player menu.",
   "menu-party-members": "Members",

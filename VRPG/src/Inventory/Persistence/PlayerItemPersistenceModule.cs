@@ -29,11 +29,18 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     public bool IsReady => !bootRefused && Service?.IsLoaded == true && checkpointHealthy;
     public PlayerItemBridgeCoordinator? Bridges { get; private set; }
     public bool OperationsRequested { get; }
+    public AdventureProfile Adventure { get; }
     public PlayerItemBridgeCoverage Coverage { get; } = new();
     public PlayerItemPersistenceModule(bool operationsRequested = true, WorldScopedPlayerItemArchiveStorage? storage = null)
     {
         OperationsRequested = operationsRequested;
         this.storage = storage;
+        Adventure = new(operationsRequested, () => Service,
+            () => IsReady && NativeInventoryPacketGuardPatch.IsReady && NativeInventoryTickGuardPatch.IsReady
+                && NativeInventoryMutationGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled
+                && EngineItemFlowPatch.IsFreshIdentityInstalled && EngineItemFlowPatch.AdventureSuppression?.Enabled == true
+                && unresolvedCursors.Count == 0,
+            Custody);
         Coverage.Register("pickup:persisted", () => IsReady && EngineItemFlowPatch.IsInstalled);
         Coverage.Register("pickup:fresh", () => IsReady && EngineItemFlowPatch.IsFreshIdentityInstalled);
         Coverage.Register("native:packets", () => IsReady && NativeInventoryPacketGuardPatch.IsReady);
@@ -52,15 +59,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
     {
         this.bootstrapError = bootstrapError;
     }
-    public bool CanActivateNativeProfile => OperationsRequested && IsReady && NativeInventoryPacketGuardPatch.IsReady
-        && NativeInventoryTickGuardPatch.IsReady
-        && NativeInventoryMutationGuardPatch.IsReady
-        && unresolvedCursors.Count == 0 && EngineItemFlowPatch.IsInstalled && Coverage.CanActivate(new[]
-    {
-        "pickup:persisted", "pickup:fresh", "grant:rewards", "grant:admin", "slots:hotbar", "slots:offhand",
-        "slots:cursor", "slots:crafting", "slots:equipment", "slots:backpack", "trade", "containers",
-        "producer:sign", "producer:labeled-chest", "producer:ground-storage", "death", "held", "use", "drop", "home-placement"
-    });
+    public bool CanActivateNativeProfile => Adventure.IsReady;
 
     public void StartServerSide(ICoreServerAPI api)
     {
@@ -72,7 +71,6 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         this.api = api;
         api.Event.SaveGameLoaded += OnSaveGameLoaded;
         if (bootstrapError != null) return;
-        EngineItemFlowPatch.BeforePublicationObserver = EngineItemPickupSource.EstablishBeforePublication;
         storage ??= new WorldScopedPlayerItemArchiveStorage(api.GetOrCreateDataPath("VRPG/player-items"),
             api.WorldManager.SaveGame.SavegameIdentifier, new VintageStoryPlayerItemArchiveStorage(api.WorldManager.SaveGame));
         Service = new PlayerItemArchiveService(new PlayerItemArchiveRepository(storage));
@@ -91,6 +89,9 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         if (bootstrapError != null) return;
         try
         {
+            EngineItemFlowPatch.BeforePublicationObserver = EngineItemPickupSource.EstablishBeforePublication;
+            EngineItemFlowPatch.AdventureSuppression = new(Adventure.Enabled,
+                message => api.Logger.Warning("[VRPG/Adventure] {0}", message));
             NativeInventoryPacketGuardPatch.CustodyResolver = Custody;
             NativeInventoryPacketGuardPatch.CursorRecoveryObserver = RequireCursorRecovery;
             NativeInventoryPacketGuardPatch.Patch(harmony, api.Logger);
@@ -117,6 +118,7 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         NativeInventoryTickGuardPatch.Reset();
         NativeInventoryMutationGuardPatch.Reset();
         EngineItemFlowPatch.BeforePublicationObserver = null;
+        EngineItemFlowPatch.AdventureSuppression = null;
         if (api != null)
         {
             api.Event.SaveGameLoaded -= OnSaveGameLoaded;
@@ -165,7 +167,8 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
         }
         return custody.Observe(playerUid, loaded && confirmation?.IsConfirmed == true, phase, IsReady,
             OperationsRequested && reconciled && NativeInventoryPacketGuardPatch.IsReady
-                && NativeInventoryTickGuardPatch.IsReady && NativeInventoryMutationGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled);
+                && NativeInventoryTickGuardPatch.IsReady && NativeInventoryMutationGuardPatch.IsReady && EngineItemFlowPatch.IsInstalled
+                && Adventure.IsReady);
     }
 
     public void RequireCursorRecovery(string playerUid)
@@ -188,7 +191,9 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
             return;
         }
         if (protectionInstallFailed || !NativeInventoryPacketGuardPatch.IsReady || !NativeInventoryTickGuardPatch.IsReady
-            || !NativeInventoryMutationGuardPatch.IsReady || !EngineItemFlowPatch.IsInstalled)
+            || !NativeInventoryMutationGuardPatch.IsReady || !EngineItemFlowPatch.IsInstalled
+            || (Adventure.Enabled && (!EngineItemFlowPatch.IsFreshIdentityInstalled
+                || EngineItemFlowPatch.AdventureSuppression?.Enabled != true)))
         {
             RefuseBoot("Required native item protection is unavailable.");
             return;
@@ -255,6 +260,9 @@ public sealed class PlayerItemPersistenceModule : IVrpgModule
 
     private void OnEntityLoaded(Entity entity)
     {
+        // Preserve legacy payloads. The Adventure pickup guard leaves these entities inert
+        // to collection, without issuing delivery receipts or deleting world items.
+        if (Adventure.Enabled && entity is EntityItem) return;
         if (entity.GetType() != typeof(EntityItem)) return;
         var item = (EntityItem)entity;
         EngineItemPickupSource.Observe(item, loaded: true);

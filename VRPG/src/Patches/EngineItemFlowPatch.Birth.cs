@@ -76,12 +76,13 @@ public static partial class EngineItemFlowPatch
         }
     }
 
-    public static void BeforeSpawnPrefix(Entity entity)
+    public static bool BeforeSpawnPrefix(Entity entity)
     {
+        if (entity is EntityItem && AdventureSuppression?.RefusePublication() == true) return false;
         var installation = birthInstallation;
         var observer = BeforePublicationObserver;
         long lifetime = observerLifetime;
-        if (entity.GetType() != typeof(EntityItem) || installation?.IsReady() != true || observer == null) return;
+        if (entity.GetType() != typeof(EntityItem) || installation?.IsReady() != true || observer == null) return true;
         // The evidence carries this installation's lease. Reset, unpatch, or a conflicting patch
         // cannot leave an old in-memory source eligible under a new hook installation.
         try
@@ -94,6 +95,7 @@ public static partial class EngineItemFlowPatch
             installation.Failed = true;
             installation.Logger.Error("[VRPG/Inventory] Fresh source identity observer failed; fresh pickup is unavailable: {0}", error.Message);
         }
+        return true;
     }
 
     private static void ResetBirth()

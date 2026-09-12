@@ -17,6 +17,7 @@ internal sealed class NativeLegacyInventoryFixture
     public readonly Dictionary<string, LegacyInventory> Inventories;
     public readonly Vintagestory.API.Datastructures.OrderedDictionary<string, InventoryBase> Registered = new();
     public readonly VintageStoryLegacyInventorySource Source;
+    public readonly AdmissionPlayer Player;
     public readonly List<string> Diagnostics = new();
 
     public NativeLegacyInventoryFixture()
@@ -34,7 +35,7 @@ internal sealed class NativeLegacyInventoryFixture
         { "get_World" => world, "get_Side" => EnumAppSide.Server, "get_Logger" => logger, _ => null });
         Inventories = new[] { "hotbar", "backpack", "character", "mouse", "craftinggrid" }
             .ToDictionary(name => name, name => new LegacyInventory(name, api));
-        var player = (NativeClearCommandFixture.BroadcastPlayer)RuntimeHelpers.GetUninitializedObject(typeof(NativeClearCommandFixture.BroadcastPlayer));
+        var player = (AdmissionPlayer)RuntimeHelpers.GetUninitializedObject(typeof(AdmissionPlayer));
         var data = ServerWorldPlayerData.CreateNew("player", "player");
         data.EntityPlayer = new EntityPlayer { World = world, Api = api };
         AccessTools.Field(typeof(ServerPlayer), "worlddata").SetValue(player, data);
@@ -43,6 +44,7 @@ internal sealed class NativeLegacyInventoryFixture
         Inventories["hotbar"][0].Itemstack = new ItemStack(item, 7);
         Inventories["mouse"][0].Itemstack = new ItemStack(item, 3);
         Source = new VintageStoryLegacyInventorySource(player);
+        Player = player;
     }
 
     public void MakeUnavailable(string reason)
@@ -74,6 +76,14 @@ internal sealed class NativeLegacyInventoryFixture
     }
 
     public int Quantity => Inventories.Values.Sum(inventory => inventory.Quantity);
+
+    internal sealed class AdmissionPlayer : ServerPlayer
+    {
+        public string? DisconnectReason;
+        public AdmissionPlayer() : base(null!, null!) { }
+        public override void BroadcastPlayerData(bool sendInventory = false) { }
+        public override void Disconnect(string reason) => DisconnectReason = reason;
+    }
 
     internal sealed class LegacyInventory : InventoryBasePlayer
     {

@@ -19,6 +19,56 @@ namespace VRPG.Tests;
 [Collection("EngineItemBirth")]
 public sealed class PlayerItemCustodyBootstrapTests
 {
+    [Fact]
+    public void AdventureUsesInstalledCentralProtectionWithoutTheoreticalProducerCoverage()
+    {
+        using var scope = new LifecycleScope();
+        scope.Start(true);
+        scope.Raise("SaveGameLoaded");
+        Assert.True(scope.Module!.CanActivateNativeProfile);
+        Assert.False(scope.Module.Coverage.CanActivate(new[] { "home-placement", "trade" }));
+        scope.Module.RequireCursorRecovery("player");
+        Assert.False(scope.Module.CanActivateNativeProfile);
+    }
+
+    [Fact]
+    public void AdventureLeavesLoadedNativeItemsUncollectibleWithoutInventingCanonicalDelivery()
+    {
+        using var scope = new LifecycleScope();
+        scope.Start(true);
+        scope.Raise("SaveGameLoaded");
+        var item = new EntityItem { Itemstack = new ItemStack(scope.Item, 3) };
+        scope.Raise("OnEntityLoaded", item);
+        bool collected = true;
+        Assert.False(EngineItemFlowPatch.OnFoundCollectiblePrefix(
+            new Vintagestory.GameContent.EntityBehaviorCollectEntities(new EntityPlayer()), item, ref collected));
+        Assert.False(collected);
+        Assert.Equal(3, item.Itemstack.StackSize);
+        Assert.Empty(scope.Module!.Service!.Directory.ForPlayer("player").Query(new("", "", 0, 100)).Entries);
+    }
+
+    [Fact]
+    public void AdventureAdmissionKeepsNativePacketsRefusedAndWithdrawsReadinessIfSuppressionIsLost()
+    {
+        using var scope = new LifecycleScope();
+        scope.Start(true);
+        scope.Raise("SaveGameLoaded");
+        var legacy = new NativeLegacyInventoryFixture();
+        Assert.True(scope.Module!.Adventure.Prepare(legacy.Source, true).Success);
+        Assert.True(scope.Module.Adventure.CanParticipate("player", true));
+        var nativeType = AccessTools.TypeByName("Vintagestory.Server.ServerSystemInventory");
+        var native = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(nativeType);
+        var fixture = new NativeInventoryGuardFixture(native);
+        AccessTools.Method(nativeType, "HandleMoveItemstack").Invoke(native,
+            new object[] { fixture.Packet("HandleMoveItemstack"), fixture.Client });
+        Assert.Equal(7, fixture.Inventory[0].StackSize);
+        Assert.Null(fixture.Inventory[1].Itemstack);
+        EngineItemFlowPatch.AdventureSuppression = null;
+        Assert.False(scope.Module.CanActivateNativeProfile);
+        Assert.False(scope.Module.Adventure.CanParticipate("player", true));
+        Assert.False(scope.Module.Custody("player").AllowsVanilla);
+    }
+
     [Theory]
     [InlineData(PlayerItemMigrationStatus.Committed, 7)]
     [InlineData(PlayerItemMigrationStatus.Prepared, 7)]
@@ -292,7 +342,9 @@ public sealed class PlayerItemCustodyBootstrapTests
         scope.Start(true);
         scope.Raise("SaveGameLoaded");
         var source = new EntityItem { Code = new("game:item"), Itemstack = new(scope.Item, 3) };
-        EngineItemFlowPatch.BeforeSpawnPrefix(source);
+        // Seed a historical receipt; ordinary Adventure spawns now have no publication authority.
+        using (AdventureItemSuppression.AllowMaterialization())
+            Assert.True(EngineItemFlowPatch.BeforeSpawnPrefix(source));
         byte[] original;
         using (var stream = new MemoryStream())
         {

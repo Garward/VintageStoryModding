@@ -20,6 +20,61 @@ namespace VRPG.Tests;
 [Collection("EngineItemBirth")]
 public sealed class EngineItemBirthTests
 {
+    [Fact]
+    public void AdventureRefusesNativePublicationBeforeInitializationWithoutDeliveryOrLogFlood()
+    {
+        using var scope = new BirthScope();
+        int diagnostics = 0;
+        EngineItemFlowPatch.AdventureSuppression = new(true, _ => diagnostics++);
+        var spawn = AccessTools.Method(typeof(ServerMain), "SpawnEntity_internal");
+        var server = (ServerMain)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(ServerMain));
+        for (int i = 0; i < 100; i++)
+        {
+            var entity = ItemEntity();
+            Assert.Null(Record.Exception(() => spawn.Invoke(server, new object?[] { null, entity })));
+            Assert.Null(entity.Api);
+            Assert.Equal(0, entity.EntityId);
+            Assert.NotNull(entity.Itemstack);
+            Assert.Empty(new EngineItemPickupSource(entity).Token);
+        }
+        Assert.Equal(1, diagnostics);
+        Assert.Equal(0, scope.Total());
+    }
+
+    [Fact]
+    public void ExplicitServerMaterializationScopeAllowsOnlyItsSynchronousSpawn()
+    {
+        using var scope = new BirthScope();
+        EngineItemFlowPatch.AdventureSuppression = new(true, _ => { });
+        Assert.False(EngineItemFlowPatch.BeforeSpawnPrefix(ItemEntity()));
+        using (AdventureItemSuppression.AllowMaterialization())
+        {
+            Assert.True(EngineItemFlowPatch.BeforeSpawnPrefix(ItemEntity()));
+            using (AdventureItemSuppression.AllowMaterialization())
+                Assert.True(EngineItemFlowPatch.BeforeSpawnPrefix(ItemEntity()));
+            Assert.True(EngineItemFlowPatch.BeforeSpawnPrefix(ItemEntity()));
+        }
+        Assert.False(EngineItemFlowPatch.BeforeSpawnPrefix(ItemEntity()));
+        Assert.True(EngineItemFlowPatch.BeforeSpawnPrefix(new EntityPlayer()));
+    }
+
+    [Fact]
+    public void AdventureLoadedItemsRemainUncollectibleWithoutCanonicalCredit()
+    {
+        using var scope = new BirthScope();
+        EngineItemFlowPatch.AdventureSuppression = new(true, _ => { });
+        EngineItemFlowPatch.CoordinatorResolver = () => scope.Bridge;
+        EngineItemFlowPatch.CustodyResolver = _ => new(PlayerItemCustodyOwner.Canonical, true);
+        var entity = ItemEntity();
+        EngineItemPickupSource.Observe(entity, loaded: true);
+        bool collected = true;
+        Assert.False(EngineItemFlowPatch.OnFoundCollectiblePrefix(
+            new Vintagestory.GameContent.EntityBehaviorCollectEntities(new EntityPlayer()), entity, ref collected));
+        Assert.False(collected);
+        Assert.NotNull(entity.Itemstack);
+        Assert.Equal(0, scope.Total());
+    }
+
     [Theory]
     [InlineData(PlayerItemCustodyOwner.Recovery)]
     [InlineData(PlayerItemCustodyOwner.Canonical)]
