@@ -409,7 +409,7 @@ git commit -m "feat: add native Library and Options pages"
 - Produces: one ordinary open path, `OpenPlayerMenu(PlayerMenuEntryPoint entry, PlayerMenuPage? page = null)`.
 - Preserves: the separate privileged `GuiDialogVRPGTalentEditor` path.
 
-- [ ] **Step 1: Write failing route-retirement tests**
+- [x] **Step 1: Write failing route-retirement tests**
 
 Use reflection/proxies to assert:
 
@@ -427,17 +427,17 @@ public void HubAndLibraryPacketsNeverCreateLegacyPlayerDialogs()
 
 Also assert the V hotkey enters Stats, `/vrpg library open` enters Library, E/C close the already-open shell, and the talent editor still opens only for authorized packets.
 
-- [ ] **Step 2: Run route tests and verify failure**
+- [x] **Step 2: Run route tests and verify failure**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~PlayerMenuRouteRetirementTests|FullyQualifiedName~PlayerMenuReplacementCompositionTests|FullyQualifiedName~PlayerMenuReplacementLifecycleTests"
 ```
 
-- [ ] **Step 3: Remove ordinary legacy dialog creation**
+- [x] **Step 3: Remove ordinary legacy dialog creation**
 
 Replace `OpenHubDialog` and `OpenLibraryDialog` with state receive + shell navigation. Remove `clientHubDialog` and `clientLibraryDialog` ownership and their disposal branches. Delete legacy dialog/element files only after `rg` proves no runtime or test references remain; otherwise retain them as non-instantiated compatibility code and record why. Do not touch the talent editor.
 
-- [ ] **Step 4: Run the complete automated suite and production build**
+- [x] **Step 4: Run the complete automated suite and production build**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj
@@ -450,11 +450,11 @@ Expected: all tests pass and the Release build has zero warnings introduced by t
 
 Install the newly built mod using the repository's established deployment command. Join a test world and capture evidence for E, C, V/Stats, Skills, Talents, Library, Options, Party, readable localized item names, centered controls, and at least one real action or honest rejection on each mutable page. Inspect `client-main.log` after each transition for texture-atlas, composition, packet, or input errors. Do not claim player acceptance; leave the client open if the user is actively testing.
 
-- [ ] **Step 6: Update checklists with exact evidence and remaining blockers**
+- [x] **Step 6: Update checklists with exact evidence and remaining blockers**
 
 Mark only automated and directly observed live facts. Keep user-confirmation boxes open until the user joins and confirms no Vanilla Inventory, Character, Stats, or Survival UI appears and the replacement is usable.
 
-- [ ] **Step 7: Commit route retirement and verified evidence**
+- [x] **Step 7: Commit route retirement and verified evidence**
 
 ```bash
 git add VRPG/src/VRPGModSystem.cs VRPG/src/Client VRPG/tests/VRPG.Tests/PlayerMenuRouteRetirementTests.cs VRPG/tests/VRPG.Tests/PlayerMenuReplacementCompositionTests.cs VRPG/tests/VRPG.Tests/PlayerMenuReplacementLifecycleTests.cs VRPG/docs/design/usable-player-menu-checklist.md VRPG/docs/design/testable-version-todo.md
@@ -465,8 +465,8 @@ git commit -m "feat: complete unified VRPG player menu routing"
 
 ## Final self-review gate
 
-- [ ] Map every section of the specification to at least one completed task above.
-- [ ] Search this plan and implementation for unresolved placeholders, fake UI, raw item IDs in normal presentation, and ordinary `new GuiDialogVRPGHub` / `new GuiDialogVRPGLibrary` paths.
-- [ ] Confirm all introduced method/property names match their consumers.
-- [ ] Confirm every task was reviewed for spec compliance and code quality before the next task began.
+- [x] Map every section of the specification to at least one completed task above.
+- [x] Search this plan and implementation for unresolved placeholders, fake UI, raw item IDs in normal presentation, and ordinary `new GuiDialogVRPGHub` / `new GuiDialogVRPGLibrary` paths.
+- [x] Confirm all introduced method/property names match their consumers.
+- [x] Confirm every task was reviewed for spec compliance and code quality before the next task began.
 - [ ] Confirm the final test/build output and live screenshots are fresh evidence from the final commit.
