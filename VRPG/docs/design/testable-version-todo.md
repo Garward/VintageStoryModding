@@ -50,7 +50,7 @@ These foundations should be reused rather than rebuilt:
   Library, and Options; V opens Stats, the Library command opens Library, ordinary
   Hub refreshes stay passive, and the obsolete ordinary Hub/Library UI is removed.
 - [x] Automated menu evidence: 23 focused routing/lifecycle/composition tests and
-  the full 1,794-test suite passed on 2026-09-14; the Release build completed with
+  the full 1,798-test suite passed on 2026-09-14; the Release build completed with
   zero warnings and zero errors and was synchronized to the installed development
   Mods folder. Joined-client behavior remains unverified.
 

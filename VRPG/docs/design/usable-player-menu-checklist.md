@@ -41,7 +41,7 @@ commit hashes stay in git rather than in this checklist.
 - [ ] The joined-client verification loop is repeatable.
 
 Automated evidence on 2026-09-14: 23 focused routing/lifecycle/composition tests
-and the full 1,794-test suite passed. The Release build completed with zero warnings
+and the full 1,798-test suite passed. The Release build completed with zero warnings
 and zero errors, and the development mod was synchronized to the installed Mods
 folder. These facts do not replace the joined-client checks below.
 
