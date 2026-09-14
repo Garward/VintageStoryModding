@@ -363,25 +363,25 @@ git commit -m "feat: add native Talent page"
 - Produces: `OptionsPage.SelectCategory` plus typed methods for existing notification, action-bar, combat-HUD, and combat-visual actions.
 - Consumes: existing `LibraryEntryPacket[]`, `HubOptionsPacket`, `RpgHudConfig`, `CombatVisualsConfig`, and `HubPageActions`.
 
-- [ ] **Step 1: Write failing Library and Options behavior tests**
+- [x] **Step 1: Write failing Library and Options behavior tests**
 
 Assert deterministic category order, case-insensitive search across readable names/summary/tags, selection reconciliation, bounded scroll, honest empty state, exact callback arguments, 4–8 visible skill-slot clamp, auto-throw toggle, resource-HUD sizing bounds, and combat visual cycles.
 
-- [ ] **Step 2: Run focused tests and verify failure**
+- [x] **Step 2: Run focused tests and verify failure**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter FullyQualifiedName~LibraryOptionsPageTests
 ```
 
-- [ ] **Step 3: Implement Library within the shared shell**
+- [x] **Step 3: Implement Library within the shared shell**
 
 Render a category rail or compact selector, native search field, entry list, and details well using existing packet fields. Keep names and summaries prominent; source, tags, and fields appear only in detail. Replace the dialog's Inventory-only text-input condition with a selected-page input descriptor so Inventory and Library can each own one correctly focused native search field.
 
-- [ ] **Step 4: Implement Options within the shared shell**
+- [x] **Step 4: Implement Options within the shared shell**
 
 Render Notifications, Action Bar, Combat HUD, and Combat Visuals as a category selector plus focused settings panel. Use dedicated toggle/stepper rows, concise explanations, and current values. Do not render future whole-console controls until supported.
 
-- [ ] **Step 5: Capture, inspect, run tests, and commit**
+- [x] **Step 5: Capture, inspect, run tests, and commit**
 
 ```bash
 dotnet test VRPG/tests/VRPG.Tests/VRPG.Tests.csproj --filter "FullyQualifiedName~LibraryOptionsPageTests|FullyQualifiedName~HubPageCompositionCaptureTests"
