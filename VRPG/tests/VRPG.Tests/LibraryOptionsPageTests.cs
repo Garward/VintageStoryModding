@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using VRPG.Client.PlayerMenu.Hub;
 using VRPG.Config;
+using VRPG.Data;
+using VRPG.Data.Definitions;
+using VRPG.Data.Library;
 using VRPG.Network;
 using Xunit;
 
@@ -52,6 +55,37 @@ public sealed class LibraryOptionsPageTests
         hub.Receive(new OpenLibraryPacket { Entries = Entries().Reverse().ToArray() });
         Assert.Equal("Skills", page.Category); Assert.Equal("vrpg:slash", page.SelectedEntry!.Code);
         hub.Receive(new OpenLibraryPacket()); Assert.Equal("", page.Category); Assert.Null(page.SelectedEntry);
+    }
+
+    [Fact]
+    public void SearchUsesTheSamePlayerFacingWordsShownForRealLibrarySourceText()
+    {
+        using var hub = new HubPageClientService(_ => { }, new());
+        hub.Receive(new OpenLibraryPacket { Entries = RealSourceEntries() });
+
+        hub.Library.SetQuery("restore health");
+        Assert.Equal("vrpg:arc", Assert.Single(hub.Library.VisibleEntries).Code);
+
+        hub.Library.SetQuery("damage over time");
+        Assert.Equal(new[] { "vrpg:arc", "vrpg:bleed" }, hub.Library.VisibleEntries.Select(entry => entry.Code));
+    }
+
+    [Fact]
+    public void CategoryRepresentativeAndSelectionAreStableAcrossPacketOrderAndCase()
+    {
+        using var hub = new HubPageClientService(_ => { }, new());
+        var titleCase = new LibraryEntryPacket { Code = "vrpg:first", Name = "First", Category = "Skills" };
+        var lowerCase = new LibraryEntryPacket { Code = "vrpg:second", Name = "Second", Category = "skills" };
+        hub.Receive(new OpenLibraryPacket { Entries = new[] { titleCase } });
+        hub.Library.SelectCategory("Skills");
+
+        hub.Receive(new OpenLibraryPacket { Entries = new[] { lowerCase, titleCase } });
+        Assert.Equal(new[] { "", "Skills" }, hub.Library.Categories);
+        Assert.Equal("Skills", hub.Library.Category);
+
+        hub.Receive(new OpenLibraryPacket { Entries = new[] { titleCase, lowerCase } });
+        Assert.Equal(new[] { "", "Skills" }, hub.Library.Categories);
+        Assert.Equal("Skills", hub.Library.Category);
     }
 
     [Fact]
@@ -117,4 +151,33 @@ public sealed class LibraryOptionsPageTests
     internal static LibraryEntryPacket[] Entries() => new[] {
         new LibraryEntryPacket { Code = "vrpg:slash", Name = "Cleave", Category = "Skills", Summary = "Sweep nearby enemies.", Tags = new[] { "Melee" }, Fields = new[] { new LibraryFieldPacket { Label = "Damage", Value = "12" } } },
         new LibraryEntryPacket { Code = "vrpg:orb", Name = "Life orb", Category = "Currency", Summary = "Recover health.", Tags = new[] { "Healing" } } };
+
+    internal static LibraryEntryPacket[] RealSourceEntries()
+    {
+        var data = new VRPGDataRegistry();
+        data.Skills.Load(new[] { new SkillDefinition
+        {
+            Code = "vrpg:arc", Name = "Arc", Description = "Restore vrpg:restore_health.",
+            ClassCode = "vrpg:warden", Delivery = "projectile_aoe", Tags = new[] { "melee_arc", "damage_over_time" }
+        } });
+        data.StatusEffects.Load(new[] { new StatusEffectDefinition
+        {
+            Code = "vrpg:bleed", Name = "Bleed", Description = "A wound that worsens over time.",
+            Kind = "damage_over_time", ChanceStat = "bleed_chance", DurationStat = "bleed_duration",
+            DamageProfile = "damage_over_time", Tags = new[] { "damage_over_time" }
+        } });
+        return new ILibrarySource[] { new SkillsLibrarySource(), new StatusEffectsLibrarySource() }
+            .SelectMany(source => source.Build(data)).Select(Packet).ToArray();
+    }
+
+    private static LibraryEntryPacket Packet(LibraryEntry entry) => new()
+    {
+        Code = entry.Code,
+        Name = entry.Name,
+        Category = entry.Category,
+        Summary = entry.Summary,
+        Source = entry.Source,
+        Tags = entry.Tags,
+        Fields = entry.Fields.Select(field => new LibraryFieldPacket { Label = field.Label, Value = field.Value }).ToArray()
+    };
 }

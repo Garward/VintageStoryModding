@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Cairo;
 using VRPG.Client.PlayerMenu.Components;
 using VRPG.Client.PlayerMenu.Hub;
@@ -35,8 +34,6 @@ public sealed partial class PlayerMenuShell
         session.Update(session.Current with { Search = input.Text, ScrollAnchor = 0, InspectorScroll = 0, Focus = "search" });
     }
 
-    private static string LibraryText(string? text) => Regex.Replace(text ?? "", @"\b[a-z][a-z0-9_-]*:[a-zA-Z0-9_./-]+",
-        match => PlayerItemDisplayNameResolver.HumanizeAssetPath(match.Value));
     private void DrawLibrary(Context ctx)
     {
         var page = hub!.Library; var b = Layout.Browser;
@@ -45,7 +42,7 @@ public sealed partial class PlayerMenuShell
             PlayerMenuDrawing.DrawWell(ctx, b);
             Button(ctx, "library-category:previous", "", new(b.X + 8, b.Y + 6, 32, 30), page.Categories.Length > 1 ? MenuControlState.Default : MenuControlState.Disabled, "‹");
             Button(ctx, "library-category:next", "", new(b.Right - 40, b.Y + 6, 32, 30), page.Categories.Length > 1 ? MenuControlState.Default : MenuControlState.Disabled, "›");
-            HubBrowseLabel(ctx, page.Category.Length == 0 ? T("library-all") : LibraryText(PlayerItemDisplayNameResolver.HumanizeAssetPath(page.Category)), new(b.X + 48, b.Y + 8, b.Width - 96, 24), 17);
+            HubBrowseLabel(ctx, page.Category.Length == 0 ? T("library-all") : LibraryDisplayText.Format(PlayerItemDisplayNameResolver.HumanizeAssetPath(page.Category)), new(b.X + 48, b.Y + 8, b.Width - 96, 24), 17);
             Button(ctx, "search", "", LibrarySearch);
             page.ScrollBy(0, LibraryRows);
             var clip = LibraryList;
@@ -55,8 +52,8 @@ public sealed partial class PlayerMenuShell
                 var entry = page.VisibleEntries[i]; var row = new MenuRect(clip.X, clip.Y + (i - page.Scroll) * 52, clip.Width, 48);
                 if (row.Bottom > clip.Bottom) break;
                 Button(ctx, "library-entry:" + i, "", row, page.SelectedEntry?.Code == entry.Code ? MenuControlState.Selected : MenuControlState.Default);
-                HubBrowseLabel(ctx, LibraryText(LibraryPage.ReadableName(entry)), new(row.X + 8, row.Y + 2, row.Width - 16, 22), 15);
-                HubBrowseLabel(ctx, LibraryText(entry.Summary), new(row.X + 8, row.Y + 25, row.Width - 16, 20), 13);
+                HubBrowseLabel(ctx, LibraryDisplayText.Format(LibraryPage.ReadableName(entry)), new(row.X + 8, row.Y + 2, row.Width - 16, 22), 15);
+                HubBrowseLabel(ctx, LibraryDisplayText.Format(entry.Summary), new(row.X + 8, row.Y + 25, row.Width - 16, 20), 13);
             }
             if (page.VisibleEntries.Length == 0) Text(ctx, T(page.Query.Trim().Length > 0 ? "library-no-match" : "library-empty"), clip, 16);
             ctx.Restore();
@@ -67,10 +64,10 @@ public sealed partial class PlayerMenuShell
             var lines = new List<(string Text, double Size)>();
             if (page.SelectedEntry is { } entry)
             {
-                lines.Add((LibraryText(LibraryPage.ReadableName(entry)), 21)); lines.Add((LibraryText(entry.Summary), 16));
-                foreach (var field in entry.Fields) lines.Add((LibraryText(field.Label) + ": " + LibraryText(field.Value), 15));
-                if (entry.Tags.Length > 0) lines.Add((T("library-tags", string.Join(" · ", entry.Tags.Select(LibraryText))), 14));
-                if (!string.IsNullOrWhiteSpace(entry.Source)) lines.Add((T("library-source", LibraryText(entry.Source)), 14));
+                lines.Add((LibraryDisplayText.Format(LibraryPage.ReadableName(entry)), 21)); lines.Add((LibraryDisplayText.Format(entry.Summary), 16));
+                foreach (var field in entry.Fields) lines.Add((LibraryDisplayText.Format(field.Label) + ": " + LibraryDisplayText.Format(field.Value), 15));
+                if (entry.Tags.Length > 0) lines.Add((T("library-tags", string.Join(" · ", entry.Tags.Select(LibraryDisplayText.Format))), 14));
+                if (!string.IsNullOrWhiteSpace(entry.Source)) lines.Add((T("library-source", LibraryDisplayText.Format(entry.Source)), 14));
             }
             else lines.Add((T(page.Query.Trim().Length > 0 ? "library-no-match" : "library-empty"), 18));
             DrawHubDetails(ctx, lines);

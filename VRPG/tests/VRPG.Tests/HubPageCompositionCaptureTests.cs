@@ -62,6 +62,27 @@ public sealed class HubPageCompositionCaptureTests
     }
 
     [Fact]
+    public void RealLibrarySourcesRenderPlayerFacingFieldAndTagNames()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        using var hub = new HubPageClientService(_ => { }, new());
+        hub.Receive(new OpenLibraryPacket { Entries = LibraryOptionsPageTests.RealSourceEntries() });
+        var session = new PlayerMenuSessionState(); session.Navigate(PlayerMenuPage.Library);
+        var text = new List<string>(); using var shell = Shell(session, hub, 1120, 680, text.Add);
+
+        hub.Library.SelectEntry("vrpg:arc"); Draw(shell, 1120, 680);
+        Assert.Contains("Delivery: Projectile Aoe", text);
+        Assert.Contains(text, line => line.Contains("Melee Arc", StringComparison.Ordinal));
+        Assert.DoesNotContain(text, HasTechnicalLibraryToken);
+
+        text.Clear(); hub.Library.SelectEntry("vrpg:bleed"); Draw(shell, 1120, 680);
+        Assert.Contains("Kind: Damage Over Time", text);
+        Assert.Contains("Chance Stat: Bleed Chance", text);
+        Assert.Contains("Duration Stat: Bleed Duration", text);
+        Assert.DoesNotContain(text, HasTechnicalLibraryToken);
+    }
+
+    [Fact]
     public void CapturesLibraryOptionsStatesWithBoundedControlsAndReadableDetails()
     {
         using var scope = new InventoryCompositionTestScope();
@@ -461,4 +482,6 @@ public sealed class HubPageCompositionCaptureTests
     }
     private static void AssertInside(MenuRect rect, int width, int height)
     { Assert.InRange(rect.X, 0, width); Assert.InRange(rect.Y, 0, height); Assert.InRange(rect.Right, 0, width); Assert.InRange(rect.Bottom, 0, height); }
+    private static bool HasTechnicalLibraryToken(string text) => new[] { "vrpg:", "melee_arc", "projectile_aoe", "damage_over_time", "bleed_chance", "bleed_duration" }
+        .Any(token => text.Contains(token, StringComparison.OrdinalIgnoreCase));
 }

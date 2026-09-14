@@ -27,7 +27,11 @@ public sealed class LibraryPage
         hub.State = hub.State with { LibraryQuery = search.Text }; Scroll = 0; Filter();
     }
     public void SelectCategory(string category)
-    { Category = Categories.Contains(category) ? category : ""; Scroll = 0; Filter(); }
+    {
+        Category = Categories.FirstOrDefault(candidate => string.Equals(candidate, category, StringComparison.OrdinalIgnoreCase)) ?? "";
+        Scroll = 0;
+        Filter();
+    }
     public void SelectEntry(string code)
     { if (VisibleEntries.Any(e => e.Code == code)) hub.State = hub.State with { LibrarySelection = code }; }
     public void ScrollBy(int delta, int rows)
@@ -36,14 +40,16 @@ public sealed class LibraryPage
     {
         entries = next;
         Categories = new[] { "" }.Concat(entries.Select(e => e.Category ?? "").Where(c => c.Length > 0)
-            .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(c => c, StringComparer.OrdinalIgnoreCase).ThenBy(c => c, StringComparer.Ordinal)).ToArray();
-        if (!Categories.Contains(Category)) Category = "";
+            .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.OrderBy(c => c, StringComparer.Ordinal).First())
+            .OrderBy(c => c, StringComparer.OrdinalIgnoreCase).ThenBy(c => c, StringComparer.Ordinal)).ToArray();
+        Category = Categories.FirstOrDefault(candidate => string.Equals(candidate, Category, StringComparison.OrdinalIgnoreCase)) ?? "";
         Filter();
     }
     private void Filter()
     {
         string query = Query.Trim();
-        bool Matches(string? text) => text?.Contains(query, StringComparison.OrdinalIgnoreCase) == true;
+        bool Matches(string? text) => LibraryDisplayText.Format(text).Contains(query, StringComparison.OrdinalIgnoreCase);
         VisibleEntries = entries.Where(e => (Category.Length == 0 || string.Equals(e.Category, Category, StringComparison.OrdinalIgnoreCase))
             && (query.Length == 0 || Matches(ReadableName(e)) || Matches(e.Summary) || e.Tags.Any(Matches)))
             .OrderBy(ReadableName, StringComparer.OrdinalIgnoreCase).ThenBy(e => e.Code, StringComparer.Ordinal).ToArray();
