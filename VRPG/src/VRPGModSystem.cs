@@ -46,8 +46,6 @@ public sealed class VRPGModSystem : ModSystem
     private IServerEventAPI? skillNotificationEvents;
     private PlayerItemPersistenceModule? playerItemPersistence;
     private PartyModule? partyModule;
-    private GuiDialogVRPGHub? clientHubDialog;
-    private GuiDialogVRPGLibrary? clientLibraryDialog;
     private GuiDialogVRPGTalentEditor? clientTalentEditorDialog;
     private GuiDialogVRPGStarterPreview? clientStarterPreviewDialog;
     private GuiDialogVrpgPlayerMenu? clientPartyMenu;
@@ -78,7 +76,6 @@ public sealed class VRPGModSystem : ModSystem
     private Harmony? clientHarmony;
     private Harmony? serverHarmony;
     private Harmony? characterRuntimeHarmony;
-    private TalentTreeSnapshotPacket clientTalentTree = new TalentTreeSnapshotPacket();
     private SkillLoadoutPacket clientSkillLoadout = new SkillLoadoutPacket();
     private long clientSkillLoadoutAtMilliseconds;
     private readonly HashSet<int> heldSkillSlots = new HashSet<int>();
@@ -231,8 +228,8 @@ public sealed class VRPGModSystem : ModSystem
                     return TextCommandResult.Success();
                 });
         clientChannel
-            .SetMessageHandler<OpenHubPacket>(packet => clientHubPages?.Receive(packet))
-            .SetMessageHandler<TalentTreeSnapshotPacket>(packet => ReceivePlayerMenuTalentTree(api, packet))
+            .SetMessageHandler<OpenHubPacket>(ReceivePlayerMenuHub)
+            .SetMessageHandler<TalentTreeSnapshotPacket>(ReceivePlayerMenuTalentTree)
             .SetMessageHandler<TalentProgressPacket>(packet => clientHubPages?.Receive(packet))
             .SetMessageHandler<TalentEditorSnapshotPacket>(packet => OpenTalentEditorDialog(api, packet))
             .SetMessageHandler<OpenLibraryPacket>(packet => OpenPlayerMenuLibrary(packet))
@@ -424,7 +421,6 @@ public sealed class VRPGModSystem : ModSystem
     {
         clientPlayerMenuCapabilities = PlayerMenuCapabilityState.Unavailable;
         clientPlayerMenuReplacement?.LeaveWorld();
-        clientTalentTree = new();
     }
 
     public override void Dispose()
@@ -472,12 +468,6 @@ public sealed class VRPGModSystem : ModSystem
         clientPlayerMenuController = null;
         PartyClient?.Dispose();
         PartyClient = null;
-        clientHubDialog?.TryClose();
-        clientHubDialog?.Dispose();
-        clientHubDialog = null;
-        clientLibraryDialog?.TryClose();
-        clientLibraryDialog?.Dispose();
-        clientLibraryDialog = null;
         clientTalentEditorDialog?.TryClose();
         clientTalentEditorDialog?.Dispose();
         clientTalentEditorDialog = null;
@@ -682,7 +672,7 @@ public sealed class VRPGModSystem : ModSystem
                 {
                     if (args.Caller.Player is not IServerPlayer player)
                         return TextCommandResult.Error("Only a player can open the VRPG Hub.");
-                    HandleOpenHubRequest(api, player, new OpenHubRequestPacket());
+                    SendHubPacket(api, player, "", false, openRequested: true);
                     return TextCommandResult.Success("Opening the VRPG Hub.");
                 })
             .EndSubCommand()
@@ -1077,22 +1067,24 @@ public sealed class VRPGModSystem : ModSystem
 
     private void SendHubPacket(ICoreServerAPI api, IServerPlayer player, string feedbackMessage, bool feedbackError)
     {
+        SendHubPacket(api, player, feedbackMessage, feedbackError, openRequested: false);
+    }
+
+    private void SendHubPacket(ICoreServerAPI api, IServerPlayer player, string feedbackMessage, bool feedbackError, bool openRequested)
+    {
         EnsureDataLoaded(api);
         OpenHubPacket packet = BuildHubPacket(player);
         packet.FeedbackMessage = feedbackMessage ?? "";
         packet.FeedbackError = feedbackError;
+        packet.OpenRequested = openRequested;
         serverChannel?.SendPacket(packet, player);
         api.Logger.Notification("[VRPG] Sent hub UI packet with {0} entries to {1}.", packet.Entries.Length, player.PlayerName);
     }
 
     private bool OnHubHotkey(KeyCombination keyCombination)
     {
-        if (clientPlayerMenu?.IsOpened() == true)
-        {
-            clientPlayerMenu.TryClose();
-            return true;
-        }
-        clientPlayerMenu?.ShowPage(PlayerMenuPage.Stats);
+        OpenPlayerMenu(PlayerMenuEntryPoint.LegacyHubMenu,
+            clientPlayerMenuController?.Session.IsOpen == true ? null : PlayerMenuPage.Stats);
         return true;
     }
 
@@ -1431,86 +1423,49 @@ public sealed class VRPGModSystem : ModSystem
         };
     }
 
-    private void ReceiveTalentTreeSnapshot(ICoreClientAPI api, TalentTreeSnapshotPacket packet)
-    {
-        if (packet.SchemaVersion != TalentTreeSnapshotPacket.CurrentSchemaVersion
-            || packet.Nodes == null
-            || packet.Nodes.Length > TalentGraphComponent.MaximumNodeCount)
-        {
-            api.Logger.Error("[VRPG] Rejected incompatible talent tree snapshot {0} schema={1} nodes={2}.",
-                packet.TreeCode,
-                packet.SchemaVersion,
-                packet.Nodes?.Length ?? 0);
-            return;
-        }
-
-        clientTalentTree = packet;
-        clientHubDialog?.UpdateTalentTree(packet);
-    }
-
-    private void ReceivePlayerMenuTalentTree(ICoreClientAPI api, TalentTreeSnapshotPacket packet)
+    private void ReceivePlayerMenuTalentTree(TalentTreeSnapshotPacket packet)
     {
         clientHubPages?.Receive(packet);
-        // Keep the privileged/legacy authoring reference current during the migration.
-        if (packet.SchemaVersion == TalentTreeSnapshotPacket.CurrentSchemaVersion && packet.Nodes != null
-            && packet.Nodes.Length <= TalentGraphComponent.MaximumNodeCount) ReceiveTalentTreeSnapshot(api, packet);
+    }
+
+    private void ReceivePlayerMenuHub(OpenHubPacket packet)
+    {
+        clientHubPages?.Receive(packet);
+        if (packet.OpenRequested) OpenPlayerMenu(PlayerMenuEntryPoint.LegacyHubMenu, PlayerMenuPage.Stats);
     }
 
     private void OpenPlayerMenuLibrary(OpenLibraryPacket packet)
     {
         clientHubPages?.Receive(packet);
-        clientPlayerMenu?.ShowPage(PlayerMenuPage.Library);
+        OpenPlayerMenu(PlayerMenuEntryPoint.LegacyHubMenu, PlayerMenuPage.Library);
     }
 
-    private void OpenHubDialog(ICoreClientAPI api, OpenHubPacket packet)
+    private void OpenPlayerMenu(PlayerMenuEntryPoint entry, PlayerMenuPage? page = null)
     {
-        packet.Options.SkillHotbarLocked = config.Modules.Rpg.SkillHotbar.Locked;
-        packet.Options.SkillHotbarSlots = config.Modules.Rpg.SkillHotbar.SlotCount;
-        packet.Options.HoldToRepeatChargedSkills = config.Modules.Rpg.SkillHotbar.HoldToRepeatChargedSkills;
-        bool treeMissing = !string.Equals(clientTalentTree.TreeCode, packet.TalentTreeCode, StringComparison.OrdinalIgnoreCase)
-            || !string.Equals(clientTalentTree.ContentHash, packet.TalentTreeHash, StringComparison.Ordinal);
-        if (treeMissing)
+        if (clientPlayerMenuController == null) return;
+        if (page != null && clientPlayerMenu?.IsOpened() == true)
         {
-            clientChannel?.SendPacket(new TalentTreeRequestPacket
-            {
-                KnownTreeCode = clientTalentTree.TreeCode,
-                KnownContentHash = clientTalentTree.ContentHash
-            });
-        }
-        if (clientHubDialog?.IsOpened() == true)
-        {
-            clientHubDialog.UpdatePacket(packet);
+            clientPlayerMenu.ShowPage(page.Value);
             return;
         }
+        if (page == null)
+        {
+            clientPlayerMenuController.Enter(entry);
+        }
+        else
+        {
+            if (!clientPlayerMenuController.Session.IsOpen) clientPlayerMenuController.Enter(entry);
+            if (clientPlayerMenuController.Session.IsOpen) clientPlayerMenuController.Navigate(page.Value);
+        }
 
-        clientLibraryDialog?.TryClose();
-        clientLibraryDialog?.Dispose();
-        clientLibraryDialog = null;
-        clientHubDialog?.TryClose();
-        clientHubDialog?.Dispose();
-        clientHubDialog = new GuiDialogVRPGHub(
-            api,
-            packet,
-            clientTalentTree,
-            entries => OpenLibraryDialog(api, new OpenLibraryPacket { Entries = entries }),
-            (statCode, delta) => clientChannel?.SendPacket(new StatAllocationRequestPacket { StatCode = statCode, Delta = delta }),
-            (showCooldown, showResources) => clientChannel?.SendPacket(new UpdateHubOptionsPacket
-            {
-                ShowCooldownNotifications = showCooldown,
-                ShowResourceNotifications = showResources
-            }),
-            (locked, slotCount) => SetClientHotbarOptions(api, locked, slotCount),
-            enabled => SetClientAutoThrow(api, enabled),
-            config.Modules.Rpg.Hud,
-            locked => SetClientResourceHudLocked(api, locked),
-            (widthDelta, heightDelta) => ResizeClientResourceHud(api, widthDelta, heightDelta),
-            () => ResetClientResourceHud(api),
-            (slot, skillCode) => clientChannel?.SendPacket(new SkillEquipRequestPacket { Slot = slot, SkillCode = skillCode }),
-            (allocate, refund) => clientChannel?.SendPacket(new TalentPlanRequestPacket { Allocate = allocate, Refund = refund }),
-            () => clientChannel?.SendPacket(new TalentEditorOpenRequestPacket()),
-            config.Modules.Rpg.CombatVisuals,
-            () => PersistClientConfig(api));
-        clientHubDialog.TryOpen();
+        if (clientPlayerMenu == null) return;
+        if (!clientPlayerMenuController.Session.IsOpen)
+        {
+            if (clientPlayerMenu.IsOpened()) clientPlayerMenu.TryClose();
+            return;
+        }
+        if (clientPlayerMenu.IsOpened()) return;
+        if (!clientPlayerMenu.IsOpened() && !clientPlayerMenu.TryOpen()) clientPlayerMenuController.Close();
     }
 
     private void OpenTalentEditorDialog(ICoreClientAPI api, TalentEditorSnapshotPacket packet)
@@ -1521,7 +1476,7 @@ public sealed class VRPGModSystem : ModSystem
             return;
         }
 
-        clientHubDialog?.TryClose();
+        clientPlayerMenu?.TryClose();
         clientTalentEditorDialog?.Dispose();
         clientTalentEditorDialog = new GuiDialogVRPGTalentEditor(
             api,
@@ -1543,21 +1498,9 @@ public sealed class VRPGModSystem : ModSystem
         clientTalentEditorDialog.TryOpen();
     }
 
-    private void OpenLibraryDialog(ICoreClientAPI api, OpenLibraryPacket packet)
-    {
-        clientHubDialog?.TryClose();
-        clientHubDialog?.Dispose();
-        clientHubDialog = null;
-        clientLibraryDialog?.TryClose();
-        clientLibraryDialog?.Dispose();
-        clientLibraryDialog = new GuiDialogVRPGLibrary(api, packet.Entries);
-        clientLibraryDialog.TryOpen();
-    }
-
     private void ReceivePlayerResources(ICoreClientAPI api, RpgResourcePacket packet)
     {
         clientHubPages?.Receive(packet);
-        clientHubDialog?.UpdateResources(packet);
 
         if (config.Modules.Rpg.Hud.UnifiedCombatConsole)
         {

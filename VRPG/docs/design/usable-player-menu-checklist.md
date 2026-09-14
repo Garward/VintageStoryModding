@@ -1,14 +1,14 @@
 # Player-Menu Acceptance Checklist
 
-Status: **First usable Adventure menu acceptance checklist**
-Updated: 2026-09-12
+Status: **Unified Adventure menu implemented; joined-client acceptance pending**
+Updated: 2026-09-14
 Execution order: [Playable vertical-slice checklist](testable-version-todo.md)
 Design: [Unified player-menu design](../superpowers/specs/2026-09-06-unified-player-menu-design.md)
 
-This document defines the narrow first usable Adventure-menu handoff: VRPG takes
+This document defines the first cohesive Adventure-menu handoff. VRPG takes
 ownership of the semantic `inventorydialog` and `characterdialog` actions together
-and routes them to Inventory/Equipment. It does not restore a broad menu roadmap
-or gate combat, expeditions, or reward delivery on later pages.
+and presents Inventory, Stats, Skills, Talents, Library, Options, and the basic
+Party permission panel in one player-facing shell.
 
 The source/test handoff is complete. A preview, isolated client, or hidden Vanilla
 widget does not count as replacement-ready: the joined-client and explicit-player
@@ -30,14 +30,36 @@ commit hashes stay in git rather than in this checklist.
 
 ## First-pass boundary
 
-- [x] Inventory and Character are the only first-pass semantic actions.
+- [x] Inventory, Character, and the VRPG Hub hotkey all route through one shell.
 - [x] Inventory opens browsing; Character opens Inventory with Equipment expanded.
+- [x] The Hub hotkey opens Stats, and `/vrpg library open` opens Library.
+- [x] Ordinary Hub state refreshes do not open or reopen the menu.
+- [x] The separate ordinary Hub and Library dialogs and their UI elements are
+  removed; the privileged talent editor remains separate.
 - [x] Canonical-custody failure is fail-closed in Adventure; Vanilla is not a live
   fallback after ownership has transferred.
 - [ ] The joined-client verification loop is repeatable.
 
+Automated evidence on 2026-09-14: 23 focused routing/lifecycle/composition tests
+and the full 1,794-test suite passed. The Release build completed with zero warnings
+and zero errors, and the development mod was synchronized to the installed Mods
+folder. These facts do not replace the joined-client checks below.
+
+Live acceptance was not run from this task environment: no Vintage Story client
+was active, no native app surface was available, and the desktop helper could not
+connect to the desktop session bus. No login or credential entry was attempted.
+
 ## Server-backed page acceptance
 
+- [x] One connection-owned Hub service supplies Stats, Skills, Talents, Library,
+  and Options without recreating state for each page.
+- [x] Every top-level page tab is a real route in the shared shell; unavailable,
+  loading, empty, pending, success, and rejection bodies are covered by composition
+  tests where the state applies.
+- [x] Ordinary item names prefer the live client localization path, use readable
+  fallback names, and reserve raw identifiers for explicit recovery detail.
+- [x] Narrow gallery Stats/Skills inspectors accept Page Up and Page Down without
+  changing production page behavior.
 - [ ] Inventory shows real aggregate and unique records with bounded paging,
   searching, filtering, categories, quantities, and capacity summaries.
 - [ ] Equipment shows authoritative equipped state, comparisons, requirements,
@@ -59,9 +81,9 @@ commit hashes stay in git rather than in this checklist.
   requirements, mechanical effects, comparison, and Equip/Unequip result needed
   for this first pass.
 
-Appearance, retained Character facts, Stats, Skills, Talents, Library, Options,
-progression, starter selection, and Welcome integration are later player-page
-work. They do not gate this Inventory/Equipment handoff.
+Character facts that are not yet authoritative, starter selection, and Welcome
+integration remain later work. The six-page shell is implemented, but its
+joined-client usability still belongs to this acceptance gate.
 
 ## Semantic-dialog ownership transaction
 
@@ -84,6 +106,12 @@ work. They do not gate this Inventory/Equipment handoff.
 - [ ] Join a dedicated VRPG server with the supported client build.
 - [ ] Open both semantic actions through default and remapped bindings.
 - [ ] Confirm neither ordinary route opens the Vanilla Inventory or Character UI.
+- [ ] Open V/Stats, Skills, Talents, Library, Options, and Party from the shared
+  shell; confirm navigation, readable names, centered controls, and truthful page
+  feedback in the real client.
+- [ ] Exercise at least one real mutation or honest rejection on every mutable page.
+- [ ] Confirm the client log remains free of texture-atlas, composition, packet,
+  and input errors during those transitions.
 - [ ] Exercise inventory browsing, equipment changes, the Equipment disclosure,
   recovery, resize, death, reconnect, save, and server restart.
 - [ ] Confirm any startup or runtime failure follows the declared fallback policy
@@ -92,10 +120,10 @@ work. They do not gate this Inventory/Equipment handoff.
 
 ## Work that does not belong in this gate
 
-- Party management and party-only loot.
+- Party health bars and party-only loot delivery beyond the existing permission panel.
 - Loot piles, salvage previews, favorite/junk workflows, and random affix breadth.
 - Housing, worldgen, realm ownership, creature ingestion, or expedition systems.
-- Completing all six planned pages when fewer pages satisfy observed use.
+- Later page breadth or visual polish that does not resolve an observed usability issue.
 
 Those features require their own playable gates. They cannot become prerequisites
 for semantic-dialog replacement merely because they may eventually appear in the

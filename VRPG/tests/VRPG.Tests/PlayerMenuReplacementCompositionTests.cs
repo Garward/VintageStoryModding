@@ -167,6 +167,32 @@ public sealed class PlayerMenuReplacementCompositionTests
 [Collection("Inventory Cairo")]
 public sealed class PlayerMenuHubCompositionTests
 {
+    [Fact]
+    public void NarrowGalleryStatsInspectorAcceptsPageUpAndPageDown()
+    {
+        using var scope = new InventoryCompositionTestScope();
+        var session = new PlayerMenuSessionState();
+        session.Navigate(PlayerMenuPage.Stats);
+        session.Update(session.Current with { InspectorOnly = true, SelectedEntry = "preview-0" });
+        var api = DispatchProxy.Create<ICoreClientAPI, InventoryCompositionCaptureTests.CaptureProxy>();
+        using var shell = new VRPG.Client.PlayerMenu.Shell.PlayerMenuShell(api, ElementBounds.Fixed(0, 0, 400, 350),
+            VRPG.Client.PlayerMenu.Shell.PlayerMenuLayout.Resolve(400, 350), session,
+            new VRPG.Client.PlayerMenu.Shell.PlayerMenuGallery(), _ => { });
+        using var surface = new Cairo.ImageSurface((Cairo.Format)0, 400, 350);
+        using var context = new Cairo.Context(surface);
+        shell.GetType().GetMethod("Draw", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(shell, new object[] { context });
+
+        var down = new KeyEvent { KeyCode = (int)GlKeys.PageDown };
+        shell.OnKeyDown(api, down);
+        Assert.True(down.Handled);
+        Assert.True(session.Current.InspectorScroll > 0);
+
+        var up = new KeyEvent { KeyCode = (int)GlKeys.PageUp };
+        shell.OnKeyDown(api, up);
+        Assert.True(up.Handled);
+        Assert.Equal(0, session.Current.InspectorScroll);
+    }
+
     [Theory]
     [InlineData(PlayerMenuPage.Stats)][InlineData(PlayerMenuPage.Skills)][InlineData(PlayerMenuPage.Talents)]
     [InlineData(PlayerMenuPage.Library)][InlineData(PlayerMenuPage.Options)]

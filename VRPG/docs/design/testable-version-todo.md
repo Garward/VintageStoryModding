@@ -1,7 +1,7 @@
 # Playable Vertical-Slice Checklist
 
 Status: **Authoritative implementation roadmap**
-Updated: 2026-09-12
+Updated: 2026-09-14
 Design basis: [Complete game design](complete-game-design.md) · [Implementation readiness and test strategy](implementation-readiness-and-test-strategy.md) · [Strategy audit](../audit.md)
 
 This is the only document that sets implementation order. Subsystem designs and
@@ -10,15 +10,14 @@ on the critical path. When another document disagrees with this sequence, update
 that document or treat its ordering as superseded.
 
 The next milestone is ten playable minutes that prove VRPG's combat premise. The
-first usable Adventure profile also has a narrow prerequisite: its existing
-Inventory and Character semantic owners must hand off together to the
-server-backed VRPG Inventory/Equipment page. That is not a return to an
-exhaustive pre-combat UI roadmap or proof of compatibility with every theoretical
-item producer. It is the small semantic-owner swap and central Adventure
-suppression described in the [first usable player-menu plan](../superpowers/plans/2026-09-12-first-usable-player-menu.md).
+first usable Adventure profile also needs its Inventory, Character, Hub, and
+Library entry points to converge on the same server-backed player menu. The first
+cohesive six-page implementation now exists; it does not prove compatibility with
+every theoretical item producer.
 
-The swap is source- and automated-test complete, but it is not replacement-ready:
-the supported joined-client check and explicit player confirmation remain open.
+The unified route is source- and automated-test complete, but it is not
+replacement-ready: the supported joined-client check and explicit player
+confirmation remain open.
 
 ## Status rules
 
@@ -47,6 +46,16 @@ These foundations should be reused rather than rebuilt:
 - [x] Narrow Inventory/Character semantic-owner swap, central Adventure producer
   suppression, and fail-closed activation coverage. Live client acceptance remains
   open.
+- [x] One unified player-menu shell owns Inventory, Stats, Skills, Talents,
+  Library, and Options; V opens Stats, the Library command opens Library, ordinary
+  Hub refreshes stay passive, and the obsolete ordinary Hub/Library UI is removed.
+- [x] Automated menu evidence: 23 focused routing/lifecycle/composition tests and
+  the full 1,794-test suite passed on 2026-09-14; the Release build completed with
+  zero warnings and zero errors and was synchronized to the installed development
+  Mods folder. Joined-client behavior remains unverified.
+
+The 2026-09-14 task environment had no active Vintage Story client or connected
+desktop-control surface, so it did not attempt login or record live acceptance.
 
 These are useful foundations, not proof that their complete player journeys work.
 
@@ -66,6 +75,10 @@ real client/server path.
   the current gate.
 - [ ] Run the smoke script once and record the result. Authentication failure,
   isolated startup, or a menu preview does not complete this item.
+- [ ] Confirm E and C never expose Vanilla Inventory, Character, Stats, or Survival
+  panels; confirm V/Stats and all five sibling pages stay in the unified shell.
+- [ ] Confirm readable item names, centered controls, Party access, and one real
+  mutation or honest rejection on each mutable page while checking the client log.
 
 **Exit:** a developer can repeat the joined-client smoke loop without rediscovering
 setup steps. No later gate can be called complete without this loop.
@@ -115,8 +128,8 @@ attempt. The loop should sustain at least ten minutes of useful playtesting.
   one repeatable loop.
 - [ ] Open the VRPG inventory from the Hub or an explicit `/vrpg inv` route using
   real server-backed data. In the Adventure profile, use the completed paired
-  semantic-owner route; it does not require Stats, Skills, Talents, Library, or
-  Options to merge into the first pass.
+  semantic-owner route. The sibling pages already share the shell, but their
+  presence does not make them combat-gate dependencies.
 - [ ] Deliver any test rewards directly through an explicit VRPG-owned transaction.
   Do not require field loot piles, party permissions, salvage, or random affixes.
 - [ ] Show enough HUD feedback to read health, resources, cooldowns, enemy intent,
@@ -212,7 +225,7 @@ Begin only after Gate 1 produces a stable, enjoyable combat loop.
 
 The following work is intentionally excluded from Gates 0 and 1:
 
-- The complete unified six-page player menu.
+- Joined-client acceptance and later refinement of the implemented six-page menu.
 - Loot piles, Everyone/Party drop policy, and further party features.
 - Random affixes, salvage, crafting, and economy breadth.
 - VRPG-owned realm runtime and Manifold parity work.

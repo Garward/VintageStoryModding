@@ -37,6 +37,10 @@ public sealed class OpenHubPacket
 
     [ProtoMember(12)]
     public bool CanEditTalentTree { get; set; }
+
+    /// <summary>True only when the server is explicitly asking the client to open the player menu.</summary>
+    [ProtoMember(13)]
+    public bool OpenRequested { get; set; }
 }
 
 [ProtoContract]

@@ -505,7 +505,7 @@ public sealed partial class PlayerMenuShell : GuiElement
         }
         else if (args.KeyCode == (int)GlKeys.Enter && focus.Length > 0) { Activate(focus); args.Handled = true; }
         else if (args.KeyCode is (int)GlKeys.PageDown or (int)GlKeys.PageUp
-            && (session.Page is not (PlayerMenuPage.Stats or PlayerMenuPage.Skills or PlayerMenuPage.Talents) || StatsSkillsOpen))
+            && (gallery != null || session.Page is not (PlayerMenuPage.Stats or PlayerMenuPage.Skills or PlayerMenuPage.Talents) || StatsSkillsOpen))
         {
             session.Update(session.Current with { InspectorScroll = Math.Clamp(session.Current.InspectorScroll + (args.KeyCode == (int)GlKeys.PageDown ? 96 : -96), 0, inspectorMaximumScroll) });
             args.Handled = true; Refresh();
