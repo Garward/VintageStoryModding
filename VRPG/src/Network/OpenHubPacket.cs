@@ -41,6 +41,10 @@ public sealed class OpenHubPacket
     /// <summary>True only when the server is explicitly asking the client to open the player menu.</summary>
     [ProtoMember(13)]
     public bool OpenRequested { get; set; }
+
+    /// <summary>True for an equip rejection that updates Skills feedback without replacing the Hub snapshot.</summary>
+    [ProtoMember(14)]
+    public bool SkillEquipResponseOnly { get; set; }
 }
 
 [ProtoContract]

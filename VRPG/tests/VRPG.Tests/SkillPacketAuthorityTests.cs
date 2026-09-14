@@ -4,6 +4,7 @@ using System.Linq;
 using HarmonyLib;
 using Newtonsoft.Json;
 using VRPG.Config;
+using VRPG.Client.PlayerMenu.Hub;
 using VRPG.Data;
 using VRPG.Data.Definitions;
 using VRPG.Data.Library;
@@ -69,7 +70,7 @@ public sealed class SkillPacketAuthorityTests
         Assert.Equal(2, f.Player.Messages.Count);
         Assert.Empty(f.Profiles);
         Assert.Equal(0, f.Storage.Writes);
-        Assert.Empty(f.Packets);
+        AssertEquipRejections(f, path == "disabled" ? 1 : 0);
     }
 
     [Theory]
@@ -106,7 +107,7 @@ public sealed class SkillPacketAuthorityTests
         Assert.Equal(before, JsonConvert.SerializeObject(f.Profiles));
         Assert.Equal(persisted, f.Storage.Bytes);
         Assert.Equal(writes, f.Storage.Writes);
-        Assert.Empty(f.Packets);
+        AssertEquipRejections(f, path == "disabled" ? 1 : 0);
     }
 
     [Theory]
@@ -147,7 +148,7 @@ public sealed class SkillPacketAuthorityTests
         Assert.Equal(cleanup == "dispose" ? 2 : 1, other.Messages.Count);
         Assert.Equal(before, JsonConvert.SerializeObject(f.Profiles));
         Assert.Equal(writes, f.Storage.Writes);
-        Assert.Empty(f.Packets);
+        AssertEquipRejections(f, path == "disabled" ? 4 : 0);
     }
 
     [Theory]
@@ -201,8 +202,34 @@ public sealed class SkillPacketAuthorityTests
         Assert.Equal(before, JsonConvert.SerializeObject(f.Profiles));
         Assert.Equal(writes, f.Storage.Writes);
         Assert.Equal(persisted, f.Storage.Bytes);
-        Assert.Empty(f.Packets);
+        AssertEquipRejections(f, action == "equip" ? 2 : 0);
         Assert.Equal("Skills are unavailable right now.", Assert.Single(f.Player.Messages));
+    }
+
+    [Fact]
+    public void UnavailableEquipReturnsAuthoritativeReadableRejectionAndClearsClientPending()
+    {
+        using var f = new Fixture();
+        HubPageClientService? hub = null;
+        hub = new HubPageClientService(_ => { }, new()
+        {
+            EquipSkill = (_, code) =>
+            {
+                f.Equip(code);
+                hub!.Receive(Assert.Single(f.Packets.OfType<OpenHubPacket>()));
+            }
+        });
+        using (hub)
+        {
+            hub.Receive(StatsSkillsPageTests.Fixture.Packet());
+            hub.Skills.EquipSelected(0);
+            Assert.False(hub.Skills.Pending);
+            Assert.True(hub.Skills.FeedbackError);
+            Assert.Equal("Skills are unavailable right now.", hub.Skills.Feedback);
+            Assert.DoesNotContain("vrpg:", hub.Skills.Feedback, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal("vrpg:cleave", hub.Skills.SelectedSkill!.Code);
+            Assert.Equal(8, hub.Packet!.Resources!.Level);
+        }
     }
 
     [Theory]
@@ -243,6 +270,18 @@ public sealed class SkillPacketAuthorityTests
         Assert.Single(f.Packets.OfType<SkillLoadoutPacket>());
         Assert.Empty(f.Packets.OfType<OpenHubPacket>());
         Assert.Equal(0, f.Profiles["p"].Mana);
+    }
+
+    private static void AssertEquipRejections(Fixture fixture, int expected)
+    {
+        Assert.Equal(expected, fixture.Packets.Count);
+        Assert.All(fixture.Packets, value =>
+        {
+            var packet = Assert.IsType<OpenHubPacket>(value);
+            Assert.True(packet.SkillEquipResponseOnly);
+            Assert.True(packet.FeedbackError);
+            Assert.Equal("Skills are unavailable right now.", packet.FeedbackMessage);
+        });
     }
 
     private sealed class Fixture : IDisposable

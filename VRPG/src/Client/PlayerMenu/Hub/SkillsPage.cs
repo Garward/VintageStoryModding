@@ -51,6 +51,13 @@ public sealed class SkillsPage
         SelectSkill(skillIndex >= 0 ? skillIndex : oldSkill);
         if (Pending) { Pending = false; Feedback = HubPageFeedback.Present(packet.FeedbackMessage, packet.FeedbackError, PlayerMenuPage.Skills); FeedbackError = packet.FeedbackError; }
     }
+    internal void ReceiveEquipResponse(OpenHubPacket packet)
+    {
+        if (!Pending) return;
+        Pending = false;
+        Feedback = HubPageFeedback.Present(packet.FeedbackMessage, packet.FeedbackError, PlayerMenuPage.Skills);
+        FeedbackError = packet.FeedbackError;
+    }
     internal void Reset()
     {
         classes = Array.Empty<HubClassPacket>(); Skills = Array.Empty<HubSkillPacket>();

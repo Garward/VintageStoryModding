@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.IO;
 using VRPG.Client.PlayerMenu;
 using VRPG.Client.PlayerMenu.Inventory;
 using VRPG.Network;
@@ -11,6 +12,15 @@ namespace VRPG.Tests;
 [Collection("EntityDamageScalingPatch")]
 public sealed class PlayerMenuReplacementCompositionTests
 {
+    [Fact]
+    public void TalentCompositionUsesCheapTreePresenceInsteadOfCopyingTheSnapshot()
+    {
+        string source = File.ReadAllText(Path.GetFullPath(Path.Combine(AppContext.BaseDirectory,
+            "../../../../../src/Client/PlayerMenu/Shell/PlayerMenuShell.Talents.cs")));
+        Assert.Contains("hub.HasTalentTree", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("hub.TalentTree == null", source, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData(true)][InlineData(false)]
     public void ResourceHandlerUpdatesClosedMenuBeforeExistingCombatHud(bool unified)

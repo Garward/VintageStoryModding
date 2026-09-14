@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using VRPG.Client.PlayerMenu.Hub;
 using VRPG.Network;
 using Xunit;
@@ -134,5 +135,27 @@ public sealed class HubPageClientServiceTests
         Assert.False(service.Packet!.Options.SkillHotbarLocked);
         Assert.False(service.Packet.Options.HoldToRepeatChargedSkills);
         Assert.Equal(0, service.Packet.Options.SkillHotbarSlots);
+    }
+
+    [Fact]
+    public void TalentReadinessQueryDoesNotCopyTheStoredTree()
+    {
+        using var service = new HubPageClientService(_ => { }, new());
+        service.Receive(new TalentTreeSnapshotPacket
+        {
+            Nodes = Enumerable.Range(0, 2048).Select(index => new TalentTreeNodePacket
+            {
+                Code = "node-" + index,
+                Name = "Node " + index,
+                Description = new string('x', 256)
+            }).ToArray()
+        });
+        Assert.True(service.HasTalentTree);
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        bool present = false;
+        for (int i = 0; i < 100; i++) present |= service.HasTalentTree;
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Assert.True(present);
+        Assert.True(allocated < 4096, $"Talent readiness allocated {allocated:N0} bytes.");
     }
 }

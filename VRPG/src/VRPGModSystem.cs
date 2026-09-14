@@ -1378,6 +1378,12 @@ public sealed class VRPGModSystem : ModSystem
         if (rpgModule?.SkillsAvailable(player) != true)
         {
             NotifyUnavailableSkills(player);
+            serverChannel?.SendPacket(new OpenHubPacket
+            {
+                FeedbackMessage = "Skills are unavailable right now.",
+                FeedbackError = true,
+                SkillEquipResponseOnly = true
+            }, player);
             return;
         }
 

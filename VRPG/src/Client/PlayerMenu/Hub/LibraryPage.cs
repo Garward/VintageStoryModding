@@ -50,8 +50,11 @@ public sealed class LibraryPage
     {
         string query = Query.Trim();
         bool Matches(string? text) => LibraryDisplayText.Format(text).Contains(query, StringComparison.OrdinalIgnoreCase);
+        bool MatchesIdentifier(string? text) => LibraryDisplayText.FormatIdentifier(text).Contains(query, StringComparison.OrdinalIgnoreCase);
+        bool MatchesField(LibraryFieldPacket field) => Matches(field.Label) || LibraryDisplayText.FormatField(field.Label, field.Value).Contains(query, StringComparison.OrdinalIgnoreCase);
         VisibleEntries = entries.Where(e => (Category.Length == 0 || string.Equals(e.Category, Category, StringComparison.OrdinalIgnoreCase))
-            && (query.Length == 0 || Matches(ReadableName(e)) || Matches(e.Summary) || e.Tags.Any(Matches)))
+            && (query.Length == 0 || Matches(ReadableName(e)) || Matches(e.Summary) || MatchesIdentifier(e.Source)
+                || e.Tags.Any(MatchesIdentifier) || e.Fields.Any(MatchesField)))
             .OrderBy(ReadableName, StringComparer.OrdinalIgnoreCase).ThenBy(e => e.Code, StringComparer.Ordinal).ToArray();
         if (SelectedEntry == null) hub.State = hub.State with { LibrarySelection = VisibleEntries.FirstOrDefault()?.Code ?? "" };
         ScrollBy(0, visibleRows);

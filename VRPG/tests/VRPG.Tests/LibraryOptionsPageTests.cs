@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using VRPG.Client.PlayerMenu.Hub;
 using VRPG.Config;
 using VRPG.Data;
@@ -68,6 +69,32 @@ public sealed class LibraryOptionsPageTests
 
         hub.Library.SetQuery("damage over time");
         Assert.Equal(new[] { "vrpg:arc", "vrpg:bleed" }, hub.Library.VisibleEntries.Select(entry => entry.Code));
+    }
+
+    [Fact]
+    public void IndexedHyphenatedIdentifiersUsePlayerFacingWordsForDisplayAndSearchWithoutChangingProse()
+    {
+        var data = new VRPGDataRegistry();
+        data.StatusEffects.Load(new[] { new StatusEffectDefinition
+        {
+            Code = "vrpg:bleed", Name = "Bleed", Description = "A well-made wound effect.",
+            Kind = "damage-over-time", TriggerDamageType = "damage-types", Tags = new[] { "stat-family" }
+        } });
+        var system = new VRPGModSystem();
+        AccessTools.Field(typeof(VRPGModSystem), "libraryIndex").SetValue(system, LibraryIndex.Build(data));
+        var packet = Assert.IsType<OpenLibraryPacket>(AccessTools.Method(typeof(VRPGModSystem), "BuildLibraryPacket").Invoke(system, Array.Empty<object>()));
+        var entry = Assert.Single(packet.Entries, item => item.Code == "vrpg:bleed");
+
+        Assert.Equal("Status Effects", LibraryDisplayText.FormatIdentifier(entry.Source));
+        Assert.Equal("Damage Types", LibraryDisplayText.FormatField("Trigger Damage", entry.Fields.Single(field => field.Label == "Trigger Damage").Value));
+        Assert.Equal("A well-made wound effect.", LibraryDisplayText.Format(entry.Summary));
+
+        using var hub = new HubPageClientService(_ => { }, new());
+        hub.Receive(packet);
+        hub.Library.SetQuery("status effects");
+        Assert.Equal("vrpg:bleed", Assert.Single(hub.Library.VisibleEntries).Code);
+        hub.Library.SetQuery("stat family");
+        Assert.Equal("vrpg:bleed", Assert.Single(hub.Library.VisibleEntries).Code);
     }
 
     [Fact]

@@ -32,7 +32,7 @@ public sealed partial class PlayerMenuShell
             Text(ctx, hub.TalentTreeReady ? T("talent-points", page.PlannedPoints, page.RemainingRespec) : T("talent-loading"), new(b.X + 12, b.Y + 33, b.Width - 24, 22), 14, PlayerMenuTheme.Muted);
             var graph = TalentWell; PlayerMenuDrawing.DrawWell(ctx, graph);
             if (page.Graph.Count == 0)
-                Text(ctx, T(hub.TalentTree == null ? "talent-loading" : "talent-empty"), new(graph.X + 10, graph.Y + 8, graph.Width - 20, graph.Height - 16), 16);
+                Text(ctx, T(!hub.HasTalentTree ? "talent-loading" : "talent-empty"), new(graph.X + 10, graph.Y + 8, graph.Width - 20, graph.Height - 16), 16);
             else
             {
                 page.Graph.Draw(ctx, graph.X, graph.Y, graph.Width, graph.Height); page.SaveView();
@@ -74,7 +74,7 @@ public sealed partial class PlayerMenuShell
             foreach (string modifier in node.Modifiers) lines.Add((modifier.Replace("vrpg:", "", StringComparison.OrdinalIgnoreCase).Replace('_', ' '), 16));
             if (!string.IsNullOrWhiteSpace(node.Description) && !string.Equals(node.Description.Trim(), "Unassigned talent node.", StringComparison.OrdinalIgnoreCase)) lines.Add((node.Description, 15));
         }
-        else lines.Add((T(hub.TalentTree == null ? "talent-loading" : "talent-empty"), 17));
+        else lines.Add((T(!hub.HasTalentTree ? "talent-loading" : "talent-empty"), 17));
         lines.Add((T("talent-input"), 14));
         lines.Add((T("talent-legend"), 17));
         foreach (var state in Enum.GetValues<TalentGraphNodeState>()) lines.Add((TalentState(state), 14));

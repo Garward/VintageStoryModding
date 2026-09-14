@@ -65,9 +65,9 @@ public sealed partial class PlayerMenuShell
             if (page.SelectedEntry is { } entry)
             {
                 lines.Add((LibraryDisplayText.Format(LibraryPage.ReadableName(entry)), 21)); lines.Add((LibraryDisplayText.Format(entry.Summary), 16));
-                foreach (var field in entry.Fields) lines.Add((LibraryDisplayText.Format(field.Label) + ": " + LibraryDisplayText.Format(field.Value), 15));
-                if (entry.Tags.Length > 0) lines.Add((T("library-tags", string.Join(" · ", entry.Tags.Select(LibraryDisplayText.Format))), 14));
-                if (!string.IsNullOrWhiteSpace(entry.Source)) lines.Add((T("library-source", LibraryDisplayText.Format(entry.Source)), 14));
+                foreach (var field in entry.Fields) lines.Add((LibraryDisplayText.Format(field.Label) + ": " + LibraryDisplayText.FormatField(field.Label, field.Value), 15));
+                if (entry.Tags.Length > 0) lines.Add((T("library-tags", string.Join(" · ", entry.Tags.Select(LibraryDisplayText.FormatIdentifier))), 14));
+                if (!string.IsNullOrWhiteSpace(entry.Source)) lines.Add((T("library-source", LibraryDisplayText.FormatIdentifier(entry.Source)), 14));
             }
             else lines.Add((T(page.Query.Trim().Length > 0 ? "library-no-match" : "library-empty"), 18));
             DrawHubDetails(ctx, lines);

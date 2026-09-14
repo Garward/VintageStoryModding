@@ -34,6 +34,7 @@ public sealed class HubPageClientService : IDisposable
     public HubPageState State { get; set; } = new();
     public OpenHubPacket? Packet => packet == null ? null : Copy(packet);
     public TalentTreeSnapshotPacket? TalentTree => talentTree == null ? null : Copy(talentTree);
+    public bool HasTalentTree => talentTree != null;
     public LibraryEntryPacket[] LibraryEntries => Copy(libraryEntries);
     public bool HasSnapshot => packet != null;
     public bool Loading { get; private set; }
@@ -62,6 +63,12 @@ public sealed class HubPageClientService : IDisposable
     public void Receive(OpenHubPacket next)
     {
         if (disposed) return;
+        if (next.SkillEquipResponseOnly)
+        {
+            Skills.ReceiveEquipResponse(next);
+            Changed?.Invoke();
+            return;
+        }
         packet = Copy(next);
         packet.Entries = NormalizeLibraryEntries(packet.Entries); packet.BaseStats ??= Array.Empty<HubStatPacket>();
         packet.Classes ??= Array.Empty<HubClassPacket>(); packet.Talents ??= Array.Empty<string>();
