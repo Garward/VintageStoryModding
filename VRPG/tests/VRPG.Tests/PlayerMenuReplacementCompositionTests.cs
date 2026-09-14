@@ -131,6 +131,8 @@ public sealed class PlayerMenuReplacementCompositionTests
         var controller = Assert.IsType<PlayerMenuController>(Field(mod, "clientPlayerMenuController"));
         Assert.NotNull(controller.Inventory);
         Assert.NotNull(controller.Hub);
+        Assert.NotNull(controller.Party);
+        Assert.NotNull(mod.PartyClient);
         Assert.Same(controller.Hub, Field(mod, "clientHubPages"));
         Assert.Same(controller.Items, Field(mod, "clientPlayerItems"));
         Assert.NotNull(((ChannelProxy)(object)channel).Capability);
@@ -138,6 +140,7 @@ public sealed class PlayerMenuReplacementCompositionTests
         mod.Dispose();
         Assert.Null(controller.Hub.Packet);
         Assert.Null(Field(mod, "clientHubPages"));
+        Assert.Null(mod.PartyClient);
     }
     private static object? Field(object owner, string name) => owner.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(owner);
     private sealed class FailingNativeDialog(ICoreClientAPI api, string action) : GuiDialog(api)

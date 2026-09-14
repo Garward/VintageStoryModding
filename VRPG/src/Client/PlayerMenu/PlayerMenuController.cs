@@ -20,6 +20,8 @@ public sealed class PlayerMenuController
     public PlayerMenuController(PlayerItemClientService connectionItems) { Items = connectionItems; nowMilliseconds = static () => 0; }
     public PlayerMenuController(PlayerItemClientService connectionItems, HubPageClientService hub) : this(connectionItems) { Hub = hub; }
     public PlayerMenuController(InventoryPage inventory, Func<double> worldClock, HubPageClientService hub) : this(inventory, worldClock) { Hub = hub; }
+    public PlayerMenuController(InventoryPage inventory, Func<double> worldClock, HubPageClientService hub, PartyPanel party)
+        : this(inventory, worldClock, hub) { Party = party ?? throw new ArgumentNullException(nameof(party)); }
     public PlayerMenuController(PlayerItemClientService connectionItems, PartyPanel party) : this(connectionItems) { Party = party; }
     public PlayerMenuController(InventoryPage inventory, PartyPanel party) : this(inventory) { Party = party; }
     public void OpenParty()

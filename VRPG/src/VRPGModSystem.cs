@@ -48,8 +48,6 @@ public sealed class VRPGModSystem : ModSystem
     private PartyModule? partyModule;
     private GuiDialogVRPGTalentEditor? clientTalentEditorDialog;
     private GuiDialogVRPGStarterPreview? clientStarterPreviewDialog;
-    private GuiDialogVrpgPlayerMenu? clientPartyMenu;
-    private PlayerMenuController? partyMenuController;
     private PlayerItemClientService? clientPlayerItems;
     private HubPageClientService? clientHubPages;
     private InventoryPage? clientInventoryPage;
@@ -207,16 +205,12 @@ public sealed class VRPGModSystem : ModSystem
 
         clientChannel = VRPGNetwork.RegisterClient(api);
         InitializeClientPlayerMenu(api, clientChannel);
-        PartyClient?.Dispose();
-        PartyClient = new PartyClientService(clientChannel, api.Event);
         if (Environment.GetEnvironmentVariable("VRPG_PARTY_MENU") == "1")
             api.ChatCommands.Create("vrpgparty").WithDescription(Lang.Get("vrpg:menu-party-command"))
                 .HandleWith(_ =>
                 {
-                    partyMenuController ??= new(new VRPG.Client.PlayerMenu.Inventory.PlayerItemClientService(), new PartyPanel(PartyClient));
-                    clientPartyMenu ??= new(api, partyMenuController);
-                    partyMenuController.OpenParty();
-                    clientPartyMenu.TryOpen();
+                    clientPlayerMenuController?.OpenParty();
+                    clientPlayerMenu?.TryOpen();
                     return TextCommandResult.Success();
                 });
         if (Environment.GetEnvironmentVariable("VRPG_PLAYER_MENU") == "1")
@@ -372,6 +366,8 @@ public sealed class VRPGModSystem : ModSystem
 
     private void InitializeClientPlayerMenu(ICoreClientAPI api, IClientNetworkChannel channel)
     {
+        PartyClient?.Dispose();
+        PartyClient = new PartyClientService(channel, api.Event);
         clientPlayerItems = new PlayerItemClientService();
         clientPlayerItems.Attach(channel);
         clientInventoryPage = new InventoryPage(clientPlayerItems);
@@ -400,7 +396,11 @@ public sealed class VRPGModSystem : ModSystem
             },
             ReportError = error => api.Logger.Error("[VRPG] Player menu update failed: {0}", error)
         });
-        clientPlayerMenuController = new PlayerMenuController(clientInventoryPage, () => api.World.ElapsedMilliseconds, clientHubPages);
+        clientPlayerMenuController = new PlayerMenuController(
+            clientInventoryPage,
+            () => api.World.ElapsedMilliseconds,
+            clientHubPages,
+            new PartyPanel(PartyClient));
         clientPlayerMenu = new(api, clientPlayerMenuController);
         clientPlayerMenuReplacement = new(api, clientPlayerMenuController, clientPlayerMenu);
         clientPlayerMenuEvents = api.Event;
@@ -452,9 +452,6 @@ public sealed class VRPGModSystem : ModSystem
 
         modules.Clear();
         partyModule = null;
-        clientPartyMenu?.Dispose();
-        clientPartyMenu = null;
-        partyMenuController = null;
         clientPlayerMenuReplacement?.Dispose();
         clientPlayerMenuReplacement = null;
         clientPlayerMenu?.Dispose();
