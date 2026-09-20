@@ -29,6 +29,7 @@ public sealed partial class PlayerMenuShell : GuiElement
     private readonly PlayerItemDisplayNameResolver displayNames;
     private readonly System.Func<PlayerItemEntryPacket, string?> localizedCollectibleName;
     private readonly Action<string>? textDrawn;
+    private readonly PlayerMenuFonts fonts;
     private readonly Dictionary<string, ItemSlot> icons = new();
     private readonly List<(string Id, MenuRect Bounds, FittedButton Button)> controls = new();
     private readonly List<(ItemSlot Slot, MenuRect Bounds)> visibleIcons = new();
@@ -49,6 +50,7 @@ public sealed partial class PlayerMenuShell : GuiElement
         displayNames = new(() => T("unknown-item"));
         this.localizedCollectibleName = localizedCollectibleName ?? ResolveLocalizedCollectibleName;
         this.textDrawn = textDrawn;
+        fonts = PlayerMenuFonts.From(api);
         itemRenderer = new(api, bounds);
         focus = session.Current.Focus;
     }
@@ -78,8 +80,18 @@ public sealed partial class PlayerMenuShell : GuiElement
         Button(ctx, "back", "back", Layout.Back);
         Button(ctx, "close", "close", Layout.Close);
         if (party != null) Button(ctx, "party", "party", PartyHeaderBounds, PartyOpen ? MenuControlState.Selected : MenuControlState.Default);
-        PlayerMenuDrawing.DrawSectionHeading(ctx, T(PartyOpen ? "party" : gallery != null ? "gallery-title" : session.Page.ToString().ToLowerInvariant()),
-            Layout.Title, Layout.AlternatePanes ? 17 : 21);
+        string pageKey = PartyOpen ? "party" : gallery != null ? "gallery-title" : session.Page.ToString().ToLowerInvariant();
+        string pageIcon = PartyOpen ? "party" : gallery != null ? "document" : session.Page.ToString().ToLowerInvariant();
+        if (!Layout.AlternatePanes)
+        {
+            var brand = new MenuRect(Layout.Back.Right + 14, Layout.Header.Y + 3, 112, Layout.Header.Height - 6);
+            VrpgIconPainter.Draw(ctx, "crest", brand.X, brand.Y + 3, 22, .92, .6, .18);
+            PlayerMenuDrawing.DrawSectionHeading(ctx, "VRPG", new(brand.X + 30, brand.Y, brand.Width - 30, brand.Height), 18, fonts);
+            PlayerMenuDrawing.DrawSectionHeader(ctx, Layout.Title, pageIcon, T(pageKey), fonts);
+            Text(ctx, T(pageKey + "-purpose"), new(Layout.Title.X + Math.Min(220, Layout.Title.Width * .32), Layout.Title.Y + 2,
+                Math.Max(0, Layout.Title.Width - Math.Min(220, Layout.Title.Width * .32)), Layout.Title.Height - 2), 13, PlayerMenuTheme.Muted);
+        }
+        else PlayerMenuDrawing.DrawSectionHeading(ctx, T(pageKey), Layout.Title, 17, fonts);
         if (inventory != null && session.Page == PlayerMenuPage.Inventory && Layout.AlternatePanes && !PartyOpen)
             Button(ctx, "inspect", "inspect", new(Layout.Back.Right + 6, 10, Math.Max(0, (party == null ? Layout.Close.X : PartyHeaderBounds.X) - Layout.Back.Right - 12), 34));
         foreach (var page in Enum.GetValues<PlayerMenuPage>())
@@ -234,19 +246,29 @@ public sealed partial class PlayerMenuShell : GuiElement
         string label = labelOverride ?? (key.Length == 0 ? "" : key == "gallery-count" ? T(key, gallery!.Entries(session.Current.Category).Count,
             session.Current.Category == PlayerItemCategories.Gear ? 120 : 512) : T(key));
         PlayerMenuDrawing.DrawButton(ctx, bounds, label, button, visual, focus == id, session.ReducedMotion,
-            id.StartsWith("page:", StringComparison.Ordinal));
+            id.StartsWith("page:", StringComparison.Ordinal), ControlIcon(id), fonts);
     }
     private static void Fill(Context ctx, MenuRect b, string color) => PlayerMenuDrawing.Fill(ctx, b, color);
     private static void Stroke(Context ctx, MenuRect b, string color, double line) => PlayerMenuDrawing.Stroke(ctx, b, color, line);
     private void Text(Context ctx, string text, MenuRect b, double size, string color = PlayerMenuTheme.Text)
     {
         textDrawn?.Invoke(text);
-        PlayerMenuDrawing.DrawBodyText(ctx, text, b, size, color);
+        PlayerMenuDrawing.DrawBodyText(ctx, text, b, size, color, FontWeight.Normal, fonts.Body);
     }
-    private static double MeasureTextHeight(Context ctx, string text, double width, double size)
+    private double MeasureTextHeight(Context ctx, string text, double width, double size)
     {
-        ctx.SelectFontFace(PlayerMenuTheme.Font, FontSlant.Normal, FontWeight.Normal); ctx.SetFontSize(size);
+        ctx.SelectFontFace(fonts.Body, FontSlant.Normal, FontWeight.Normal); ctx.SetFontSize(size);
         return PlayerMenuTextLayout.Wrap(text, width, value => ctx.TextExtents(value).Width).Count * (size + 5);
+    }
+
+    private static string ControlIcon(string id)
+    {
+        if (id.StartsWith("page:", StringComparison.Ordinal)) return id[5..].ToLowerInvariant();
+        return id switch
+        {
+            "back" => "back", "close" => "close", "party" => "party", "search" => "search",
+            _ => ""
+        };
     }
     private void DrawInventoryBrowser(Context ctx)
     {

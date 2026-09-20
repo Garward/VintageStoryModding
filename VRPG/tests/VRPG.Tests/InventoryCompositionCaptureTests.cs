@@ -50,6 +50,7 @@ public sealed class InventoryCompositionCaptureTests
         Assert.Contains("Iron Pickaxe", textCalls);
         Assert.Contains("Ancient Vault Key", textCalls);
         Assert.Contains("Emberwake", textCalls);
+        Assert.Contains("Manage your items and equipment.", textCalls);
         Assert.DoesNotContain(textCalls, text => text.Contains("game:pickaxe-iron", StringComparison.Ordinal)
             || text.Contains("addon:ancient_vault-key", StringComparison.Ordinal)
             || text.Contains("game:sword-iron", StringComparison.Ordinal));

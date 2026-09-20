@@ -17,6 +17,12 @@ public static class VrpgIconPainter
         ctx.LineCap = LineCap.Round;
         ctx.LineJoin = LineJoin.Round;
 
+        if (DrawMenuIcon(ctx, icon, x, y, size, unit))
+        {
+            ctx.Restore();
+            return;
+        }
+
         switch (icon)
         {
             case "gear":
@@ -107,7 +113,7 @@ public static class VrpgIconPainter
                 ctx.Fill();
                 break;
             default:
-                DrawFallback(ctx, Initials(icon), cx, y + size * 0.66, size * 0.31, r, g, b, alpha);
+                DrawFallback(ctx, cx, cy, unit);
                 break;
         }
 
@@ -143,14 +149,92 @@ public static class VrpgIconPainter
         ctx.ClosePath();
     }
 
-    private static void DrawFallback(Context ctx, string text, double x, double baseline, double size, double r, double g, double b, double alpha)
+    private static bool DrawMenuIcon(Context ctx, string icon, double x, double y, double size, double u)
     {
-        ctx.SelectFontFace("Arial", FontSlant.Normal, FontWeight.Bold);
-        ctx.SetFontSize(size);
-        TextExtents extents = ctx.TextExtents(text);
-        ctx.SetSourceRGBA(r, g, b, alpha);
-        ctx.MoveTo(x - extents.Width / 2.0 - extents.XBearing, baseline);
-        ctx.ShowText(text);
+        double cx = x + size / 2, cy = y + size / 2;
+        switch (icon)
+        {
+            case "inventory": case "bag": case "empty_bag": case "pouch": case "miscellaneous":
+                ctx.MoveTo(x + 2.4 * u, y + 3.7 * u); ctx.CurveTo(x + 2.2 * u, y + 7.8 * u, x + 2.8 * u, y + 8.6 * u, cx, y + 8.6 * u);
+                ctx.CurveTo(x + 7.2 * u, y + 8.6 * u, x + 7.8 * u, y + 7.8 * u, x + 7.6 * u, y + 3.7 * u); ctx.ClosePath(); ctx.Stroke();
+                ctx.MoveTo(x + 3.2 * u, y + 3.7 * u); ctx.CurveTo(x + 3.8 * u, y + 1.5 * u, x + 6.2 * u, y + 1.5 * u, x + 6.8 * u, y + 3.7 * u); ctx.Stroke();
+                if (icon == "empty_bag") { ctx.MoveTo(x + 3.8 * u, cy); ctx.LineTo(x + 6.2 * u, cy); ctx.Stroke(); }
+                return true;
+            case "stats": case "crest": case "primary_attribute":
+                Polygon(ctx, (cx, y + 1.3 * u), (x + 8 * u, y + 2.5 * u), (x + 7.4 * u, y + 6.5 * u), (cx, y + 8.8 * u), (x + 2.6 * u, y + 6.5 * u), (x + 2 * u, y + 2.5 * u)); ctx.Stroke();
+                ctx.MoveTo(cx, y + 3 * u); ctx.LineTo(cx, y + 7 * u); ctx.MoveTo(x + 3.7 * u, y + 4.8 * u); ctx.LineTo(x + 6.3 * u, y + 4.8 * u); ctx.Stroke(); return true;
+            case "skills": case "skill": case "blades": case "damage":
+                ctx.MoveTo(x + 2 * u, y + 8 * u); ctx.LineTo(x + 7.7 * u, y + 2.3 * u); ctx.MoveTo(x + 8 * u, y + 8 * u); ctx.LineTo(x + 2.3 * u, y + 2.3 * u); ctx.Stroke();
+                ctx.MoveTo(x + 2.5 * u, y + 6.5 * u); ctx.LineTo(x + 3.5 * u, y + 7.5 * u); ctx.MoveTo(x + 7.5 * u, y + 6.5 * u); ctx.LineTo(x + 6.5 * u, y + 7.5 * u); ctx.Stroke(); return true;
+            case "talents": case "talent_nodes":
+                ctx.MoveTo(cx, cy); ctx.LineTo(x + 2.4 * u, y + 2.4 * u); ctx.MoveTo(cx, cy); ctx.LineTo(x + 7.6 * u, y + 2.4 * u); ctx.MoveTo(cx, cy); ctx.LineTo(cx, y + 8 * u); ctx.Stroke();
+                FillCircle(ctx, cx, cy, .9 * u); FillCircle(ctx, x + 2.4 * u, y + 2.4 * u, .8 * u); FillCircle(ctx, x + 7.6 * u, y + 2.4 * u, .8 * u); FillCircle(ctx, cx, y + 8 * u, .8 * u); return true;
+            case "library": case "book": case "all":
+                ctx.MoveTo(cx, y + 2.2 * u); ctx.CurveTo(x + 4 * u, y + 1.5 * u, x + 2.3 * u, y + 1.8 * u, x + 1.7 * u, y + 2.4 * u); ctx.LineTo(x + 1.7 * u, y + 8 * u); ctx.CurveTo(x + 3 * u, y + 7.3 * u, x + 4.2 * u, y + 7.6 * u, cx, y + 8.4 * u);
+                ctx.CurveTo(x + 5.8 * u, y + 7.6 * u, x + 7 * u, y + 7.3 * u, x + 8.3 * u, y + 8 * u); ctx.LineTo(x + 8.3 * u, y + 2.4 * u); ctx.CurveTo(x + 7.7 * u, y + 1.8 * u, x + 6 * u, y + 1.5 * u, cx, y + 2.2 * u); ctx.ClosePath(); ctx.Stroke(); ctx.MoveTo(cx, y + 2.2 * u); ctx.LineTo(cx, y + 8.4 * u); ctx.Stroke(); return true;
+            case "options": DrawGear(ctx, cx, cy, u); return true;
+            case "back": case "chevron_back":
+                ctx.MoveTo(x + 6.7 * u, y + 1.8 * u); ctx.LineTo(x + 3.2 * u, cy); ctx.LineTo(x + 6.7 * u, y + 8.2 * u); ctx.Stroke(); return true;
+            case "close":
+                ctx.MoveTo(x + 2.2 * u, y + 2.2 * u); ctx.LineTo(x + 7.8 * u, y + 7.8 * u); ctx.MoveTo(x + 7.8 * u, y + 2.2 * u); ctx.LineTo(x + 2.2 * u, y + 7.8 * u); ctx.Stroke(); return true;
+            case "party":
+                FillCircle(ctx, cx, y + 3 * u, 1.2 * u); FillCircle(ctx, x + 2.6 * u, y + 4 * u, .9 * u); FillCircle(ctx, x + 7.4 * u, y + 4 * u, .9 * u);
+                ctx.Arc(cx, y + 7.8 * u, 2.5 * u, Math.PI, Math.PI * 2); ctx.Stroke(); ctx.Arc(x + 2.3 * u, y + 7.8 * u, 1.6 * u, Math.PI, Math.PI * 1.85); ctx.Stroke(); ctx.Arc(x + 7.7 * u, y + 7.8 * u, 1.6 * u, Math.PI * 1.15, Math.PI * 2); ctx.Stroke(); return true;
+            case "search":
+                ctx.Arc(x + 4.3 * u, y + 4.3 * u, 2.5 * u, 0, Math.PI * 2); ctx.Stroke(); ctx.MoveTo(x + 6.1 * u, y + 6.1 * u); ctx.LineTo(x + 8.4 * u, y + 8.4 * u); ctx.Stroke(); return true;
+            case "armor":
+                Polygon(ctx, (x + 2 * u, y + 3 * u), (x + 3.5 * u, y + 1.6 * u), (cx, y + 2.5 * u), (x + 6.5 * u, y + 1.6 * u), (x + 8 * u, y + 3 * u), (x + 7 * u, y + 8.4 * u), (x + 3 * u, y + 8.4 * u)); ctx.Stroke(); return true;
+            case "materials": case "ingot":
+                Polygon(ctx, (x + 1.5 * u, y + 6.8 * u), (x + 3.1 * u, y + 3.1 * u), (x + 7.2 * u, y + 3.1 * u), (x + 8.5 * u, y + 6.8 * u)); ctx.ClosePath(); ctx.Stroke(); ctx.MoveTo(x + 3.1 * u, y + 3.1 * u); ctx.LineTo(x + 4 * u, y + 6.8 * u); ctx.Stroke(); return true;
+            case "consumables": case "flask":
+                ctx.MoveTo(x + 4 * u, y + 1.5 * u); ctx.LineTo(x + 6 * u, y + 1.5 * u); ctx.MoveTo(x + 4.5 * u, y + 1.5 * u); ctx.LineTo(x + 4.5 * u, y + 4 * u); ctx.CurveTo(x + 1.6 * u, y + 7.8 * u, x + 3.2 * u, y + 8.6 * u, cx, y + 8.6 * u); ctx.CurveTo(x + 6.8 * u, y + 8.6 * u, x + 8.4 * u, y + 7.8 * u, x + 5.5 * u, y + 4 * u); ctx.LineTo(x + 5.5 * u, y + 1.5 * u); ctx.Stroke(); return true;
+            case "quest": case "key":
+                ctx.Arc(x + 3.2 * u, y + 3.5 * u, 1.7 * u, 0, Math.PI * 2); ctx.Stroke(); ctx.MoveTo(x + 4.5 * u, y + 4.7 * u); ctx.LineTo(x + 8.5 * u, y + 8.3 * u); ctx.MoveTo(x + 6.6 * u, y + 6.6 * u); ctx.LineTo(x + 7.6 * u, y + 5.6 * u); ctx.Stroke(); return true;
+            case "filter":
+                Polygon(ctx, (x + 1.5 * u, y + 2 * u), (x + 8.5 * u, y + 2 * u), (x + 6 * u, y + 5.1 * u), (x + 6 * u, y + 8.3 * u), (x + 4 * u, y + 7.2 * u), (x + 4 * u, y + 5.1 * u)); ctx.Stroke(); return true;
+            case "sort":
+                ctx.MoveTo(x + 3.2 * u, y + 1.7 * u); ctx.LineTo(x + 3.2 * u, y + 8.3 * u); ctx.MoveTo(x + 1.7 * u, y + 3.2 * u); ctx.LineTo(x + 3.2 * u, y + 1.7 * u); ctx.LineTo(x + 4.7 * u, y + 3.2 * u); ctx.MoveTo(x + 6.8 * u, y + 8.3 * u); ctx.LineTo(x + 6.8 * u, y + 1.7 * u); ctx.MoveTo(x + 5.3 * u, y + 6.8 * u); ctx.LineTo(x + 6.8 * u, y + 8.3 * u); ctx.LineTo(x + 8.3 * u, y + 6.8 * u); ctx.Stroke(); return true;
+            case "capacity":
+                ctx.Rectangle(x + 2 * u, y + 3 * u, 6 * u, 5.5 * u); ctx.Stroke(); ctx.MoveTo(x + 3.2 * u, y + 3 * u); ctx.CurveTo(x + 3.2 * u, y + 1.4 * u, x + 6.8 * u, y + 1.4 * u, x + 6.8 * u, y + 3 * u); ctx.Stroke(); return true;
+            case "strength":
+                ctx.MoveTo(x + 2 * u, y + 7.8 * u); ctx.LineTo(x + 7.8 * u, y + 2.2 * u); ctx.MoveTo(x + 2.1 * u, y + 5.9 * u); ctx.LineTo(x + 4.1 * u, y + 7.9 * u); ctx.MoveTo(x + 5.9 * u, y + 2.1 * u); ctx.LineTo(x + 7.9 * u, y + 4.1 * u); ctx.Stroke(); return true;
+            case "dexterity": case "evasion":
+                ctx.MoveTo(x + 1.5 * u, y + 7.5 * u); ctx.CurveTo(x + 3.2 * u, y + 2 * u, x + 6 * u, y + 2 * u, x + 8.5 * u, y + 1.6 * u); ctx.CurveTo(x + 8 * u, y + 4.7 * u, x + 5.5 * u, y + 7.4 * u, x + 1.5 * u, y + 7.5 * u); ctx.Stroke(); ctx.MoveTo(x + 2.5 * u, y + 8.5 * u); ctx.LineTo(x + 6.5 * u, y + 4.3 * u); ctx.Stroke(); return true;
+            case "intelligence":
+                ctx.Arc(cx, y + 4 * u, 2.7 * u, Math.PI, 0); ctx.LineTo(x + 6.5 * u, y + 6.8 * u); ctx.LineTo(x + 3.5 * u, y + 6.8 * u); ctx.ClosePath(); ctx.Stroke(); ctx.MoveTo(x + 4 * u, y + 8.4 * u); ctx.LineTo(x + 6 * u, y + 8.4 * u); ctx.Stroke(); return true;
+            case "available_point":
+                ctx.Arc(cx, cy, 3.3 * u, 0, Math.PI * 2); ctx.Stroke(); ctx.MoveTo(cx, y + 3 * u); ctx.LineTo(cx, y + 7 * u); ctx.MoveTo(x + 3 * u, cy); ctx.LineTo(x + 7 * u, cy); ctx.Stroke(); return true;
+            case "level":
+                Polygon(ctx, (cx, y + 1.5 * u), (x + 6 * u, y + 4 * u), (x + 8.7 * u, y + 4.1 * u), (x + 6.6 * u, y + 6 * u), (x + 7.4 * u, y + 8.7 * u), (cx, y + 7.2 * u), (x + 2.6 * u, y + 8.7 * u), (x + 3.4 * u, y + 6 * u), (x + 1.3 * u, y + 4.1 * u), (x + 4 * u, y + 4 * u)); ctx.ClosePath(); ctx.Stroke(); return true;
+            case "lock":
+                ctx.Rectangle(x + 2.3 * u, y + 4.3 * u, 5.4 * u, 4.2 * u); ctx.Stroke(); ctx.Arc(cx, y + 4.3 * u, 2 * u, Math.PI, 0); ctx.Stroke(); return true;
+            case "cooldown":
+                ctx.Arc(cx, cy, 3.5 * u, 0, Math.PI * 2); ctx.Stroke(); ctx.MoveTo(cx, cy); ctx.LineTo(cx, y + 2.6 * u); ctx.MoveTo(cx, cy); ctx.LineTo(x + 6.8 * u, y + 6 * u); ctx.Stroke(); return true;
+            case "range": case "radius":
+                ctx.Arc(cx, cy, 3.5 * u, 0, Math.PI * 2); ctx.Stroke(); ctx.Arc(cx, cy, 1.5 * u, 0, Math.PI * 2); ctx.Stroke(); return true;
+            case "resource_cost":
+                ctx.MoveTo(cx, y + 1.3 * u); ctx.CurveTo(x + 8.2 * u, y + 5 * u, x + 7.2 * u, y + 8.5 * u, cx, y + 8.5 * u); ctx.CurveTo(x + 2.8 * u, y + 8.5 * u, x + 1.8 * u, y + 5 * u, cx, y + 1.3 * u); ctx.Stroke(); return true;
+            case "delivery":
+                ctx.MoveTo(x + 1.5 * u, cy); ctx.LineTo(x + 8.5 * u, cy); ctx.MoveTo(x + 6 * u, y + 2.5 * u); ctx.LineTo(x + 8.5 * u, cy); ctx.LineTo(x + 6 * u, y + 7.5 * u); ctx.Stroke(); return true;
+            case "combat_slot":
+                ctx.Rectangle(x + 1.6 * u, y + 1.6 * u, 6.8 * u, 6.8 * u); ctx.Stroke(); ctx.Arc(cx, cy, 1.4 * u, 0, Math.PI * 2); ctx.Stroke(); return true;
+            case "status":
+                ctx.Arc(cx, cy, 3.4 * u, 0, Math.PI * 2); ctx.Stroke(); ctx.MoveTo(x + 3.2 * u, cy); ctx.LineTo(x + 4.5 * u, y + 6.3 * u); ctx.LineTo(x + 7 * u, y + 3.2 * u); ctx.Stroke(); return true;
+            case "dungeon":
+                ctx.Rectangle(x + 1.5 * u, y + 3 * u, 7 * u, 5.5 * u); ctx.Stroke(); ctx.Rectangle(x + 4 * u, y + 5 * u, 2 * u, 3.5 * u); ctx.Stroke(); ctx.MoveTo(x + 2 * u, y + 3 * u); ctx.LineTo(x + 2 * u, y + 1.7 * u); ctx.LineTo(x + 3.5 * u, y + 1.7 * u); ctx.LineTo(x + 3.5 * u, y + 3 * u); ctx.MoveTo(x + 6.5 * u, y + 3 * u); ctx.LineTo(x + 6.5 * u, y + 1.7 * u); ctx.LineTo(x + 8 * u, y + 1.7 * u); ctx.LineTo(x + 8 * u, y + 3 * u); ctx.Stroke(); return true;
+            case "mechanics":
+                ctx.Arc(cx, cy, 2.5 * u, 0, Math.PI * 2); ctx.Stroke(); for (int i = 0; i < 6; i++) { double a = i * Math.PI / 3; ctx.MoveTo(cx + Math.Cos(a) * 2.4 * u, cy + Math.Sin(a) * 2.4 * u); ctx.LineTo(cx + Math.Cos(a) * 3.7 * u, cy + Math.Sin(a) * 3.7 * u); } ctx.Stroke(); return true;
+            case "document":
+                ctx.MoveTo(x + 2.2 * u, y + 1.3 * u); ctx.LineTo(x + 6.3 * u, y + 1.3 * u); ctx.LineTo(x + 7.8 * u, y + 2.8 * u); ctx.LineTo(x + 7.8 * u, y + 8.7 * u); ctx.LineTo(x + 2.2 * u, y + 8.7 * u); ctx.ClosePath(); ctx.Stroke(); ctx.MoveTo(x + 3.5 * u, y + 4.5 * u); ctx.LineTo(x + 6.5 * u, y + 4.5 * u); ctx.MoveTo(x + 3.5 * u, y + 6 * u); ctx.LineTo(x + 6.5 * u, y + 6 * u); ctx.Stroke(); return true;
+            default: return false;
+        }
+    }
+
+    private static void DrawFallback(Context ctx, double cx, double cy, double unit)
+    {
+        Polygon(ctx, (cx, cy - 3.4 * unit), (cx + 3.4 * unit, cy), (cx, cy + 3.4 * unit), (cx - 3.4 * unit, cy));
+        ctx.Stroke();
+        FillCircle(ctx, cx, cy, .75 * unit);
     }
 
     private static string Normalize(string value)
@@ -161,11 +245,4 @@ public static class VrpgIconPainter
         return safe.Replace('-', '_').Replace(' ', '_');
     }
 
-    private static string Initials(string value)
-    {
-        string[] words = value.Split(new[] { '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
-        if (words.Length == 0) return "?";
-        if (words.Length == 1) return words[0].Substring(0, Math.Min(2, words[0].Length)).ToUpperInvariant();
-        return (words[0][0].ToString() + words[1][0]).ToUpperInvariant();
-    }
 }

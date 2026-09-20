@@ -15,8 +15,8 @@ public sealed record PlayerMenuLayout(double Width, double Height, bool Alternat
 {
     public const double RowHeight = 54;
     public MenuRect Header => new(Back.X, Back.Y, Math.Max(0, Close.Right - Back.X), Back.Height);
-    public MenuRect Title => new(Back.X, 48, Header.Width, AlternatePanes ? 20 : 26);
-    public MenuRect Navigation => new(Back.X, AlternatePanes ? 72 : 80, Header.Width, AlternatePanes ? 64 : 34);
+    public MenuRect Title => new(Back.X, AlternatePanes ? 48 : 94, Header.Width, AlternatePanes ? 20 : 28);
+    public MenuRect Navigation => new(Back.X, AlternatePanes ? 72 : 54, Header.Width, AlternatePanes ? 64 : 34);
     public MenuRect Footer => new(Back.X, Browser.Bottom, Header.Width, Math.Max(0, Height - Browser.Bottom));
     public MenuRect PageTab(int index)
     {
@@ -45,7 +45,7 @@ public sealed record PlayerMenuLayout(double Width, double Height, bool Alternat
         width = Math.Max(0, width); height = Math.Max(0, height);
         double margin = Math.Min(24, width / 20), inner = Math.Max(0, width - margin * 2);
         bool alternate = width < 800 || height < 520;
-        double top = Math.Min(alternate ? 142 : 126, height * .45);
+        double top = Math.Min(alternate ? 142 : 132, height * .45);
         double footer = Math.Min(70, height * .2), bodyHeight = Math.Max(0, height - top - footer);
         double gap = alternate ? 0 : 24, browserWidth = alternate ? inner : (inner - gap) * .55;
         double detailX = alternate ? margin : margin + browserWidth + gap;

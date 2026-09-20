@@ -459,6 +459,22 @@ public sealed class HubPageCompositionCaptureTests
         }
     }
 
+    [Theory]
+    [InlineData(PlayerMenuPage.Stats, "Shape your core attributes.")]
+    [InlineData(PlayerMenuPage.Skills, "Review abilities and assign combat slots.")]
+    [InlineData(PlayerMenuPage.Talents, "Build your character through connected choices.")]
+    [InlineData(PlayerMenuPage.Library, "Learn how abilities, effects, and systems work.")]
+    [InlineData(PlayerMenuPage.Options, "Adjust your interface and combat feedback.")]
+    public void DesktopShellShowsLocalizedPagePurposeWithoutRepeatingItOnNarrowLayouts(PlayerMenuPage page, string purpose)
+    {
+        using var scope = new InventoryCompositionTestScope(); using var f = new StatsSkillsPageTests.Fixture();
+        var session = new PlayerMenuSessionState(); session.Navigate(page);
+        var text = new List<string>(); using var desktop = Shell(session, f.Hub, 1120, 680, text.Add);
+        Draw(desktop, 1120, 680); Assert.Contains(purpose, text);
+        text.Clear(); using var narrow = Shell(session, f.Hub, 400, 350, text.Add);
+        Draw(narrow, 400, 350); Assert.DoesNotContain(purpose, text);
+    }
+
     private static PlayerMenuShell Shell(PlayerMenuSessionState session, HubPageClientService hub, int width, int height, Action<string>? text = null)
         => new(DispatchProxy.Create<ICoreClientAPI, InventoryCompositionCaptureTests.CaptureProxy>(), ElementBounds.Fixed(0, 0, width, height),
             PlayerMenuLayout.Resolve(width, height), session, null, _ => { }, hub: hub, textDrawn: text);

@@ -10,9 +10,17 @@ public sealed class PlayerMenuLayoutTests
     public void HeaderTitleNavigationBodyAndFooterHaveDedicatedSpace(double width, double height)
     {
         var layout = PlayerMenuLayout.Resolve(width, height);
-        Assert.True(layout.Header.Bottom <= layout.Title.Y);
-        Assert.True(layout.Title.Bottom <= layout.Navigation.Y);
-        Assert.True(layout.Navigation.Bottom <= layout.Browser.Y);
+        if (layout.AlternatePanes)
+        {
+            Assert.True(layout.Header.Bottom <= layout.Title.Y);
+            Assert.True(layout.Title.Bottom <= layout.Navigation.Y);
+        }
+        else
+        {
+            Assert.True(layout.Header.Bottom <= layout.Navigation.Y);
+            Assert.True(layout.Navigation.Bottom <= layout.Title.Y);
+        }
+        Assert.True(layout.Title.Bottom <= layout.Browser.Y);
         Assert.True(layout.Browser.Bottom <= layout.Footer.Y);
         Assert.True(layout.PrimaryAction.Y >= layout.Footer.Y);
         for (int i = 0; i < 6; i++)
