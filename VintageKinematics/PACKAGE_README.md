@@ -19,6 +19,10 @@ Early kinetic power comes from hand cranks, treadwheels, and counterweight drive
 - The Kinetic Warehouse, providing searchable shared storage with expandable capacity and belt input and output.
 - Powered equipment including drills, saws, kinetic boots, backpacks, and the Mechanical Binder.
 
+## Version 1.4.4
+
+- Fixed a crash when withdrawing a stack from the Kinetic Warehouse into backpack inventory slots.
+
 ## Version 1.4.3
 
 - Fixed Kinetic Warehouse Terminals sometimes becoming unusable or appearing empty after removing storage cells and reloading the world.

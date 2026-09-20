@@ -6,7 +6,7 @@ Vintage Kinematics is its own kinetic power system. It has shafts, stress units,
 
 ## Current Scope
 
-Version: `1.4.2`
+Version: `1.4.4`
 
 Side: universal, required on both client and server.
 
@@ -27,6 +27,10 @@ Machines include primitive and kinetic sieves, the kinetic quern, crusher and cr
 Contraptions use gantry carriages and gantry shafts to move selected blocks as one entity. The Mechanical Binder supports custom multi box selections, removal boxes, live previews, and connected block validation. Contraption drills and saws can work while moving, and carried storage can collect drops.
 
 Tools include the kinetic wrench, powered drill, powered saw, flywheel backpack, reinforced backpack, pogo rod, kinetic boots, and the Mechanical Binder.
+
+## Version 1.4.4 Highlights
+
+Fixed a crash when withdrawing a stack from the Kinetic Warehouse into backpack inventory slots.
 
 ## Version 1.4.2 Highlights
 

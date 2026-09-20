@@ -74,13 +74,7 @@ namespace VintageKinematics.Gui.Storage
             var prediction = new StorageTerminalInventoryPrediction(capi);
             if (exemplar?.Collectible == null || quantity <= 0) return prediction;
 
-            var before = new Dictionary<ItemSlot, ItemStack>();
             IPlayer player = capi.World.Player;
-            foreach (InventoryBase inventory in player.InventoryManager.InventoriesOrdered)
-            {
-                if (inventory is not InventoryBasePlayer || !inventory.HasOpened(player)) continue;
-                foreach (ItemSlot slot in inventory) before[slot] = Clone(slot.Itemstack);
-            }
 
             ItemStack offered = exemplar.Clone();
             offered.StackSize = quantity;
@@ -104,19 +98,16 @@ namespace VintageKinematics.Gui.Storage
                     skipped);
                 if (target == null) break;
                 skipped.Add(target);
+                ItemStack before = Clone(target.Itemstack);
                 int beforeQuantity = source.StackSize;
                 source.TryPutInto(target, ref operation);
                 if (source.StackSize == beforeQuantity) break;
+                // TryPutInto already notifies the target inventory. Snapshot only the
+                // recipient: bag contents also change their containing bag's attributes,
+                // and marking that bag dirty would rebuild and detach its content slots.
+                prediction.slots.Add(new PredictedSlot(target, before, Clone(target.Itemstack)));
             }
             prediction.Moved = quantity - source.StackSize;
-
-            foreach ((ItemSlot slot, ItemStack original) in before)
-            {
-                ItemStack after = Clone(slot.Itemstack);
-                if (Same(capi.World, original, after)) continue;
-                slot.MarkDirty();
-                prediction.slots.Add(new PredictedSlot(slot, original, after));
-            }
             return prediction;
         }
 
@@ -129,6 +120,10 @@ namespace VintageKinematics.Gui.Storage
         {
             foreach (PredictedSlot predicted in slots)
             {
+                // Inventory packets and bag changes can replace slot objects while a
+                // prediction is pending. Never restore or notify a detached slot.
+                if (predicted.Slot.Inventory != null
+                    && predicted.Slot.Inventory.GetSlotId(predicted.Slot) < 0) continue;
                 if (!Same(capi.World, predicted.Slot.Itemstack, predicted.After)) continue;
                 predicted.Slot.Itemstack = Clone(predicted.Before);
                 predicted.Slot.MarkDirty();
