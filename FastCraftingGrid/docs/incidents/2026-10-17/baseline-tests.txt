@@ -1,0 +1,7 @@
+Unexpected output generation: Grid recipe '' has no output specified
+Unexpected output generation: Grid recipe '' has no output specified
+FAIL: item/block with the same ID must not reuse a cached result
+FAIL: stale positive cache must resume matching and fall back when candidates are absent
+FAIL: cached recipe is revalidated against current player/world context
+FAIL: disabled cached recipe must not generate output
+6/10 regression checks passed.
