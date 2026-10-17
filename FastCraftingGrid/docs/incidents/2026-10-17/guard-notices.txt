@@ -1,0 +1,4 @@
+17.10.2026 17:45:28 [Server Warning] [CraftGuard] Player A: crafting temporarily paused for 15s (crafting recipe processing exceeded its time budget). This is a performance safeguard, not a cheating determination.
+17.10.2026 17:45:37 [Server Warning] [CraftGuard] Player B: crafting temporarily paused for 15s (crafting recipe processing exceeded its time budget). This is a performance safeguard, not a cheating determination.
+17.10.2026 17:50:58 [Server Warning] [CraftGuard] Player A: crafting temporarily paused for 15s (crafting recipe processing exceeded its time budget). This is a performance safeguard, not a cheating determination.
+17.10.2026 17:52:03 [Server Warning] [CraftGuard] Player A: crafting temporarily paused for 15s (crafting recipe processing exceeded its time budget). This is a performance safeguard, not a cheating determination.

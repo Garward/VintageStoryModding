@@ -1,0 +1,50 @@
+[
+  {
+    "item": "ingot-copper",
+    "before_1600": 0,
+    "after_1700": 0,
+    "change": 0
+  },
+  {
+    "item": "rod-copper",
+    "before_1600": 1,
+    "after_1700": 1,
+    "change": 0
+  },
+  {
+    "item": "nugget-nativecopper",
+    "before_1600": 69,
+    "after_1700": 69,
+    "change": 0
+  },
+  {
+    "item": "metalbit-copper",
+    "before_1600": 24,
+    "after_1700": 24,
+    "change": 0
+  },
+  {
+    "item": "metalplate-copper",
+    "before_1600": 1,
+    "after_1700": 1,
+    "change": 0
+  },
+  {
+    "item": "chutesection-copper",
+    "before_1600": 2,
+    "after_1700": 2,
+    "change": 0
+  },
+  {
+    "item": "ingot-tinbronze",
+    "before_1600": 0,
+    "after_1700": 0,
+    "change": 0
+  },
+  {
+    "item": "metalbit-tinbronze",
+    "before_1600": 20,
+    "after_1700": 20,
+    "change": 0
+  }
+]

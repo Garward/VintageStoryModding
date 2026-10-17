@@ -53,7 +53,19 @@ internal static class FindMatchingRecipePatch
         long gridHash = ComputeGridHash(slots);
         GridMatchCache cache = MatchCaches.GetValue(inventory, _ => new GridMatchCache());
 
-        if (cache.Valid && cache.Hash == gridHash)
+        // The hash describes grid contents, not the player/world matching context.
+        // Revalidate a positive result before generating predicted output: recipe
+        // hooks, permissions, or an ID/hash collision can invalidate it.
+        bool sameGrid = cache.Valid && cache.Hash == gridHash;
+        if (sameGrid && cache.MatchedRecipe != null
+            && (!cache.MatchedRecipe.Enabled
+                || !cache.MatchedRecipe.Matches(inventory.Player, world, slots, gridWidth)))
+        {
+            cache.Valid = false;
+            sameGrid = false;
+        }
+
+        if (sameGrid)
         {
             if (ApplyCachedMatch(inventory, slots, outputSlot, outputIndex, cache, hadOutput))
             {
@@ -184,6 +196,8 @@ internal static class FindMatchingRecipePatch
             if (collectible == null || stack.StackSize <= 0) continue;
 
             hash = hash * 31 + i;
+            // Blocks and items have independent numeric ID registries.
+            hash = hash * 31 + (int)stack.Class;
             hash = hash * 31 + collectible.Id;
             hash = hash * 31 + stack.StackSize;
             hash = hash * 31 + stack.Attributes.GetHashCode(Array.Empty<string>());
